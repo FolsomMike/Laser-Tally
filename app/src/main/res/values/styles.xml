@@ -14,7 +14,7 @@
     	<item name="android:colorBackground">@color/backgroundColor</item>
     </style>
     
-    <style name="styledButton" >
+    <style name="styledButtonWhiteText" >
 	    <item name="android:textColor" >#ffffff</item>
 	    <item name="android:gravity" >center</item>
 	    <item name="android:textStyle" >bold</item>

@@ -59,7 +59,7 @@
             android:text="@string/moreButtonText"
             android:textSize="30sp"
             style="@style/whiteStyledButton"
-            android:onClick="moreButtonPressed" />
+            android:onClick="handleMoreButtonPressed" />
 
     </LinearLayout>
 
@@ -110,13 +110,18 @@
                 android:layout_height="10dp" >
             </View>
 
-            <Button
-                android:background="@drawable/blue_styled_button"
-                android:layout_width="225dp"
-                android:layout_height="200dp"
-                android:text="@string/measureButtonText"
-                android:textSize="50sp"
-                style="@style/styledButton" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <Button
+                    android:id="@id/measureConnectButton"
+                    android:layout_width="225dp"
+                    android:layout_height="200dp"
+                    android:textSize="50sp"
+                    style="@style/styledButtonWhiteText" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

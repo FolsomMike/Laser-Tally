@@ -27,6 +27,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -34,6 +35,11 @@ import android.view.ViewGroup;
 //
 
 public class MainActivity extends Activity {
+
+    Button measureConnectButton;
+
+    final String connectButtonText = "Connect";
+    final String measureButtonText = "Measure";
 
     //-----------------------------------------------------------------------------
     // MainActivity::onCreate
@@ -48,22 +54,54 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        determineWhichButtonToShow();
+
     }//end of MainActivity::onCreate
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MainActivity::moreButtonPressed
+    // MainActivity::onDestroy
     //
-    // Starts an activity for "More".
-    // Should be called from the "More" onClick().
+    // Automatically called when the activity is destroyed.
+    // All functions that must be done upon destruction should be called here.
     //
 
-    public void moreButtonPressed(View view) {
+    @Override
+    protected void onDestroy()
+    {
 
-        Intent intent = new Intent(this, ItemListActivity.class);
-        startActivity(intent);
+        super.onDestroy();
 
-    }//end of MainActivity::moreButtonPressed
+        //debug hss//bluetoothHandler.unregisterBluetoothReceiver();
+
+    }//end of MainActivity::onDestroy
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::messageHandler
+    //
+    // Not really a function
+    //
+    // Instantiate a new handler and Override its handleMessage() method.
+    //
+
+    public final Handler messageHandler = new Handler() {
+
+        @Override
+        public void handleMessage(Message msg) {
+
+            //get the message type
+            int type = msg.getData().getInt("what");
+
+            //debug hss//
+            //check the message types and decide what to do for each type
+    			/*if (type == BluetoothConnectionThread.HANDLER_MESSAGE_BT_INSTREAM) {
+    				//msg.//hss wip//
+    			}*/
+
+        }
+
+    };//end of MainActivity::messageHandler
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -95,46 +133,99 @@ public class MainActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MainActivity::Defining a Handler
+    // MainActivity::onClickLister
     //
-    // Instantiate a new handler and Override its handleMessage() method.
+    // Not really a function.
+    //
+    // Listeners for clicks on the objects to which it was handed.
+    //
+    // Ids are used to determine which object was pressed.
+    // When assigning this listener to any new objects, add the object's id to the
+    // switch statement and handle the case properly.
     //
 
-    public final Handler handler = new Handler() {
+    View.OnClickListener onClickLister = new View.OnClickListener() {
 
-        @Override
-        public void handleMessage(Message msg) {
+        public void onClick(View pV) {
 
-            //get the message type
-            int type = msg.getData().getInt("what");
+            int id = pV.getId();
 
-            //debug hss//
-            //check the message types and decide what to do for each type
-    			/*if (type == BluetoothConnectionThread.HANDLER_MESSAGE_BT_INSTREAM) {
-    				//msg.//hss wip//
-    			}*/
+            switch (id) {
+
+                case R.id.measureConnectButton:
+                    handleMeasureConnectButtonPressed();
+
+                default:
+                    return;
+            }
 
         }
 
-    };//end of MainActivity::Defining a Handler
+    };//end of MainActivity::onClickLister
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MainActivity::onDestroy
+    // MainActivity::determineWhichButtonToShow
     //
-    // Automatically called when the activity is destroyed.
-    // All functions that must be done upon destruction should be called here.
+    // Determines whether to create the "Measure" button or the "Connect" button
+    // according to the connected devices.
+    //
+    // hss wip -- currently just creates the "Connect" button
     //
 
-    @Override
-    protected void onDestroy()
-    {
+    private void determineWhichButtonToShow() {
 
-        super.onDestroy();
+        //debug hss
+        boolean h = true;
 
-        //debug hss//bluetoothHandler.unregisterBluetoothReceiver();
+        if (h) {
 
-    }//end of MainActivity::onDestroy
+            //hss wip -- what not
+            measureConnectButton = (Button)findViewById(R.id.measureConnectButton);
+            measureConnectButton.setBackground(getResources().getDrawable(R.drawable.green_styled_button));
+            measureConnectButton.setText(connectButtonText);
+            measureConnectButton.setOnClickListener(onClickLister);
+
+        }
+
+    }//end of MainActivity::determineWhichButtonToShow
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::handleMeasureConnectButtonPressed
+    //
+    // Starts an activity for "More".
+    // Should be called from the "More" onClick().
+    //
+
+    public void handleMeasureConnectButtonPressed() {
+
+        String btnText = measureConnectButton.getText().toString();
+
+        if (btnText == connectButtonText) {
+            //stuff to do to connect to device
+        }
+
+        else if (btnText == measureButtonText) {
+            //hss wip//stuff to do to measure
+        }
+
+    }//end of MainActivity::handleMeasureConnectButtonPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::handleMoreButtonPressed
+    //
+    // Starts an activity for "More".
+    // Should be called from the "More" onClick().
+    //
+
+    public void handleMoreButtonPressed(View pView) {
+
+        Intent intent = new Intent(this, ItemListActivity.class);
+        startActivity(intent);
+
+    }//end of MainActivity::handleMoreButtonPressed
     //-----------------------------------------------------------------------------
 
 }//end of class MainActivity
