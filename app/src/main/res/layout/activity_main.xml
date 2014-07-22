@@ -1,0 +1,225 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:baselineAligned="false"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#808080"
+    tools:context="com.yaboosh.lasertally.development.main.MainActivity" >
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="80dp"
+        android:paddingBottom="2dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="2dp"
+        tools:context="com.yaboosh.lasertally.development.main.MainActivity" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#B2B2B2"
+            android:text="Job: "
+            android:textSize="50dp"/>
+
+        <TextView
+            android:layout_width="400dp"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:text="@string/job"
+            android:textSize="50dp"/>
+
+        <!-- horizontal spacer -->
+        <View
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="1dp" >
+        </View>
+
+        <Button
+            android:background="@drawable/white_styled_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/jobInfoButtonText"
+            android:textSize="30sp"
+            style="@style/whiteStyledButton" />
+
+        <!-- horizontal spacer -->
+        <View
+            android:layout_width="10dp"
+            android:layout_height="1dp" >
+        </View>
+
+        <Button
+            android:background="@drawable/white_styled_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/moreButtonText"
+            android:textSize="30sp"
+            style="@style/whiteStyledButton"
+            android:onClick="moreButtonPressed" />
+
+    </LinearLayout>
+
+    <!-- horizontal line -->
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="2dp"
+        android:background="#191919" >
+    </View>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="2dp"
+        android:paddingLeft="2dp"
+        android:paddingRight="2dp"
+        android:paddingTop="10dp"
+        tools:context="com.yaboosh.lasertally.development.main.MainActivity" >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="2dp"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:paddingTop="2dp"
+            tools:context="com.yaboosh.lasertally.development.main.MainActivity" >
+
+            <!-- vertical spacer -->
+            <View
+                android:layout_width="1dp"
+                android:layout_height="10dp" >
+            </View>
+
+            <Button
+                android:background="@drawable/red_styled_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/redoButtonText"
+                android:textSize="50sp"
+                style="@style/redStyledButton" />
+
+            <!-- vertical spacer -->
+            <View
+                android:layout_width="1dp"
+                android:layout_height="10dp" >
+            </View>
+
+            <Button
+                android:background="@drawable/blue_styled_button"
+                android:layout_width="225dp"
+                android:layout_height="200dp"
+                android:text="@string/measureButtonText"
+                android:textSize="50sp"
+                style="@style/styledButton" />
+
+        </LinearLayout>
+
+        <!-- horizontal spacer -->
+        <View
+            android:layout_width="10dp"
+            android:layout_height="1dp" >
+        </View>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:paddingBottom="2dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:paddingTop="0dp"
+            android:background="#DDDDDD"
+            tools:context="com.yaboosh.lasertally.development.main.MainActivity" >
+
+            <TableLayout
+                android:id = "@+id/pipeMeasurementsHeaderTable"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:padding="0dp"
+                android:background="#000000">
+                <TableRow>
+                    <View style="@style/tableSideBorderLine" />
+
+                    <TextView
+                        android:id="@+id/homeRuns"
+                        android:text="@string/hello"
+                        style="@style/headerTableColumn"
+                        />
+
+                    <View style="@style/headerTableColumnDivider" />
+
+                    <TextView
+                        android:id="@+id/homeHits"
+                        android:text="@string/hello"
+                        style="@style/headerTableColumn"
+                        />
+
+                    <View style="@style/headerTableColumnDivider" />
+
+                    <TextView
+                        android:id="@+id/homeErrors"
+                        android:text="@string/hello"
+                        style="@style/headerTableColumn"
+                        />
+
+                    <View style="@style/tableSideBorderLine" />
+                </TableRow>
+            </TableLayout>
+
+            <ScrollView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:scrollbars="vertical" >
+
+                <TableLayout
+                    android:id = "@+id/pipeMeasurementsTable"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:padding="0dp">
+
+                    <TableRow android:layout_height="wrap_content">
+                        <View style="@style/tableSideBorderLine" />
+
+                        <TextView
+                            android:id="@+id/runLabel"
+                            android:text="@string/hello"
+                            style="@style/tableColumn"
+                            />
+
+                        <View style="@style/tableColumnDivider" />
+
+                        <TextView
+                            android:id="@+id/hitLabel"
+                            android:text="@string/hello"
+                            style="@style/tableColumn"
+                            />
+
+                        <View style="@style/tableColumnDivider" />
+
+                        <TextView
+                            android:id="@+id/errorLabel"
+                            android:text="@string/hello"
+                            style="@style/tableColumn"
+                            />
+
+                        <View style="@style/tableSideBorderLine" />
+                    </TableRow>
+
+                    <View style="@style/tableBottomBorderLine" />
+
+                </TableLayout>
+
+            </ScrollView>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
