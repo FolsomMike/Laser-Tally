@@ -1,14 +1,14 @@
 /******************************************************************************
- * Title: MainActivity.java
- * Author: Hunter Schoonover
- * Date: 7/22/14
- *
- * Purpose:
- *
- * This class creates the main activity for the application.
- * It is created and used upon app startup.
- *
- */
+* Title: MainActivity.java
+* Author: Hunter Schoonover
+* Date: 7/22/14
+*
+* Purpose:
+*
+* This class creates the main activity for the application.
+* It is created and used upon app startup.
+*
+*/
 
 //-----------------------------------------------------------------------------
 
@@ -18,16 +18,26 @@ package com.yaboosh.ybtech.lasertally;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
+import android.os.Messenger;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
+import java.lang.ref.WeakReference;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -37,9 +47,23 @@ import android.widget.Button;
 public class MainActivity extends Activity {
 
     Button measureConnectButton;
+    Button redoButton;
+
+    BluetoothLeClient bluetoothLeClient = null;
 
     final String connectButtonText = "Connect";
     final String measureButtonText = "Measure";
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::MainActivity (constructor)
+    //
+
+    public MainActivity() {
+
+        super();
+
+    }//end of MainActivity::MainActivity (constructor)
+    //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
     // MainActivity::onCreate
@@ -72,20 +96,48 @@ public class MainActivity extends Activity {
 
         super.onDestroy();
 
-        //debug hss//bluetoothHandler.unregisterBluetoothReceiver();
-
     }//end of MainActivity::onDestroy
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MainActivity::messageHandler
+    // MainActivity::onStart
+    //
+    // Automatically called when the activity is started.
+    // All functions that must be done upon instantiation should be called here.
+    //
+
+    @Override
+    protected void onStart() {
+
+        super.onStart();
+
+    }//end of MainActivity::onStart
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::onStop
+    //
+    // Automatically called when the activity is stopped.
+    // All functions that must be done upon instantiation should be called here.
+    //
+
+    @Override
+    protected void onStop() {
+
+            super.onStop();
+
+    }//end of MainActivity::onStop
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::handler
     //
     // Not really a function
     //
     // Instantiate a new handler and Override its handleMessage() method.
     //
 
-    public final Handler messageHandler = new Handler() {
+    public final Handler handler = new Handler() {
 
         @Override
         public void handleMessage(Message msg) {
@@ -101,7 +153,7 @@ public class MainActivity extends Activity {
 
         }
 
-    };//end of MainActivity::messageHandler
+    };//end of MainActivity::handler
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -114,20 +166,6 @@ public class MainActivity extends Activity {
     @Override
     public void onActivityResult(int pRequestCode, int pResultCode, Intent pData)
     {
-        //debug hss//
-    	/*switch (pRequestCode) {
-    		case BluetoothTools.BLUETOOTH_REQUEST_CODE:
-	            if (pResultCode == RESULT_OK) {
-	            	bluetoothHandler.handleBluetoothOnState();
-	            }
-	            if (pResultCode == RESULT_CANCELED) {
-	            	bluetoothHandler.handleBluetoothTurnOnFailed();
-	            }
-	            break;
-
-            default:
-            	break;
-    	}//end of switch (pRequestCode)*/
 
     }//end of MainActivity::onActivityResult
     //-----------------------------------------------------------------------------
@@ -154,9 +192,16 @@ public class MainActivity extends Activity {
 
                 case R.id.measureConnectButton:
                     handleMeasureConnectButtonPressed();
+                    break;
+
+                case R.id.redoButton:
+                    //debug hss//
+                    handleRedoButtonPressed();
+                    break;
 
                 default:
                     return;
+
             }
 
         }
@@ -180,11 +225,15 @@ public class MainActivity extends Activity {
 
         if (h) {
 
-            //hss wip -- what not
             measureConnectButton = (Button)findViewById(R.id.measureConnectButton);
-            measureConnectButton.setBackground(getResources().getDrawable(R.drawable.green_styled_button));
+            measureConnectButton.setBackground(getResources().getDrawable
+                                                                (R.drawable.green_styled_button));
             measureConnectButton.setText(connectButtonText);
             measureConnectButton.setOnClickListener(onClickLister);
+
+            redoButton = (Button)findViewById(R.id.redoButton);
+            redoButton.setOnClickListener(onClickLister);
+            //debug hss//redoButton.setVisibility(View.INVISIBLE);
 
         }
 
@@ -194,16 +243,20 @@ public class MainActivity extends Activity {
     //-----------------------------------------------------------------------------
     // MainActivity::handleMeasureConnectButtonPressed
     //
-    // Starts an activity for "More".
-    // Should be called from the "More" onClick().
+    // Calls functions depending on the text of the handleMeasureConnectButton
+    // button.
     //
 
     public void handleMeasureConnectButtonPressed() {
 
         String btnText = measureConnectButton.getText().toString();
 
+        //debug hss//
+        System.out.println("handleMeasureConnectButton was pressed -- text: " + btnText);
+
         if (btnText == connectButtonText) {
             //stuff to do to connect to device
+           startLeScanningProcess();
         }
 
         else if (btnText == measureButtonText) {
@@ -226,6 +279,35 @@ public class MainActivity extends Activity {
         startActivity(intent);
 
     }//end of MainActivity::handleMoreButtonPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::handleRedoButtonPressed
+    //
+    // //hss wip//
+    //
+
+    public void handleRedoButtonPressed() {
+
+        if (bluetoothLeClient != null) {
+            bluetoothLeClient.turnLaserOn();
+        }
+
+    }//end of MainActivity::handleRedoButtonPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::startLeScanningProcess
+    //
+    // Creates a BluetoothLeClient and initiate it using MODE0.
+    //
+
+    public void startLeScanningProcess() {
+
+        Intent intent = new Intent(this, BluetoothScanActivity.class);
+        startActivity(intent);
+
+    }//end of MainActivity::startLeScanningProcess
     //-----------------------------------------------------------------------------
 
 }//end of class MainActivity

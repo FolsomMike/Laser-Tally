@@ -15,6 +15,7 @@
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:paddingTop="2dp"
+        android:background="#1A1A1A"
         tools:context="com.yaboosh.lasertally.development.main.MainActivity" >
 
         <TextView
@@ -74,9 +75,9 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="2dp"
-        android:paddingLeft="2dp"
-        android:paddingRight="2dp"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         android:paddingTop="10dp"
         tools:context="com.yaboosh.lasertally.development.main.MainActivity" >
 
@@ -84,10 +85,10 @@
             android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingBottom="2dp"
-            android:paddingLeft="2dp"
-            android:paddingRight="2dp"
-            android:paddingTop="2dp"
+            android:paddingBottom="0dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:paddingTop="0dp"
             tools:context="com.yaboosh.lasertally.development.main.MainActivity" >
 
             <!-- vertical spacer -->
@@ -97,12 +98,13 @@
             </View>
 
             <Button
-                android:background="@drawable/red_styled_button"
+                android:id="@id/redoButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/redoButtonText"
                 android:textSize="50sp"
-                style="@style/redStyledButton" />
+                style="@style/redStyledButton"
+                android:background="@drawable/red_styled_button" />
 
             <!-- vertical spacer -->
             <View
@@ -110,18 +112,12 @@
                 android:layout_height="10dp" >
             </View>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" >
-
-                <Button
-                    android:id="@id/measureConnectButton"
-                    android:layout_width="225dp"
-                    android:layout_height="200dp"
-                    android:textSize="50sp"
-                    style="@style/styledButtonWhiteText" />
-
-            </LinearLayout>
+            <Button
+                android:id="@id/measureConnectButton"
+                android:layout_width="225dp"
+                android:layout_height="200dp"
+                android:textSize="50sp"
+                style="@style/styledButtonWhiteText" />
 
         </LinearLayout>
 
@@ -136,7 +132,7 @@
             android:layout_weight="1"
             android:layout_width="0dip"
             android:layout_height="match_parent"
-            android:paddingBottom="2dp"
+            android:paddingBottom="0dp"
             android:paddingLeft="0dp"
             android:paddingRight="0dp"
             android:paddingTop="0dp"
@@ -153,24 +149,24 @@
                     <View style="@style/tableSideBorderLine" />
 
                     <TextView
-                        android:id="@+id/homeRuns"
-                        android:text="@string/hello"
+                        android:id="@+id/pipeNumberRow"
+                        android:text="Pipe #"
                         style="@style/headerTableColumn"
                         />
 
                     <View style="@style/headerTableColumnDivider" />
 
                     <TextView
-                        android:id="@+id/homeHits"
-                        android:text="@string/hello"
+                        android:id="@+id/threadOnRow"
+                        android:text="Actual"
                         style="@style/headerTableColumn"
                         />
 
                     <View style="@style/headerTableColumnDivider" />
 
                     <TextView
-                        android:id="@+id/homeErrors"
-                        android:text="@string/hello"
+                        android:id="@+id/threadOffRow"
+                        android:text="Adjusted"
                         style="@style/headerTableColumn"
                         />
 

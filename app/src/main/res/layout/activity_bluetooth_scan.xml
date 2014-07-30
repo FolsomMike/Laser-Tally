@@ -1,0 +1,155 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_content"
+    android:layout_width="500dp"
+    android:layout_height="400dp"
+    android:orientation="vertical"
+    android:background="#808080"
+    android:paddingBottom="0dp"
+    android:paddingLeft="0dp"
+    android:paddingRight="0dp"
+    android:paddingTop="0dp"
+    tools:context="com.yaboosh.ybtech.lasertally.BluetoothScanActivity" >
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="70dp"
+        android:paddingBottom="0dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="0dp"
+        android:background="#1A1A1A" >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:paddingBottom="0dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:paddingTop="0dp" >
+
+            <!-- vertical spacer -->
+            <View
+                android:layout_width="0dp"
+                android:layout_height="5dp" >
+            </View>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:textColor="#B2B2B2"
+                android:text="Select a Device: "
+                android:textSize="40dp" />
+
+        </LinearLayout>
+
+        <!-- horizontal spacer -->
+        <View
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="1dp" >
+        </View>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:paddingBottom="0dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:paddingTop="0dp" >
+
+            <!-- vertical spacer -->
+            <View
+                android:layout_width="0dp"
+                android:layout_height="15dp" >
+            </View>
+
+            <Button
+                android:background="@drawable/close_x_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="handleCloseXButtonPressed" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:paddingBottom="0dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="0dp" >
+
+        <!-- horizontal center -->
+            <!-- will only work if another view identical to
+                    to this one is used on the other side of
+                    whatever you are trying to center -->
+        <View
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="0dp" >
+        </View>
+
+        <ProgressBar
+            android:id="@id/bluetoothScanProgressBar"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            style="@android:style/Widget.ProgressBar"
+            android:gravity="center" />
+
+        <!-- horizontal spacer -->
+        <View
+            android:id="@id/specialHorizontalSpacer"
+            android:layout_width="10dp"
+            android:layout_height="0dp" >
+        </View>
+
+        <TextView
+            android:id="@id/bluetoothScanningText"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textSize="20dp"
+            android:gravity="center" />
+
+        <!-- horizontal center -->
+            <!-- will only work if another view identical to
+                    to this one is used on the other side of
+                    whatever you are trying to center -->
+        <View
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="0dp" >
+        </View>
+
+    </LinearLayout>
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FFFFFF"
+        tools:context="com.yaboosh.ybtech.lasertally.DeviceListFragment" >
+
+        <ListView
+            android:id="@android:id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:dividerHeight="7px"
+            android:fadeScrollbars="false" />
+
+        <TextView
+            android:id="@android:id/empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/no_devices"/>
+
+    </FrameLayout>
+
+</LinearLayout>

@@ -5,6 +5,12 @@
     <string name="job">Test Job</string>
     <string name="hello">Hello</string>
 
+    //Strings used for the BluetoothScanActivity/activity_bluetooth_scan
+    <string name="scanning">Looking for devices...</string>
+    <string name="not_scanning">Done looking for devices.</string>
+    <string name="empty_view_no_text"></string>
+    <string name="no_devices">No devices found.</string>
+
     <!-- Strings for button texts -->
     <string name="jobInfoButtonText">Job Info</string>
     <string name="moreButtonText">More</string>
@@ -12,13 +18,16 @@
     <string name="measureButtonText">Measure</string>
 
     <color name="backgroundColor">#B6B6B6</color>
-    <color name="headerTableColumnDividerColor">#E6E6E6</color>
-    <color name="tableColumnDividerColor">#737373</color>
+    <color name="headerTableColumnDividerColor">#505050</color>
+    <color name="tableColumnDividerColor">#505050</color>
     <color name="tableSideBorderLineColor">#000000</color>
     <color name="tableBottomBorderLineColor">#000000</color>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_item_list">Items</string>
     <string name="title_item_detail">Item Detail</string>
+    <string name="title_activity_bluetooth_scan">BluetoothScanActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 
 </resources>

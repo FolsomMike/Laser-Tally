@@ -2,6 +2,13 @@
 
 <resources>
 
+    //Ids used for the BluetoothScanActivity/activity_bluetooth_scan
+    <item type="id" name="bluetoothScanProgressBar" />
+    <item type="id" name="bluetoothScanningText" />
+    <item type="id" name="specialHorizontalSpacer" />
+
     <item type="id" name="measureConnectButton" />
+    <item type="id" name="redoButton" />
+    <item type="id" name="deviceList" />
 
 </resources>
