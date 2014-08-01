@@ -29,9 +29,13 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
+import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
+import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Intent;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -46,6 +50,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.Stack;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class BluetoothLeService extends Service implements BluetoothAdapter.LeScanCallback {
 
@@ -63,9 +70,25 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
 
     private final Messenger messenger;
     private final IncomingHandler handler;
+    Handler timerHandler = new Handler();
     private final List<Messenger> clients = new LinkedList<Messenger>();
     private final Map<String, RemoteLeDevice> devices = new HashMap<String, RemoteLeDevice>();
+    private Stack subscribeStack = new Stack();
 
+    //QUEUE COMMANDS//
+    private static final String NO_NEW_COMMAND = "NONEWCOMMAND";
+    private static final String SUBSCRIBE_TO_DISTANCE_CHAR = "SUBSCRIBETODISTANCECHAR";
+    private static final String SUBSCRIBE_TO_DISTANCE_DISPLAY_UNIT_CHAR =
+                                                        "SUBSCRIBETODISTANCEDISPLAYUNITCHAR";
+    private static final String SUBSCRIBE_TO_INCLINATION_CHAR = "SUBSCRIBETOINCLINATIONCHAR";
+    private static final String SUBSCRIBE_TO_INCLINATION_DISPLAY_UNIT_CHAR =
+                                                        "SUBSCRIBETOINCLINATIONDISPLAYUNITCHAR";
+    private static final String TURN_LASER_ON = "TURNLASERON";
+    //END OF QUEUE COMMANDS//
+
+    /*//debug hss//private static final Queue<String> queue = new ConcurrentLinkedQueue<String>();*/
+    private boolean writing = false;
+    private static final Queue<Object> writeQueue = new ConcurrentLinkedQueue<Object>();
 
     public enum State {
         UNKNOWN,
@@ -159,10 +182,11 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
     //
     // Not really a function.
     //
-    // Defines a BluetoothGattCallback that automatically gets called whenever
-    // the connection state of what it was assigned to changes.
+    // Defines a new BluetoothGattCallback object.
     //
-    // Does actions depending on the different connection states.
+    // Automatically notified/called for several different changes concerning
+    // the gatt to which it was given.
+    //
     //
 
     private BluetoothGattCallback gattCallback = new BluetoothGattCallback() {
@@ -177,17 +201,173 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
 
             if (pNewState == BluetoothProfile.STATE_CONNECTED) {
                 setState(State.CONNECTED);
+                gatt.discoverServices();
             } else {
                 setState(State.IDLE);
             }
 
         }
 
+        @Override
+        public void onServicesDiscovered(BluetoothGatt pGatt, int pStatus) {
+
+            Log.d(TAG, "onServicesDiscovered: " + pStatus);
+
+            if (pStatus != BluetoothGatt.GATT_SUCCESS) { return; }
+
+            BluetoothGattService tempService = pGatt.getService(BluetoothLeVars.DISTO_SERVICE);
+
+            subscribeStack.push(tempService.getCharacteristic
+                                (BluetoothLeVars.DISTO_CHARACTERISTIC_DISTANCE_DISPLAY_UNIT));
+
+            subscribeStack.push(tempService.getCharacteristic
+                                (BluetoothLeVars.DISTO_CHARACTERISTIC_INCLINATION));
+
+            subscribeStack.push(tempService.getCharacteristic
+                                (BluetoothLeVars.DISTO_CHARACTERISTIC_INCLINATION_DISPLAY_UNIT));
+
+            timerHandler.postDelayed(new DelayedEnableNotification(
+                    pGatt,
+                    tempService.getCharacteristic(BluetoothLeVars.DISTO_CHARACTERISTIC_DISTANCE)),
+                    950L);
+
+            //debug hss//
+            //timerHandler.postDelayed(new Runnable() { @Override public void run() { doCommand(TURN_LASER_ON); }}, 20000);
+
+        }
+
+        @Override
+        public void onCharacteristicWrite(BluetoothGatt pGatt,
+                                          BluetoothGattCharacteristic pCharacteristic,
+                                          int pStatus) {
+
+            if (pStatus == BluetoothGatt.GATT_SUCCESS) {
+                Log.d(TAG, "Writing to characteristic GATT_SUCCESS");
+            }
+            else if (pStatus == BluetoothGatt.GATT_FAILURE) {
+                Log.d(TAG, "Writing to characteristic GATT_FAILURE");
+            }
+            else if (pStatus == BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION) {
+                Log.d(TAG, "Writing to characteristic GATT_INSUFFICIENT_AUTHENTICATION");
+            }
+            else if (pStatus == BluetoothGatt.GATT_INSUFFICIENT_ENCRYPTION) {
+                Log.d(TAG, "Writing to characteristic GATT_INSUFFICIENT_ENCRYPTION");
+            }
+            else if (pStatus == BluetoothGatt.GATT_INVALID_ATTRIBUTE_LENGTH) {
+                Log.d(TAG, "Writing to characteristic GATT_INVALID_ATTRIBUTE_LENGTH");
+            }
+            else if (pStatus == BluetoothGatt.GATT_INVALID_OFFSET) {
+                Log.d(TAG, "Writing to characteristic GATT_INVALID_OFFSET");
+            }
+            else if (pStatus == BluetoothGatt.GATT_READ_NOT_PERMITTED) {
+                Log.d(TAG, "Writing to characteristic GATT_READ_NOT_PERMITTED");
+            }
+            else if (pStatus == BluetoothGatt.GATT_REQUEST_NOT_SUPPORTED) {
+                Log.d(TAG, "Writing to characteristic GATT_REQUEST_NOT_SUPPORTED");
+            }
+            else if (pStatus == BluetoothGatt.GATT_WRITE_NOT_PERMITTED) {
+                Log.d(TAG, "Writing to characteristic GATT_WRITE_NOT_PERMITTED");
+            }
+
+            Log.v(TAG, "onCharacteristicWrite: " + pStatus + " :: " + pCharacteristic);
+            writing = false;
+        }
+
+        @Override
+        public void onDescriptorWrite(BluetoothGatt pGatt,
+                                      BluetoothGattDescriptor pDescriptor,
+                                      int pStatus) {
+
+            if (pStatus == BluetoothGatt.GATT_SUCCESS) {
+                Log.d(TAG, "Writing to descriptor GATT_SUCCESS");
+            }
+            else if (pStatus == BluetoothGatt.GATT_FAILURE) {
+                Log.d(TAG, "Writing to descriptor GATT_FAILURE");
+            }
+            else if (pStatus == BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION) {
+                Log.d(TAG, "Writing to descriptor GATT_INSUFFICIENT_AUTHENTICATION");
+            }
+            else if (pStatus == BluetoothGatt.GATT_INSUFFICIENT_ENCRYPTION) {
+                Log.d(TAG, "Writing to descriptor GATT_INSUFFICIENT_ENCRYPTION");
+            }
+            else if (pStatus == BluetoothGatt.GATT_INVALID_ATTRIBUTE_LENGTH) {
+                Log.d(TAG, "Writing to descriptor GATT_INVALID_ATTRIBUTE_LENGTH");
+            }
+            else if (pStatus == BluetoothGatt.GATT_INVALID_OFFSET) {
+                Log.d(TAG, "Writing to descriptor GATT_INVALID_OFFSET");
+            }
+            else if (pStatus == BluetoothGatt.GATT_READ_NOT_PERMITTED) {
+                Log.d(TAG, "Writing to descriptor GATT_READ_NOT_PERMITTED");
+            }
+            else if (pStatus == BluetoothGatt.GATT_REQUEST_NOT_SUPPORTED) {
+                Log.d(TAG, "Writing to descriptor GATT_REQUEST_NOT_SUPPORTED");
+            }
+            else if (pStatus == BluetoothGatt.GATT_WRITE_NOT_PERMITTED) {
+                Log.d(TAG, "Writing to descriptor GATT_WRITE_NOT_PERMITTED");
+            }
+
+            Log.v(TAG, "onCharacteristicWrite: " + pStatus + " :: " + pDescriptor);
+
+            if (subscribeStack.isEmpty()) {
+                //debug hss//
+                Log.d(TAG, "subscribe stack empty");
+                return;
+            }
+            BluetoothGattCharacteristic localBluetoothGattCharacteristic =
+                                                (BluetoothGattCharacteristic)subscribeStack.pop();
+            timerHandler.postDelayed(new DelayedEnableNotification
+                                                (pGatt, localBluetoothGattCharacteristic), 500);
+
+        }
+
     };//end of BluetoothLeService::gattCallback
     //-----------------------------------------------------------------------------
 
+    private void subscribe(BluetoothGatt gatt) {
+        BluetoothGattService distoService = gatt.getService(BluetoothLeVars.DISTO_SERVICE);
+        if (distoService != null) {
+            BluetoothGattCharacteristic humidityCharacteristic = distoService.getCharacteristic(BluetoothLeVars.DISTO_CHARACTERISTIC_DISTANCE);
+            if (humidityCharacteristic != null) {
+                BluetoothGattDescriptor config = humidityCharacteristic.getDescriptor(BluetoothLeVars.DISTO_DESCRIPTOR);
+                if (config != null) {
+                    gatt.setCharacteristicNotification(humidityCharacteristic, true);
+                    config.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+                    write(config);
+                }
+            }
+        }
+    }
+
+    //debug hss//
+    private synchronized void write(Object o) {
+        if (writeQueue.isEmpty() && !writing) {
+            doWrite(o);
+        } else {
+            writeQueue.add(o);
+        }
+    }
+
+    private synchronized void nextWrite() {
+        if (writeQueue.isEmpty() && !writing) {
+            doWrite(writeQueue.poll());
+        }
+    }
+
+    private synchronized void doWrite(Object o) {
+        if (o instanceof BluetoothGattCharacteristic) {
+            writing = true;
+            gatt.writeCharacteristic((BluetoothGattCharacteristic) o);
+        } else if (o instanceof BluetoothGattDescriptor) {
+            writing = true;
+            gatt.writeDescriptor((BluetoothGattDescriptor) o);
+        } else {
+            nextWrite();
+        }
+    }
+    //debug hss//
+
     //-----------------------------------------------------------------------------
-    // BluetoothLeService::connectByName
+    // BluetoothLeService::connect
     //
     // Connects to passed in device using the passed in address.
     //
@@ -201,7 +381,7 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
 
         gatt = pDevice.connectGatt(this, true, gattCallback);
 
-    }//end of BluetoothLeService::connectByName
+    }//end of BluetoothLeService::connect
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -218,6 +398,267 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
         connect(tempDevice.getDevice(), tempDevice.getAddress());
 
     }//end of BluetoothLeService::connectByName
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // BluetoothLeService::doCommand
+    //
+    // First, the passed in command string is added to the queue if it is not
+    //  equal to the noCommand String variable.
+    //
+    // Second, if the gatt is already writing, the function returns.
+    //
+    // If the gatt is not writing, the last command added to the queue is
+    // extracted and compared to preset command strings. Different actions are
+    // taken depending on which string the polled command matches.
+    //
+    // To add and learn about existing commands that can be used, search for:
+    //      //QUEUE COMMANDS//
+    //
+    // When adding commands to the //QUEUE COMMANDS// variable section, a new
+    // case for each new command String must be caught and handled here.
+    //
+
+    private synchronized void doCommand(String pCommand) {
+
+        Log.d(TAG, "Made it inside of doCommand()");
+
+        if (pCommand != NO_NEW_COMMAND) { queue.add(pCommand); }
+
+        if (writing || queue.isEmpty()) {
+            Log.d(TAG, "Already writing or queue was empty -- return from function");
+            return;
+        }
+
+        String cmd = queue.poll();
+
+        if (cmd == null) { Log.d(TAG, "Poll returned null -- return from function"); return; }
+
+        writing = true;
+        if (cmd == TURN_LASER_ON) {
+            toggleLaser(true);
+        } else { writing = false; return; }
+
+    }//end of BluetoothLeService::doCommand
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // BluetoothLeService::subscribeToDistanceChar
+    //
+    // Registers with the distance characteristic on the Disto device and tells
+    // it that we want to receive notifications each time the distance value
+    // changes.
+    //
+
+    private synchronized void subscribeToDistanceChar() {
+
+        Log.d(TAG, "inside of subscribeToDistanceChar()");
+
+        BluetoothGattService tempServ = gatt.getService(BluetoothLeVars.DISTO_SERVICE);
+        if (tempServ == null) {
+            Log.d(TAG, "subscribeToDistanceCharacteristic() :: DISTO_SERVICE was null");
+            return;
+        }
+
+        BluetoothGattCharacteristic tempChar = tempServ.getCharacteristic
+                                                    (BluetoothLeVars.DISTO_CHARACTERISTIC_DISTANCE);
+        if (tempChar == null) {
+            Log.d(TAG,
+                "subscribeToDistanceCharacteristic() :: DISTO_CHARACTERISTIC_DISTANCE was null");
+            return;
+        }
+
+        BluetoothGattDescriptor tempDes = tempChar.getDescriptor(BluetoothLeVars.DISTO_DESCRIPTOR);
+        if (tempDes == null) {
+            Log.d(TAG,
+                    "subscribeToDistanceCharacteristic() :: DISTO_DESCRIPTOR was null");
+            return;
+        }
+
+        tempDes.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+        gatt.writeDescriptor(tempDes);
+
+    }//end of BluetoothLeService::subscribeToDistanceChar
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // BluetoothLeService::subscribeToDistanceDisplayUnitChar
+    //
+    // Registers with the distance display unit characteristic on the Disto device
+    // and tells it that we want to receive notifications each time the
+    // characteristic changes.
+    //
+
+    private synchronized void subscribeToDistanceDisplayUnitChar() {
+
+        Log.d(TAG, "subscribeToDistanceDisplayUnitChar()");
+
+        BluetoothGattService tempServ = gatt.getService(BluetoothLeVars.DISTO_SERVICE);
+        if (tempServ == null) {
+            Log.d(TAG,
+                    "subscribeToDistanceDisplayUnitChar() :: DISTO_SERVICE was null");
+            return;
+        }
+
+        BluetoothGattCharacteristic tempChar = tempServ.getCharacteristic
+                (BluetoothLeVars.DISTO_CHARACTERISTIC_DISTANCE_DISPLAY_UNIT);
+        if (tempChar == null) {
+            Log.d(TAG, "subscribeToDistanceDisplayUnitChar() :: " +
+                                            "DISTO_CHARACTERISTIC_DISTANCE_DISPLAY_UNIT was null");
+            return;
+        }
+
+        BluetoothGattDescriptor tempDes = tempChar.getDescriptor(BluetoothLeVars.DISTO_DESCRIPTOR);
+        if (tempDes == null) {
+            Log.d(TAG,
+                    "subscribeToDistanceDisplayUnitChar() :: DISTO_DESCRIPTOR was null");
+            return;
+        }
+
+        tempDes.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+        gatt.writeDescriptor(tempDes);
+
+    }//end of BluetoothLeService::subscribeToDistanceDisplayUnitChar
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // BluetoothLeService::subscribeToInclinationChar
+    //
+    // Registers with the inclination characteristic on the Disto device
+    // and tells it that we want to receive notifications each time the
+    // characteristic changes.
+    //
+
+    private synchronized void subscribeToInclinationChar() {
+
+        Log.d(TAG, "subscribeToInclinationChar");
+
+        BluetoothGattService tempServ = gatt.getService(BluetoothLeVars.DISTO_SERVICE);
+        if (tempServ == null) {
+            Log.d(TAG,
+                    "subscribeToInclinationChar() :: DISTO_SERVICE was null");
+            return;
+        }
+
+        BluetoothGattCharacteristic tempChar = tempServ.getCharacteristic
+                (BluetoothLeVars.DISTO_CHARACTERISTIC_INCLINATION);
+        if (tempChar == null) {
+            Log.d(TAG, "subscribeToInclinationChar() :: " +
+                    "DISTO_CHARACTERISTIC_INCLINATION was null");
+            return;
+        }
+
+        BluetoothGattDescriptor tempDes = tempChar.getDescriptor(BluetoothLeVars.DISTO_DESCRIPTOR);
+        if (tempDes == null) {
+            Log.d(TAG,
+                    "subscribeToInclinationChar() :: DISTO_DESCRIPTOR was null");
+            return;
+        }
+
+        tempDes.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+        gatt.writeDescriptor(tempDes);
+
+    }//end of BluetoothLeService::subscribeToInclinationChar
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // BluetoothLeService::subscribeToInclinationDisplayUnitChar
+    //
+    // Registers with the inclination display unit characteristic on the Disto
+    // device and tells it that we want to receive notifications each time the
+    // characteristic changes.
+    //
+
+    private synchronized void subscribeToInclinationDisplayUnitChar() {
+
+        Log.d(TAG, "subscribeToInclinationDisplayUnitChar()");
+
+        BluetoothGattService tempServ = gatt.getService(BluetoothLeVars.DISTO_SERVICE);
+        if (tempServ == null) {
+            Log.d(TAG,
+                    "subscribeToInclinatioDisplayUnitChar() :: DISTO_SERVICE was null");
+            return;
+        }
+
+        BluetoothGattCharacteristic tempChar = tempServ.getCharacteristic
+                (BluetoothLeVars.DISTO_CHARACTERISTIC_INCLINATION_DISPLAY_UNIT);
+        if (tempChar == null) {
+            Log.d(TAG, "subscribeToInclinatioDisplayUnitChar() :: " +
+                    "DISTO_CHARACTERISTIC_INCLINATION_DISPLAY_UNIT was null");
+            return;
+        }
+
+        BluetoothGattDescriptor tempDes = tempChar.getDescriptor(BluetoothLeVars.DISTO_DESCRIPTOR);
+        if (tempDes == null) {
+            Log.d(TAG,
+                    "subscribeToInclinatioDisplayUnitChar() :: DISTO_DESCRIPTOR was null");
+            return;
+        }
+
+        tempDes.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+        gatt.writeDescriptor(tempDes);
+
+    }//end of BluetoothLeService::subscribeToInclinationDisplayUnitChar
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // BluetoothLeService::toggleLaser
+    //
+    // Toggles the laser on and off according to the passed in boolean
+    //
+    // True turns the laser on.
+    // False turns the laser off.
+    //
+
+    private synchronized void toggleLaser(boolean pBool) {
+
+        Log.d(TAG, "toggleLaser()");
+
+        if (pBool) { sendCommand(BluetoothLeVars.TURN_LASER_ON_CMD); }
+        else { sendCommand(BluetoothLeVars.TURN_LASER_OFF_CMD); }
+
+    }//end of BluetoothLeService::toggleLaser
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // BluetoothLeService::sendCommand
+    //
+    // Sends the passed in string command to the DISTO.
+    //
+
+    private synchronized void sendCommand(String pCmd) {
+
+        BluetoothGattService tempBluetoothGattService =
+                                                    gatt.getService(BluetoothLeVars.DISTO_SERVICE);
+        if (tempBluetoothGattService == null) {
+            Log.d("DistoBluetoothService", "writeGattCharacteristic: DistoService null");
+            return;
+        }
+
+        BluetoothGattCharacteristic tempBluetoothGattCharacteristic = tempBluetoothGattService.
+                                    getCharacteristic(BluetoothLeVars.DISTO_CHARACTERISTIC_COMMAND);
+        if (tempBluetoothGattCharacteristic == null) {
+            Log.d("DistoBluetoothService", "distoCharacteristicCommand null");
+            return;
+        }
+
+        writing = true;
+        //debug hss//byte[] tempBytes = pCmd.getBytes();
+        String temp = "o";
+        byte[] tempBytes = null;
+        try {
+            tempBytes = temp.getBytes("UTF-8");
+        } catch(Exception e) {}
+
+        if (tempBytes == null) {
+            Log.d(TAG, "tempBytes was null");
+        }
+
+        tempBluetoothGattCharacteristic.setValue(tempBytes);
+        gatt.writeCharacteristic(tempBluetoothGattCharacteristic);
+
+    }
+    //end of BluetoothLeService::sendCommand
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -346,6 +787,66 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
         return success;
 
     }//end of BluetoothLeService::sendMessage
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------
+    // class BluetoothLeService::DelayedEnableNotification
+    //
+    // Purpose:
+    //
+    // This class is uses a thread separate from the UI thread to enable the
+    // notification status for the passed in characteristic found on the passed
+    // in gatt.
+    //
+    // Continues attempting to retrieve the DISTO_DESCRIPTOR until it does not
+    // return null.
+    //
+    // Continues writing until success.
+    //
+
+    class DelayedEnableNotification implements Runnable {
+
+        final BluetoothGattCharacteristic classChar;
+        final BluetoothGatt classGatt;
+
+        //-----------------------------------------------------------------------------
+        // DelayedEnableNotification::DelayedEnableNotification (constructor)
+        //
+
+        DelayedEnableNotification(BluetoothGatt pGatt, BluetoothGattCharacteristic pChar) {
+
+            classGatt= pGatt;
+            classChar = pChar;
+
+        }// DelayedEnableNotification::DelayedEnableNotification (constructor)
+        //-----------------------------------------------------------------------------
+
+        //-----------------------------------------------------------------------------
+        // DelayedEnableNotification::run
+        //
+
+        public void run() {
+
+            boolean bool = false;
+
+            //debug hss//do {
+                BluetoothGattDescriptor tempDes;
+
+                //do {
+                    classGatt.setCharacteristicNotification(classChar, true);
+                    tempDes = classChar.getDescriptor(BluetoothLeVars.DISTO_DESCRIPTOR);
+                //} while (tempDes == null);
+
+                tempDes.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+                bool = classGatt.writeDescriptor(tempDes);
+            //} while (!bool);
+
+        }// DelayedEnableNotification::run
+        //-----------------------------------------------------------------------------
+
+    }//end of class BluetoothLeService::DelayedEnableNotification
+    //-----------------------------------------------------------------------------
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
