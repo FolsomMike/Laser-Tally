@@ -174,8 +174,8 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
         Log.d(TAG, "Made it past service == null");
 
         try {
-            Message msg = Message.obtain(null,
-                    BluetoothLeService.MSG_UNREGISTER);
+            //debug hss//Message msg = Message.obtain(null, BluetoothLeService.MSG_UNREGISTER);
+            Message msg = Message.obtain(null, BluetoothLeService.MSG_APP_EXITING);
             if (msg != null) {
                 msg.replyTo = messenger;
                 service.send(msg);
