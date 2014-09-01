@@ -1,0 +1,17 @@
+Problems/Bugs/Things to Do with the Disto Laser Tally Program (numerical order is not of any relevance):
+
+1. disconnects on first try ------------------- solution::use a counter to attempt to reconnect 3 times. If these fail, display message to user.
+
+
+2. program sometimes freezes on descriptor write status: gatt_insufficient_authentication ----------------- solution::might try writing to descriptor in another thread
+
+
+3. make the BluetoothMessagActivity go away after a certain amount of time after connection --------------- solution::set up a timer and display the final "connected" message for a specified amount of time
+
+
+4. subscribe to the required characteristics ---------------- solution::after a descriptor write status of success, call a function to subscribe to all of the required characteristics
+
+5. onDescriptorWrite sometimes returns with INSUFFICIENT_ENCRYPTION and is stuck in the bonding state forever. ------------------- solution::disconnect and reconnect to DISTO Laser Tally (restart the whole process)
+
+
+6. onDescriptorWRite sometimes returns with INSUFFICIENT_AUTHENTICATION even when the device is bonded -------------- solution::unpair and recall the initiatebondingfunction

@@ -35,6 +35,9 @@ import android.bluetooth.BluetoothProfile;
 import android.content.IntentFilter;
 import android.util.Log;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
 public class GattCallback extends BluetoothGattCallback {
 
     BluetoothLeService parentService;
@@ -94,9 +97,31 @@ public class GattCallback extends BluetoothGattCallback {
 
         if (pStatus != BluetoothGatt.GATT_SUCCESS) { return; }
 
-        parentService.handleServicesDiscoveredSuccess();
+        parentService.handleServicesDiscoveredSuccess(pGatt.getDevice());
 
     }//end of GattCallback::onServicesDiscovered
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // GattCallback::onCharacteristicChanged
+    //
+    // Calls a function in the parent service to read the characteristic.
+    //
+    // Automatically called when a characteristic is changed.
+    //
+
+    @Override
+    public void onCharacteristicChanged(BluetoothGatt pGatt,
+                                        BluetoothGattCharacteristic pCharacteristic) {
+
+        Log.d(TAG, "Characteristic Changed");
+
+        float value = ByteBuffer.wrap(pCharacteristic.getValue()).order
+                                                            (ByteOrder.LITTLE_ENDIAN).getFloat();
+
+        parentService.handleCharacteristicChanged(value);
+
+    }//end of GattCallback::onCharacteristicChanged
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -104,7 +129,7 @@ public class GattCallback extends BluetoothGattCallback {
     //
     // Takes different actions depending on the status of the characteristic write.
     //
-    // Automatically when a characteristic is written to.
+    // Automatically called when a characteristic is written to.
     //
 
     @Override
@@ -176,11 +201,10 @@ public class GattCallback extends BluetoothGattCallback {
             Log.d(TAG, "Writing to descriptor (" + pDescriptor +
                                                             ") GATT_INSUFFICIENT_AUTHENTICATION");
 
+            System.out.println("Device bond state: " + pGatt.getDevice().getBondState());
+
             if (pGatt.getDevice().getBondState() == BluetoothDevice.BOND_NONE) {
                 Log.d(TAG, "Device not bonded");
-
-                //debug hss//
-                //debug hss//pGatt.getDevice().createBond();
 
                 parentService.handleDeviceNotBonded();
             }

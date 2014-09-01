@@ -7,6 +7,12 @@
     <item type="id" name="bluetoothScanningText" />
     <item type="id" name="specialHorizontalSpacer" />
 
+    //Ids used for the BluetoothActivityMessage
+    <item type="id" name="bluetoothMessageProgressBar" />
+    <item type="id" name="bluetoothGreenCheckMark" />
+    <item type="id" name="bluetoothMessageTextView" />
+    <item type="id" name="bluetoothMessageVerticalSpacer" />
+
     <item type="id" name="measureConnectButton" />
     <item type="id" name="redoButton" />
     <item type="id" name="deviceList" />

@@ -27,6 +27,7 @@
     <string name="title_item_list">Items</string>
     <string name="title_item_detail">Item Detail</string>
     <string name="title_activity_bluetooth_scan">BluetoothScanActivity</string>
+    <string name="title_activity_bluetooth_message">BluetoothMessageActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
 

@@ -17,26 +17,20 @@ package com.yaboosh.ybtech.lasertally;
 //-----------------------------------------------------------------------------
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGatt;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
 
@@ -47,10 +41,17 @@ import java.lang.ref.WeakReference;
 
 public class MainActivity extends Activity {
 
+    public static final String TAG = "MainActivity";
+
     Button measureConnectButton;
     Button redoButton;
 
     BluetoothLeClient bluetoothLeClient = null;
+
+    private final Messenger messenger;
+    private Intent serviceIntent;
+    private Messenger service = null;
+    private BluetoothLeVars.State state = BluetoothLeVars.State.UNKNOWN;
 
     final String connectButtonText = "Connect";
     final String measureButtonText = "Measure";
@@ -62,6 +63,8 @@ public class MainActivity extends Activity {
     public MainActivity() {
 
         super();
+
+        messenger = new Messenger(new IncomingHandler(this));
 
     }//end of MainActivity::MainActivity (constructor)
     //-----------------------------------------------------------------------------
@@ -77,9 +80,12 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+
+        Log.d(TAG, "Inside of MainActivity onCreate");
+
         setContentView(R.layout.activity_main);
 
-        determineWhichButtonToShow();
+        serviceIntent = new Intent(this, BluetoothLeService.class);
 
     }//end of MainActivity::onCreate
     //-----------------------------------------------------------------------------
@@ -95,66 +101,117 @@ public class MainActivity extends Activity {
     protected void onDestroy()
     {
 
+        Log.d(TAG, "Inside of MainActivity onDestroy");
+
         super.onDestroy();
 
     }//end of MainActivity::onDestroy
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MainActivity::onStart
+    // MainActivity::onResume
     //
-    // Automatically called when the activity is started.
+    // Automatically called when the activity is paused when it does not have
+    // user's focus but it still partially visible.
     // All functions that must be done upon instantiation should be called here.
     //
 
     @Override
-    protected void onStart() {
+    protected void onResume() {
 
-        super.onStart();
+        super.onResume();
 
-    }//end of MainActivity::onStart
+        Log.d(TAG, "Inside of MainActivity onResume");
+
+        //debug hss//startService(serviceIntent);
+        bindService(serviceIntent, connection, BIND_AUTO_CREATE);
+
+    }//end of MainActivity::onResume
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MainActivity::onStop
+    // MainActivity::onPause
     //
-    // Automatically called when the activity is stopped.
+    // Automatically called when the activity is paused when it does not have
+    // user's focus but it still partially visible.
     // All functions that must be done upon instantiation should be called here.
     //
 
     @Override
-    protected void onStop() {
+    protected void onPause() {
 
-            super.onStop();
+        super.onPause();
 
-    }//end of MainActivity::onStop
+        Log.d(TAG, "Inside of MainActivity onPause");
+
+        unbindService(connection);
+
+        if (service == null) {
+            Log.d(TAG, "service was null -- return from function");
+            return;
+        }
+
+        try {
+            Message msg = Message.obtain(null, BluetoothLeService.MSG_UNREGISTER_MAIN_ACTIVITY);
+            if (msg != null) {
+                msg.replyTo = messenger;
+                service.send(msg);
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Error unregistering with BleService", e);
+            service = null;
+        } finally {
+            //debug hss//stopService(serviceIntent);
+        }
+
+    }//end of MainActivity::onPause
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MainActivity::handler
+    // BluetoothScanActivity::connection
     //
     // Not really a function
     //
-    // Instantiate a new handler and Override its handleMessage() method.
+    // Creates a new ServiceConnection object and overrides its onServiceConnected()
+    // and onServiceDisconnected() functions.
     //
 
-    public final Handler handler = new Handler() {
+    private ServiceConnection connection = new ServiceConnection() {
 
         @Override
-        public void handleMessage(Message msg) {
+        public void onServiceConnected(ComponentName pName, IBinder pService) {
 
-            //get the message type
-            int type = msg.getData().getInt("what");
+            Log.d(TAG, "Service connected to MainActivity");
 
-            //debug hss//
-            //check the message types and decide what to do for each type
-    			/*if (type == BluetoothConnectionThread.HANDLER_MESSAGE_BT_INSTREAM) {
-    				//msg.//hss wip//
-    			}*/
+            service = new Messenger(pService);
+
+            try {
+
+                Message msg = Message.obtain(null, BluetoothLeService.MSG_REGISTER_MAIN_ACTIVITY);
+                if (msg != null) {
+                    msg.replyTo = messenger;
+                    service.send(msg);
+                } else {
+                    service = null;
+                }
+
+            } catch (Exception e) {
+                Log.w(TAG, "Error connecting to BleService", e);
+                service = null;
+            }
 
         }
 
-    };//end of MainActivity::handler
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+            Log.d(TAG, "Service disconnected");
+
+            service = null;
+
+        }
+
+    };//end of BluetoothScanActivity::connection
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -172,7 +229,7 @@ public class MainActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MainActivity::onClickLister
+    // MainActivity::onClickListener
     //
     // Not really a function.
     //
@@ -183,7 +240,7 @@ public class MainActivity extends Activity {
     // switch statement and handle the case properly.
     //
 
-    View.OnClickListener onClickLister = new View.OnClickListener() {
+    View.OnClickListener onClickListener = new View.OnClickListener() {
 
         public void onClick(View pV) {
 
@@ -196,7 +253,6 @@ public class MainActivity extends Activity {
                     break;
 
                 case R.id.redoButton:
-                    //debug hss//
                     handleRedoButtonPressed();
                     break;
 
@@ -207,38 +263,50 @@ public class MainActivity extends Activity {
 
         }
 
-    };//end of MainActivity::onClickLister
+    };//end of MainActivity::onClickListener
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MainActivity::determineWhichButtonToShow
+    // MainActivity::handleDeviceConnected
     //
-    // Determines whether to create the "Measure" button or the "Connect" button
-    // according to the connected devices.
-    //
-    // hss wip -- currently just creates the "Connect" button
+    // Sets the measureConnectButton to its "measuring" look and text and sets
+    // the redo button visible.
     //
 
-    private void determineWhichButtonToShow() {
+    public void handleDeviceConnected() {
 
-        //debug hss
-        boolean h = true;
+        measureConnectButton = (Button)findViewById(R.id.measureConnectButton);
+        measureConnectButton.setBackground(getResources().getDrawable
+                (R.drawable.blue_styled_button));
+        measureConnectButton.setText(measureButtonText);
+        measureConnectButton.setOnClickListener(onClickListener);
 
-        if (h) {
+        redoButton = (Button)findViewById(R.id.redoButton);
+        redoButton.setOnClickListener(onClickListener);
+        redoButton.setVisibility(View.VISIBLE);
 
-            measureConnectButton = (Button)findViewById(R.id.measureConnectButton);
-            measureConnectButton.setBackground(getResources().getDrawable
+    }//end of MainActivity::handleDeviceConnected
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::handleDeviceNotConnected
+    //
+    // Sets the measureConnectButton to its "connecting" look and text and sets
+    // the redo button invisible.
+    //
+
+    public void handleDeviceNotConnected() {
+
+        measureConnectButton = (Button)findViewById(R.id.measureConnectButton);
+        measureConnectButton.setBackground(getResources().getDrawable
                                                                 (R.drawable.green_styled_button));
-            measureConnectButton.setText(connectButtonText);
-            measureConnectButton.setOnClickListener(onClickLister);
+        measureConnectButton.setText(connectButtonText);
+        measureConnectButton.setOnClickListener(onClickListener);
 
-            redoButton = (Button)findViewById(R.id.redoButton);
-            redoButton.setOnClickListener(onClickLister);
-            //debug hss//redoButton.setVisibility(View.INVISIBLE);
+        redoButton = (Button)findViewById(R.id.redoButton);
+        redoButton.setVisibility(View.INVISIBLE);
 
-        }
-
-    }//end of MainActivity::determineWhichButtonToShow
+    }//end of MainActivity::handleDeviceNotConnected
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -283,18 +351,67 @@ public class MainActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // MainActivity::handleNewDistanceValue
+    //
+    // Creates a new row in the measurementsTable using the passed in value.
+    //
+
+    public void handleNewDistanceValue(Float pDistance) {
+
+        TableLayout measurementsTable = (TableLayout)findViewById(R.id.measurementsTable);
+        TableRow newRow = new TableRow(this);
+
+        View sideBorderLine = getLayoutInflater().inflate(R.layout.table_side_border_line, null);
+        View columnDivider = getLayoutInflater().inflate(R.layout.table_column_divider, null);
+
+        newRow.addView(sideBorderLine);
+
+        TextView col1 = (TextView)getLayoutInflater().inflate(R.layout.table_column_template, null);
+        String distanceValue = Float.toString(pDistance);
+        col1.setText(distanceValue);
+        newRow.addView(sideBorderLine);
+
+        newRow.addView(columnDivider);
+
+        TextView col2 = (TextView)getLayoutInflater().inflate(R.layout.table_column_template, null);
+        col1.setText("No value");
+        newRow.addView(col2);
+
+        newRow.addView(columnDivider);
+
+        TextView col3 = (TextView)getLayoutInflater().inflate(R.layout.table_column_template, null);
+        col1.setText("No value");
+        newRow.addView(col3);
+
+        newRow.addView(sideBorderLine);
+        measurementsTable.addView(newRow);
+
+    }//end of MainActivity::handleNewDistanceValue
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // MainActivity::handleRedoButtonPressed
     //
     // //hss wip//
     //
 
-    public void handleRedoButtonPressed() {
+    private void handleRedoButtonPressed() {
 
-        if (bluetoothLeClient != null) {
-            bluetoothLeClient.turnLaserOn();
-        }
+        //hss wip//Code needs to added that redoes the last measurement
+        // stored.
 
     }//end of MainActivity::handleRedoButtonPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::handleStateUnknown
+    //
+
+    private void handleStateUnknown() {
+
+        handleDeviceNotConnected();
+
+    }//end of MainActivity::handleStateUnknown
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -303,12 +420,136 @@ public class MainActivity extends Activity {
     // Creates a BluetoothLeClient and initiate it using MODE0.
     //
 
-    public void startLeScanningProcess() {
+    private void startLeScanningProcess() {
 
         Intent intent = new Intent(this, BluetoothScanActivity.class);
         startActivity(intent);
 
     }//end of MainActivity::startLeScanningProcess
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // BluetoothScanActivity::stateChanged
+    //
+    // Performs different operations depending on the passed in state.
+    //
+
+    private void stateChanged(BluetoothLeVars.State pNewState) {
+
+        Log.d(TAG, "state changed");
+
+        state = pNewState;
+
+        if (state == BluetoothLeVars.State.BLUETOOTH_OFF) {
+            Log.d(TAG, "state bluetooth off");
+            handleBluetoothOffState();
+        }
+        else if (state == BluetoothLeVars.State.CONNECTED) {
+            Log.d(TAG, "state connected");
+            handleDeviceConnected();
+        }
+        else if (state == BluetoothLeVars.State.IDLE) {
+            Log.d(TAG, "state idle");
+            handleIdleState();
+        }
+        else if (state == BluetoothLeVars.State.NOT_CONNECTED) {
+            Log.d(TAG, "state not connected");
+            handleDeviceNotConnected();
+        }
+        else if (state == BluetoothLeVars.State.UNKNOWN) {
+            Log.d(TAG, "state is unknown");
+            handleStateUnknown();
+        }
+        else {
+            Log.d(TAG, "state not listed in switch statement " + state);
+        }
+
+    }//end of BluetoothScanActivity::stateChanged
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // BluetoothScanActivity::handleBluetoothOffState
+    //
+
+    public void handleBluetoothOffState() {
+
+        handleDeviceNotConnected();
+
+    }//end of BluetoothScanActivity::handleBluetoothOffState
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // BluetoothScanActivity::handleIdleState
+    //
+
+    public void handleIdleState() {
+
+    }//end of BluetoothScanActivity::handleIdleState
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------
+    // class MainActivity::IncomingHandler
+    //
+    // Purpose:
+    //
+    // This class handles incoming messages given to the messenger to which it
+    // was passed.
+    //
+
+    private static class IncomingHandler extends Handler {
+
+        private final WeakReference<MainActivity> activity;
+
+        //-----------------------------------------------------------------------------
+        // IncomingHandler::IncomingHandler (constructor)
+        //
+
+        public IncomingHandler(MainActivity pActivity) {
+
+            activity = new WeakReference<MainActivity>(pActivity);
+
+        }//end of IncomingHandler::IncomingHandler (constructor)
+        //-----------------------------------------------------------------------------
+
+        //-----------------------------------------------------------------------------
+        // IncomingHandler::handleMessage
+        //
+        // Checks to see if the activity is null. Then calls functions if it isn't null. //hss wip//
+        //
+
+        @Override
+        public void handleMessage(Message pMsg) {
+
+            MainActivity tempActivity = activity.get();
+            if (tempActivity != null) {
+
+                switch (pMsg.what) {
+
+                    case BluetoothLeService.MSG_DEVICE_CONNECTED:
+                        tempActivity.handleDeviceConnected();
+                        break;
+
+                    case BluetoothLeService.MSG_DISTANCE_VALUE:
+                        Log.d(TAG, "Received distance value message");
+                        tempActivity.handleNewDistanceValue((Float)pMsg.obj);
+                        break;
+
+                    case BluetoothLeService.MSG_BT_STATE:
+                        tempActivity.stateChanged(BluetoothLeVars.State.values()[pMsg.arg1]);
+                        break;
+
+                }
+
+            }
+
+            super.handleMessage(pMsg);
+
+        }//end of IncomingHandler::handleMessage
+        //-----------------------------------------------------------------------------
+
+    }//end of class MainActivity::IncomingHandler
+    //-----------------------------------------------------------------------------
     //-----------------------------------------------------------------------------
 
 }//end of class MainActivity

@@ -48,6 +48,7 @@ import android.os.RemoteException;
 import android.util.Log;
 
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -60,14 +61,24 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class BluetoothLeService extends Service implements BluetoothAdapter.LeScanCallback {
 
     public static final String TAG = "BluetoothLeService";
-    static final int MSG_REGISTER = 1;
-    static final int MSG_UNREGISTER = 2;
-    static final int MSG_START_SCAN = 3;
-    static final int MSG_STATE_CHANGED = 4;
-    static final int MSG_DEVICE_FOUND = 5;
-    static final int MSG_DEVICE_CONNECT = 6;
-    static final int MSG_DEVICE_DISCONNECT = 7;
-    static final int MSG_APP_EXITING = 8;
+    static final int MSG_REGISTER_BLUETOOTH_SCAN_ACTIVITY = 1;
+    static final int MSG_REGISTER_MAIN_ACTIVITY = 2;
+    static final int MSG_UNREGISTER = 3;
+    static final int MSG_START_SCAN = 4;
+    static final int MSG_BT_STATE = 5;
+    static final int MSG_DEVICE_FOUND = 6;
+    static final int MSG_DEVICE_CONNECT = 7;
+    static final int MSG_DEVICE_DISCONNECT = 8;
+    static final int MSG_APP_EXITING = 9;
+    static final int MSG_EXIT_SCAN_ACTIVITY = 10;
+    static final int MSG_DEVICE_CONNECTED = 11;
+    static final int MSG_REGISTER_BLUETOOTH_MESSAGE_ACTIVITY = 12;
+    static final int MSG_REMOTE_DEVICE_NAME = 13;
+    static final int MSG_DESCRIPTOR_WRITE_SUCCESS = 14;
+    static final int MSG_UNREGISTER_MAIN_ACTIVITY = 15;
+    static final int MSG_DISTANCE_VALUE = 16;
+    static final int MSG_UNREGISTER_BLUETOOTH_SCAN_ACTIVITY = 17;
+    static final int MSG_UNREGISTER_BLUETOOTH_MESSAGE_ACTIVITY = 18;
     private static final long SCAN_PERIOD = 10000;
     public static final String KEY_MAC_ADDRESSES = "KEY_MAC_ADDRESSES";
     public static final String KEY_NAMES = "KEY_NAMES";
@@ -77,36 +88,15 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
     Handler timerHandler = new Handler();
     private final List<Messenger> clients = new LinkedList<Messenger>();
     private final Map<String, RemoteLeDevice> devices = new HashMap<String, RemoteLeDevice>();
-    private Stack subscribeStack = new Stack();
 
-    //QUEUE COMMANDS//
-    private static final String NO_NEW_COMMAND = "NONEWCOMMAND";
-    private static final String SUBSCRIBE_TO_DISTANCE_CHAR = "SUBSCRIBETODISTANCECHAR";
-    private static final String SUBSCRIBE_TO_DISTANCE_DISPLAY_UNIT_CHAR =
-                                                        "SUBSCRIBETODISTANCEDISPLAYUNITCHAR";
-    private static final String SUBSCRIBE_TO_INCLINATION_CHAR = "SUBSCRIBETOINCLINATIONCHAR";
-    private static final String SUBSCRIBE_TO_INCLINATION_DISPLAY_UNIT_CHAR =
-                                                        "SUBSCRIBETOINCLINATIONDISPLAYUNITCHAR";
-    private static final String TURN_LASER_ON = "TURNLASERON";
-    //END OF QUEUE COMMANDS//
-
-    /*//debug hss//private static final Queue<String> queue = new ConcurrentLinkedQueue<String>();*/
     private boolean writing = false;
     private static final Queue<Object> writeQueue = new ConcurrentLinkedQueue<Object>();
 
-    public enum State {
-        UNKNOWN,
-        IDLE,
-        SCANNING,
-        BLUETOOTH_OFF,
-        CONNECTING,
-        CONNECTED,
-        DISCONNECTING
-    }
-
     private BluetoothGatt gatt = null;
     private BluetoothAdapter bluetooth = null;
-    private State state = State.UNKNOWN;
+    private BluetoothLeVars.State state = BluetoothLeVars.State.UNKNOWN;
+    private String remoteDeviceName;
+    private boolean mainActivityRegistered = false;
 
     //-----------------------------------------------------------------------------
     // BluetoothLeService::BluetoothLeService (constructor)
@@ -145,6 +135,8 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
     @Override
     public void onLeScan(final BluetoothDevice pDevice, int pRssi, byte[] pScanRecord) {
 
+        Log.d(TAG, "Found a device");
+
         //Checks to make sure that pDevice is not null, is already stored,
         //if the device name is null.
         //Then checks to make sure that the device name has the word "DISTO"
@@ -152,11 +144,13 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
         //conditions have already been checked for because indexOf() throws
         //an exception if the string is not found; the first if statement
         //checks to make sure that the string exists.
-        if (pDevice == null || devices.containsValue(pDevice) || pDevice.getName() == null) {
+        if (pDevice == null || pDevice.getName() == null) {
+            Log.d(TAG, "Device name did not contain 'DISTO'");
             return;
         }
 
-        if (pDevice.getName().indexOf("DISTO") == -1) {
+        if (!pDevice.getName().contains("DISTO")) {
+            Log.d(TAG, "Device name did not contain 'DISTO'");
             return;
         }
 
@@ -221,10 +215,12 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
             if (!device.getAddress().equals(gatt.getDevice().getAddress())) { return;}
 
             if (bondState == BluetoothDevice.BOND_BONDED) {
-                //debug hss//subscribe();
-                //debug hss//
-                sendCommand("o");
+                subscribe();
                 pContext.unregisterReceiver(this);
+            }
+            else if (bondState == BluetoothDevice.BOND_NONE &&
+                        state == BluetoothLeVars.State.CONNECTED) {
+                initiateBondingProcessByAttemptingToSubscribe();
             }
 
         }
@@ -285,20 +281,20 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
 
     private synchronized void write(Object pO) {
 
+        if (!writeQueue.isEmpty()) {
+            Log.d(TAG, "Write queue wasn't empty");
+            writeQueue.add(pO);
+        }
+        if (writing) {
+            Log.d(TAG, "Writing was true");
+            writeQueue.add(pO);
+        }
         if (writeQueue.isEmpty() && !writing) {
             doWrite(pO);
         } /*//debu hss//else {
             Log.d(TAG, "Write queue wasn't empty or program was writing");
             writeQueue.add(pO);
         }*/
-        else if (!writeQueue.isEmpty()) {
-            Log.d(TAG, "Write queue wasn't empty");
-            writeQueue.add(pO);
-        }
-        else if (writing) {
-            Log.d(TAG, "Writing was true");
-            writeQueue.add(pO);
-        }
 
     }//end of BluetoothLeService::write
     //-----------------------------------------------------------------------------
@@ -318,7 +314,7 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothLeService:: doWrite
+    // BluetoothLeService::doWrite
     //
     // Writes the value of the passed in object to the remote device.
     //
@@ -329,10 +325,10 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
     private synchronized void doWrite(Object o) {
 
         if (o instanceof BluetoothGattCharacteristic) {
-            writing = true;
+            //debug hsss//writing = true;
             gatt.writeCharacteristic((BluetoothGattCharacteristic) o);
         } else if (o instanceof BluetoothGattDescriptor) {
-            writing = true;
+            //debug hss//writing = true;
             gatt.writeDescriptor((BluetoothGattDescriptor) o);
         } else { return; }
 
@@ -347,9 +343,9 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
 
     public void connect(BluetoothDevice pDevice) {
 
-        if (state == State.SCANNING) {
+        if (state == BluetoothLeVars.State.SCANNING) {
             bluetooth.stopLeScan(BluetoothLeService.this);
-            setState(State.IDLE);
+            setState(BluetoothLeVars.State.IDLE);
         }
 
         GattCallback gattCallback = new GattCallback(this);
@@ -367,11 +363,38 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
 
     public void connectByName(String pName) {
 
+        remoteDeviceName = pName;
         RemoteLeDevice tempDevice = devices.get(pName);
         if (tempDevice == null) { return; }
         connect(tempDevice.getDevice());
 
     }//end of BluetoothLeService::connectByName
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // BluetoothLeService::handleCharacteristicChanged
+    //
+    // The only characteristic that was subscribed to is the distance
+    // characteristic which means that the only value passed in is the distance.
+    //
+    // If the MainActivity is registered as a client, the distance value is sent
+    // to the MainActivity to be displayed.
+    //
+
+    public void handleCharacteristicChanged(Float pValue) {
+
+        Log.d(TAG, "Inside of handleCharacteristicChanged");
+
+        if (!mainActivityRegistered) {
+            Log.d(TAG, "MainActivity not registered");
+            return;
+        }
+        Message msg = Message.obtain(null, MSG_DISTANCE_VALUE);
+        if (msg == null) { return; }
+        msg.obj = pValue;
+        sendMessage(msg);
+
+    }//end of BluetoothLeService::handleCharacteristicChanged
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -392,9 +415,12 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
 
     public void handleDescriptorWriteSuccess() {
 
-        //debug hss//
-        sendCommand("o");
-        //debug hss//nextWrite();
+        writing = false;
+        Message msg = getDescriptorWriteSuccessMessage();
+        if (msg != null) {
+            sendMessage(msg);
+        }
+        nextWrite();
 
     }//end of BluetoothLeService::handleDescriptorWriteSuccess
     //-----------------------------------------------------------------------------
@@ -413,22 +439,94 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // BluetoothLeService::handleElseBondState
+    //
+
+    public void handleElseBondState(BluetoothDevice pDevice) {
+
+        pDevice.createBond();
+
+        //register a BroadcastReceiver to listen for bonding changes
+        final IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
+        registerReceiver(bondingBroadcastReceiver, filter);
+
+    }//end of BluetoothLeService::handleElseBondState
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // BluetoothLeService::handleElseConnectionState
     //
 
     public void handleElseConnectionState() {
 
-        setState(State.IDLE);
+        setState(BluetoothLeVars.State.IDLE);
 
     }//end of BluetoothLeService::handleElseConnectionState
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // BluetoothLeService::handleRegisterBluetoothMessageActivity
+    //
+    // Sends the current Bluetooth state to the BluetoothMessageActivity.
+    //
+
+    public void handleRegisterBluetoothMessageActivity() {
+
+        Message msg = getRemoteDeviceNameMessage();
+        if (msg == null) {
+            Log.d(TAG, "handleRegisterBluetoothMessageActivity::msg was null -- return");
+            return;
+        }
+        sendMessage(msg);
+
+        /*//debug hss//Message msg2 = getStateMessage();
+        if (msg2 == null) {
+            Log.d(TAG, "handleRegisterBluetoothMessageActivity::msg2 was null -- return");
+            return;
+        }
+        sendMessage(msg2);*/
+
+    }//end of BluetoothLeService::handleRegisterBluetoothMessageActivity
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // BluetoothLeService::handleRegisterMainActivity
+    //
+    // Sends the current Bluetooth state to the MainActivity.
+    //
+
+    public void handleRegisterMainActivity() {
+
+        mainActivityRegistered = true;
+
+        Message msg = getStateMessage();
+        if (msg != null) {
+            sendMessage(msg);
+        }
+
+    }//end of BluetoothLeService::handleRegisterMainActivity
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // BluetoothLeService::handleUnregisterMainActivity
+    //
+
+    public void handleUnregisterMainActivity() {
+
+        mainActivityRegistered = false;
+
+    }//end of BluetoothLeService::handleUnregisterMainActivity
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
     // BluetoothLeService::handleServicesDiscoveredSuccess
     //
 
-    public void handleServicesDiscoveredSuccess() {
+    public void handleServicesDiscoveredSuccess(BluetoothDevice pDevice) {
 
+        Log.d(TAG, "Inside of handleServicesDiscoveredSuccess");
+
+        Log.d(TAG, "handleServicesDiscoveredSuccess::Initiating bonding process");
         initiateBondingProcessByAttemptingToSubscribe();
 
     }//end of BluetoothLeService::handleServicesDiscoveredSuccess
@@ -440,7 +538,7 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
 
     public void handleStateConnected() {
 
-        setState(State.CONNECTED);
+        setState(BluetoothLeVars.State.CONNECTED);
         gatt.discoverServices();
 
     }//end of BluetoothLeService::handleStateConnected
@@ -648,6 +746,27 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // BluetoothLeService::unpairDevice
+    //
+    // Removes the pairing bond between the tablet and the remote device.
+    //
+
+    public void unpairDevice(BluetoothDevice pDevice) {
+
+        Log.d(TAG, "Inside of unpairDevice");
+
+        try {
+            Method m = pDevice.getClass().getMethod("removeBond", (Class[]) null);
+            m.invoke(pDevice, (Object[]) null);
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+            unregisterReceiver(bondingBroadcastReceiver);
+        }
+
+    }//end of BluetoothLeService::unpairDevice
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // BluetoothLeService::sendCommand
     //
     // Sends the passed in string command to the DISTO.
@@ -705,17 +824,18 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
         }
 
         if (bluetooth == null || !bluetooth.isEnabled()) {
-            setState(State.BLUETOOTH_OFF);
+            Log.d(TAG, "bluetooth was not enabled -- sending request to user");
+            setState(BluetoothLeVars.State.BLUETOOTH_OFF);
         }
         else {
-            handler.postDelayed(new Runnable() {
+            timerHandler.postDelayed(new Runnable() {
 
                 @Override
                 public void run() {
 
-                    if (state == State.SCANNING) {
+                    if (state == BluetoothLeVars.State.SCANNING) {
                         bluetooth.stopLeScan(BluetoothLeService.this);
-                        setState(State.IDLE);
+                        setState(BluetoothLeVars.State.IDLE);
                     }
 
                 }
@@ -723,7 +843,7 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
             }, SCAN_PERIOD);
 
             bluetooth.startLeScan(this);
-            setState(State.SCANNING);
+            setState(BluetoothLeVars.State.SCANNING);
         }
 
     }//end of BluetoothLeService::startScan
@@ -736,7 +856,7 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
     // to all the stored clients.
     //
 
-    private void setState(State pNewState) {
+    private void setState(BluetoothLeVars.State pNewState) {
 
         if (state == pNewState) {
             return;
@@ -753,6 +873,69 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // BluetoothLeService::getExitScanActivityMessage
+    //
+    // Gets and returns a message with a what type of
+    // MSG_EXIT_SCAN_ACTIVITY_CHANGED.
+    //
+
+    private Message getExitScanActivityMessage() {
+
+        Message msg = Message.obtain(null, MSG_EXIT_SCAN_ACTIVITY);
+
+        return msg;
+
+    }//end of BluetoothLeService::getExitScanActivityMessage
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // BluetoothLeService::getDescriptorWriteSuccessMessage
+    //
+    // Gets and returns a message with a what type of MSG_DESCRIPTOR_WRITE_SUCCESS.
+    //
+
+    private Message getDescriptorWriteSuccessMessage() {
+
+        Message msg = Message.obtain(null, MSG_DESCRIPTOR_WRITE_SUCCESS);
+
+        return msg;
+
+    }//end of BluetoothLeService::getDescriptorWriteSuccessMessage
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // BluetoothLeService::getRemoteDeviceName
+    //
+    // Returns the name of the remote device name that is currently being used.
+    //
+
+    private String getRemoteDeviceName() {
+
+        return remoteDeviceName;
+
+    }//end of BluetoothLeService::getRemoteDeviceName
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // BluetoothLeService::getRemoteDeviceNameMessage
+    //
+    // Gets and returns a message with a what type of MSG_STATE_CHANGED and the
+    // arg1 set the the state.ordinal().
+    //
+
+    private Message getRemoteDeviceNameMessage() {
+
+        Message msg = Message.obtain(null, MSG_REMOTE_DEVICE_NAME);
+        if (msg != null) {
+            msg.obj = getRemoteDeviceName();
+        }
+
+        return msg;
+
+    }//end of BluetoothLeService::getRemoteDeviceNameMessage
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // BluetoothLeService::getStateMessage
     //
     // Gets and returns a message with a what type of MSG_STATE_CHANGED and the
@@ -761,7 +944,7 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
 
     private Message getStateMessage() {
 
-        Message msg = Message.obtain(null, MSG_STATE_CHANGED);
+        Message msg = Message.obtain(null, MSG_BT_STATE);
         if (msg != null) {
             msg.arg1 = state.ordinal();
         }
@@ -782,10 +965,13 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
 
     private void sendMessage(Message pMsg) {
 
+        Log.d(TAG, "Number of Clients: " + clients.size());
+
         for (int i = clients.size() - 1; i >= 0; i--) {
 
             Messenger messenger = clients.get(i);
             if (!sendMessage(messenger, pMsg)) {
+                Log.d(TAG, "Sending message failed -- removing client");
                 clients.remove(messenger);
             }
 
@@ -911,18 +1097,49 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
         @Override
         public void handleMessage(Message pMsg) {
 
+            Log.d(TAG, "message received");
+
             BluetoothLeService tempService = service.get();
             if (tempService != null) {
 
                 switch (pMsg.what) {
-                    case MSG_REGISTER:
+                    case MSG_REGISTER_BLUETOOTH_SCAN_ACTIVITY:
                         tempService.clients.add(pMsg.replyTo);
-                        Log.d(TAG, "Registered");
+                        Log.d(TAG, "Registered BluetoothScanActivity");
+                        break;
+
+                    case MSG_REGISTER_MAIN_ACTIVITY:
+                        tempService.clients.add(pMsg.replyTo);
+                        tempService.handleRegisterMainActivity();
+                        Log.d(TAG, "Registered MainActivity");
+                        break;
+
+                    case MSG_REGISTER_BLUETOOTH_MESSAGE_ACTIVITY:
+                        tempService.clients.add(pMsg.replyTo);
+                        tempService.handleRegisterBluetoothMessageActivity();
+                        Log.d(TAG, "Registered BluetoothMessageActivity");
+                        Log.d(TAG, "Number of Clients: " + tempService.clients.size());
                         break;
 
                     case MSG_UNREGISTER:
                         tempService.clients.remove(pMsg.replyTo);
                         Log.d(TAG, "Unregistered");
+                        break;
+
+                    case MSG_UNREGISTER_BLUETOOTH_MESSAGE_ACTIVITY:
+                        tempService.clients.remove(pMsg.replyTo);
+                        Log.d(TAG, "Unregistered BluetoothMessageActivity");
+                        break;
+
+                    case MSG_UNREGISTER_BLUETOOTH_SCAN_ACTIVITY:
+                        tempService.clients.remove(pMsg.replyTo);
+                        Log.d(TAG, "Unregistered BluetoothScanActivity");
+                        break;
+
+                    case MSG_UNREGISTER_MAIN_ACTIVITY:
+                        tempService.clients.remove(pMsg.replyTo);
+                        tempService.handleUnregisterMainActivity();
+                        Log.d(TAG, "Unregistered MainActivity");
                         break;
 
                     case MSG_START_SCAN:
@@ -935,14 +1152,15 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
                         break;
 
                     case MSG_DEVICE_DISCONNECT:
-                        if (tempService.state == State.CONNECTED && tempService.gatt != null) {
+                        if (tempService.state == BluetoothLeVars.State.CONNECTED &&
+                            tempService.gatt != null) {
                             tempService.gatt.disconnect();
                         }
                         break;
 
                     case MSG_APP_EXITING:
                         if (tempService.gatt == null) { return; }
-                        if (tempService.state != State.CONNECTED) { return; }
+                        if (tempService.state != BluetoothLeVars.State.CONNECTED) { return; }
                         tempService.gatt.disconnect();
                         tempService.gatt.close();
                         break;

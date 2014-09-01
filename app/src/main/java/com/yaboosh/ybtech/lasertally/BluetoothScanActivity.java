@@ -57,7 +57,7 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
 
     public static final String TAG = "BluetoothScanActivity";
     private final int ENABLE_BT = 1;
-    private BluetoothLeService.State state = BluetoothLeService.State.UNKNOWN;
+    private BluetoothLeVars.State state = BluetoothLeVars.State.UNKNOWN;
     private final Messenger messenger;
     private Intent serviceIntent;
     private Messenger service = null;
@@ -72,6 +72,7 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
     private ListAdapter adapter;
 
     private String[] deviceNames = null;
+    private boolean bluetoothRequestActive = false;
 
     //-----------------------------------------------------------------------------
     // BluetoothScanActivity::BluetoothScanActivity (constructor)
@@ -97,6 +98,8 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+
+        Log.d(TAG, "Inside of BluetoothScanActivity onCreate");
 
         setContentView(R.layout.activity_bluetooth_scan);
 
@@ -127,69 +130,70 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
     protected void onDestroy()
     {
 
+        Log.d(TAG, "Inside of BluetoothScanActivity onDestroy");
+
         super.onDestroy();
 
     }//end of BluetoothScanActivity::onDestroy
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothScanActivity::onStart
+    // BluetoothScanActivity::onResume
     //
-    // Automatically called when the activity is started.
+    // Automatically called when the activity is paused when it does not have
+    // user's focus but it still partially visible.
     // All functions that must be done upon instantiation should be called here.
     //
 
     @Override
-    protected void onStart() {
+    protected void onResume() {
 
-        super.onStart();
+        super.onResume();
 
-        startService(serviceIntent);
+        Log.d(TAG, "Inside of BluetoothScanActivity onResume");
+
+        //debug hss//startService(serviceIntent);
         bindService(serviceIntent, connection, BIND_AUTO_CREATE);
 
-    }//end of BluetoothScanActivity::onStart
+    }//end of BluetoothScanActivity::onResume
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothScanActivity::onStop
+    // BluetoothScanActivity::onPause
     //
-    // Automatically called when the activity is stopped.
+    // Automatically called when the activity is paused when it does not have
+    // user's focus but it still partially visible.
     // All functions that must be done upon instantiation should be called here.
     //
 
     @Override
-    protected void onStop() {
+    protected void onPause() {
 
-        super.onStop();
+        Log.d(TAG, "Inside of BluetoothScanActivity onPause");
+
+        super.onPause();
 
         unbindService(connection);
 
         if (service == null) {
-            //debug hss//
             Log.d(TAG, "service was null -- return from function");
             return;
         }
 
-        //debug hss//
-        Log.d(TAG, "Made it past service == null");
-
         try {
-            //debug hss//Message msg = Message.obtain(null, BluetoothLeService.MSG_UNREGISTER);
-            Message msg = Message.obtain(null, BluetoothLeService.MSG_APP_EXITING);
+            Message msg = Message.obtain(null, BluetoothLeService.MSG_UNREGISTER_BLUETOOTH_SCAN_ACTIVITY);
             if (msg != null) {
                 msg.replyTo = messenger;
                 service.send(msg);
             }
         } catch (Exception e) {
-            Log.w(TAG,
-                    "Error unregistering with BleService",
-                    e);
+            Log.w(TAG, "Error unregistering with BleService", e);
             service = null;
         } finally {
-            stopService(serviceIntent);
+            //debug hss//stopService(serviceIntent);
         }
 
-    }//end of BluetoothScanActivity::onStop
+    }//end of BluetoothScanActivity::onPause
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -206,20 +210,19 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
         @Override
         public void onServiceConnected(ComponentName pName, IBinder pService) {
 
-            //debug hss//
-            Log.d(TAG, "Service connected");
+            Log.d(TAG, "Service connected to BluetoothScanActivity");
 
             service = new Messenger(pService);
 
             try {
 
-                Message msg = Message.obtain(null, BluetoothLeService.MSG_REGISTER);
+                Message msg = Message.obtain(null,
+                                        BluetoothLeService.MSG_REGISTER_BLUETOOTH_SCAN_ACTIVITY);
                 if (msg != null) {
                     msg.replyTo = messenger;
                     service.send(msg);
                 } else {
-                    //debug hss//
-                    Log.d(TAG, "service = null");
+                    Log.d(TAG, "service is null");
                     service = null;
                 }
 
@@ -248,6 +251,19 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // BluetoothScanActivity::exitActivity
+    //
+    // Finishes and closes the activity.
+    //
+
+    public void exitActivity() {
+
+        finish();
+
+    }//end of BluetoothScanActivity::exitActivity
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // BluetoothScanActivity::handleBluetoothOffState
     //
     // Starts an intent to request for the user to enable the Bluetooth
@@ -267,6 +283,7 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
 
         Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
         startActivityForResult(enableBtIntent, ENABLE_BT);
+        bluetoothRequestActive = true;
 
     }//end of BluetoothScanActivity::handleBluetoothOffState
     //-----------------------------------------------------------------------------
@@ -279,7 +296,7 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
 
     public void handleCloseXButtonPressed(View pView) {
 
-        finish();
+        exitActivity();
 
     }//end of BluetoothScanActivity::handleCloseXButtonPressed
     //-----------------------------------------------------------------------------
@@ -292,6 +309,8 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
 
     public void handleDeviceClick(String pName) {
 
+        Log.d(TAG, "User clicked on " + pName);
+
         Message msg = Message.obtain(null, BluetoothLeService.MSG_DEVICE_CONNECT);
         if (msg == null) { return; }
 
@@ -302,6 +321,8 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
             Log.w(TAG, "Lost connection to service", e);
             unbindService(connection);
         }
+
+        finishActivityAndStartBluetoothMessageActivity();
 
     }//end of BluetoothScanActivity::handleDeviceClick
     //-----------------------------------------------------------------------------
@@ -318,6 +339,22 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
         setScanning(false);
 
     }//end of BluetoothScanActivity::handleIdleState
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // BluetoothScanActivity::finishActivityAndStartBluetoothMessageActivity
+    //
+    // Closes this activity and starts the BluetoothMessageActivity.
+    //
+
+    private void finishActivityAndStartBluetoothMessageActivity() {
+
+        Intent intent = new Intent(this, BluetoothMessageActivity.class);
+        startActivity(intent);
+
+        exitActivity();
+
+    }//end of BluetoothScanActivity::finishActivityAndStartBluetoothMessageActivity
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -345,14 +382,17 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
     protected void onActivityResult(int pRequestCode, int pResultCode, Intent pData) {
 
         if (pRequestCode == ENABLE_BT) {
+
+            bluetoothRequestActive = false;
+
             if (pResultCode == RESULT_OK) {
                 startScan();
             }
             else {
                 //The user has elected not to turn on
                 //Bluetooth. There's nothing we can do
-                //without it, so let's finish().
-                finish();
+                //without it, so we exit the activity
+                exitActivity();
             }
         }
         else {
@@ -489,22 +529,12 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
     // Performs different operations depending on the passed in state.
     //
 
-    private void stateChanged(BluetoothLeService.State pNewState) {
+    private void stateChanged(BluetoothLeVars.State pNewState) {
 
         state = pNewState;
-        switch (state) {
-            case SCANNING:
-                handleScanningState();
-                break;
-
-            case BLUETOOTH_OFF:
-                handleBluetoothOffState();
-                break;
-
-            case IDLE:
-                handleIdleState();
-                break;
-        }
+        if (state == BluetoothLeVars.State.SCANNING) { handleScanningState(); }
+        else if (state == BluetoothLeVars.State.BLUETOOTH_OFF) { handleBluetoothOffState(); }
+        else if (state == BluetoothLeVars.State.IDLE) { handleIdleState(); }
 
     }//end of BluetoothScanActivity::stateChanged
     //-----------------------------------------------------------------------------
@@ -543,12 +573,14 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
         @Override
         public void handleMessage(Message pMsg) {
 
+            Log.d(TAG, "Message received");
+
             BluetoothScanActivity tempActivity = activity.get();
             if (tempActivity != null) {
 
                 switch (pMsg.what) {
-                    case BluetoothLeService.MSG_STATE_CHANGED:
-                        tempActivity.stateChanged(BluetoothLeService.State.values()[pMsg.arg1]);
+                    case BluetoothLeService.MSG_BT_STATE:
+                        tempActivity.stateChanged(BluetoothLeVars.State.values()[pMsg.arg1]);
                         break;
 
                     case BluetoothLeService.MSG_DEVICE_FOUND:
@@ -560,6 +592,11 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
 
                         }
                         break;
+
+                    case BluetoothLeService.MSG_EXIT_SCAN_ACTIVITY:
+                        tempActivity.exitActivity();
+                        break;
+
                 }
 
             }

@@ -37,6 +37,17 @@ public class BluetoothLeVars {
     public final static String EXTRA_DATA =
             "com.example.bluetooth.le.EXTRA_DATA";
 
+    public enum State {
+        UNKNOWN,
+        IDLE,
+        SCANNING,
+        BLUETOOTH_OFF,
+        CONNECTING,
+        CONNECTED,
+        DISCONNECTING,
+        NOT_CONNECTED
+    }
+
     public final static int MODE0 = 0000;
 
     // Variables specific to the Disto //
