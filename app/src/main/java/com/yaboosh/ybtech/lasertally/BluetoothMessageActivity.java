@@ -121,7 +121,6 @@ public class BluetoothMessageActivity extends Activity {
 
         Log.d(TAG, "Inside of BluetoothMessageActivity onResume");
 
-        startService(serviceIntent);
         bindService(serviceIntent, connection, BIND_AUTO_CREATE);
 
     }//end of BluetoothMessageActivity::onResume
@@ -159,8 +158,6 @@ public class BluetoothMessageActivity extends Activity {
         } catch (Exception e) {
             Log.w(TAG, "Error unregistering with BleService", e);
             service = null;
-        } finally {
-            stopService(serviceIntent);
         }
 
     }//end of BluetoothMessageActivity::onPause

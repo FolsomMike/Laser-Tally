@@ -144,10 +144,10 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
         //conditions have already been checked for because indexOf() throws
         //an exception if the string is not found; the first if statement
         //checks to make sure that the string exists.
-        if (pDevice == null || pDevice.getName() == null) {
+        /*//debug hss//if (pDevice == null || pDevice.getName() == null) {
             Log.d(TAG, "Device name did not contain 'DISTO'");
             return;
-        }
+        }*/
 
         if (!pDevice.getName().contains("DISTO")) {
             Log.d(TAG, "Device name did not contain 'DISTO'");

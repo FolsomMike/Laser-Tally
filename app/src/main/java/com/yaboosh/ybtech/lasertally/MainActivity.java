@@ -20,6 +20,8 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Color;
+import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -28,6 +30,7 @@ import android.os.Messenger;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -86,6 +89,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         serviceIntent = new Intent(this, BluetoothLeService.class);
+        startService(serviceIntent);
 
     }//end of MainActivity::onCreate
     //-----------------------------------------------------------------------------
@@ -102,6 +106,8 @@ public class MainActivity extends Activity {
     {
 
         Log.d(TAG, "Inside of MainActivity onDestroy");
+
+        stopService(serviceIntent);
 
         super.onDestroy();
 
@@ -123,7 +129,6 @@ public class MainActivity extends Activity {
 
         Log.d(TAG, "Inside of MainActivity onResume");
 
-        //debug hss//startService(serviceIntent);
         bindService(serviceIntent, connection, BIND_AUTO_CREATE);
 
     }//end of MainActivity::onResume
@@ -160,8 +165,6 @@ public class MainActivity extends Activity {
         } catch (Exception e) {
             Log.w(TAG, "Error unregistering with BleService", e);
             service = null;
-        } finally {
-            //debug hss//stopService(serviceIntent);
         }
 
     }//end of MainActivity::onPause
@@ -359,31 +362,54 @@ public class MainActivity extends Activity {
     public void handleNewDistanceValue(Float pDistance) {
 
         TableLayout measurementsTable = (TableLayout)findViewById(R.id.measurementsTable);
-        TableRow newRow = new TableRow(this);
+        TableRow newRow = new TableRow(getApplicationContext());
 
-        View sideBorderLine = getLayoutInflater().inflate(R.layout.table_side_border_line, null);
-        View columnDivider = getLayoutInflater().inflate(R.layout.table_column_divider, null);
+        // Add side border
+        View sB1 = new View(this);
+        sB1.setLayoutParams(new TableRow.LayoutParams(1, TableRow.LayoutParams.MATCH_PARENT));
+        sB1.setBackgroundColor(Color.parseColor("#000000"));
+        newRow.addView(sB1);
 
-        newRow.addView(sideBorderLine);
-
-        TextView col1 = (TextView)getLayoutInflater().inflate(R.layout.table_column_template, null);
+        TextView col1 = new TextView(this);
+        col1.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1));
+        col1.setTextSize(30);
+        col1.setTextColor(Color.BLACK);
         String distanceValue = Float.toString(pDistance);
         col1.setText(distanceValue);
-        newRow.addView(sideBorderLine);
+        newRow.addView(col1);
 
-        newRow.addView(columnDivider);
+        // Add vertical spacer
+        View vS1 = new View(this);
+        vS1.setLayoutParams(new TableRow.LayoutParams(1, TableRow.LayoutParams.MATCH_PARENT));
+        vS1.setBackgroundColor(Color.parseColor("#000000"));
+        newRow.addView(vS1);
 
-        TextView col2 = (TextView)getLayoutInflater().inflate(R.layout.table_column_template, null);
-        col1.setText("No value");
+        TextView col2 = new TextView(this);
+        col2.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1));
+        col2.setTextSize(30);
+        col1.setTextColor(Color.BLACK);
+        col2.setText("No value");
         newRow.addView(col2);
 
-        newRow.addView(columnDivider);
+        // Add vertical spacer
+        View vS2 = new View(this);
+        vS2.setLayoutParams(new TableRow.LayoutParams(1, TableRow.LayoutParams.MATCH_PARENT));
+        vS2.setBackgroundColor(Color.parseColor("#000000"));
+        newRow.addView(vS2);
 
-        TextView col3 = (TextView)getLayoutInflater().inflate(R.layout.table_column_template, null);
-        col1.setText("No value");
+        TextView col3 = new TextView(this);
+        col3.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1));
+        col3.setTextSize(30);
+        col1.setTextColor(Color.BLACK);
+        col3.setText("No value");
         newRow.addView(col3);
 
-        newRow.addView(sideBorderLine);
+        // Add side border
+        View sB2 = new View(this);
+        sB2.setLayoutParams(new TableRow.LayoutParams(1, TableRow.LayoutParams.MATCH_PARENT));
+        sB2.setBackgroundColor(Color.parseColor("#000000"));
+        newRow.addView(sB2);
+
         measurementsTable.addView(newRow);
 
     }//end of MainActivity::handleNewDistanceValue

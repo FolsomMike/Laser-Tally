@@ -152,7 +152,6 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
 
         Log.d(TAG, "Inside of BluetoothScanActivity onResume");
 
-        //debug hss//startService(serviceIntent);
         bindService(serviceIntent, connection, BIND_AUTO_CREATE);
 
     }//end of BluetoothScanActivity::onResume
@@ -189,8 +188,6 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
         } catch (Exception e) {
             Log.w(TAG, "Error unregistering with BleService", e);
             service = null;
-        } finally {
-            //debug hss//stopService(serviceIntent);
         }
 
     }//end of BluetoothScanActivity::onPause
