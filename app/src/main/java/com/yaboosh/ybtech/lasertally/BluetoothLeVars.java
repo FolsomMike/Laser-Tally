@@ -66,7 +66,11 @@ public class BluetoothLeVars {
 
     public final static String TURN_LASER_ON_CMD = "o";
     public final static String TURN_LASER_OFF_CMD = "p";
+    public final static String TRIGGER_DISTANCE_MEASUREMENT = "g";
     // End of variables specific to the Disto //
+
+    //Meters to feet conversion factor
+    public final static Double METERS_FEET_CONVERSION_FACTOR = 3.2808;
 
 }//end of class BluetoothLeVars
 //-----------------------------------------------------------------------------

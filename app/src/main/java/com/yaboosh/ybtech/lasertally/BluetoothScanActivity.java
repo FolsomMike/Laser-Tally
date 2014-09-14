@@ -134,6 +134,27 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
 
         super.onDestroy();
 
+        try {
+            unbindService(connection);
+        } catch (Exception e) {}
+
+        if (service == null) {
+            Log.d(TAG, "service was null -- return from function");
+            return;
+        }
+
+        try {
+            Message msg = Message.obtain(null, BluetoothLeService.MSG_UNREGISTER_BLUETOOTH_SCAN_ACTIVITY);
+            if (msg != null) {
+                Log.d(TAG, "msg was not null -- sending unregister scan message");
+                msg.replyTo = messenger;
+                service.send(msg);
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Error unregistering with BleService", e);
+            service = null;
+        }
+
     }//end of BluetoothScanActivity::onDestroy
     //-----------------------------------------------------------------------------
 
@@ -182,6 +203,7 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
         try {
             Message msg = Message.obtain(null, BluetoothLeService.MSG_UNREGISTER_BLUETOOTH_SCAN_ACTIVITY);
             if (msg != null) {
+                Log.d(TAG, "msg was not null -- sending unregister scan message");
                 msg.replyTo = messenger;
                 service.send(msg);
             }
@@ -268,6 +290,9 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
     //
 
     public void handleBluetoothOffState() {
+
+        //debug hss//
+        Log.d(TAG, "made it to handleBluetoothOffState()");
 
         ProgressBar tempBar = (ProgressBar) findViewById(R.id.bluetoothScanProgressBar);
         TextView tempText = (TextView) findViewById(R.id.bluetoothScanningText);
@@ -527,6 +552,9 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
     //
 
     private void stateChanged(BluetoothLeVars.State pNewState) {
+
+        //debug hss//
+        Log.d(TAG, "state changed message received");
 
         state = pNewState;
         if (state == BluetoothLeVars.State.SCANNING) { handleScanningState(); }

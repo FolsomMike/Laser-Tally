@@ -79,6 +79,7 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
     static final int MSG_DISTANCE_VALUE = 16;
     static final int MSG_UNREGISTER_BLUETOOTH_SCAN_ACTIVITY = 17;
     static final int MSG_UNREGISTER_BLUETOOTH_MESSAGE_ACTIVITY = 18;
+    static final int MSG_START_DEVICE_MEASURING_PROCESS = 19;
     private static final long SCAN_PERIOD = 10000;
     public static final String KEY_MAC_ADDRESSES = "KEY_MAC_ADDRESSES";
     public static final String KEY_NAMES = "KEY_NAMES";
@@ -788,23 +789,21 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
             return;
         }
 
-        //debug hss//writing = true;
-        //debug hss//byte[] tempBytes = pCmd.getBytes();
-        String temp = "o";
+        writing = true;
         byte[] tempBytes = null;
         try {
-            tempBytes = temp.getBytes("UTF-8");
+            tempBytes = pCmd.getBytes("UTF-8");
         } catch(Exception e) {}
 
         if (tempBytes == null) {
-            Log.d(TAG, "tempBytes was null");
+            Log.d(TAG, "tempBytes was null -- return");
+            return;
         }
 
         tempBluetoothGattCharacteristic.setValue(tempBytes);
         gatt.writeCharacteristic(tempBluetoothGattCharacteristic);
 
-    }
-    //end of BluetoothLeService::sendCommand
+    }//end of BluetoothLeService::sendCommand
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -828,6 +827,8 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
             setState(BluetoothLeVars.State.BLUETOOTH_OFF);
         }
         else {
+            Log.d(TAG, "bluetooth was not null or not enabled -- else state");
+
             timerHandler.postDelayed(new Runnable() {
 
                 @Override
@@ -850,6 +851,20 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // BluetoothLeService::startMeasuringProcess
+    //
+    // //hss wip//
+    //
+
+    private void startMeasuringProcess() {
+
+        //zzz
+        sendCommand(BluetoothLeVars.TRIGGER_DISTANCE_MEASUREMENT);
+
+    }//end of BluetoothLeService::startMeasuringProcess
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // BluetoothLeService::setState
     //
     // Sets the state to the state passed in and sends it to contained in message
@@ -858,16 +873,16 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
 
     private void setState(BluetoothLeVars.State pNewState) {
 
-        if (state == pNewState) {
-            return;
-        }
-
         state = pNewState;
 
         Message msg = getStateMessage();
-        if (msg != null) {
-            sendMessage(msg);
+        if (msg == null) {
+            Log.d(TAG, "msg was null");
+            return;
         }
+
+        Log.d(TAG, "msg was not null -- sending state message");
+        sendMessage(msg);
 
     }//end of BluetoothLeService::setState
     //-----------------------------------------------------------------------------
@@ -1103,6 +1118,30 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
             if (tempService != null) {
 
                 switch (pMsg.what) {
+
+                    case MSG_APP_EXITING:
+                        if (tempService.gatt == null) { return; }
+                        if (tempService.state != BluetoothLeVars.State.CONNECTED) { return; }
+                        tempService.gatt.disconnect();
+                        tempService.gatt.close();
+                        break;
+
+                    case MSG_DEVICE_CONNECT:
+                        tempService.connectByName((String) pMsg.obj);
+                        break;
+
+                    case MSG_DEVICE_DISCONNECT:
+                        if (tempService.state == BluetoothLeVars.State.CONNECTED &&
+                                tempService.gatt != null) {
+                            tempService.gatt.disconnect();
+                        }
+                        break;
+
+                    case MSG_START_SCAN:
+                        tempService.startScan();
+                        Log.d(TAG, "Start Scan Message Received");
+                        break;
+
                     case MSG_REGISTER_BLUETOOTH_SCAN_ACTIVITY:
                         tempService.clients.add(pMsg.replyTo);
                         Log.d(TAG, "Registered BluetoothScanActivity");
@@ -1120,6 +1159,10 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
                         Log.d(TAG, "Registered BluetoothMessageActivity");
                         Log.d(TAG, "Number of Clients: " + tempService.clients.size());
                         break;
+
+                    case MSG_START_DEVICE_MEASURING_PROCESS:
+                        Log.d(TAG, "Message Received :: starting measuring process");
+                        tempService.startMeasuringProcess();
 
                     case MSG_UNREGISTER:
                         tempService.clients.remove(pMsg.replyTo);
@@ -1140,29 +1183,6 @@ public class BluetoothLeService extends Service implements BluetoothAdapter.LeSc
                         tempService.clients.remove(pMsg.replyTo);
                         tempService.handleUnregisterMainActivity();
                         Log.d(TAG, "Unregistered MainActivity");
-                        break;
-
-                    case MSG_START_SCAN:
-                        tempService.startScan();
-                        Log.d(TAG, "Start Scan");
-                        break;
-
-                    case MSG_DEVICE_CONNECT:
-                        tempService.connectByName((String) pMsg.obj);
-                        break;
-
-                    case MSG_DEVICE_DISCONNECT:
-                        if (tempService.state == BluetoothLeVars.State.CONNECTED &&
-                            tempService.gatt != null) {
-                            tempService.gatt.disconnect();
-                        }
-                        break;
-
-                    case MSG_APP_EXITING:
-                        if (tempService.gatt == null) { return; }
-                        if (tempService.state != BluetoothLeVars.State.CONNECTED) { return; }
-                        tempService.gatt.disconnect();
-                        tempService.gatt.close();
                         break;
 
                     default:

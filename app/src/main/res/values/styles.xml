@@ -15,6 +15,16 @@
         <item name="android:colorBackground">@color/backgroundColor</item>
     </style>
 
+    <style name="disabledStyledButton">
+        <item name="android:textColor">@color/disabledTextColor</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:shadowColor">@color/disabledTextColor</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">0</item>
+        <item name="android:shadowRadius">0</item>
+    </style>
+
     <style name="styledButtonWhiteText">
         <item name="android:textColor">#ffffff</item>
         <item name="android:gravity">center</item>
@@ -57,7 +67,7 @@
 
     <!-- Header Table Column Divider - simple line used as a divider -->
     <style name="headerTableColumnDivider">
-        <item name="android:layout_width">3dp</item>
+        <item name="android:layout_width">0.75dp</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:background">@color/headerTableColumnDividerColor</item>
     </style>
@@ -82,15 +92,15 @@
 
     <!-- Table Side Border Line - simple line used as a left or right table border -->
     <style name="tableSideBorderLine">
-        <item name="android:layout_width">3dp</item>
+        <item name="android:layout_width">2.5dp</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:background">@color/tableSideBorderLineColor</item>
     </style>
 
     <!-- Table Bottom Border Line - simple line used as a bottom border -->
-    <style name="tableBottomBorderLine">
+    <style name="measurementsTableBottomBorderLine">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">3dp</item>
+        <item name="android:layout_height">1.5dp</item>
         <item name="android:background">@color/tableBottomBorderLineColor</item>
     </style>
 

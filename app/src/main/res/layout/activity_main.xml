@@ -177,43 +177,19 @@
             <ScrollView
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:scrollbars="vertical" >
+                android:scrollbars="vertical"
+                android:fadeScrollbars="false" >
 
                 <TableLayout
                     android:id = "@+id/measurementsTable"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:padding="0dp">
+                    android:padding="0dp" >
 
-                    <TableRow android:layout_height="wrap_content">
-                        <View style="@style/tableSideBorderLine" />
-
-                        <TextView
-                            android:id="@+id/runLabel"
-                            android:text="@string/hello"
-                            style="@style/tableColumn"
-                            />
-
-                        <View style="@style/tableColumnDivider" />
-
-                        <TextView
-                            android:id="@+id/hitLabel"
-                            android:text="@string/hello"
-                            style="@style/tableColumn"
-                            />
-
-                        <View style="@style/tableColumnDivider" />
-
-                        <TextView
-                            android:id="@+id/errorLabel"
-                            android:text="@string/hello"
-                            style="@style/tableColumn"
-                            />
-
-                        <View style="@style/tableSideBorderLine" />
-                    </TableRow>
-
-                    <View style="@style/tableBottomBorderLine" />
+                    <View
+                        android:id="@id/measurementsTableBottomBorderLine"
+                        android:visibility="gone"
+                        style="@style/measurementsTableBottomBorderLine" />
 
                 </TableLayout>
 

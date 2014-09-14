@@ -16,5 +16,7 @@
     <item type="id" name="measureConnectButton" />
     <item type="id" name="redoButton" />
     <item type="id" name="deviceList" />
+    <item type="id" name="measurementsTableBottomBorderLine" />
+    <item type="id" name="measurementsTableRowDivider" />
 
 </resources>

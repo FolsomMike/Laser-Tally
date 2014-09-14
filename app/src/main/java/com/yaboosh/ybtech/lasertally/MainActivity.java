@@ -27,7 +27,9 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
+import android.os.RemoteException;
 import android.util.Log;
+import android.util.SparseIntArray;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -36,6 +38,9 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
+import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -49,12 +54,16 @@ public class MainActivity extends Activity {
     Button measureConnectButton;
     Button redoButton;
 
+    private DecimalFormat tallyFormat = new DecimalFormat("#.##");
+
     BluetoothLeClient bluetoothLeClient = null;
 
     private final Messenger messenger;
     private Intent serviceIntent;
     private Messenger service = null;
     private BluetoothLeVars.State state = BluetoothLeVars.State.UNKNOWN;
+
+    TableLayout measurementsTable;
 
     final String connectButtonText = "Connect";
     final String measureButtonText = "Measure";
@@ -87,6 +96,10 @@ public class MainActivity extends Activity {
         Log.d(TAG, "Inside of MainActivity onCreate");
 
         setContentView(R.layout.activity_main);
+
+        measurementsTable = (TableLayout)findViewById(R.id.measurementsTable);
+        measureConnectButton = (Button)findViewById(R.id.measureConnectButton);
+        redoButton = (Button)findViewById(R.id.redoButton);
 
         serviceIntent = new Intent(this, BluetoothLeService.class);
         startService(serviceIntent);
@@ -130,6 +143,8 @@ public class MainActivity extends Activity {
         Log.d(TAG, "Inside of MainActivity onResume");
 
         bindService(serviceIntent, connection, BIND_AUTO_CREATE);
+
+        handleNewDistanceValue((float)5.05);
 
     }//end of MainActivity::onResume
     //-----------------------------------------------------------------------------
@@ -270,6 +285,112 @@ public class MainActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // MainActivity::createNewColumn
+    //
+    // Creates and returns a TextView object with the properties of a column used
+    // with the measurement table. The column's text is set to the passed in string.
+    //
+
+    public TextView createNewColumn(String pColumnText) {
+
+        TextView col = new TextView(this);
+        col.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1));
+        col.setText(pColumnText);
+        col.setTextColor(Color.BLACK);
+        col.setTextSize(30);
+        col.setPadding(15, 25, 15, 25);
+
+        return col;
+
+    }//end of MainActivity::createNewColumn
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::createNewColumnDivider
+    //
+    // Creates and returns a View object with the properties of a column
+    // divider used with the measurements table.
+    //
+
+    public View createNewColumnDivider() {
+
+        View cd = new View(this);
+        cd.setLayoutParams(new TableRow.LayoutParams(2, TableRow.LayoutParams.MATCH_PARENT));
+        cd.setBackgroundColor(Color.parseColor("#505050"));
+
+        return cd;
+
+    }//end of MainActivity::createNewColumnDivider
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::createNewRow
+    //
+    // Creates and returns a View object with the properties of a side border used
+    // with the measurements table.
+    //
+
+    public TableRow createNewRow(String pCol1Text, String pCol2Text, String pCol3Text) {
+
+        TableRow newRow = new TableRow(getApplicationContext());
+
+        newRow.addView(createNewSideBorder());
+
+        newRow.addView(createNewColumn(pCol1Text));
+
+        newRow.addView(createNewColumnDivider());
+
+        newRow.addView(createNewColumn(pCol2Text));
+
+        newRow.addView(createNewColumnDivider());
+
+        newRow.addView(createNewColumn(pCol3Text));
+
+        newRow.addView(createNewSideBorder());
+
+        return newRow;
+
+    }//end of MainActivity::createNewRow
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::createNewRowDivider
+    //
+    // Creates and returns a View object with the properties of a row divider used
+    // with the measurements table.
+    //
+
+    public View createNewRowDivider() {
+
+        View rd = new View(this);
+        rd.setId(R.id.measurementsTableRowDivider);
+        rd.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, 3));
+        rd.setBackgroundColor(Color.parseColor("#000000"));
+
+        return rd;
+
+    }//end of MainActivity::createNewRowDivider
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::createNewSideBorder
+    //
+    // Creates and returns a View object with the properties of a side border used
+    // with the measurements table.
+    //
+
+    public View createNewSideBorder() {
+
+        View sb = new View(this);
+        sb.setLayoutParams(new TableRow.LayoutParams(6, TableRow.LayoutParams.MATCH_PARENT));
+        sb.setBackgroundColor(Color.parseColor("#000000"));
+
+        return sb;
+
+    }//end of MainActivity::createNewSideBorder
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // MainActivity::handleDeviceConnected
     //
     // Sets the measureConnectButton to its "measuring" look and text and sets
@@ -278,13 +399,11 @@ public class MainActivity extends Activity {
 
     public void handleDeviceConnected() {
 
-        measureConnectButton = (Button)findViewById(R.id.measureConnectButton);
         measureConnectButton.setBackground(getResources().getDrawable
                 (R.drawable.blue_styled_button));
         measureConnectButton.setText(measureButtonText);
         measureConnectButton.setOnClickListener(onClickListener);
 
-        redoButton = (Button)findViewById(R.id.redoButton);
         redoButton.setOnClickListener(onClickListener);
         redoButton.setVisibility(View.VISIBLE);
 
@@ -332,7 +451,7 @@ public class MainActivity extends Activity {
         }
 
         else if (btnText == measureButtonText) {
-            //hss wip//stuff to do to measure
+            startMeasuringProcess();
         }
 
     }//end of MainActivity::handleMeasureConnectButtonPressed
@@ -356,61 +475,33 @@ public class MainActivity extends Activity {
     //-----------------------------------------------------------------------------
     // MainActivity::handleNewDistanceValue
     //
-    // Creates a new row in the measurementsTable using the passed in value.
+    // Creates a new row in the measurementsTable and inserts the appropriate data
+    // using the passed in value.
     //
 
     public void handleNewDistanceValue(Float pDistance) {
 
-        TableLayout measurementsTable = (TableLayout)findViewById(R.id.measurementsTable);
-        TableRow newRow = new TableRow(getApplicationContext());
+        //Convert the value from meters to inches
+        Double distanceValue = pDistance * BluetoothLeVars.METERS_FEET_CONVERSION_FACTOR;
+        String distanceValueString = tallyFormat.format(distanceValue);
 
-        // Add side border
-        View sB1 = new View(this);
-        sB1.setLayoutParams(new TableRow.LayoutParams(1, TableRow.LayoutParams.MATCH_PARENT));
-        sB1.setBackgroundColor(Color.parseColor("#000000"));
-        newRow.addView(sB1);
+        View measurementsTableBottomBorderLine = findViewById(R.id.measurementsTableBottomBorderLine);
 
-        TextView col1 = new TextView(this);
-        col1.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1));
-        col1.setTextSize(30);
-        col1.setTextColor(Color.BLACK);
-        String distanceValue = Float.toString(pDistance);
-        col1.setText(distanceValue);
-        newRow.addView(col1);
+        //zzz
 
-        // Add vertical spacer
-        View vS1 = new View(this);
-        vS1.setLayoutParams(new TableRow.LayoutParams(1, TableRow.LayoutParams.MATCH_PARENT));
-        vS1.setBackgroundColor(Color.parseColor("#000000"));
-        newRow.addView(vS1);
+        measurementsTable.removeView(measurementsTableBottomBorderLine);
 
-        TextView col2 = new TextView(this);
-        col2.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1));
-        col2.setTextSize(30);
-        col1.setTextColor(Color.BLACK);
-        col2.setText("No value");
-        newRow.addView(col2);
+        measurementsTable.addView(createNewRow(distanceValueString, "No value", "No Value"));
+        measurementsTable.addView(createNewRowDivider());
 
-        // Add vertical spacer
-        View vS2 = new View(this);
-        vS2.setLayoutParams(new TableRow.LayoutParams(1, TableRow.LayoutParams.MATCH_PARENT));
-        vS2.setBackgroundColor(Color.parseColor("#000000"));
-        newRow.addView(vS2);
+        measurementsTableBottomBorderLine.setVisibility(View.VISIBLE);
+        measurementsTable.addView(measurementsTableBottomBorderLine);
 
-        TextView col3 = new TextView(this);
-        col3.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1));
-        col3.setTextSize(30);
-        col1.setTextColor(Color.BLACK);
-        col3.setText("No value");
-        newRow.addView(col3);
-
-        // Add side border
-        View sB2 = new View(this);
-        sB2.setLayoutParams(new TableRow.LayoutParams(1, TableRow.LayoutParams.MATCH_PARENT));
-        sB2.setBackgroundColor(Color.parseColor("#000000"));
-        newRow.addView(sB2);
-
-        measurementsTable.addView(newRow);
+        //enable the measureConnect and redo buttons
+        //so that the user can use them now that the
+        //measuring process has been completed
+        setMeasureConnectButtonEnabled(true);
+        setRedoButtonEnabled(true);
 
     }//end of MainActivity::handleNewDistanceValue
     //-----------------------------------------------------------------------------
@@ -418,13 +509,52 @@ public class MainActivity extends Activity {
     //-----------------------------------------------------------------------------
     // MainActivity::handleRedoButtonPressed
     //
-    // //hss wip//
+    // Retrieves and removes the final row added to the measurementsTable.
     //
 
     private void handleRedoButtonPressed() {
 
-        //hss wip//Code needs to added that redoes the last measurement
-        // stored.
+        Log.d(TAG, "Redo button pressed");
+
+        int rowCount = 0;
+        // HashMap is used to store the number of rows and the position each
+        // one is at in the measurementsTable <Integer, Integer> = <RowNumber, RowPosition>
+        SparseIntArray rowAndPosition = new SparseIntArray();
+
+        int divCount = 0;
+        // HashMap is used to store the number of row dividers and the position each
+        // one is at in the measurementsTable <Integer, Integer> = <DivNumber, DivPosition>
+        SparseIntArray dividerAndPosition = new SparseIntArray();
+
+        // Determine the number of rows and their positions
+        for (int i = 0; i<measurementsTable.getChildCount(); i++) {
+
+            if (measurementsTable.getChildAt(i).getId() == R.id.measurementsTableRowDivider) {
+                dividerAndPosition.put(++divCount, i);
+            }
+
+            // Checks to see if the child at i is a TableRow
+            if (!(measurementsTable.getChildAt(i) instanceof TableRow)) { continue; }
+
+            rowAndPosition.put(++rowCount, i);
+
+        }
+
+        if (rowCount == 0) {
+            Log.d(TAG, "There were no rows in the measurement table -- return;");
+            return;
+        }
+        // Get the position of the last row found and remove it from the table
+        measurementsTable.removeView(measurementsTable.getChildAt(rowAndPosition.get(rowCount)));
+
+        if (divCount == 0) {
+            Log.d(TAG, "There were no row dividers in the measurement table -- return;");
+            return;
+        }
+        // Get the position of the last row divider found and remove it from the table
+        // 1 is subtracted from the divider position because its position has been moved
+        // up one since one of the children above it was removed (row)
+        measurementsTable.removeView(measurementsTable.getChildAt(dividerAndPosition.get(divCount)-1));
 
     }//end of MainActivity::handleRedoButtonPressed
     //-----------------------------------------------------------------------------
@@ -438,6 +568,45 @@ public class MainActivity extends Activity {
         handleDeviceNotConnected();
 
     }//end of MainActivity::handleStateUnknown
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::setMeasureConnectButtonEnabled
+    //
+    // Enables or disables the measure connect button according to the passed in
+    // boolean. The style is also set according to the passed in boolean.
+    //
+
+    private void setMeasureConnectButtonEnabled(boolean pBool) {
+
+        measureConnectButton.setEnabled(pBool);
+
+        if (pBool) {
+            measureConnectButton.setTextAppearance(getApplicationContext(), R.style.styledButtonWhiteText);
+        } else {
+            measureConnectButton.setTextAppearance(getApplicationContext(), R.style.disabledStyledButton);
+        }
+
+    }//end of MainActivity::disableMeasureConnectButton
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::setRedoButtonEnabled
+    //
+    // Disables the redo button and sets its text color to the disabled text color.
+    //
+
+    private void setRedoButtonEnabled(boolean pBool) {
+
+        redoButton.setEnabled(pBool);
+
+        if (pBool) {
+            redoButton.setTextAppearance(getApplicationContext(), R.style.redStyledButton);
+        } else {
+            redoButton.setTextAppearance(getApplicationContext(), R.style.disabledStyledButton);
+        }
+
+    }//end of MainActivity::setRedoButtonEnabled
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -455,6 +624,34 @@ public class MainActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // MainActivity::startMeasuringProcess
+    //
+    // Sends a message to the BluetoothLeService to start the measuring process and
+    // disables the measure and redo button.
+    //
+
+    private void startMeasuringProcess() {
+
+        Message msg = Message.obtain(null, BluetoothLeService.MSG_START_DEVICE_MEASURING_PROCESS);
+        if (msg != null) {
+            try {
+                service.send(msg);
+            } catch (RemoteException e) {
+                Log.w(TAG, "Lost connection to service", e);
+                unbindService(connection);
+            }
+        }
+
+        //disable the measureConnect and redo buttons
+        //so that the user can't use them during the
+        //measuring process
+        setMeasureConnectButtonEnabled(false);
+        setRedoButtonEnabled(false);
+
+    }//end of MainActivity::startMeasuringProcess
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // BluetoothScanActivity::stateChanged
     //
     // Performs different operations depending on the passed in state.
@@ -466,7 +663,9 @@ public class MainActivity extends Activity {
 
         state = pNewState;
 
-        if (state == BluetoothLeVars.State.BLUETOOTH_OFF) {
+        handleDeviceConnected();
+
+        /*//debug hss//if (state == BluetoothLeVars.State.BLUETOOTH_OFF) {
             Log.d(TAG, "state bluetooth off");
             handleBluetoothOffState();
         }
@@ -488,7 +687,7 @@ public class MainActivity extends Activity {
         }
         else {
             Log.d(TAG, "state not listed in switch statement " + state);
-        }
+        }*/
 
     }//end of BluetoothScanActivity::stateChanged
     //-----------------------------------------------------------------------------
