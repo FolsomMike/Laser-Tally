@@ -26,6 +26,7 @@
             android:textSize="50dp"/>
 
         <TextView
+            android:id="@id/jobTitleTextView"
             android:layout_width="400dp"
             android:layout_height="wrap_content"
             android:textColor="#FFFFFF"

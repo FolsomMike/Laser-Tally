@@ -43,6 +43,7 @@ public class JobInfoActivity extends Activity {
     public static final String FACILITY_KEY = "FACILITY_KEY";
     public static final String GRADE_KEY = "GRADE_KEY";
     public static final String JOB_KEY =  "JOB_KEY";
+    public static final String PROTECTOR_MAKE_UP_ADJUSTMENT_KEY = "PROTECTOR_MAKE_UP_ADJUSTMENT_KEY";
     public static final String RACK_KEY = "RACK_KEY";
     public static final String RANGE_KEY = "RANGE_KEY";
     public static final String RIG_KEY = "RIG_KEY";
@@ -156,7 +157,7 @@ public class JobInfoActivity extends Activity {
     //
     // Listens for window focus changes.
     //
-    // If the activity has focus, the system visbility is set to the uiOptions.
+    // If the activity has focus, the system visibility is set to the uiOptions.
     //
 
 
@@ -220,23 +221,37 @@ public class JobInfoActivity extends Activity {
     // JobInfoActivity::exitActivityByOk
     //
     // Used when the user closes the activity using the ok button.
-    // Puts the pipe number and total length into the intent extras, sets the
-    // result to ok, and finishes the activity.
+    // Puts the job info into the intent extras, sets the result to ok, and
+    // finishes the activity.
+    //
+    // //hss wip// should store into a file
     //
 
     private void exitActivityByOk() {
 
-        TextView pPN = (TextView)findViewById(R.id.editTextPipeNumber);
-        pipeNumber = pPN.getText().toString();
-        TextView pTL = (TextView)findViewById(R.id.editTextTotalLength);
-        totalLength = pTL.getText().toString();
-        CheckBox cBRAB = (CheckBox)findViewById(R.id.checkBoxRenumberAllBelow);
-        renumberAll = cBRAB.isChecked();
-
         Intent resultIntent = new Intent();
-        resultIntent.putExtra(PIPE_NUMBER_KEY, pipeNumber);
-        resultIntent.putExtra(TOTAL_LENGTH_KEY, totalLength);
-        resultIntent.putExtra(RENUMBER_ALL_CHECKBOX_KEY, renumberAll);
+
+        resultIntent.putExtra(COMPANY_NAME_KEY,
+                        ((TextView) findViewById(R.id.editTextCompanyName)).getText().toString());
+        resultIntent.putExtra(DIAMETER_KEY,
+                            ((TextView) findViewById(R.id.editTextDiameter)).getText().toString());
+        resultIntent.putExtra(FACILITY_KEY,
+                            ((TextView) findViewById(R.id.editTextFacility)).getText().toString());
+        resultIntent.putExtra(GRADE_KEY,
+                                ((TextView) findViewById(R.id.editTextGrade)).getText().toString());
+        resultIntent.putExtra(JOB_KEY,
+                                ((TextView) findViewById(R.id.editTextJob)).getText().toString());
+        resultIntent.putExtra(PROTECTOR_MAKE_UP_ADJUSTMENT_KEY,
+            ((TextView) findViewById(R.id.editTextProtectorMakeupAdjustment)).getText().toString());
+        resultIntent.putExtra(RACK_KEY,
+                                ((TextView) findViewById(R.id.editTextRack)).getText().toString());
+        resultIntent.putExtra(RANGE_KEY,
+                                ((TextView) findViewById(R.id.editTextRange)).getText().toString());
+        resultIntent.putExtra(RIG_KEY,
+                                ((TextView) findViewById(R.id.editTextRig)).getText().toString());
+        resultIntent.putExtra(WALL_KEY,
+                                ((TextView) findViewById(R.id.editTextWall)).getText().toString());
+
         setResult(Activity.RESULT_OK, resultIntent);
         finish();
 

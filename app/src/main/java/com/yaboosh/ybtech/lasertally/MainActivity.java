@@ -74,6 +74,8 @@ public class MainActivity extends Activity {
     final String connectButtonText = "Connect";
     final String measureButtonText = "Measure";
 
+    private float protectorMakeupValue = 0;
+
     private TableRow lastRowEdited;
 
     //-----------------------------------------------------------------------------
@@ -223,16 +225,24 @@ public class MainActivity extends Activity {
 
         if (pRequestCode == TABLE_ROW_EDITOR_ACTIVITY_RESULT) {
 
-            Log.d(TAG, "Table Row Editor activity result"); //debug hss//
-
             if (pResultCode == RESULT_OK) {
                 handleTableRowEditorActivityResultOk(
                         pData.getStringExtra(TableRowEditorActivity.PIPE_NUMBER_KEY),
                         pData.getStringExtra(TableRowEditorActivity.TOTAL_LENGTH_KEY),
                         pData.getBooleanExtra(TableRowEditorActivity.RENUMBER_ALL_CHECKBOX_KEY, false));
             }
-            if (pResultCode == RESULT_CANCELED) {
+            else if (pResultCode == RESULT_CANCELED) {
                 handleTableRowEditorActivityResultCancel();
+            }
+        }
+        else if (pRequestCode == JOB_INFO_ACTIVITY_RESULT) {
+
+            if (pResultCode == RESULT_OK) {
+                handleJobInfoActivityResultOk(pData.getStringExtra(JobInfoActivity.JOB_KEY),
+                            pData.getStringExtra(JobInfoActivity.PROTECTOR_MAKE_UP_ADJUSTMENT_KEY));
+            }
+            else if (pResultCode == RESULT_CANCELED) {
+                handleJobInfoActivityResultCancel();
             }
         }
         else {
@@ -493,12 +503,39 @@ public class MainActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MainActivity::getAdjustedOfRow
+    // MainActivity::getAdjustedColumnOfRow
+    //
+    // Returns a pointer for the TextView used for the Adjusted column in the passed
+    // in row.
+    //
+
+    private TextView getAdjustedColumnOfRow(TableRow pR) {
+
+        TextView adjustedColumn = null;
+
+        // For each child in the row, check its id
+        // and see if it is the Adjusted column.
+        for (int i=0; i<pR.getChildCount(); i++) {
+
+            if (pR.getChildAt(i).getId() == R.id.measurementsTableColumnAdjusted) {
+                adjustedColumn = (TextView)pR.getChildAt(i);
+                return adjustedColumn;
+            }
+
+        }
+
+        return adjustedColumn;
+
+    }//end of MainActivity::getAdjustedColumnOfRow
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::getAdjustedColValueOfRow
     //
     // Gets the value under the Adjusted column in the passed in row.
     //
 
-    private String getAdjustedOfRow(TableRow pR) {
+    private String getAdjustedColValueOfRow(TableRow pR) {
 
         String adjusted = "";
 
@@ -515,7 +552,7 @@ public class MainActivity extends Activity {
 
         return adjusted;
 
-    }//end of MainActivity::getAdjustedOfRow
+    }//end of MainActivity::getAdjustedColValueOfRow
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -690,6 +727,34 @@ public class MainActivity extends Activity {
         redoButton.setVisibility(View.INVISIBLE);
 
     }//end of MainActivity::handleDeviceNotConnected
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::handleJobInfoActivityResultOk
+    //
+    // Sets the job title to the passed in job title and sets the adjusted columns
+    // using the passed in protector/makeup adjustment value.
+    //
+
+    private void handleJobInfoActivityResultOk(String pJob, String pProtectorMakeupValue) {
+
+        setJobTitle(pJob);
+        setAdjustedColumns(Float.parseFloat(pProtectorMakeupValue));
+
+    }//end of MainActivity::handleJobInfoActivityResultOk
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::handleJobInfoActivityResultCancel
+    //
+    // Currently does nothing.
+    //
+
+    private void handleJobInfoActivityResultCancel() {
+
+        //Currently does nothing
+
+    }//end of MainActivity::handleJobInfoActivityResultCancel
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -929,7 +994,7 @@ public class MainActivity extends Activity {
 
     private void renumberAllAfterRow(TableRow pR, int pPipeNum) {
 
-        for (int rowPos=getPositionOfRow(pR)+1; rowPos<measurementsTable.getChildCount(); rowPos++) {
+        for (int rowPos=(getPositionOfRow(pR)+1); rowPos<measurementsTable.getChildCount(); rowPos++) {
 
             View v = measurementsTable.getChildAt(rowPos);
 
@@ -940,6 +1005,57 @@ public class MainActivity extends Activity {
         }
 
     }//end of MainActivity::renumberAllAfterRow
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::setAdjustedColumns
+    //
+    // If the passed in protector/makeup value is not the same as the old one, the
+    // Adjusted columns are set using the passed in float.
+    //
+    // Each Adjusted column's value is determined by subtracting the passed in
+    // float from the Total Length column in the corresponding row.
+    //
+
+    private void setAdjustedColumns(float pNewProtectorMakeupValue) {
+
+        if (pNewProtectorMakeupValue == protectorMakeupValue) { return; }
+
+        protectorMakeupValue = pNewProtectorMakeupValue;
+
+        for (int i=0; i<measurementsTable.getChildCount(); i++) {
+
+            View v = measurementsTable.getChildAt(i);
+
+            if (!(v instanceof TableRow)) { continue; }
+
+            float totalLength = Float.parseFloat(getTotalLengthColValueOfRow((TableRow)v));
+            float adjustedValue = totalLength - protectorMakeupValue;
+            getAdjustedColumnOfRow((TableRow)v).setText(Float.toString(adjustedValue));
+
+        }
+
+    }//end of MainActivity::setAdjustedColumns
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::setJobTitle
+    //
+    // If the passed in job title is not the same as the old one, the job title
+    // is changed to the passed in string.
+    //
+
+    private void setJobTitle(String pNewJobTitle) {
+
+        TextView jobTitleTextView = (TextView)findViewById(R.id.jobTitleTextView);
+
+        if (pNewJobTitle.equals(jobTitleTextView.getText().toString())) {
+            return;
+        }
+
+        jobTitleTextView.setText(pNewJobTitle);
+
+    }//end of MainActivity::setJobTitle
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

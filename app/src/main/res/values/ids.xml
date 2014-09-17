@@ -30,11 +30,13 @@
     <item type="id" name="editTextGrade" />
     <item type="id" name="editTextJob" />
     <item type="id" name="editTextPipeNumber" />
+    <item type="id" name="editTextProtectorMakeupAdjustment" />
     <item type="id" name="editTextRack" />
     <item type="id" name="editTextRange" />
     <item type="id" name="editTextRig" />
     <item type="id" name="editTextTotalLength" />
     <item type="id" name="editTextWall" />
+    <item type="id" name="jobTitleTextView" />
     <item type="id" name="renumberAllBelowCheckbox" />
     <item type="id" name="tableRowEditorRedXButton" />
     <item type="id" name="tableRowEditorCancelButton" />
