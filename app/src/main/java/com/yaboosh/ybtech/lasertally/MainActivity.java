@@ -171,6 +171,8 @@ public class MainActivity extends Activity {
 
         Log.d(TAG, "Inside of MainActivity onResume");
 
+        bindService(serviceIntent, connection, BIND_AUTO_CREATE);
+
         decorView.setSystemUiVisibility(uiOptions);
 
     }//end of MainActivity::onResume
