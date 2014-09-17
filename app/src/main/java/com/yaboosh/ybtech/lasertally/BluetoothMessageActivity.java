@@ -44,6 +44,10 @@ import java.lang.ref.WeakReference;
 public class BluetoothMessageActivity extends Activity {
 
     public static final String TAG = "MessageActivity";
+
+    private View decorView;
+    private int uiOptions;
+
     private BluetoothLeVars.State state = BluetoothLeVars.State.UNKNOWN;
     private final Messenger messenger;
     private Intent serviceIntent;
@@ -83,6 +87,17 @@ public class BluetoothMessageActivity extends Activity {
 
         this.setFinishOnTouchOutside(false);
 
+        decorView = getWindow().getDecorView();
+
+        uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+
+        createUiChangeListener();
+
         serviceIntent = new Intent(this, BluetoothLeService.class);
 
     }//end of BluetoothMessageActivity::onCreate
@@ -121,13 +136,6 @@ public class BluetoothMessageActivity extends Activity {
 
         Log.d(TAG, "Inside of BluetoothMessageActivity onResume");
 
-        // Give the activity a fullscreen effect
-        View decorView = getWindow().getDecorView();
-        int uiOptions = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
         decorView.setSystemUiVisibility(uiOptions);
 
         bindService(serviceIntent, connection, BIND_AUTO_CREATE);
@@ -170,6 +178,27 @@ public class BluetoothMessageActivity extends Activity {
         }
 
     }//end of BluetoothMessageActivity::onPause
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // BluetoothMessageActivity::onWindowFocusChanged
+    //
+    // Listens for window focus changes.
+    //
+    // If the activity has focus, the system visbility is set to the uiOptions.
+    //
+
+
+    @Override
+    public void onWindowFocusChanged(boolean pHasFocus) {
+
+        super.onWindowFocusChanged(pHasFocus);
+
+        if(pHasFocus) {
+            decorView.setSystemUiVisibility(uiOptions);
+        }
+
+    }//end of BluetoothMessageActivity::onWindowFocusChanged
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -219,6 +248,34 @@ public class BluetoothMessageActivity extends Activity {
         }
 
     };//end of BluetoothMessageActivity::connection
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // BluetoothMessageActivity::createUiChangeListener
+    //
+    // Listens for visibility changes in the ui.
+    //
+    // If the system bars are visible, the system visibility is set to the uiOptions.
+    //
+    //
+
+    private void createUiChangeListener() {
+
+        decorView.setOnSystemUiVisibilityChangeListener (
+                new View.OnSystemUiVisibilityChangeListener() {
+
+                    @Override
+                    public void onSystemUiVisibilityChange(int pVisibility) {
+
+                        if ((pVisibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+                            decorView.setSystemUiVisibility(uiOptions);
+                        }
+
+                    }
+
+                });
+
+    }//end of BluetoothMessageActivity::createUiChangeListener
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

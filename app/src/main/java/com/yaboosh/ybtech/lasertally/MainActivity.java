@@ -51,6 +51,11 @@ import java.util.Map;
 public class MainActivity extends Activity {
 
     public static final String TAG = "MainActivity";
+    public static final int TABLE_ROW_EDITOR_ACTIVITY_RESULT = 1231;
+    public static final int JOB_INFO_ACTIVITY_RESULT = 1232;
+
+    private View decorView;
+    private int uiOptions;
 
     Button measureConnectButton;
     Button redoButton;
@@ -99,6 +104,17 @@ public class MainActivity extends Activity {
         Log.d(TAG, "Inside of MainActivity onCreate");
 
         setContentView(R.layout.activity_main);
+
+        decorView = getWindow().getDecorView();
+
+        uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+
+        createUiChangeListener();
 
         measurementsTable = (TableLayout)findViewById(R.id.measurementsTable);
         measureConnectButton = (Button)findViewById(R.id.measureConnectButton);
@@ -153,16 +169,7 @@ public class MainActivity extends Activity {
 
         Log.d(TAG, "Inside of MainActivity onResume");
 
-        // Give the activity a fullscreen effect
-        View decorView = getWindow().getDecorView();
-        int uiOptions = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
         decorView.setSystemUiVisibility(uiOptions);
-
-        bindService(serviceIntent, connection, BIND_AUTO_CREATE);
 
     }//end of MainActivity::onResume
     //-----------------------------------------------------------------------------
@@ -201,6 +208,59 @@ public class MainActivity extends Activity {
         }
 
     }//end of MainActivity::onPause
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::onActivityResult
+    //
+    // Listens for activity results and decides what actions to take depending on
+    // their request codes and requests' result codes.
+    //
+
+    @Override
+    public void onActivityResult(int pRequestCode, int pResultCode, Intent pData)
+    {
+
+        if (pRequestCode == TABLE_ROW_EDITOR_ACTIVITY_RESULT) {
+
+            Log.d(TAG, "Table Row Editor activity result"); //debug hss//
+
+            if (pResultCode == RESULT_OK) {
+                handleTableRowEditorActivityResultOk(
+                        pData.getStringExtra(TableRowEditorActivity.PIPE_NUMBER_KEY),
+                        pData.getStringExtra(TableRowEditorActivity.TOTAL_LENGTH_KEY),
+                        pData.getBooleanExtra(TableRowEditorActivity.RENUMBER_ALL_CHECKBOX_KEY, false));
+            }
+            if (pResultCode == RESULT_CANCELED) {
+                handleTableRowEditorActivityResultCancel();
+            }
+        }
+        else {
+            super.onActivityResult(pRequestCode, pResultCode, pData);
+        }
+
+    }//end of MainActivity::onActivityResult
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::onWindowFocusChanged
+    //
+    // Listens for window focus changes.
+    //
+    // If the activity has focus, the system visibility is set to the uiOptions.
+    //
+
+
+    @Override
+    public void onWindowFocusChanged(boolean pHasFocus) {
+
+        super.onWindowFocusChanged(pHasFocus);
+
+        if(pHasFocus) {
+            decorView.setSystemUiVisibility(uiOptions);
+        }
+
+    }//end of MainActivity::onWindowFocusChanged
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -248,38 +308,6 @@ public class MainActivity extends Activity {
         }
 
     };//end of BluetoothScanActivity::connection
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // MainActivity::onActivityResult
-    //
-    // Listens for activity results and decides what actions to take depending on
-    // their request codes and requests' result codes.
-    //
-
-    @Override
-    public void onActivityResult(int pRequestCode, int pResultCode, Intent pData)
-    {
-
-        if (pRequestCode == TableRowEditorActivity.TABLE_ROW_EDITOR) {
-
-            Log.d(TAG, "Table Row Editor activity result"); //debug hss//
-
-            if (pResultCode == RESULT_OK) {
-                handleTableRowEditorActivityResultOk(
-                        pData.getStringExtra(TableRowEditorActivity.PIPE_NUMBER_KEY),
-                        pData.getStringExtra(TableRowEditorActivity.TOTAL_LENGTH_KEY),
-                        pData.getBooleanExtra(TableRowEditorActivity.RENUMBER_ALL_CHECKBOX_KEY, false));
-            }
-            if (pResultCode == RESULT_CANCELED) {
-                handleTableRowEditorActivityResultCancel();
-            }
-        }
-        else {
-            super.onActivityResult(pRequestCode, pResultCode, pData);
-        }
-
-    }//end of MainActivity::onActivityResult
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -439,31 +467,27 @@ public class MainActivity extends Activity {
     //-----------------------------------------------------------------------------
     // MainActivity::createUiChangeListener
     //
-    // zzz
+    // Listens for visibility changes in the ui.
+    //
+    // If the system bars are visible, the system visibility is set to the uiOptions.
+    //
     //
 
     private void createUiChangeListener() {
 
-        final View decorView = getWindow().getDecorView();
         decorView.setOnSystemUiVisibilityChangeListener (
-            new View.OnSystemUiVisibilityChangeListener() {
+                new View.OnSystemUiVisibilityChangeListener() {
 
-                @Override
-                public void onSystemUiVisibilityChange(int pVisibility) {
+                    @Override
+                    public void onSystemUiVisibilityChange(int pVisibility) {
 
-                    if ((pVisibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
-                        decorView.setSystemUiVisibility(
-                                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                                        | View.SYSTEM_UI_FLAG_FULLSCREEN
-                                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+                        if ((pVisibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+                            decorView.setSystemUiVisibility(uiOptions);
+                        }
+
                     }
 
-                }
-
-            });
+                });
 
     }//end of MainActivity::createUiChangeListener
     //-----------------------------------------------------------------------------
@@ -678,7 +702,7 @@ public class MainActivity extends Activity {
     public void handleJobInfoButtonPressed(View pView) {
 
         Intent intent = new Intent(this, JobInfoActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, JOB_INFO_ACTIVITY_RESULT);
 
     }//end of MainActivity::handleJobInfoButtonPressed
     //-----------------------------------------------------------------------------
@@ -762,7 +786,7 @@ public class MainActivity extends Activity {
         Intent intent = new Intent(this, TableRowEditorActivity.class);
         intent.putExtra(TableRowEditorActivity.PIPE_NUMBER_KEY, pipeNum);
         intent.putExtra(TableRowEditorActivity.TOTAL_LENGTH_KEY, totalLength);
-        startActivityForResult(intent, TableRowEditorActivity.TABLE_ROW_EDITOR);
+        startActivityForResult(intent, TABLE_ROW_EDITOR_ACTIVITY_RESULT);
 
     }//end of MainActivity::handleTableRowPressed
     //-----------------------------------------------------------------------------

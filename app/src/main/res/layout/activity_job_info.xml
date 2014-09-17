@@ -133,7 +133,6 @@
                     android:paddingRight="10dp"
                     android:paddingTop="10dp"
                     android:selectAllOnFocus="true"
-                    android:imeOptions="flagNoExtractUi"
                     android:background="@drawable/black_border" >
                 </EditText>
 

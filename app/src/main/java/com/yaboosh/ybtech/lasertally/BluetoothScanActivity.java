@@ -56,6 +56,10 @@ import java.util.Map;
 public class BluetoothScanActivity extends Activity implements AbsListView.OnItemClickListener {
 
     public static final String TAG = "BluetoothScanActivity";
+
+    private View decorView;
+    private int uiOptions;
+
     private final int ENABLE_BT = 1;
     private BluetoothLeVars.State state = BluetoothLeVars.State.UNKNOWN;
     private final Messenger messenger;
@@ -104,6 +108,17 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
         setContentView(R.layout.activity_bluetooth_scan);
 
         this.setFinishOnTouchOutside(false);
+
+        decorView = getWindow().getDecorView();
+
+        uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+
+        createUiChangeListener();
 
         serviceIntent = new Intent(this, BluetoothLeService.class);
 
@@ -173,13 +188,6 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
 
         Log.d(TAG, "Inside of BluetoothScanActivity onResume");
 
-        // Give the activity a fullscreen effect
-        View decorView = getWindow().getDecorView();
-        int uiOptions = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
         decorView.setSystemUiVisibility(uiOptions);
 
         bindService(serviceIntent, connection, BIND_AUTO_CREATE);
@@ -222,6 +230,27 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
         }
 
     }//end of BluetoothScanActivity::onPause
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // BluetoothScanActivity::onWindowFocusChanged
+    //
+    // Listens for window focus changes.
+    //
+    // If the activity has focus, the system visbility is set to the uiOptions.
+    //
+
+
+    @Override
+    public void onWindowFocusChanged(boolean pHasFocus) {
+
+        super.onWindowFocusChanged(pHasFocus);
+
+        if(pHasFocus) {
+            decorView.setSystemUiVisibility(uiOptions);
+        }
+
+    }//end of BluetoothScanActivity::onWindowFocusChanged
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -276,6 +305,34 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
         }
 
     };//end of BluetoothScanActivity::connection
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // BluetoothScanActivity::createUiChangeListener
+    //
+    // Listens for visibility changes in the ui.
+    //
+    // If the system bars are visible, the system visibility is set to the uiOptions.
+    //
+    //
+
+    private void createUiChangeListener() {
+
+        decorView.setOnSystemUiVisibilityChangeListener (
+                new View.OnSystemUiVisibilityChangeListener() {
+
+                    @Override
+                    public void onSystemUiVisibilityChange(int pVisibility) {
+
+                        if ((pVisibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+                            decorView.setSystemUiVisibility(uiOptions);
+                        }
+
+                    }
+
+                });
+
+    }//end of BluetoothScanActivity::createUiChangeListener
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

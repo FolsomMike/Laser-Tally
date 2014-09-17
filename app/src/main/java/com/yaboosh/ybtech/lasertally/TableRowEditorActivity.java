@@ -28,6 +28,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -42,8 +43,9 @@ import java.lang.ref.WeakReference;
 public class TableRowEditorActivity extends Activity {
 
     public static final String TAG = "TableRowEditorActivity";
+    private View decorView;
+    private int uiOptions;
 
-    public static final int TABLE_ROW_EDITOR = 1234;
     public static final String PIPE_NUMBER_KEY =  "PIPE_NUMBER_KEY";
     public static final String RENUMBER_ALL_CHECKBOX_KEY = "RENUMBER_ALL_CHECKBOX_KEY";
     public static final String TOTAL_LENGTH_KEY = "TOTAL_LENGTH_KEY";
@@ -80,6 +82,21 @@ public class TableRowEditorActivity extends Activity {
         setContentView(R.layout.activity_table_row_editor);
 
         this.setFinishOnTouchOutside(false);
+
+        this.getWindow().setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        decorView = getWindow().getDecorView();
+
+        uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+
+        createUiChangeListener();
 
         //Get the pipe number and total length
         //sent to this activity from its parent
@@ -153,6 +170,55 @@ public class TableRowEditorActivity extends Activity {
         Log.d(TAG, "Inside of TableRowEditorActivity onPause");
 
     }//end of TableRowEditorActivity::onPause
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TableRowEditorActivity::onWindowFocusChanged
+    //
+    // Listens for window focus changes.
+    //
+    // If the activity has focus, the system visbility is set to the uiOptions.
+    //
+
+
+    @Override
+    public void onWindowFocusChanged(boolean pHasFocus) {
+
+        super.onWindowFocusChanged(pHasFocus);
+
+        if(pHasFocus) {
+            decorView.setSystemUiVisibility(uiOptions);
+        }
+
+    }//end of TableRowEditorActivity::onWindowFocusChanged
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TableRowEditorActivity::createUiChangeListener
+    //
+    // Listens for visibility changes in the ui.
+    //
+    // If the system bars are visible, the system visibility is set to the uiOptions.
+    //
+    //
+
+    private void createUiChangeListener() {
+
+        decorView.setOnSystemUiVisibilityChangeListener (
+                new View.OnSystemUiVisibilityChangeListener() {
+
+                    @Override
+                    public void onSystemUiVisibilityChange(int pVisibility) {
+
+                        if ((pVisibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+                            decorView.setSystemUiVisibility(uiOptions);
+                        }
+
+                    }
+
+                });
+
+    }//end of TableRowEditor::createUiChangeListener
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

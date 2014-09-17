@@ -33,16 +33,20 @@ import android.widget.TextView;
 
 public class JobInfoActivity extends Activity {
 
-    public static final String TAG = "TableRowEditorActivity";
+    public static final String TAG = "JobInfoActivity";
 
-    public static final int TABLE_ROW_EDITOR = 1234;
-    public static final String PIPE_NUMBER_KEY =  "PIPE_NUMBER_KEY";
-    public static final String RENUMBER_ALL_CHECKBOX_KEY = "RENUMBER_ALL_CHECKBOX_KEY";
-    public static final String TOTAL_LENGTH_KEY = "TOTAL_LENGTH_KEY";
+    private View decorView;
+    private int uiOptions;
 
-    private String pipeNumber = "";
-    private String totalLength = "";
-    private boolean renumberAll;
+    public static final String COMPANY_NAME_KEY = "COMPANY_NAME_KEY";
+    public static final String DIAMETER_KEY = "DIAMETER_KEY";
+    public static final String FACILITY_KEY = "FACILITY_KEY";
+    public static final String GRADE_KEY = "GRADE_KEY";
+    public static final String JOB_KEY =  "JOB_KEY";
+    public static final String RACK_KEY = "RACK_KEY";
+    public static final String RANGE_KEY = "RANGE_KEY";
+    public static final String RIG_KEY = "RIG_KEY";
+    public static final String WALL_KEY = "WALL_KEY";
 
     //-----------------------------------------------------------------------------
     // JobInfoActivity::JobInfoActivity (constructor)
@@ -67,7 +71,7 @@ public class JobInfoActivity extends Activity {
 
         super.onCreate(savedInstanceState);
 
-        Log.d(TAG, "Inside of TableRowEditorActivity onCreate");
+        Log.d(TAG, "Inside of JobInfoActivity onCreate");
 
         setContentView(R.layout.activity_job_info);
 
@@ -75,9 +79,16 @@ public class JobInfoActivity extends Activity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        //getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
         this.setFinishOnTouchOutside(false);
+
+        decorView = getWindow().getDecorView();
+
+        uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
         createUiChangeListener();
 
@@ -95,7 +106,7 @@ public class JobInfoActivity extends Activity {
     protected void onDestroy()
     {
 
-        Log.d(TAG, "Inside of TableRowEditorActivity onDestroy");
+        Log.d(TAG, "Inside of JobInfoActivity onDestroy");
 
         super.onDestroy();
 
@@ -115,7 +126,9 @@ public class JobInfoActivity extends Activity {
 
         super.onResume();
 
-        Log.d(TAG, "Inside of TableRowEditorActivity onResume");
+        Log.d(TAG, "Inside of JobInfoActivity onResume");
+
+        decorView.setSystemUiVisibility(uiOptions);
 
     }//end of JobInfoActivity::onResume
     //-----------------------------------------------------------------------------
@@ -133,36 +146,43 @@ public class JobInfoActivity extends Activity {
 
         super.onPause();
 
-        Log.d(TAG, "Inside of TableRowEditorActivity onPause");
+        Log.d(TAG, "Inside of JobInfoActivity onPause");
 
     }//end of JobInfoActivity::onPause
     //-----------------------------------------------------------------------------
 
+    //-----------------------------------------------------------------------------
+    // JobInfoActivity::onWindowFocusChanged
+    //
+    // Listens for window focus changes.
+    //
+    // If the activity has focus, the system visbility is set to the uiOptions.
+    //
+
+
     @Override
     public void onWindowFocusChanged(boolean pHasFocus) {
+
         super.onWindowFocusChanged(pHasFocus);
 
         if(pHasFocus) {
-            final View decorView = getWindow().getDecorView();
-            decorView.setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+            decorView.setSystemUiVisibility(uiOptions);
         }
-    }
+
+    }//end of JobInfoActivity::onWindowFocusChanged
+    //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
     // JobInfoActivity::createUiChangeListener
     //
-    // zzz
+    // Listens for visibility changes in the ui.
+    //
+    // If the system bars are visible, the system visibility is set to the uiOptions.
+    //
     //
 
     private void createUiChangeListener() {
 
-        final View decorView = getWindow().getDecorView();
         decorView.setOnSystemUiVisibilityChangeListener (
                 new View.OnSystemUiVisibilityChangeListener() {
 
@@ -170,15 +190,7 @@ public class JobInfoActivity extends Activity {
                     public void onSystemUiVisibilityChange(int pVisibility) {
 
                         if ((pVisibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
-                            //debug hss//
-                            Log.d(TAG, "system visibility change");
-                            decorView.setSystemUiVisibility(
-                                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                                            | View.SYSTEM_UI_FLAG_FULLSCREEN
-                                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+                            decorView.setSystemUiVisibility(uiOptions);
                         }
 
                     }
@@ -268,23 +280,6 @@ public class JobInfoActivity extends Activity {
         exitActivityByCancel();
 
     }//end of JobInfoActivity::handleRedXButtonPressed
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobInfoActivity::setPipeNumberAndTotalLengthValues
-    //
-    // Sets the pipe number and total length edit text values to pipeNumber and
-    // and totalLength.
-    //
-
-    private void setPipeNumberAndTotalLengthValues() {
-
-        TextView pPN = (TextView)findViewById(R.id.editTextPipeNumber);
-        pPN.setText(pipeNumber);
-        TextView pTL = (TextView)findViewById(R.id.editTextTotalLength);
-        pTL.setText(totalLength);
-
-    }//end of JobInfoActivity::setPipeNumberAndTotalLengthValues
     //-----------------------------------------------------------------------------
 
 }//end of class JobInfoActivity
