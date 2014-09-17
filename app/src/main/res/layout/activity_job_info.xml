@@ -1,0 +1,589 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_content"
+    android:layout_width="645dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#CFCFCF"
+    android:paddingBottom="0dp"
+    android:paddingLeft="0dp"
+    android:paddingRight="0dp"
+    android:paddingTop="0dp"
+    tools:context="com.yaboosh.ybtech.lasertally.JobInfoActivity"
+    android:gravity="center" >
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="70dp"
+        android:paddingBottom="0dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="0dp"
+        android:background="#1A1A1A" >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:paddingBottom="0dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:paddingTop="0dp" >
+
+            <!-- vertical spacer -->
+            <View
+                android:layout_width="0dp"
+                android:layout_height="5dp" >
+            </View>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:textColor="#B2B2B2"
+                android:text="Job Info"
+                android:textSize="40dp" />
+
+        </LinearLayout>
+
+        <!-- horizontal spacer -->
+        <View
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="1dp" >
+        </View>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:paddingBottom="0dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:paddingTop="0dp" >
+
+            <!-- vertical spacer -->
+            <View
+                android:layout_width="0dp"
+                android:layout_height="15dp" >
+            </View>
+
+            <Button
+                android:id="@id/tableRowEditorRedXButton"
+                android:background="@drawable/close_x_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="handleRedXButtonPressed"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="400dp"
+        android:scrollbars="vertical"
+        android:fadeScrollbars="false" >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="400dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="10dp"
+            android:gravity="center" >
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="0dp"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                android:paddingTop="0dp"
+                android:gravity="center" >
+
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Job:"
+                    android:textColor="#000000"
+                    android:textSize="40sp"
+                    android:gravity="end" />
+
+                <!-- horizontal spacer -->
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="1dp" >
+                </View>
+
+                <EditText
+                    android:id="@id/editTextJob"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textColor="#000000"
+                    android:textSize="35sp"
+                    android:maxLength="30"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="10dp"
+                    android:selectAllOnFocus="true"
+                    android:imeOptions="flagNoExtractUi"
+                    android:background="@drawable/black_border" >
+                </EditText>
+
+            </LinearLayout>
+
+            <!-- vertical spacer -->
+            <View
+                android:layout_width="1dp"
+                android:layout_height="20dp"
+                android:padding="0dp" >
+            </View>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="0dp"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                android:paddingTop="0dp"
+                android:gravity="center" >
+
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Company Name:"
+                    android:textColor="#000000"
+                    android:textSize="40sp"
+                    android:gravity="end" />
+
+                <!-- horizontal spacer -->
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="1dp" >
+                </View>
+
+                <EditText
+                    android:id="@id/editTextCompanyName"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textColor="#000000"
+                    android:textSize="35sp"
+                    android:maxLength="30"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="10dp"
+                    android:selectAllOnFocus="true"
+                    android:background="@drawable/black_border" >
+                </EditText>
+
+            </LinearLayout>
+
+            <!-- vertical spacer -->
+            <View
+                android:layout_width="1dp"
+                android:layout_height="20dp"
+                android:padding="0dp" >
+            </View>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="0dp"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                android:paddingTop="0dp"
+                android:gravity="center" >
+
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Diameter:"
+                    android:textColor="#000000"
+                    android:textSize="40sp"
+                    android:gravity="end" />
+
+                <!-- horizontal spacer -->
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="1dp" >
+                </View>
+
+                <EditText
+                    android:id="@id/editTextDiameter"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:maxLength="15"
+                    android:textColor="#000000"
+                    android:textSize="35sp"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="10dp"
+                    android:selectAllOnFocus="true"
+                    android:background="@drawable/black_border" >
+                </EditText>
+
+            </LinearLayout>
+
+            <!-- vertical spacer -->
+            <View
+                android:layout_width="1dp"
+                android:layout_height="20dp"
+                android:padding="0dp" >
+            </View>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="0dp"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                android:paddingTop="0dp"
+                android:gravity="center" >
+
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Wall:"
+                    android:textColor="#000000"
+                    android:textSize="40sp"
+                    android:gravity="end" />
+
+                <!-- horizontal spacer -->
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="1dp" >
+                </View>
+
+                <EditText
+                    android:id="@id/editTextWall"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:maxLength="7"
+                    android:textColor="#000000"
+                    android:textSize="35sp"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="10dp"
+                    android:selectAllOnFocus="true"
+                    android:background="@drawable/black_border" >
+                </EditText>
+
+            </LinearLayout>
+
+            <!-- vertical spacer -->
+            <View
+                android:layout_width="1dp"
+                android:layout_height="20dp"
+                android:padding="0dp" >
+            </View>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="0dp"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                android:paddingTop="0dp"
+                android:gravity="center" >
+
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Grade:"
+                    android:textColor="#000000"
+                    android:textSize="40sp"
+                    android:gravity="end" />
+
+                <!-- horizontal spacer -->
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="1dp" >
+                </View>
+
+                <EditText
+                    android:id="@id/editTextGrade"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:maxLength="7"
+                    android:textColor="#000000"
+                    android:textSize="35sp"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="10dp"
+                    android:selectAllOnFocus="true"
+                    android:background="@drawable/black_border" >
+                </EditText>
+
+            </LinearLayout>
+
+            <!-- vertical spacer -->
+            <View
+                android:layout_width="1dp"
+                android:layout_height="20dp"
+                android:padding="0dp" >
+            </View>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="0dp"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                android:paddingTop="0dp"
+                android:gravity="center" >
+
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Range:"
+                    android:textColor="#000000"
+                    android:textSize="40sp"
+                    android:gravity="end" />
+
+                <!-- horizontal spacer -->
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="1dp" >
+                </View>
+
+                <EditText
+                    android:id="@id/editTextRange"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:maxLength="3"
+                    android:textColor="#000000"
+                    android:textSize="35sp"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="10dp"
+                    android:selectAllOnFocus="true"
+                    android:background="@drawable/black_border" >
+                </EditText>
+
+            </LinearLayout>
+
+            <!-- vertical spacer -->
+            <View
+                android:layout_width="1dp"
+                android:layout_height="20dp"
+                android:padding="0dp" >
+            </View>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="0dp"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                android:paddingTop="0dp"
+                android:gravity="center" >
+
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Facility:"
+                    android:textColor="#000000"
+                    android:textSize="40sp"
+                    android:gravity="end" />
+
+                <!-- horizontal spacer -->
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="1dp" >
+                </View>
+
+                <EditText
+                    android:id="@id/editTextFacility"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:maxLength="30"
+                    android:textColor="#000000"
+                    android:textSize="35sp"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="10dp"
+                    android:selectAllOnFocus="true"
+                    android:background="@drawable/black_border" >
+                </EditText>
+
+            </LinearLayout>
+
+            <!-- vertical spacer -->
+            <View
+                android:layout_width="1dp"
+                android:layout_height="20dp"
+                android:padding="0dp" >
+            </View>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="0dp"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                android:paddingTop="0dp"
+                android:gravity="center" >
+
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Rack:"
+                    android:textColor="#000000"
+                    android:textSize="40sp"
+                    android:gravity="end" />
+
+                <!-- horizontal spacer -->
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="1dp" >
+                </View>
+
+                <EditText
+                    android:id="@id/editTextRack"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:maxLength="20"
+                    android:textColor="#000000"
+                    android:textSize="35sp"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="10dp"
+                    android:selectAllOnFocus="true"
+                    android:background="@drawable/black_border" >
+                </EditText>
+
+            </LinearLayout>
+
+            <!-- vertical spacer -->
+            <View
+                android:layout_width="1dp"
+                android:layout_height="20dp"
+                android:padding="0dp" >
+            </View>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="0dp"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                android:paddingTop="0dp"
+                android:gravity="center" >
+
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Rig:"
+                    android:textColor="#000000"
+                    android:textSize="40sp"
+                    android:gravity="end" />
+
+                <!-- horizontal spacer -->
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="1dp" >
+                </View>
+
+                <EditText
+                    android:id="@id/editTextRig"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:maxLength="30"
+                    android:textColor="#000000"
+                    android:textSize="35sp"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="10dp"
+                    android:selectAllOnFocus="true"
+                    android:background="@drawable/black_border" >
+                </EditText>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="70dp"
+        android:paddingBottom="10dp"
+        android:paddingLeft="0dp"
+        android:paddingRight="0dp"
+        android:paddingTop="3dp"
+        android:gravity="center"
+        android:background="#1A1A1A" >
+
+        <Button
+            android:id="@id/tableRowEditorCancelButton"
+            android:background="@drawable/white_styled_button"
+            android:layout_width="125dp"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:text="cancel"
+            android:textSize="30sp"
+            style="@style/whiteStyledButton"
+            android:onClick="handleCancelButtonPressed" />
+
+        <!-- horizontal spacer -->
+        <View
+            android:layout_width="60dp"
+            android:layout_height="1dp" >
+        </View>
+
+        <Button
+            android:id="@id/tableRowEditorOkButton"
+            android:background="@drawable/white_styled_button"
+            android:layout_width="125dp"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:text="ok"
+            android:textSize="30sp"
+            style="@style/whiteStyledButton"
+            android:onClick="handleOkButtonPressed" />
+
+    </LinearLayout>
+
+</LinearLayout>

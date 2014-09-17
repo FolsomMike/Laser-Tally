@@ -79,6 +79,20 @@
 
         </activity>
 
+        <activity
+            android:name=".TableRowEditorActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_table_row_editor"
+            android:theme="@style/activityDialog" >
+        </activity>
+
+        <activity
+            android:name=".JobInfoActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_table_row_editor"
+            android:theme="@style/activityDialog" >
+        </activity>
+
         <service android:name="com.yaboosh.ybtech.lasertally.BluetoothLeService" >
         </service>
 

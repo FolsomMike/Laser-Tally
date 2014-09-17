@@ -1,0 +1,245 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_content"
+    android:layout_width="600dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#CFCFCF"
+    android:paddingBottom="0dp"
+    android:paddingLeft="0dp"
+    android:paddingRight="0dp"
+    android:paddingTop="0dp"
+    tools:context="com.yaboosh.ybtech.lasertally.TableRowEditorActivity"
+    android:gravity="center" >
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="70dp"
+        android:paddingBottom="0dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="0dp"
+        android:background="#1A1A1A" >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:paddingBottom="0dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:paddingTop="0dp" >
+
+            <!-- vertical spacer -->
+            <View
+                android:layout_width="0dp"
+                android:layout_height="5dp" >
+            </View>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:textColor="#B2B2B2"
+                android:text="Edit Entry"
+                android:textSize="40dp" />
+
+        </LinearLayout>
+
+        <!-- horizontal spacer -->
+        <View
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="1dp" >
+        </View>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:paddingBottom="0dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:paddingTop="0dp" >
+
+            <!-- vertical spacer -->
+            <View
+                android:layout_width="0dp"
+                android:layout_height="15dp" >
+            </View>
+
+            <Button
+                android:id="@id/tableRowEditorRedXButton"
+                android:background="@drawable/close_x_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="handleRedXButtonPressed"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:paddingBottom="20dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingTop="20dp"
+        android:gravity="center" >
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="0dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:paddingTop="0dp"
+            android:gravity="center" >
+
+            <TextView
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Pipe Number:"
+                android:textColor="#000000"
+                android:textSize="40sp"
+                style="@android:style/Widget.ProgressBar.Large"
+                android:gravity="center" />
+
+            <!-- horizontal spacer -->
+            <View
+                android:layout_width="10dp"
+                android:layout_height="1dp" >
+            </View>
+
+            <EditText
+                android:id="@id/editTextPipeNumber"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textColor="#000000"
+                android:textSize="35sp"
+                android:inputType="number"
+                android:digits="0123456789"
+                android:paddingBottom="10dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="10dp"
+                android:selectAllOnFocus="true"
+                android:background="@drawable/black_border" >
+            </EditText>
+
+        </LinearLayout>
+
+        <CheckBox
+            android:id="@id/checkBoxRenumberAllBelow"
+            android:text="renumber all below"
+            android:textColor="#333333"
+            android:textSize="20sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+        </CheckBox>
+
+        <!-- vertical spacer -->
+        <View
+            android:layout_width="1dp"
+            android:layout_height="20dp"
+            android:padding="0dp" >
+        </View>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="0dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:paddingTop="0dp"
+            android:gravity="center" >
+
+            <TextView
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Total Length:"
+                android:textColor="#000000"
+                android:textSize="40sp"
+                style="@android:style/Widget.ProgressBar.Large"
+                android:gravity="center" />
+
+            <!-- horizontal spacer -->
+            <View
+                android:layout_width="10dp"
+                android:layout_height="1dp" >
+            </View>
+
+            <EditText
+                android:id="@id/editTextTotalLength"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textColor="#000000"
+                android:textSize="35sp"
+                android:inputType="numberDecimal"
+                android:digits="0123456789,."
+                android:paddingBottom="10dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="10dp"
+                android:selectAllOnFocus="true"
+                android:background="@drawable/black_border" >
+            </EditText>
+
+        </LinearLayout>
+
+        <!-- vertical spacer -->
+        <View
+            android:layout_width="1dp"
+            android:layout_height="40dp"
+            android:padding="0dp" >
+        </View>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="0dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:paddingTop="0dp"
+            android:gravity="center" >
+
+            <Button
+                android:id="@id/tableRowEditorCancelButton"
+                android:background="@drawable/white_styled_button"
+                android:layout_width="125dp"
+                android:layout_height="wrap_content"
+                android:text="cancel"
+                android:textSize="30sp"
+                style="@style/whiteStyledButton"
+                android:onClick="handleCancelButtonPressed" />
+
+            <!-- horizontal spacer -->
+            <View
+                android:layout_width="60dp"
+                android:layout_height="1dp" >
+            </View>
+
+            <Button
+                android:id="@id/tableRowEditorOkButton"
+                android:background="@drawable/white_styled_button"
+                android:layout_width="125dp"
+                android:layout_height="wrap_content"
+                android:text="ok"
+                android:textSize="30sp"
+                style="@style/whiteStyledButton"
+                android:onClick="handleOkButtonPressed" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

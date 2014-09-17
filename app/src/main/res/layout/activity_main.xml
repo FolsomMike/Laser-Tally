@@ -45,7 +45,8 @@
             android:layout_height="wrap_content"
             android:text="@string/jobInfoButtonText"
             android:textSize="30sp"
-            style="@style/whiteStyledButton" />
+            style="@style/whiteStyledButton"
+            android:onClick="handleJobInfoButtonPressed" />
 
         <!-- horizontal spacer -->
         <View
@@ -94,7 +95,7 @@
             <!-- vertical spacer -->
             <View
                 android:layout_width="1dp"
-                android:layout_height="10dp" >
+                android:layout_height="30dp" >
             </View>
 
             <Button
@@ -158,7 +159,7 @@
 
                     <TextView
                         android:id="@+id/threadOnRow"
-                        android:text="Actual"
+                        android:text="Total Length"
                         style="@style/headerTableColumn"
                         />
 
@@ -183,7 +184,8 @@
                 <TableLayout
                     android:id = "@+id/measurementsTable"
                     android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/measurementsTableColor"
                     android:padding="0dp" >
 
                     <View

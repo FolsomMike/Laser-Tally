@@ -17,6 +17,27 @@
     <item type="id" name="redoButton" />
     <item type="id" name="deviceList" />
     <item type="id" name="measurementsTableBottomBorderLine" />
+    <item type="id" name="measurementsTableColumnPipeNum" />
+    <item type="id" name="measurementsTableColumnActual" />
+    <item type="id" name="measurementsTableColumnAdjusted" />
+    <item type="id" name="measurementsTableRow" />
     <item type="id" name="measurementsTableRowDivider" />
+
+    <item type="id" name="checkBoxRenumberAllBelow" />
+    <item type="id" name="editTextCompanyName" />
+    <item type="id" name="editTextDiameter" />
+    <item type="id" name="editTextFacility" />
+    <item type="id" name="editTextGrade" />
+    <item type="id" name="editTextJob" />
+    <item type="id" name="editTextPipeNumber" />
+    <item type="id" name="editTextRack" />
+    <item type="id" name="editTextRange" />
+    <item type="id" name="editTextRig" />
+    <item type="id" name="editTextTotalLength" />
+    <item type="id" name="editTextWall" />
+    <item type="id" name="renumberAllBelowCheckbox" />
+    <item type="id" name="tableRowEditorRedXButton" />
+    <item type="id" name="tableRowEditorCancelButton" />
+    <item type="id" name="tableRowEditorOkButton" />
 
 </resources>

@@ -16,6 +16,7 @@ package com.yaboosh.ybtech.lasertally;
 
 //-----------------------------------------------------------------------------
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -68,6 +69,8 @@ public class MainActivity extends Activity {
     final String connectButtonText = "Connect";
     final String measureButtonText = "Measure";
 
+    private TableRow lastRowEdited;
+
     //-----------------------------------------------------------------------------
     // MainActivity::MainActivity (constructor)
     //
@@ -103,6 +106,14 @@ public class MainActivity extends Activity {
 
         serviceIntent = new Intent(this, BluetoothLeService.class);
         startService(serviceIntent);
+
+        handleNewDistanceValue((float)4.04);
+        handleNewDistanceValue((float)5.06);
+        handleNewDistanceValue((float)3434);
+        handleNewDistanceValue((float)5.43);
+        handleNewDistanceValue((float)6.54);
+        handleNewDistanceValue((float)6.34);
+        handleNewDistanceValue((float)6.34);
 
     }//end of MainActivity::onCreate
     //-----------------------------------------------------------------------------
@@ -142,9 +153,16 @@ public class MainActivity extends Activity {
 
         Log.d(TAG, "Inside of MainActivity onResume");
 
-        bindService(serviceIntent, connection, BIND_AUTO_CREATE);
+        // Give the activity a fullscreen effect
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+        decorView.setSystemUiVisibility(uiOptions);
 
-        handleNewDistanceValue((float)5.05);
+        bindService(serviceIntent, connection, BIND_AUTO_CREATE);
 
     }//end of MainActivity::onResume
     //-----------------------------------------------------------------------------
@@ -243,6 +261,24 @@ public class MainActivity extends Activity {
     public void onActivityResult(int pRequestCode, int pResultCode, Intent pData)
     {
 
+        if (pRequestCode == TableRowEditorActivity.TABLE_ROW_EDITOR) {
+
+            Log.d(TAG, "Table Row Editor activity result"); //debug hss//
+
+            if (pResultCode == RESULT_OK) {
+                handleTableRowEditorActivityResultOk(
+                        pData.getStringExtra(TableRowEditorActivity.PIPE_NUMBER_KEY),
+                        pData.getStringExtra(TableRowEditorActivity.TOTAL_LENGTH_KEY),
+                        pData.getBooleanExtra(TableRowEditorActivity.RENUMBER_ALL_CHECKBOX_KEY, false));
+            }
+            if (pResultCode == RESULT_CANCELED) {
+                handleTableRowEditorActivityResultCancel();
+            }
+        }
+        else {
+            super.onActivityResult(pRequestCode, pResultCode, pData);
+        }
+
     }//end of MainActivity::onActivityResult
     //-----------------------------------------------------------------------------
 
@@ -270,12 +306,13 @@ public class MainActivity extends Activity {
                     handleMeasureConnectButtonPressed();
                     break;
 
+                case R.id.measurementsTableRow:
+                    handleTableRowPressed((TableRow)pV);
+                    break;
+
                 case R.id.redoButton:
                     handleRedoButtonPressed();
                     break;
-
-                default:
-                    return;
 
             }
 
@@ -333,18 +370,27 @@ public class MainActivity extends Activity {
     public TableRow createNewRow(String pCol1Text, String pCol2Text, String pCol3Text) {
 
         TableRow newRow = new TableRow(getApplicationContext());
+        newRow.setId(R.id.measurementsTableRow);
+        newRow.setClickable(true);
+        newRow.setOnClickListener(onClickListener);
 
         newRow.addView(createNewSideBorder());
 
-        newRow.addView(createNewColumn(pCol1Text));
+        View pipeNumCol = createNewColumn(pCol1Text);
+        pipeNumCol.setId(R.id.measurementsTableColumnPipeNum);
+        newRow.addView(pipeNumCol);
 
         newRow.addView(createNewColumnDivider());
 
-        newRow.addView(createNewColumn(pCol2Text));
+        View actualCol = createNewColumn(pCol2Text);
+        actualCol.setId(R.id.measurementsTableColumnActual);
+        newRow.addView(actualCol);
 
         newRow.addView(createNewColumnDivider());
 
-        newRow.addView(createNewColumn(pCol3Text));
+        View adjustedCol = createNewColumn(pCol3Text);
+        adjustedCol.setId(R.id.measurementsTableColumnAdjusted);
+        newRow.addView(adjustedCol);
 
         newRow.addView(createNewSideBorder());
 
@@ -391,6 +437,197 @@ public class MainActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // MainActivity::createUiChangeListener
+    //
+    // zzz
+    //
+
+    private void createUiChangeListener() {
+
+        final View decorView = getWindow().getDecorView();
+        decorView.setOnSystemUiVisibilityChangeListener (
+            new View.OnSystemUiVisibilityChangeListener() {
+
+                @Override
+                public void onSystemUiVisibilityChange(int pVisibility) {
+
+                    if ((pVisibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+                        decorView.setSystemUiVisibility(
+                                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+                    }
+
+                }
+
+            });
+
+    }//end of MainActivity::createUiChangeListener
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::getAdjustedOfRow
+    //
+    // Gets the value under the Adjusted column in the passed in row.
+    //
+
+    private String getAdjustedOfRow(TableRow pR) {
+
+        String adjusted = "";
+
+        // For each child in the row, check its id
+        // and see if it is the Adjusted column.
+        for (int i=0; i<pR.getChildCount(); i++) {
+
+            if (pR.getChildAt(i).getId() == R.id.measurementsTableColumnAdjusted) {
+                TextView tV = (TextView)pR.getChildAt(i);
+                adjusted = tV.getText().toString();
+            }
+
+        }
+
+        return adjusted;
+
+    }//end of MainActivity::getAdjustedOfRow
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::getPositionOfRow
+    //
+    // Returns the position of the passed in row in the measurementsTable.
+    //
+
+    private int getPositionOfRow(TableRow pR) {
+
+        // For each child in the row, get a pointer
+        // to the row and compare it to the passed
+        // in row.
+        for (int i=0; i<measurementsTable.getChildCount(); i++) {
+
+            if (measurementsTable.getChildAt(i) == pR) {
+                return i;
+            }
+
+        }
+
+        return 0;
+
+    }//end of MainActivity::getChildPositionOfRow
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::getDividerCountAndPositions
+    //
+    // Gets the number of dividers and each of their positions in the measurements
+    // table and returns them in a SparseIntArray.
+    //
+
+    private SparseIntArray getDividerCountAndPositions() {
+
+        SparseIntArray divAndPos = new SparseIntArray();
+
+        int divCount = 0;
+
+        // Determine the number of rows and their positions
+        for (int i = 0; i<measurementsTable.getChildCount(); i++) {
+
+            // Checks to see if the child at i is a TableRow
+            if (measurementsTable.getChildAt(i).getId() == R.id.measurementsTableRowDivider) {
+                divAndPos.put(++divCount, i);
+            }
+
+        }
+
+        return divAndPos;
+
+    }//end of MainActivity::getDividerCountAndPositions
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::getPipeNumberColValueOfRow
+    //
+    // Returns the value under the Pipe # column in the passed in row.
+    //
+
+    private String getPipeNumberColValueOfRow(TableRow pR) {
+
+        String pipeNum = "0";
+
+        // For each child in the row, check its id
+        // and see if it is the Pipe # column.
+        for (int i=0; i<pR.getChildCount(); i++) {
+
+            if (pR.getChildAt(i).getId() == R.id.measurementsTableColumnPipeNum) {
+                TextView tV = (TextView)pR.getChildAt(i);
+                pipeNum = tV.getText().toString();
+                Log.d(TAG, "Pipe Number: " + pipeNum);
+            }
+
+        }
+
+        return pipeNum;
+
+    }//end of MainActivity::getPipeNumberColValueOfRow
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::getRowCountAndPositions
+    //
+    // Gets the number of rows and each of their positions in the measurements
+    // table and returns them in a SparseIntArray.
+    //
+
+    private SparseIntArray getRowCountAndPositions() {
+
+        SparseIntArray rowAndPos = new SparseIntArray();
+
+        int rowCount = 0;
+
+        // Determine the number of rows and their positions
+        for (int i = 0; i<measurementsTable.getChildCount(); i++) {
+
+            // Checks to see if the child at i is a TableRow
+            if (!(measurementsTable.getChildAt(i) instanceof TableRow)) { continue; }
+
+            rowAndPos.put(++rowCount, i);
+
+        }
+
+        return rowAndPos;
+
+    }//end of MainActivity::getRowCountAndPositions
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::getTotalLengthColValueOfRow
+    //
+    // Returns the value under the Total Length column in the passed in row.
+    //
+
+    private String getTotalLengthColValueOfRow(TableRow pR) {
+
+        String actual = "";
+
+        // For each child in the row, check its id
+        // and see if it is the Actual column.
+        for (int i=0; i<pR.getChildCount(); i++) {
+
+            if (pR.getChildAt(i).getId() == R.id.measurementsTableColumnActual) {
+                TextView tV = (TextView)pR.getChildAt(i);
+                actual = tV.getText().toString();
+            }
+
+        }
+
+        return actual;
+
+    }//end of MainActivity::getTotalLengthColValueOfRow
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // MainActivity::handleDeviceConnected
     //
     // Sets the measureConnectButton to its "measuring" look and text and sets
@@ -432,6 +669,21 @@ public class MainActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // MainActivity::handleJobInfoButtonPressed
+    //
+    // Starts an activity for Job Info.
+    // Should be called from the "Job Info" button onClick().
+    //
+
+    public void handleJobInfoButtonPressed(View pView) {
+
+        Intent intent = new Intent(this, JobInfoActivity.class);
+        startActivity(intent);
+
+    }//end of MainActivity::handleJobInfoButtonPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // MainActivity::handleMeasureConnectButtonPressed
     //
     // Calls functions depending on the text of the handleMeasureConnectButton
@@ -445,16 +697,74 @@ public class MainActivity extends Activity {
         //debug hss//
         System.out.println("handleMeasureConnectButton was pressed -- text: " + btnText);
 
-        if (btnText == connectButtonText) {
+        if (btnText.equals(connectButtonText)) {
             //stuff to do to connect to device
            startLeScanningProcess();
         }
 
-        else if (btnText == measureButtonText) {
+        else if (btnText.equals(measureButtonText)) {
             startMeasuringProcess();
         }
 
     }//end of MainActivity::handleMeasureConnectButtonPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::handleTableRowEditorActivityResultOk
+    //
+    // Sets the pipe number and total length of the last edited row to the passed
+    // in values.
+    // Also sets the background color of the last edited row back to white.
+    //
+
+    private void handleTableRowEditorActivityResultOk(String pPipeNum, String pTotalLength,
+                                                    boolean pRenumberAll) {
+
+        lastRowEdited.setBackgroundColor(getResources().getColor(R.color.measurementsTableColor));
+        setPipeNumberOfRow(lastRowEdited, pPipeNum);
+        setTotalLengthOfRow(lastRowEdited, pTotalLength);
+
+        if (!pRenumberAll) { return; }
+
+        renumberAllAfterRow(lastRowEdited, Integer.parseInt(pPipeNum)+1);
+
+    }//end of MainActivity::handleTableRowEditorActivityResultOk
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::handleTableRowEditorActivityResultCancel
+    //
+    // Sets the background color of the last edited row back to white.
+    //
+
+    private void handleTableRowEditorActivityResultCancel() {
+
+        lastRowEdited.setBackgroundColor(getResources().getColor(R.color.measurementsTableColor));
+
+    }//end of MainActivity::handleTableRowEditorActivityResultCancel
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::handleTableRowPressed
+    //
+    // Gets the values in the Pipe #, Actual, and Adjusted columns and sends the
+    // values to the EditPipeRowActivity to be displayed to and edited by the user.
+    //
+
+    public void handleTableRowPressed(TableRow pR) {
+
+        Log.d(TAG, "Measurements Table Row pressed");
+        lastRowEdited = pR;
+        pR.setBackgroundColor(getResources().getColor(R.color.selectedTableRowColor));
+        String pipeNum = getPipeNumberColValueOfRow(pR);
+        String totalLength = getTotalLengthColValueOfRow(pR);
+
+        Intent intent = new Intent(this, TableRowEditorActivity.class);
+        intent.putExtra(TableRowEditorActivity.PIPE_NUMBER_KEY, pipeNum);
+        intent.putExtra(TableRowEditorActivity.TOTAL_LENGTH_KEY, totalLength);
+        startActivityForResult(intent, TableRowEditorActivity.TABLE_ROW_EDITOR);
+
+    }//end of MainActivity::handleTableRowPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -487,11 +797,25 @@ public class MainActivity extends Activity {
 
         View measurementsTableBottomBorderLine = findViewById(R.id.measurementsTableBottomBorderLine);
 
-        //zzz
-
         measurementsTable.removeView(measurementsTableBottomBorderLine);
 
-        measurementsTable.addView(createNewRow(distanceValueString, "No value", "No Value"));
+        // Get the row count and each of their positions
+        SparseIntArray rowAndPos = getRowCountAndPositions();
+        // Check to see if the row count is greater than 0
+        // If it is greater than 0, then pipeNumInt is set
+        //  to the pipe number found in the last row. If
+        // not, then the pipeNumInt remains equal to 0.
+        int pipeNumInt = rowAndPos.size();
+        Log.d(TAG, "row and pos size :: " + rowAndPos.size());
+        if (pipeNumInt > 0) {
+            TableRow tR = (TableRow) measurementsTable.getChildAt(rowAndPos.get(rowAndPos.size()));
+            pipeNumInt = Integer.parseInt(getPipeNumberColValueOfRow(tR));
+        }
+        Log.d(TAG, "pipeNumInt: " + pipeNumInt);
+        pipeNumInt = pipeNumInt + 1;
+        String pipeNumString = Integer.toString(pipeNumInt);
+
+        measurementsTable.addView(createNewRow(pipeNumString, distanceValueString, "No Value"));
         measurementsTable.addView(createNewRowDivider());
 
         measurementsTableBottomBorderLine.setVisibility(View.VISIBLE);
@@ -516,30 +840,10 @@ public class MainActivity extends Activity {
 
         Log.d(TAG, "Redo button pressed");
 
-        int rowCount = 0;
         // HashMap is used to store the number of rows and the position each
         // one is at in the measurementsTable <Integer, Integer> = <RowNumber, RowPosition>
-        SparseIntArray rowAndPosition = new SparseIntArray();
-
-        int divCount = 0;
-        // HashMap is used to store the number of row dividers and the position each
-        // one is at in the measurementsTable <Integer, Integer> = <DivNumber, DivPosition>
-        SparseIntArray dividerAndPosition = new SparseIntArray();
-
-        // Determine the number of rows and their positions
-        for (int i = 0; i<measurementsTable.getChildCount(); i++) {
-
-            if (measurementsTable.getChildAt(i).getId() == R.id.measurementsTableRowDivider) {
-                dividerAndPosition.put(++divCount, i);
-            }
-
-            // Checks to see if the child at i is a TableRow
-            if (!(measurementsTable.getChildAt(i) instanceof TableRow)) { continue; }
-
-            rowAndPosition.put(++rowCount, i);
-
-        }
-
+        SparseIntArray rowAndPosition = getRowCountAndPositions();
+        int rowCount = rowAndPosition.size();
         if (rowCount == 0) {
             Log.d(TAG, "There were no rows in the measurement table -- return;");
             return;
@@ -547,14 +851,16 @@ public class MainActivity extends Activity {
         // Get the position of the last row found and remove it from the table
         measurementsTable.removeView(measurementsTable.getChildAt(rowAndPosition.get(rowCount)));
 
+        // HashMap is used to store the number of row dividers and the position each
+        // one is at in the measurementsTable <Integer, Integer> = <DivNumber, DivPosition>
+        SparseIntArray dividerAndPosition = getDividerCountAndPositions();
+        int divCount = dividerAndPosition.size();
         if (divCount == 0) {
             Log.d(TAG, "There were no row dividers in the measurement table -- return;");
             return;
         }
         // Get the position of the last row divider found and remove it from the table
-        // 1 is subtracted from the divider position because its position has been moved
-        // up one since one of the children above it was removed (row)
-        measurementsTable.removeView(measurementsTable.getChildAt(dividerAndPosition.get(divCount)-1));
+        measurementsTable.removeView(measurementsTable.getChildAt(dividerAndPosition.get(divCount)));
 
     }//end of MainActivity::handleRedoButtonPressed
     //-----------------------------------------------------------------------------
@@ -591,6 +897,53 @@ public class MainActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // MainActivity::renumberAllAfterRow
+    //
+    // Renumbers all of the pipe numbers after the passed in row starting with the
+    // passed in value.
+    //
+
+    private void renumberAllAfterRow(TableRow pR, int pPipeNum) {
+
+        for (int rowPos=getPositionOfRow(pR)+1; rowPos<measurementsTable.getChildCount(); rowPos++) {
+
+            View v = measurementsTable.getChildAt(rowPos);
+
+            if (!(v instanceof TableRow)) { continue; }
+
+            setPipeNumberOfRow((TableRow)v, Integer.toString(pPipeNum++));
+
+        }
+
+    }//end of MainActivity::renumberAllAfterRow
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::setPipeNumberOfRow
+    //
+    // Sets the value under the Pipe # column in the passed in row to the passed in
+    // string.
+    //
+
+    private void setPipeNumberOfRow(TableRow pR, String pPipeNum) {
+
+        // For each child in the row, check its id
+        // and see if it is the Pipe # column.
+        // If it is, then the TextView is set
+        // to the passed in string.
+        for (int i=0; i<pR.getChildCount(); i++) {
+
+            if (pR.getChildAt(i).getId() == R.id.measurementsTableColumnPipeNum) {
+                TextView tV = (TextView)pR.getChildAt(i);
+                tV.setText(pPipeNum);
+            }
+
+        }
+
+    }//end of MainActivity::setPipeNumberOfRow
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // MainActivity::setRedoButtonEnabled
     //
     // Disables the redo button and sets its text color to the disabled text color.
@@ -607,6 +960,31 @@ public class MainActivity extends Activity {
         }
 
     }//end of MainActivity::setRedoButtonEnabled
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::setTotalLengthOfRow
+    //
+    // Sets the value under the Total Length column in the passed in row to the
+    // passed in string.
+    //
+
+    private void setTotalLengthOfRow(TableRow pR, String pTotalLength) {
+
+        // For each child in the row, check its id
+        // and see if it is the TotalLength column.
+        // If it is, the text of the TextView is
+        // set to pTotalLength.
+        for (int i=0; i<pR.getChildCount(); i++) {
+
+            if (pR.getChildAt(i).getId() == R.id.measurementsTableColumnActual) {
+                TextView tV = (TextView)pR.getChildAt(i);
+                tV.setText(pTotalLength);
+            }
+
+        }
+
+    }//end of MainActivity::setTotalLengthOfRow
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
