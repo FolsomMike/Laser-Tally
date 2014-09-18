@@ -52,7 +52,6 @@ public class TableRowEditorActivity extends Activity {
 
     private String pipeNumber = "";
     private String totalLength = "";
-    private boolean renumberAll;
 
     //-----------------------------------------------------------------------------
     // TableRowEditorActivity::TableRowEditorActivity (constructor)
@@ -83,18 +82,16 @@ public class TableRowEditorActivity extends Activity {
 
         this.setFinishOnTouchOutside(false);
 
-        this.getWindow().setFlags(
-                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         decorView = getWindow().getDecorView();
 
-        uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+        uiOptions = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
 
         createUiChangeListener();
 
@@ -142,13 +139,6 @@ public class TableRowEditorActivity extends Activity {
 
         Log.d(TAG, "Inside of TableRowEditorActivity onResume");
 
-        // Give the activity a fullscreen effect
-        View decorView = getWindow().getDecorView();
-        int uiOptions = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
         decorView.setSystemUiVisibility(uiOptions);
 
     }//end of TableRowEditorActivity::onResume
@@ -170,27 +160,6 @@ public class TableRowEditorActivity extends Activity {
         Log.d(TAG, "Inside of TableRowEditorActivity onPause");
 
     }//end of TableRowEditorActivity::onPause
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // TableRowEditorActivity::onWindowFocusChanged
-    //
-    // Listens for window focus changes.
-    //
-    // If the activity has focus, the system visbility is set to the uiOptions.
-    //
-
-
-    @Override
-    public void onWindowFocusChanged(boolean pHasFocus) {
-
-        super.onWindowFocusChanged(pHasFocus);
-
-        if(pHasFocus) {
-            decorView.setSystemUiVisibility(uiOptions);
-        }
-
-    }//end of TableRowEditorActivity::onWindowFocusChanged
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -252,7 +221,7 @@ public class TableRowEditorActivity extends Activity {
         TextView pTL = (TextView)findViewById(R.id.editTextTotalLength);
         totalLength = pTL.getText().toString();
         CheckBox cBRAB = (CheckBox)findViewById(R.id.checkBoxRenumberAllBelow);
-        renumberAll = cBRAB.isChecked();
+        Boolean renumberAll = cBRAB.isChecked();
 
         Intent resultIntent = new Intent();
         resultIntent.putExtra(PIPE_NUMBER_KEY, pipeNumber);

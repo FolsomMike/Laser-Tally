@@ -233,27 +233,6 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothScanActivity::onWindowFocusChanged
-    //
-    // Listens for window focus changes.
-    //
-    // If the activity has focus, the system visbility is set to the uiOptions.
-    //
-
-
-    @Override
-    public void onWindowFocusChanged(boolean pHasFocus) {
-
-        super.onWindowFocusChanged(pHasFocus);
-
-        if(pHasFocus) {
-            decorView.setSystemUiVisibility(uiOptions);
-        }
-
-    }//end of BluetoothScanActivity::onWindowFocusChanged
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
     // BluetoothScanActivity::connection
     //
     // Not really a function

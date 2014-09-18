@@ -171,9 +171,9 @@ public class MainActivity extends Activity {
 
         Log.d(TAG, "Inside of MainActivity onResume");
 
-        bindService(serviceIntent, connection, BIND_AUTO_CREATE);
-
         decorView.setSystemUiVisibility(uiOptions);
+
+        bindService(serviceIntent, connection, BIND_AUTO_CREATE);
 
     }//end of MainActivity::onResume
     //-----------------------------------------------------------------------------
@@ -252,27 +252,6 @@ public class MainActivity extends Activity {
         }
 
     }//end of MainActivity::onActivityResult
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // MainActivity::onWindowFocusChanged
-    //
-    // Listens for window focus changes.
-    //
-    // If the activity has focus, the system visibility is set to the uiOptions.
-    //
-
-
-    @Override
-    public void onWindowFocusChanged(boolean pHasFocus) {
-
-        super.onWindowFocusChanged(pHasFocus);
-
-        if(pHasFocus) {
-            decorView.setSystemUiVisibility(uiOptions);
-        }
-
-    }//end of MainActivity::onWindowFocusChanged
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -769,7 +748,7 @@ public class MainActivity extends Activity {
     public void handleJobInfoButtonPressed(View pView) {
 
         Intent intent = new Intent(this, JobInfoActivity.class);
-        startActivityForResult(intent, JOB_INFO_ACTIVITY_RESULT);
+        startActivity(intent);
 
     }//end of MainActivity::handleJobInfoButtonPressed
     //-----------------------------------------------------------------------------

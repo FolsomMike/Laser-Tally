@@ -205,14 +205,26 @@
                 android:paddingTop="0dp"
                 android:gravity="center" >
 
-                <TextView
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Protector/Makeup Adjustment:"
-                    android:textColor="#000000"
-                    android:textSize="40sp"
-                    android:gravity="end" />
+                <LinearLayout
+                android:orientation="horizontal"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingBottom="0dp"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                android:paddingTop="0dp"
+                android:gravity="end" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Adjustment:"
+                        android:textColor="#000000"
+                        android:textSize="40sp"
+                        android:gravity="center_horizontal" />
+
+                </LinearLayout>
 
                 <!-- horizontal spacer -->
                 <View

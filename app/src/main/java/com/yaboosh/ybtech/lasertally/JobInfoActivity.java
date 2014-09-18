@@ -76,20 +76,18 @@ public class JobInfoActivity extends Activity {
 
         setContentView(R.layout.activity_job_info);
 
-        this.getWindow().setFlags(
-                WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
         this.setFinishOnTouchOutside(false);
+
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         decorView = getWindow().getDecorView();
 
-        uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        uiOptions = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
 
         createUiChangeListener();
 
@@ -153,27 +151,6 @@ public class JobInfoActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoActivity::onWindowFocusChanged
-    //
-    // Listens for window focus changes.
-    //
-    // If the activity has focus, the system visibility is set to the uiOptions.
-    //
-
-
-    @Override
-    public void onWindowFocusChanged(boolean pHasFocus) {
-
-        super.onWindowFocusChanged(pHasFocus);
-
-        if(pHasFocus) {
-            decorView.setSystemUiVisibility(uiOptions);
-        }
-
-    }//end of JobInfoActivity::onWindowFocusChanged
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
     // JobInfoActivity::createUiChangeListener
     //
     // Listens for visibility changes in the ui.
@@ -229,7 +206,7 @@ public class JobInfoActivity extends Activity {
 
     private void exitActivityByOk() {
 
-        Intent resultIntent = new Intent();
+        /*Intent resultIntent = new Intent();
 
         resultIntent.putExtra(COMPANY_NAME_KEY,
                         ((TextView) findViewById(R.id.editTextCompanyName)).getText().toString());
@@ -253,7 +230,7 @@ public class JobInfoActivity extends Activity {
                                 ((TextView) findViewById(R.id.editTextWall)).getText().toString());
 
         setResult(Activity.RESULT_OK, resultIntent);
-        finish();
+        finish();*/
 
     }//end of JobInfoActivity::exitActivityByOk
     //-----------------------------------------------------------------------------

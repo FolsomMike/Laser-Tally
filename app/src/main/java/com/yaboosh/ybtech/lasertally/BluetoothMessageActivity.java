@@ -181,27 +181,6 @@ public class BluetoothMessageActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothMessageActivity::onWindowFocusChanged
-    //
-    // Listens for window focus changes.
-    //
-    // If the activity has focus, the system visbility is set to the uiOptions.
-    //
-
-
-    @Override
-    public void onWindowFocusChanged(boolean pHasFocus) {
-
-        super.onWindowFocusChanged(pHasFocus);
-
-        if(pHasFocus) {
-            decorView.setSystemUiVisibility(uiOptions);
-        }
-
-    }//end of BluetoothMessageActivity::onWindowFocusChanged
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
     // BluetoothMessageActivity::connection
     //
     // Not really a function
