@@ -30,6 +30,6 @@
             android:text="Open an existing job."
             android:textSize="30sp"
             style="@style/whiteStyledButton"
-            android:onClick="handleJobInfoButtonPressed" />
+            android:onClick="handleOpenAnExistingJobButtonPressed" />
 
 </LinearLayout>

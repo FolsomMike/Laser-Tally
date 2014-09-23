@@ -24,6 +24,7 @@
     <item type="id" name="measurementsTableRowDivider" />
 
     <item type="id" name="checkBoxRenumberAllBelow" />
+    <item type="id" name="createJobOkButton" />
     <item type="id" name="editTextCompanyName" />
     <item type="id" name="editTextDiameter" />
     <item type="id" name="editTextFacility" />

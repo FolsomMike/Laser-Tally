@@ -28,6 +28,7 @@
     <string name="title_item_detail">Item Detail</string>
     <string name="title_activity_bluetooth_scan">BluetoothScanActivity</string>
     <string name="title_activity_bluetooth_message">BluetoothMessageActivity</string>
+    <string name="title_activity_create_job">CreateJobActivity</string>
     <string name="title_activity_job_display">JobDisplayActivity</string>
     <string name="title_activity_job_info">JobInfoActivity</string>
     <string name="title_activity_table_row_editor">TableRowEditorActivity</string>

@@ -19,6 +19,7 @@ package com.yaboosh.ybtech.lasertally;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
@@ -38,8 +39,10 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,6 +57,8 @@ public class MainActivity extends Activity {
 
     private View decorView;
     private int uiOptions;
+
+    private ArrayList<String> jobNames = new ArrayList<String>();
 
     //-----------------------------------------------------------------------------
     // MainActivity::MainActivity (constructor)
@@ -153,22 +158,6 @@ public class MainActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MainActivity::handleCreateANewJobButtonPressed
-    //
-    // Starts an activity for Job Info.
-    // Should be called from the "Create a new job." button onClick().
-    //
-
-    public void handleCreateANewJobButtonPressed(View pView) {
-
-        Intent intent = new Intent(this, JobInfoActivity.class);
-        intent.pu
-        startActivityForResult(intent, JobDisplayActivity.JOB_INFO_ACTIVITY_RESULT);
-
-    }//end of MainActivity::handleCreateANewJobButtonPressed
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
     // MainActivity::createUiChangeListener
     //
     // Listens for visibility changes in the ui.
@@ -194,6 +183,57 @@ public class MainActivity extends Activity {
                 });
 
     }//end of MainActivity::createUiChangeListener
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::handleCreateANewJobButtonPressed
+    //
+    // Starts an activity for Job Info.
+    // Should be called from the "Create a new job." button onClick().
+    //
+
+    public void handleCreateANewJobButtonPressed(View pView) {
+
+        Intent intent = new Intent(this, CreateJobActivity.class);
+        startActivity(intent);
+
+    }//end of MainActivity::handleCreateANewJobButtonPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::handleOpenAnExistingJobButtonPressed
+    //
+    // //hss wip//
+    //
+
+    public void handleOpenAnExistingJobButtonPressed(View pView) {
+
+        // Retrieve directory from internal memory;
+        File jobsDir = getDir("jobsDir", Context.MODE_PRIVATE);
+        File[] dirs = jobsDir.listFiles();
+        for (File f : dirs) {
+            if (f.isDirectory()) {
+                Log.d(TAG, "Directory found to delete: " + f.getName() + " :: Result of deletion: " + f.delete());
+            }
+        }
+
+        // Retrieve/Create sub-directory thisJobDir
+        File testDir1 = new File(jobsDir, "test 1");
+        if (!testDir1.exists()) { Boolean success = testDir1.mkdir(); }
+        File testDir2 = new File(jobsDir, "test 2");
+        if (!testDir2.exists()) { Boolean success = testDir2.mkdir(); }
+        File testDir3 = new File(jobsDir, "test 3");
+        if (!testDir3.exists()) { Boolean success = testDir3.mkdir(); }
+
+        File[] files = jobsDir.listFiles();
+        for (File f : files) {
+            if (f.isDirectory()) {
+                Log.d(TAG, "Directory found: " + f.getName());
+                jobNames.add(f.getName());
+            }
+        }
+
+    }//end of MainActivity::handleOpenAnExistingJobButtonPressed
     //-----------------------------------------------------------------------------
 
 }//end of class MainActivity

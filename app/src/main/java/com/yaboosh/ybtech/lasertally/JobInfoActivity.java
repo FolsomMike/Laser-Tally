@@ -25,15 +25,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -112,6 +118,9 @@ public class JobInfoActivity extends Activity {
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
 
         createUiChangeListener();
+
+        Bundle bundle = getIntent().getExtras();
+        job = bundle.getString(JOB_KEY);
 
         getJobInfoFromFile();
 
@@ -278,17 +287,17 @@ public class JobInfoActivity extends Activity {
 
     private void getAndStoreJobInfoFromUserInput() {
 
-        companyName = ((TextView) findViewById(R.id.editTextCompanyName)).getText().toString();
-        diameter = ((TextView) findViewById(R.id.editTextDiameter)).getText().toString();
-        facility = ((TextView) findViewById(R.id.editTextFacility)).getText().toString();
-        grade = ((TextView) findViewById(R.id.editTextGrade)).getText().toString();
-        job = ((TextView) findViewById(R.id.editTextJob)).getText().toString();
-        makeupAdjustment = ((TextView)
+        companyName = ((EditText) findViewById(R.id.editTextCompanyName)).getText().toString();
+        diameter = ((EditText) findViewById(R.id.editTextDiameter)).getText().toString();
+        facility = ((EditText) findViewById(R.id.editTextFacility)).getText().toString();
+        grade = ((EditText) findViewById(R.id.editTextGrade)).getText().toString();
+        job = ((EditText) findViewById(R.id.editTextJob)).getText().toString();
+        makeupAdjustment = ((EditText)
                         findViewById(R.id.editTextProtectorMakeupAdjustment)).getText().toString();
-        rack = ((TextView) findViewById(R.id.editTextRack)).getText().toString();
-        range = ((TextView) findViewById(R.id.editTextRange)).getText().toString();
-        rig = ((TextView) findViewById(R.id.editTextRig)).getText().toString();
-        wall = ((TextView) findViewById(R.id.editTextWall)).getText().toString();
+        rack = ((EditText) findViewById(R.id.editTextRack)).getText().toString();
+        range = ((EditText) findViewById(R.id.editTextRange)).getText().toString();
+        rig = ((EditText) findViewById(R.id.editTextRig)).getText().toString();
+        wall = ((EditText) findViewById(R.id.editTextWall)).getText().toString();
 
     }//end of JobInfoActivity::getAndStoreJobInfoFromUserInput
     //-----------------------------------------------------------------------------
@@ -302,8 +311,12 @@ public class JobInfoActivity extends Activity {
 
     private void getJobInfoFromFile() {
 
+        Log.d(TAG, "JOB: " + job);
+
         try {
-            // Retrieve directory into internal memory;
+            fileLines.clear();
+
+            // Retrieve/Create directory into internal memory;
             File jobsDir = getDir("jobsDir", Context.MODE_PRIVATE);
 
             // Retrieve/Create sub-directory thisJobDir
@@ -311,29 +324,43 @@ public class JobInfoActivity extends Activity {
 
             // Get a file jobInfoTextFile within the dir thisJobDir.
             File jobInfoTextFile = new File(thisJobDir, "jobInfo.txt");
-            fileLines.clear();
 
-            BufferedReader br = new BufferedReader(new FileReader(jobInfoTextFile));
-            String line;
-            while ((line = br.readLine()) != null) {
-                fileLines.add(line);
+            FileInputStream fStream = new FileInputStream(jobInfoTextFile);
+            Scanner br = new Scanner(new InputStreamReader(fStream));
+            while (br.hasNext()) {
+                String strLine = br.nextLine();
+                Log.d(TAG, "New Line Found " + strLine);
+                fileLines.add(strLine);
             }
+
+        } catch (FileNotFoundException e) {
+            Log.d(TAG, "getJobInfoFromFile() FileNotFoundException " + e.toString());
         } catch (Exception e) {}
 
         // If there were no lines in the file,
         // this function is exited.
         if (fileLines.size() == 0) { return; }
 
-        getValueFromList("Company Name", fileLines);
-        getValueFromList("Diameter", fileLines);
-        getValueFromList("Facility", fileLines);
-        getValueFromList("Grade", fileLines);
-        getValueFromList("Job", fileLines);
-        getValueFromList("Makeup Adjustment", fileLines);
-        getValueFromList("Rack", fileLines);
-        getValueFromList("Range", fileLines);
-        getValueFromList("Rig", fileLines);
-        getValueFromList("Wall", fileLines);
+        ((EditText) findViewById(R.id.editTextCompanyName)).setText
+                (getValueFromList("Company Name", fileLines));
+        ((EditText) findViewById(R.id.editTextDiameter)).setText
+                                                    (getValueFromList("Diameter", fileLines));
+        ((EditText) findViewById(R.id.editTextFacility)).setText
+                                                    (getValueFromList("Facility", fileLines));
+        ((EditText) findViewById(R.id.editTextGrade)).setText
+                                                    (getValueFromList("Grade", fileLines));
+        ((EditText) findViewById(R.id.editTextJob)).setText
+                (getValueFromList("Job", fileLines));
+        ((EditText) findViewById(R.id.editTextProtectorMakeupAdjustment)).setText
+                (getValueFromList("Makeup Adjustment", fileLines));
+        ((EditText) findViewById(R.id.editTextRack)).setText
+                (getValueFromList("Rack", fileLines));
+        ((EditText) findViewById(R.id.editTextRange)).setText
+                (getValueFromList("Range", fileLines));
+        ((EditText) findViewById(R.id.editTextRig)).setText
+                (getValueFromList("Rig", fileLines));
+        ((EditText) findViewById(R.id.editTextWall)).setText
+                (getValueFromList("Wall", fileLines));
 
     }//end of JobInfoActivity::getJobInfoFromFile
     //-----------------------------------------------------------------------------
@@ -408,17 +435,35 @@ public class JobInfoActivity extends Activity {
 
         // Retrieve/Create sub-directory thisJobDir
         File thisJobDir = new File(jobsDir, job);
-        thisJobDir.mkdir();
+        if (!thisJobDir.exists()) { Boolean success = thisJobDir.mkdir(); }
 
-        // Create/Overwrite a file jobInfoTextFile within the dir thisJobDir.
+        // Get a file jobInfoTextFile within the dir thisJobDir.
         File jobInfoTextFile = new File(thisJobDir, "jobInfo.txt");
+        try {
+            if (!jobInfoTextFile.exists()) {
+                Boolean success = jobInfoTextFile.createNewFile();
+            }
+        } catch (Exception e) {}
 
         // Use a PrintWriter to write to the file
         try {
             PrintWriter writer = new PrintWriter(jobInfoTextFile, "UTF-8");
+
+            writer.println("Company Name=" + companyName);
+            writer.println("Diameter=" + diameter);
+            writer.println("Facility=" + facility);
+            writer.println("Grade=" + grade);
             writer.println("Job=" + job);
+            writer.println("Makeup Adjustment=" + makeupAdjustment);
+            writer.println("Rack=" + rack);
+            writer.println("Range=" + range);
+            writer.println("Rig=" + rig);
+            writer.println("Wall=" + wall);
+
             writer.close();
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            Log.d(TAG, "Writing failed");
+        }
 
     }//end of JobInfoActivity::saveInformationToFile
     //-----------------------------------------------------------------------------

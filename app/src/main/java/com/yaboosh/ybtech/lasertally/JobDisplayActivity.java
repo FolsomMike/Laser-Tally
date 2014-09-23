@@ -118,6 +118,19 @@ public class JobDisplayActivity extends Activity {
         measureConnectButton = (Button)findViewById(R.id.measureConnectButton);
         redoButton = (Button)findViewById(R.id.redoButton);
 
+        Bundle bundle = getIntent().getExtras();
+        if (bundle.getBoolean(CreateJobActivity.JOB_INFO_INCLUDED, false)) {
+
+            setJobTitle(bundle.getString(CreateJobActivity.JOB_KEY));
+            String newMakeupAdjustmentValue = bundle.getString
+                                                        (CreateJobActivity.MAKEUP_ADJUSTMENT_KEY);
+
+            if (!newMakeupAdjustmentValue.equals("")) {
+                protectorMakeupValue = Float.parseFloat(newMakeupAdjustmentValue);
+            }
+
+        }
+
         serviceIntent = new Intent(this, BluetoothLeService.class);
         startService(serviceIntent);
 
@@ -601,7 +614,6 @@ public class JobDisplayActivity extends Activity {
             if (pR.getChildAt(i).getId() == R.id.measurementsTableColumnPipeNum) {
                 TextView tV = (TextView)pR.getChildAt(i);
                 pipeNum = tV.getText().toString();
-                Log.d(TAG, "Pipe Number: " + pipeNum);
             }
 
         }
@@ -745,6 +757,8 @@ public class JobDisplayActivity extends Activity {
     public void handleJobInfoButtonPressed(View pView) {
 
         Intent intent = new Intent(this, JobInfoActivity.class);
+        intent.putExtra(JobInfoActivity.JOB_KEY,
+                            ((TextView)findViewById(R.id.jobTitleTextView)).getText().toString());
         startActivityForResult(intent, JOB_INFO_ACTIVITY_RESULT);
 
     }//end of JobDisplayActivity::handleJobInfoButtonPressed
@@ -862,27 +876,33 @@ public class JobDisplayActivity extends Activity {
         Double distanceValue = pDistance * BluetoothLeVars.METERS_FEET_CONVERSION_FACTOR;
         String distanceValueString = tallyFormat.format(distanceValue);
 
+        String adjustedValueString = "No Value";
+        if (protectorMakeupValue != 0) {
+            float adjustedValue = Float.parseFloat(distanceValueString) - protectorMakeupValue;
+            adjustedValueString = Float.toString(adjustedValue);
+        }
+
         View measurementsTableBottomBorderLine = findViewById(R.id.measurementsTableBottomBorderLine);
 
         measurementsTable.removeView(measurementsTableBottomBorderLine);
 
         // Get the row count and each of their positions
         SparseIntArray rowAndPos = getRowCountAndPositions();
-        // Check to see if the row count is greater than 0
-        // If it is greater than 0, then pipeNumInt is set
+        // Check to see if the row count is greater than 1
+        // If it is greater than 1, then pipeNumInt is set
         //  to the pipe number found in the last row. If
-        // not, then the pipeNumInt remains equal to 0.
-        int pipeNumInt = rowAndPos.size();
-        Log.d(TAG, "row and pos size :: " + rowAndPos.size());
-        if (pipeNumInt > 0) {
+        // not, then the pipeNumInt remains equal to 1.
+        int pipeNumInt = rowAndPos.size() + 1;
+        if (pipeNumInt > 1) {
             TableRow tR = (TableRow) measurementsTable.getChildAt(rowAndPos.get(rowAndPos.size()));
-            pipeNumInt = Integer.parseInt(getPipeNumberColValueOfRow(tR));
+            pipeNumInt = Integer.parseInt(getPipeNumberColValueOfRow(tR)) + 1;
         }
-        Log.d(TAG, "pipeNumInt: " + pipeNumInt);
-        pipeNumInt = pipeNumInt + 1;
+
         String pipeNumString = Integer.toString(pipeNumInt);
 
-        measurementsTable.addView(createNewRow(pipeNumString, distanceValueString, "No Value"));
+        measurementsTable.addView(createNewRow(pipeNumString,
+                                                distanceValueString,
+                                                adjustedValueString));
         measurementsTable.addView(createNewRowDivider());
 
         measurementsTableBottomBorderLine.setVisibility(View.VISIBLE);

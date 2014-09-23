@@ -20,9 +20,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
@@ -43,6 +46,7 @@ public class CreateJobActivity extends Activity {
     private View decorView;
     private int uiOptions;
 
+    public static final String JOB_INFO_INCLUDED = "JOB_INFO_INCLUDED";
     public static final String COMPANY_NAME_KEY = "COMPANY_NAME_KEY";
     public static final String DIAMETER_KEY = "DIAMETER_KEY";
     public static final String FACILITY_KEY = "FACILITY_KEY";
@@ -108,6 +112,18 @@ public class CreateJobActivity extends Activity {
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
 
         createUiChangeListener();
+
+        ((TextView)findViewById(R.id.editTextJob)).addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable pE) {
+                handleEditTextJobTextChanged(pE.length());
+            }
+
+            public void beforeTextChanged(CharSequence pS, int pStart, int pCount, int pAfter) {
+            }
+
+            public void onTextChanged(CharSequence pS, int pStart, int pBefore, int pCount) {
+            }
+        });
 
     }//end of CreateJobActivity::onCreate
     //-----------------------------------------------------------------------------
@@ -225,49 +241,33 @@ public class CreateJobActivity extends Activity {
 
         getAndStoreJobInfoFromUserInput();
 
-        //debug hss//saveInformationToFile();
+        saveInformationToFile();
 
-        //debug hss//
-        extractValueFromString("j=fall");
+        Intent intent = new Intent(this, JobDisplayActivity.class);
 
-        Intent resultIntent = new Intent();
+        intent.putExtra(JOB_INFO_INCLUDED, true);
+        intent.putExtra(COMPANY_NAME_KEY, companyName);
+        intent.putExtra(DIAMETER_KEY, diameter);
+        intent.putExtra(FACILITY_KEY, facility);
+        intent.putExtra(GRADE_KEY,  grade);
+        intent.putExtra(JOB_KEY, job);
+        intent.putExtra(MAKEUP_ADJUSTMENT_KEY, makeupAdjustment);
+        intent.putExtra(RACK_KEY, rack);
+        intent.putExtra(RANGE_KEY, range);
+        intent.putExtra(RIG_KEY, rig);
+        intent.putExtra(WALL_KEY, wall);
 
-        resultIntent.putExtra(COMPANY_NAME_KEY, companyName);
-        resultIntent.putExtra(DIAMETER_KEY, diameter);
-        resultIntent.putExtra(FACILITY_KEY, facility);
-        resultIntent.putExtra(GRADE_KEY,  grade);
-        resultIntent.putExtra(JOB_KEY, job);
-        resultIntent.putExtra(MAKEUP_ADJUSTMENT_KEY, makeupAdjustment);
-        resultIntent.putExtra(RACK_KEY, rack);
-        resultIntent.putExtra(RANGE_KEY, range);
-        resultIntent.putExtra(RIG_KEY, rig);
-        resultIntent.putExtra(WALL_KEY, wall);
-
-        setResult(Activity.RESULT_OK, resultIntent);
+        startActivity(intent);
         finish();
 
     }//end of CreateJobActivity::exitActivityByOk
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // CreateJobActivity::extractValueFromString
-    //
-    // Extracts and returns the value after the equals sign from the passed in
-    // string.
-    //
-
-    private String extractValueFromString(String string) {
-
-        int startPos = string.indexOf("=") + 1;
-        return string.substring(startPos);
-
-    }//end of CreateJobActivity::extractValueFromString
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
     // CreateJobActivity::getAndStoreJobInfoFromUserInput
     //
-    // Gets and stores the job info by retrieving the values entered by the user.
+    // Gets and stores the job info into variables by retrieving the values
+    // entered by the user.
     //
 
     private void getAndStoreJobInfoFromUserInput() {
@@ -288,51 +288,6 @@ public class CreateJobActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // CreateJobActivity::getJobInfoFromFile
-    //
-    // Gets and stores the job info by retrieving the values from the jobInfo.txt
-    // file of the current job.
-    //
-
-    private void getJobInfoFromFile() {
-
-        try {
-            // Retrieve directory into internal memory;
-            File jobsDir = getDir("jobsDir", Context.MODE_PRIVATE);
-
-            // Retrieve/Create sub-directory thisJobDir
-            File thisJobDir = new File(jobsDir, job);
-
-            // Get a file jobInfoTextFile within the dir thisJobDir.
-            File jobInfoTextFile = new File(thisJobDir, "jobInfo.txt");
-            fileLines.clear();
-
-            BufferedReader br = new BufferedReader(new FileReader(jobInfoTextFile));
-            String line;
-            while ((line = br.readLine()) != null) {
-                fileLines.add(line);
-            }
-        } catch (Exception e) {}
-
-        // If there were no lines in the file,
-        // this function is exited.
-        if (fileLines.size() == 0) { return; }
-
-        getValueFromList("Company Name", fileLines);
-        getValueFromList("Diameter", fileLines);
-        getValueFromList("Facility", fileLines);
-        getValueFromList("Grade", fileLines);
-        getValueFromList("Job", fileLines);
-        getValueFromList("Makeup Adjustment", fileLines);
-        getValueFromList("Rack", fileLines);
-        getValueFromList("Range", fileLines);
-        getValueFromList("Rig", fileLines);
-        getValueFromList("Wall", fileLines);
-
-    }//end of CreateJobActivity::getJobInfoFromFile
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
     // CreateJobActivity::handleCancelButtonPressed
     //
     // Exits the activity by calling exitActivityByCancel().
@@ -346,6 +301,34 @@ public class CreateJobActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // CreateJobActivity::handleEditTextJobTextChanged
+    //
+    // Checks to see if the passed in length is more than 0. If it is, then the
+    // ok button is enabled.
+    //
+    // Called when the text in the EditText used for the Job name is changed.
+    //
+
+    private void handleEditTextJobTextChanged(int pLength) {
+
+        Boolean bool = false;
+
+        if (pLength > 0) { bool = true; }
+
+        Button okButton = (Button) findViewById(R.id.createJobOkButton);
+
+        okButton.setEnabled(bool);
+
+        if (bool) {
+            okButton.setTextAppearance(getApplicationContext(), R.style.whiteStyledButton);
+        } else {
+            okButton.setTextAppearance(getApplicationContext(), R.style.disabledStyledButton);
+        }
+
+    }//end of CreateJobActivity::handleEditTextJobTextChanged
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // CreateJobActivity::handleOkButtonPressed
     //
     // Exits the activity by calling exitActivityByOk().
@@ -356,24 +339,6 @@ public class CreateJobActivity extends Activity {
         exitActivityByOk();
 
     }//end of CreateJobActivity::handleOkButtonPressed
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // CreateJobActivity::getValueFromList
-    //
-    // Scans through the passed in List for the passed in Key and returns the
-    // value found at that string. Returns null if the Key is not found.
-    //
-
-    private String getValueFromList(String pKey, ArrayList<String> pList) {
-
-        // If the key is found in the list, the value for the
-        // key is extracted from the line and returned.
-        for (String s : pList) { if (s.contains(pKey)) { return extractValueFromString(s);} }
-
-        return null;
-
-    }//end of CreateJobActivity::getValueFromList
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -402,17 +367,35 @@ public class CreateJobActivity extends Activity {
 
         // Retrieve/Create sub-directory thisJobDir
         File thisJobDir = new File(jobsDir, job);
-        thisJobDir.mkdir();
+        if (!thisJobDir.exists()) { Boolean success = thisJobDir.mkdir(); }
 
-        // Create/Overwrite a file jobInfoTextFile within the dir thisJobDir.
+        // Get a file jobInfoTextFile within the dir thisJobDir.
         File jobInfoTextFile = new File(thisJobDir, "jobInfo.txt");
+        try {
+            if (!jobInfoTextFile.exists()) {
+                Boolean success = jobInfoTextFile.createNewFile();
+            }
+        } catch (Exception e) {}
 
         // Use a PrintWriter to write to the file
         try {
             PrintWriter writer = new PrintWriter(jobInfoTextFile, "UTF-8");
+
+            writer.println("Company Name=" + companyName);
+            writer.println("Diameter=" + diameter);
+            writer.println("Facility=" + facility);
+            writer.println("Grade=" + grade);
             writer.println("Job=" + job);
+            writer.println("Makeup Adjustment=" + makeupAdjustment);
+            writer.println("Rack=" + rack);
+            writer.println("Range=" + range);
+            writer.println("Rig=" + rig);
+            writer.println("Wall=" + wall);
+
             writer.close();
-        } catch (Exception e) {}
+        } catch (Exception e) {
+           Log.d(TAG, "Writing failed");
+        }
 
     }//end of CreateJobActivity::saveInformationToFile
     //-----------------------------------------------------------------------------
