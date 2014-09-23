@@ -38,6 +38,7 @@
             </View>
 
             <TextView
+                android:id="@id/jobInfoActivityTitleTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:textColor="#B2B2B2"

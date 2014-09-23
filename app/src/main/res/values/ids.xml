@@ -36,6 +36,7 @@
     <item type="id" name="editTextRig" />
     <item type="id" name="editTextTotalLength" />
     <item type="id" name="editTextWall" />
+    <item type="id" name="jobInfoActivityTitleTextView" />
     <item type="id" name="jobTitleTextView" />
     <item type="id" name="renumberAllBelowCheckbox" />
     <item type="id" name="tableRowEditorRedXButton" />

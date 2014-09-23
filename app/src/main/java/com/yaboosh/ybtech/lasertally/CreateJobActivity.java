@@ -1,12 +1,12 @@
 /******************************************************************************
- * Title: JobInfoActivity.java
+ * Title: CreateJobActivity.java
  * Author: Hunter Schoonover
  * Date: 09/15/14
  *
  * Purpose:
  *
  * This class is used as an activity to display a user interface that allows
- * users to edit job info.
+ * users to edit job info to create a job.
  *
  */
 
@@ -22,25 +22,21 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.CheckBox;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.List;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-// class JobInfoActivity
+// class CreateJobActivity
 //
 
-public class JobInfoActivity extends Activity {
+public class CreateJobActivity extends Activity {
 
     public static final String TAG = "JobInfoActivity";
 
@@ -72,18 +68,18 @@ public class JobInfoActivity extends Activity {
     private String wall;
 
     //-----------------------------------------------------------------------------
-    // JobInfoActivity::JobInfoActivity (constructor)
+    // CreateJobActivity::CreateJobActivity (constructor)
     //
 
-    public JobInfoActivity() {
+    public CreateJobActivity() {
 
         super();
 
-    }//end of JobInfoActivity::JobInfoActivity (constructor)
+    }//end of CreateJobActivity::CreateJobActivity (constructor)
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoActivity::onCreate
+    // CreateJobActivity::onCreate
     //
     // Automatically called when the activity is created.
     // All functions that must be done upon creation should be called here.
@@ -96,7 +92,7 @@ public class JobInfoActivity extends Activity {
 
         Log.d(TAG, "Inside of JobInfoActivity onCreate");
 
-        setContentView(R.layout.activity_job_info);
+        setContentView(R.layout.activity_create_job);
 
         this.setFinishOnTouchOutside(false);
 
@@ -106,20 +102,18 @@ public class JobInfoActivity extends Activity {
         decorView = getWindow().getDecorView();
 
         uiOptions = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
 
         createUiChangeListener();
 
-        getJobInfoFromFile();
-
-    }//end of JobInfoActivity::onCreate
+    }//end of CreateJobActivity::onCreate
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoActivity::onDestroy
+    // CreateJobActivity::onDestroy
     //
     // Automatically called when the activity is destroyed.
     // All functions that must be done upon destruction should be called here.
@@ -133,11 +127,11 @@ public class JobInfoActivity extends Activity {
 
         super.onDestroy();
 
-    }//end of JobInfoActivity::onDestroy
+    }//end of CreateJobActivity::onDestroy
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoActivity::onResume
+    // CreateJobActivity::onResume
     //
     // Automatically called when the activity is paused when it does not have
     // user's focus but it still partially visible.
@@ -153,11 +147,11 @@ public class JobInfoActivity extends Activity {
 
         decorView.setSystemUiVisibility(uiOptions);
 
-    }//end of JobInfoActivity::onResume
+    }//end of CreateJobActivity::onResume
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoActivity::onPause
+    // CreateJobActivity::onPause
     //
     // Automatically called when the activity is paused when it does not have
     // user's focus but it still partially visible.
@@ -171,11 +165,11 @@ public class JobInfoActivity extends Activity {
 
         Log.d(TAG, "Inside of JobInfoActivity onPause");
 
-    }//end of JobInfoActivity::onPause
+    }//end of CreateJobActivity::onPause
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoActivity::createUiChangeListener
+    // CreateJobActivity::createUiChangeListener
     //
     // Listens for visibility changes in the ui.
     //
@@ -199,11 +193,11 @@ public class JobInfoActivity extends Activity {
 
                 });
 
-    }//end of JobInfoActivity::createUiChangeListener
+    }//end of CreateJobActivity::createUiChangeListener
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoActivity::exitActivityByCancel
+    // CreateJobActivity::exitActivityByCancel
     //
     // Used when the user closes the activity using the cancel or red x button.
     // Sets the result to canceled and finishes the activity.
@@ -215,11 +209,11 @@ public class JobInfoActivity extends Activity {
         setResult(Activity.RESULT_CANCELED, resultIntent);
         finish();
 
-    }//end of JobInfoActivity::exitActivityByCancel
+    }//end of CreateJobActivity::exitActivityByCancel
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoActivity::exitActivityByOk
+    // CreateJobActivity::exitActivityByOk
     //
     // Used when the user closes the activity using the ok button.
     // Gets the job info and puts it into a file and into the intent extras, sets
@@ -252,11 +246,11 @@ public class JobInfoActivity extends Activity {
         setResult(Activity.RESULT_OK, resultIntent);
         finish();
 
-    }//end of JobInfoActivity::exitActivityByOk
+    }//end of CreateJobActivity::exitActivityByOk
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoActivity::extractValueFromString
+    // CreateJobActivity::extractValueFromString
     //
     // Extracts and returns the value after the equals sign from the passed in
     // string.
@@ -267,11 +261,11 @@ public class JobInfoActivity extends Activity {
         int startPos = string.indexOf("=") + 1;
         return string.substring(startPos);
 
-    }//end of JobInfoActivity::extractValueFromString
+    }//end of CreateJobActivity::extractValueFromString
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoActivity::getAndStoreJobInfoFromUserInput
+    // CreateJobActivity::getAndStoreJobInfoFromUserInput
     //
     // Gets and stores the job info by retrieving the values entered by the user.
     //
@@ -290,11 +284,11 @@ public class JobInfoActivity extends Activity {
         rig = ((TextView) findViewById(R.id.editTextRig)).getText().toString();
         wall = ((TextView) findViewById(R.id.editTextWall)).getText().toString();
 
-    }//end of JobInfoActivity::getAndStoreJobInfoFromUserInput
+    }//end of CreateJobActivity::getAndStoreJobInfoFromUserInput
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoActivity::getJobInfoFromFile
+    // CreateJobActivity::getJobInfoFromFile
     //
     // Gets and stores the job info by retrieving the values from the jobInfo.txt
     // file of the current job.
@@ -335,11 +329,11 @@ public class JobInfoActivity extends Activity {
         getValueFromList("Rig", fileLines);
         getValueFromList("Wall", fileLines);
 
-    }//end of JobInfoActivity::getJobInfoFromFile
+    }//end of CreateJobActivity::getJobInfoFromFile
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoActivity::handleCancelButtonPressed
+    // CreateJobActivity::handleCancelButtonPressed
     //
     // Exits the activity by calling exitActivityByCancel().
     //
@@ -348,11 +342,11 @@ public class JobInfoActivity extends Activity {
 
         exitActivityByCancel();
 
-    }//end of JobInfoActivity::handleCancelButtonPressed
+    }//end of CreateJobActivity::handleCancelButtonPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoActivity::handleOkButtonPressed
+    // CreateJobActivity::handleOkButtonPressed
     //
     // Exits the activity by calling exitActivityByOk().
     //
@@ -361,11 +355,11 @@ public class JobInfoActivity extends Activity {
 
         exitActivityByOk();
 
-    }//end of JobInfoActivity::handleOkButtonPressed
+    }//end of CreateJobActivity::handleOkButtonPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoActivity::getValueFromList
+    // CreateJobActivity::getValueFromList
     //
     // Scans through the passed in List for the passed in Key and returns the
     // value found at that string. Returns null if the Key is not found.
@@ -379,11 +373,11 @@ public class JobInfoActivity extends Activity {
 
         return null;
 
-    }//end of JobInfoActivity::getValueFromList
+    }//end of CreateJobActivity::getValueFromList
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoActivity::handleRedXButtonPressed
+    // CreateJobActivity::handleRedXButtonPressed
     //
     // Exits the activity by calling exitActivityByCancel().
     //
@@ -392,11 +386,11 @@ public class JobInfoActivity extends Activity {
 
         exitActivityByCancel();
 
-    }//end of JobInfoActivity::handleRedXButtonPressed
+    }//end of CreateJobActivity::handleRedXButtonPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoActivity::saveInformationToFile
+    // CreateJobActivity::saveInformationToFile
     //
     // Stores the job info in a file.
     //
@@ -420,9 +414,9 @@ public class JobInfoActivity extends Activity {
             writer.close();
         } catch (Exception e) {}
 
-    }//end of JobInfoActivity::saveInformationToFile
+    }//end of CreateJobActivity::saveInformationToFile
     //-----------------------------------------------------------------------------
 
-}//end of class JobInfoActivity
+}//end of class CreateJobActivity
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
