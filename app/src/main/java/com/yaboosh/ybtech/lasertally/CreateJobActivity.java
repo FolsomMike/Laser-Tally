@@ -58,8 +58,6 @@ public class CreateJobActivity extends Activity {
     public static final String RIG_KEY = "RIG_KEY";
     public static final String WALL_KEY = "WALL_KEY";
 
-    ArrayList<String> fileLines = new ArrayList<String>();
-
     private String companyName;
     private String diameter;
     private String facility;
@@ -206,7 +204,7 @@ public class CreateJobActivity extends Activity {
             File[] dirs = jobsDir.listFiles();
 
             for (File f : dirs) {
-                if (f.isDirectory() && pJobName.equals(extractValueFromString(f.getName()))) {
+                if (f.isDirectory() && pJobName.equals(Tools.extractValueFromString(f.getName()))) {
                     exists = true;
                 }
             }
@@ -293,21 +291,6 @@ public class CreateJobActivity extends Activity {
         finish();
 
     }//end of CreateJobActivity::exitActivityByOk
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // CreateJobActivity::extractValueFromString
-    //
-    // Extracts and returns the value after the equals sign from the passed in
-    // string.
-    //
-
-    private String extractValueFromString(String pString) {
-
-        int startPos = pString.indexOf("=") + 1;
-        return pString.substring(startPos);
-
-    }//end of CreateJobActivity::extractValueFromString
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

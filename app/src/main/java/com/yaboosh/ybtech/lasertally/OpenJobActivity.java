@@ -53,7 +53,33 @@ public class OpenJobActivity extends Activity {
     private View decorView;
     private int uiOptions;
 
+    public static final String JOB_INFO_INCLUDED = "JOB_INFO_INCLUDED";
+    public static final String COMPANY_NAME_KEY = "COMPANY_NAME_KEY";
+    public static final String DIAMETER_KEY = "DIAMETER_KEY";
+    public static final String FACILITY_KEY = "FACILITY_KEY";
+    public static final String GRADE_KEY = "GRADE_KEY";
+    public static final String JOB_KEY =  "JOB_KEY";
+    public static final String MAKEUP_ADJUSTMENT_KEY = "PROTECTOR_MAKE_UP_ADJUSTMENT_KEY";
+    public static final String RACK_KEY = "RACK_KEY";
+    public static final String RANGE_KEY = "RANGE_KEY";
+    public static final String RIG_KEY = "RIG_KEY";
+    public static final String WALL_KEY = "WALL_KEY";
+
     ArrayList<String> jobNames = new ArrayList<String>();
+
+    ArrayList<String> fileLines = new ArrayList<String>();
+
+    private String selectedJob;
+    private String companyName;
+    private String diameter;
+    private String facility;
+    private String grade;
+    private String job;
+    private String makeupAdjustment;
+    private String rack;
+    private String range;
+    private String rig;
+    private String wall;
 
     //-----------------------------------------------------------------------------
     // OpenJobActivity::OpenJobActivity (constructor)
@@ -190,7 +216,7 @@ public class OpenJobActivity extends Activity {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 
-                //debug hss//
+                handleJobSelected(((TextView)arg1).getText().toString());
                 Log.d(TAG, "Job Selected: " + ((TextView)arg1).getText().toString());
 
             }
@@ -229,21 +255,6 @@ public class OpenJobActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // OpenJobActivity::extractValueFromString
-    //
-    // Extracts and returns the value after the equals sign from the passed in
-    // string.
-    //
-
-    private String extractValueFromString(String pString) {
-
-        int startPos = pString.indexOf("=") + 1;
-        return pString.substring(startPos);
-
-    }//end of OpenJobActivity::extractValueFromString
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
     // OpenJobActivity::getAndStoreJobs
     //
     // Gets the directory names from the jobsDir directory and passes each name
@@ -260,8 +271,6 @@ public class OpenJobActivity extends Activity {
             File[] files = jobsDir.listFiles();
             for (File f : files) {
                 if (f.isDirectory()) {
-                    //debug hss//
-                    Log.d(TAG, "Directory found. Name :: " + f.getName());
                     storeJob(f.getName());
                 }
             }
@@ -270,6 +279,38 @@ public class OpenJobActivity extends Activity {
 
 
     }//end of OpenJobActivity::getAndStoreJobs
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // OpenJobActivity::handleJobSelected
+    //
+    // Starts the JobDisplayActivity, putting the job information (gotten from the
+    // jobInfo.txt file) of the selected job into the intent extras.
+    //
+
+    private void handleJobSelected(String pJobName) {
+
+        selectedJob = pJobName;
+
+        getJobInfoFromFile();
+
+        Intent intent = new Intent(this, JobDisplayActivity.class);
+
+        intent.putExtra(JOB_INFO_INCLUDED, true);
+        intent.putExtra(COMPANY_NAME_KEY, companyName);
+        intent.putExtra(DIAMETER_KEY, diameter);
+        intent.putExtra(FACILITY_KEY, facility);
+        intent.putExtra(GRADE_KEY,  grade);
+        intent.putExtra(JOB_KEY, job);
+        intent.putExtra(MAKEUP_ADJUSTMENT_KEY, makeupAdjustment);
+        intent.putExtra(RACK_KEY, rack);
+        intent.putExtra(RANGE_KEY, range);
+        intent.putExtra(RIG_KEY, rig);
+        intent.putExtra(WALL_KEY, wall);
+
+        startActivity(intent);
+
+    }//end of OpenJobActivity::handleJobSelected
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -286,6 +327,57 @@ public class OpenJobActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // OpenJobActivity::getJobInfoFromFile
+    //
+    // Gets and stores the job info by retrieving the values from the jobInfo.txt
+    // file of the selected job.
+    //
+
+    private void getJobInfoFromFile() {
+
+        try {
+            fileLines.clear();
+
+            // Retrieve/Create directory into internal memory;
+            File jobsDir = getDir("jobsDir", Context.MODE_PRIVATE);
+
+            // Retrieve/Create sub-directory thisJobDir
+            File thisJobDir = new File(jobsDir, "job=" + selectedJob);
+
+            // Get a file jobInfoTextFile within the dir thisJobDir.
+            File jobInfoTextFile = new File(thisJobDir, "jobInfo.txt");
+
+            FileInputStream fStream = new FileInputStream(jobInfoTextFile);
+            Scanner br = new Scanner(new InputStreamReader(fStream));
+            while (br.hasNext()) {
+                String strLine = br.nextLine();
+                Log.d(TAG, "New Line Found " + strLine);
+                fileLines.add(strLine);
+            }
+
+        } catch (FileNotFoundException e) {
+            Log.d(TAG, "getJobInfoFromFile() FileNotFoundException " + e.toString());
+        } catch (Exception e) {}
+
+        // If there were no lines in the file,
+        // this function is exited.
+        if (fileLines.size() == 0) { return; }
+
+        companyName = Tools.getValueFromList("Company Name", fileLines);
+        diameter = Tools.getValueFromList("Diameter", fileLines);
+        facility = Tools.getValueFromList("Facility", fileLines);
+        grade = Tools.getValueFromList("Grade", fileLines);
+        job = Tools.getValueFromList("Job", fileLines);
+        makeupAdjustment = Tools.getValueFromList("Makeup Adjustment", fileLines);
+        rack = Tools.getValueFromList("Rack", fileLines);
+        range = Tools.getValueFromList("Range", fileLines);
+        rig = Tools.getValueFromList("Rig", fileLines);
+        wall = Tools.getValueFromList("Wall", fileLines);
+
+    }//end of OpenJobActivity::getJobInfoFromFile
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // OpenJobActivity::storeJob
     //
     // If the passed in directory name contains a job name, the job name is added
@@ -296,7 +388,7 @@ public class OpenJobActivity extends Activity {
 
         if (!pName.contains("job=")) { return; }
 
-        jobNames.add(extractValueFromString(pName));
+        jobNames.add(Tools.extractValueFromString(pName));
 
         //Put jobNames in alphabetical order
         Collections.sort(jobNames);

@@ -125,6 +125,10 @@ public class JobDisplayActivity extends Activity {
             String newMakeupAdjustmentValue = bundle.getString
                                                         (CreateJobActivity.MAKEUP_ADJUSTMENT_KEY);
 
+            // Checks to see if the new value is not
+            // empty; prevents parseFloat from
+            // giving an error if there is no
+            // float in the string.
             if (!newMakeupAdjustmentValue.equals("")) {
                 protectorMakeupValue = Float.parseFloat(newMakeupAdjustmentValue);
             }

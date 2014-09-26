@@ -221,7 +221,7 @@ public class JobInfoActivity extends Activity {
             File[] dirs = jobsDir.listFiles();
 
             for (File f : dirs) {
-                if (f.isDirectory() && pJobName.equals(extractValueFromString(f.getName()))) {
+                if (f.isDirectory() && pJobName.equals(Tools.extractValueFromString(f.getName()))) {
                     exists = true;
                 }
             }
@@ -292,8 +292,6 @@ public class JobInfoActivity extends Activity {
 
         saveInformationToFile();
 
-        extractValueFromString("j=fall");
-
         Intent resultIntent = new Intent();
 
         resultIntent.putExtra(COMPANY_NAME_KEY, companyName);
@@ -311,21 +309,6 @@ public class JobInfoActivity extends Activity {
         finish();
 
     }//end of JobInfoActivity::exitActivityByOk
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobInfoActivity::extractValueFromString
-    //
-    // Extracts and returns the value after the equals sign from the passed in
-    // string.
-    //
-
-    private String extractValueFromString(String pString) {
-
-        int startPos = pString.indexOf("=") + 1;
-        return pString.substring(startPos);
-
-    }//end of JobInfoActivity::extractValueFromString
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -389,45 +372,27 @@ public class JobInfoActivity extends Activity {
         if (fileLines.size() == 0) { return; }
 
         ((EditText) findViewById(R.id.editTextCompanyName)).setText
-                (getValueFromList("Company Name", fileLines));
+                (Tools.getValueFromList("Company Name", fileLines));
         ((EditText) findViewById(R.id.editTextDiameter)).setText
-                                                    (getValueFromList("Diameter", fileLines));
+                                                    (Tools.getValueFromList("Diameter", fileLines));
         ((EditText) findViewById(R.id.editTextFacility)).setText
-                                                    (getValueFromList("Facility", fileLines));
+                                                    (Tools.getValueFromList("Facility", fileLines));
         ((EditText) findViewById(R.id.editTextGrade)).setText
-                                                    (getValueFromList("Grade", fileLines));
+                                                    (Tools.getValueFromList("Grade", fileLines));
         ((EditText) findViewById(R.id.editTextJob)).setText
-                (getValueFromList("Job", fileLines));
+                (Tools.getValueFromList("Job", fileLines));
         ((EditText) findViewById(R.id.editTextProtectorMakeupAdjustment)).setText
-                (getValueFromList("Makeup Adjustment", fileLines));
+                (Tools.getValueFromList("Makeup Adjustment", fileLines));
         ((EditText) findViewById(R.id.editTextRack)).setText
-                (getValueFromList("Rack", fileLines));
+                (Tools.getValueFromList("Rack", fileLines));
         ((EditText) findViewById(R.id.editTextRange)).setText
-                (getValueFromList("Range", fileLines));
+                (Tools.getValueFromList("Range", fileLines));
         ((EditText) findViewById(R.id.editTextRig)).setText
-                (getValueFromList("Rig", fileLines));
+                (Tools.getValueFromList("Rig", fileLines));
         ((EditText) findViewById(R.id.editTextWall)).setText
-                (getValueFromList("Wall", fileLines));
+                (Tools.getValueFromList("Wall", fileLines));
 
     }//end of JobInfoActivity::getJobInfoFromFile
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobInfoActivity::getValueFromList
-    //
-    // Scans through the passed in List for the passed in Key and returns the
-    // value found at that string. Returns null if the Key is not found.
-    //
-
-    private String getValueFromList(String pKey, ArrayList<String> pList) {
-
-        // If the key is found in the list, the value for the
-        // key is extracted from the line and returned.
-        for (String s : pList) { if (s.contains(pKey)) { return extractValueFromString(s);} }
-
-        return null;
-
-    }//end of JobInfoActivity::getValueFromList
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
