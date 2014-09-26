@@ -53,9 +53,9 @@
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="400dp"
-        android:paddingBottom="0dp"
-        android:paddingLeft="0dp"
-        android:paddingRight="0dp"
+        android:paddingBottom="20dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         android:paddingTop="0dp"
         android:gravity="top" >
 
@@ -85,7 +85,11 @@
             android:divider="#000000"
             android:dividerHeight="0dp"
             android:fadeScrollbars="false"
-            android:footerDividersEnabled="true"
+            android:paddingBottom="0dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="0dp"
+            android:scrollbarStyle="outsideOverlay"
             android:visibility="gone" ></ListView>
 
     </LinearLayout>

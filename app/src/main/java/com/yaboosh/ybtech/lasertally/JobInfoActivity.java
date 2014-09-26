@@ -413,6 +413,24 @@ public class JobInfoActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // JobInfoActivity::getValueFromList
+    //
+    // Scans through the passed in List for the passed in Key and returns the
+    // value found at that string. Returns null if the Key is not found.
+    //
+
+    private String getValueFromList(String pKey, ArrayList<String> pList) {
+
+        // If the key is found in the list, the value for the
+        // key is extracted from the line and returned.
+        for (String s : pList) { if (s.contains(pKey)) { return extractValueFromString(s);} }
+
+        return null;
+
+    }//end of JobInfoActivity::getValueFromList
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // JobInfoActivity::handleCancelButtonPressed
     //
     // Exits the activity by calling exitActivityByCancel().
@@ -494,24 +512,6 @@ public class JobInfoActivity extends Activity {
         exitActivityByOk();
 
     }//end of JobInfoActivity::handleOkButtonPressed
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobInfoActivity::getValueFromList
-    //
-    // Scans through the passed in List for the passed in Key and returns the
-    // value found at that string. Returns null if the Key is not found.
-    //
-
-    private String getValueFromList(String pKey, ArrayList<String> pList) {
-
-        // If the key is found in the list, the value for the
-        // key is extracted from the line and returned.
-        for (String s : pList) { if (s.contains(pKey)) { return extractValueFromString(s);} }
-
-        return null;
-
-    }//end of JobInfoActivity::getValueFromList
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
