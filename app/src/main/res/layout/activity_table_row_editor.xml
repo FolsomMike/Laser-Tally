@@ -229,7 +229,7 @@
             </View>
 
             <Button
-                android:id="@id/tableRowEditorOkButton"
+                android:id="@id/okButton"
                 android:background="@drawable/white_styled_button"
                 android:layout_width="125dp"
                 android:layout_height="wrap_content"

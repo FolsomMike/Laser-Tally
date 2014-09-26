@@ -350,31 +350,38 @@ public class CreateJobActivity extends Activity {
     //-----------------------------------------------------------------------------
     // CreateJobActivity::handleEditTextJobTextChanged
     //
-    // Checks to see if the passed in length is more than 0 and if the job name
-    // already exists. If the length is more than 0 and the name does not exist,
-    // then the ok button is enabled. The ok button is disabled if the opposite is
-    // true.
+    // Determines whether or not the ok button should be enabled and whether or
+    // not the jobNameAlreadyTextView should be set visible.
     //
     // Called when the text in the EditText used for the Job name is changed.
     //
 
     private void handleEditTextJobTextChanged(String pJobName, int pLength) {
 
-        Boolean bool = false;
+        Boolean enableOkButton = false;
+        Boolean jobExistsBool = false;
 
-        if (pLength > 0 && !checkIfJobNameAlreadyExists(pJobName)) { bool = true; }
+        // Check to see if the job name already exists.
+        if (checkIfJobNameAlreadyExists(pJobName)) { jobExistsBool = true; }
 
-        Button okButton = (Button) findViewById(R.id.createJobOkButton);
+        // Check to see if the length of the edit text is greater than
+        // 0 and to see if the job does not already exist.
+        if (pLength > 0 && !jobExistsBool) { enableOkButton = true; }
+
+        Button okButton = (Button) findViewById(R.id.okButton);
         TextView textView = (TextView) findViewById(R.id.jobNameAlreadyExistsTextView);
 
-        okButton.setEnabled(bool);
-
-        if (bool) {
+        okButton.setEnabled(enableOkButton);
+        if (enableOkButton) {
             okButton.setTextAppearance(getApplicationContext(), R.style.whiteStyledButton);
-            textView.setVisibility(View.INVISIBLE);
         } else {
             okButton.setTextAppearance(getApplicationContext(), R.style.disabledStyledButton);
+        }
+
+        if (jobExistsBool) {
             textView.setVisibility(View.VISIBLE);
+        } else {
+            textView.setVisibility(View.INVISIBLE);
         }
 
     }//end of CreateJobActivity::handleEditTextJobTextChanged
