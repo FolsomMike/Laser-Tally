@@ -47,8 +47,6 @@ import java.text.DecimalFormat;
 public class JobDisplayActivity extends Activity {
 
     public static final String TAG = "JobDisplayActivity";
-    public static final int TABLE_ROW_EDITOR_ACTIVITY_RESULT = 1231;
-    public static final int JOB_INFO_ACTIVITY_RESULT = 1232;
 
     private View decorView;
     private int uiOptions;
@@ -119,11 +117,10 @@ public class JobDisplayActivity extends Activity {
         redoButton = (Button)findViewById(R.id.redoButton);
 
         Bundle bundle = getIntent().getExtras();
-        if (bundle.getBoolean(CreateJobActivity.JOB_INFO_INCLUDED, false)) {
+        if (bundle.getBoolean(Keys.JOB_INFO_INCLUDED_KEY, false)) {
 
-            setJobTitle(bundle.getString(CreateJobActivity.JOB_KEY));
-            String newMakeupAdjustmentValue = bundle.getString
-                                                        (CreateJobActivity.MAKEUP_ADJUSTMENT_KEY);
+            setJobTitle(bundle.getString(Keys.JOB_KEY));
+            String newMakeupAdjustmentValue = bundle.getString(Keys.MAKEUP_ADJUSTMENT_KEY);
 
             // Checks to see if the new value is not
             // empty; prevents parseFloat from
@@ -238,7 +235,7 @@ public class JobDisplayActivity extends Activity {
     public void onActivityResult(int pRequestCode, int pResultCode, Intent pData)
     {
 
-        if (pRequestCode == TABLE_ROW_EDITOR_ACTIVITY_RESULT) {
+        if (pRequestCode == Keys.ACTIVITY_RESULT_TABLE_ROW_EDITOR) {
 
             if (pResultCode == RESULT_OK) {
                 handleTableRowEditorActivityResultOk(
@@ -250,11 +247,11 @@ public class JobDisplayActivity extends Activity {
                 handleTableRowEditorActivityResultCancel();
             }
         }
-        else if (pRequestCode == JOB_INFO_ACTIVITY_RESULT) {
+        else if (pRequestCode == Keys.ACTIVITY_RESULT_JOB_INFO) {
 
             if (pResultCode == RESULT_OK) {
-                handleJobInfoActivityResultOk(pData.getStringExtra(JobInfoActivity.JOB_KEY),
-                            pData.getStringExtra(JobInfoActivity.MAKEUP_ADJUSTMENT_KEY));
+                handleJobInfoActivityResultOk(pData.getStringExtra(Keys.JOB_KEY),
+                            pData.getStringExtra(Keys.MAKEUP_ADJUSTMENT_KEY));
             }
             else if (pResultCode == RESULT_CANCELED) {
                 handleJobInfoActivityResultCancel();
@@ -761,9 +758,9 @@ public class JobDisplayActivity extends Activity {
     public void handleJobInfoButtonPressed(View pView) {
 
         Intent intent = new Intent(this, JobInfoActivity.class);
-        intent.putExtra(JobInfoActivity.JOB_KEY,
+        intent.putExtra(Keys.JOB_KEY,
                             ((TextView)findViewById(R.id.jobTitleTextView)).getText().toString());
-        startActivityForResult(intent, JOB_INFO_ACTIVITY_RESULT);
+        startActivityForResult(intent, Keys.ACTIVITY_RESULT_JOB_INFO);
 
     }//end of JobDisplayActivity::handleJobInfoButtonPressed
     //-----------------------------------------------------------------------------
@@ -847,7 +844,7 @@ public class JobDisplayActivity extends Activity {
         Intent intent = new Intent(this, TableRowEditorActivity.class);
         intent.putExtra(TableRowEditorActivity.PIPE_NUMBER_KEY, pipeNum);
         intent.putExtra(TableRowEditorActivity.TOTAL_LENGTH_KEY, totalLength);
-        startActivityForResult(intent, TABLE_ROW_EDITOR_ACTIVITY_RESULT);
+        startActivityForResult(intent, Keys.ACTIVITY_RESULT_TABLE_ROW_EDITOR);
 
     }//end of JobDisplayActivity::handleTableRowPressed
     //-----------------------------------------------------------------------------

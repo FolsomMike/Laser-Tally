@@ -46,18 +46,6 @@ public class CreateJobActivity extends Activity {
     private View decorView;
     private int uiOptions;
 
-    public static final String JOB_INFO_INCLUDED = "JOB_INFO_INCLUDED";
-    public static final String COMPANY_NAME_KEY = "COMPANY_NAME_KEY";
-    public static final String DIAMETER_KEY = "DIAMETER_KEY";
-    public static final String FACILITY_KEY = "FACILITY_KEY";
-    public static final String GRADE_KEY = "GRADE_KEY";
-    public static final String JOB_KEY =  "JOB_KEY";
-    public static final String MAKEUP_ADJUSTMENT_KEY = "PROTECTOR_MAKE_UP_ADJUSTMENT_KEY";
-    public static final String RACK_KEY = "RACK_KEY";
-    public static final String RANGE_KEY = "RANGE_KEY";
-    public static final String RIG_KEY = "RIG_KEY";
-    public static final String WALL_KEY = "WALL_KEY";
-
     private String companyName;
     private String diameter;
     private String facility;
@@ -275,17 +263,17 @@ public class CreateJobActivity extends Activity {
 
         Intent intent = new Intent(this, JobDisplayActivity.class);
 
-        intent.putExtra(JOB_INFO_INCLUDED, true);
-        intent.putExtra(COMPANY_NAME_KEY, companyName);
-        intent.putExtra(DIAMETER_KEY, diameter);
-        intent.putExtra(FACILITY_KEY, facility);
-        intent.putExtra(GRADE_KEY,  grade);
-        intent.putExtra(JOB_KEY, job);
-        intent.putExtra(MAKEUP_ADJUSTMENT_KEY, makeupAdjustment);
-        intent.putExtra(RACK_KEY, rack);
-        intent.putExtra(RANGE_KEY, range);
-        intent.putExtra(RIG_KEY, rig);
-        intent.putExtra(WALL_KEY, wall);
+        intent.putExtra(Keys.JOB_INFO_INCLUDED_KEY, true);
+        intent.putExtra(Keys.COMPANY_NAME_KEY, companyName);
+        intent.putExtra(Keys.DIAMETER_KEY, diameter);
+        intent.putExtra(Keys.FACILITY_KEY, facility);
+        intent.putExtra(Keys.GRADE_KEY,  grade);
+        intent.putExtra(Keys.JOB_KEY, job);
+        intent.putExtra(Keys.MAKEUP_ADJUSTMENT_KEY, makeupAdjustment);
+        intent.putExtra(Keys.RACK_KEY, rack);
+        intent.putExtra(Keys.RANGE_KEY, range);
+        intent.putExtra(Keys.RIG_KEY, rig);
+        intent.putExtra(Keys.WALL_KEY, wall);
 
         startActivity(intent);
         finish();

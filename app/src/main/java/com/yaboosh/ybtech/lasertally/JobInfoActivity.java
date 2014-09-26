@@ -56,17 +56,6 @@ public class JobInfoActivity extends Activity {
     private View decorView;
     private int uiOptions;
 
-    public static final String COMPANY_NAME_KEY = "COMPANY_NAME_KEY";
-    public static final String DIAMETER_KEY = "DIAMETER_KEY";
-    public static final String FACILITY_KEY = "FACILITY_KEY";
-    public static final String GRADE_KEY = "GRADE_KEY";
-    public static final String JOB_KEY =  "JOB_KEY";
-    public static final String MAKEUP_ADJUSTMENT_KEY = "PROTECTOR_MAKE_UP_ADJUSTMENT_KEY";
-    public static final String RACK_KEY = "RACK_KEY";
-    public static final String RANGE_KEY = "RANGE_KEY";
-    public static final String RIG_KEY = "RIG_KEY";
-    public static final String WALL_KEY = "WALL_KEY";
-
     ArrayList<String> fileLines = new ArrayList<String>();
 
     private String companyName;
@@ -124,7 +113,7 @@ public class JobInfoActivity extends Activity {
         createUiChangeListener();
 
         Bundle bundle = getIntent().getExtras();
-        passedInJob = bundle.getString(JOB_KEY);
+        passedInJob = bundle.getString(Keys.JOB_KEY);
 
         getJobInfoFromFile();
 
@@ -294,16 +283,16 @@ public class JobInfoActivity extends Activity {
 
         Intent resultIntent = new Intent();
 
-        resultIntent.putExtra(COMPANY_NAME_KEY, companyName);
-        resultIntent.putExtra(DIAMETER_KEY, diameter);
-        resultIntent.putExtra(FACILITY_KEY, facility);
-        resultIntent.putExtra(GRADE_KEY,  grade);
-        resultIntent.putExtra(JOB_KEY, job);
-        resultIntent.putExtra(MAKEUP_ADJUSTMENT_KEY, makeupAdjustment);
-        resultIntent.putExtra(RACK_KEY, rack);
-        resultIntent.putExtra(RANGE_KEY, range);
-        resultIntent.putExtra(RIG_KEY, rig);
-        resultIntent.putExtra(WALL_KEY, wall);
+        resultIntent.putExtra(Keys.COMPANY_NAME_KEY, companyName);
+        resultIntent.putExtra(Keys.DIAMETER_KEY, diameter);
+        resultIntent.putExtra(Keys.FACILITY_KEY, facility);
+        resultIntent.putExtra(Keys.GRADE_KEY,  grade);
+        resultIntent.putExtra(Keys.JOB_KEY, job);
+        resultIntent.putExtra(Keys.MAKEUP_ADJUSTMENT_KEY, makeupAdjustment);
+        resultIntent.putExtra(Keys.RACK_KEY, rack);
+        resultIntent.putExtra(Keys.RANGE_KEY, range);
+        resultIntent.putExtra(Keys.RIG_KEY, rig);
+        resultIntent.putExtra(Keys.WALL_KEY, wall);
 
         setResult(Activity.RESULT_OK, resultIntent);
         finish();
@@ -460,7 +449,7 @@ public class JobInfoActivity extends Activity {
     public void handleMenuButtonPressed(View pView) {
 
         Intent intent = new Intent(this, JobInfoMenuActivity.class);
-        intent.putExtra(JOB_KEY, passedInJob);
+        intent.putExtra(Keys.JOB_KEY, passedInJob);
         startActivity(intent);
 
     }//end of JobInfoActivity::handleMenuButtonPressed
