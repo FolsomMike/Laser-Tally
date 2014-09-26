@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.WindowManager;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -211,16 +212,19 @@ public class JobInfoMenuActivity extends Activity {
     // JobInfoMenuActivity::handleDeleteThisJobButtonPressed
     //
     // Deletes the directory for the current job and launches the MainActivity.
-    // Should be called from the "Delete this job." button onClick().
+    // Should be called from the delete this job button onClick().
     //
 
     public void handleDeleteThisJobButtonPressed(View pView) {
+
+        //debug hss//
+        Log.d(TAG, "Job Name" + job);
 
         try {
 
             File jobsDir = getDir("jobsDir", Context.MODE_PRIVATE);
 
-            File thisJobDir = new File(jobsDir, job);
+            File thisJobDir = new File(jobsDir, "job=" + job);
             Tools.deleteDirectory(thisJobDir);
 
         } catch (Exception e) {}
@@ -235,7 +239,7 @@ public class JobInfoMenuActivity extends Activity {
     // JobInfoMenuActivity::handleOpenJobButtonPressed
     //
     // Starts the OpenJobActivity.
-    // Should be called from the "Open existing job." button onClick().
+    // Should be called from the open existing job button onClick().
     //
 
     public void handleOpenJobButtonPressed(View pView) {
