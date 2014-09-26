@@ -115,7 +115,9 @@ public class CreateJobActivity extends Activity {
 
         ((TextView)findViewById(R.id.editTextJob)).addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable pE) {
-                handleEditTextJobTextChanged(pE.length());
+
+                handleEditTextJobTextChanged(pE.toString(), pE.length());
+
             }
 
             public void beforeTextChanged(CharSequence pS, int pStart, int pCount, int pAfter) {
@@ -185,6 +187,38 @@ public class CreateJobActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // CreateJobActivity::checkIfJobNameAlreadyExists
+    //
+    // Searches through the jobs in the jobsDir directory to see if a job already
+    // has the passed in name.
+    //
+    // Returns true if name already exists. False if it doesn't.
+    //
+    //
+
+    private Boolean checkIfJobNameAlreadyExists(String pJobName) {
+
+        Boolean exists = false;
+
+        try {
+
+            File jobsDir = getDir("jobsDir", Context.MODE_PRIVATE);
+            File[] dirs = jobsDir.listFiles();
+
+            for (File f : dirs) {
+                if (f.isDirectory() && pJobName.equals(extractValueFromString(f.getName()))) {
+                    exists = true;
+                }
+            }
+
+        } catch (Exception e) {}
+
+        return exists;
+
+    }//end of CreateJobActivity::checkIfJobNameAlreadyExists
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // CreateJobActivity::createUiChangeListener
     //
     // Listens for visibility changes in the ui.
@@ -221,8 +255,6 @@ public class CreateJobActivity extends Activity {
 
     private void exitActivityByCancel() {
 
-        Intent resultIntent = new Intent();
-        setResult(Activity.RESULT_CANCELED, resultIntent);
         finish();
 
     }//end of CreateJobActivity::exitActivityByCancel
@@ -261,6 +293,21 @@ public class CreateJobActivity extends Activity {
         finish();
 
     }//end of CreateJobActivity::exitActivityByOk
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // CreateJobActivity::extractValueFromString
+    //
+    // Extracts and returns the value after the equals sign from the passed in
+    // string.
+    //
+
+    private String extractValueFromString(String pString) {
+
+        int startPos = pString.indexOf("=") + 1;
+        return pString.substring(startPos);
+
+    }//end of CreateJobActivity::extractValueFromString
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -303,26 +350,31 @@ public class CreateJobActivity extends Activity {
     //-----------------------------------------------------------------------------
     // CreateJobActivity::handleEditTextJobTextChanged
     //
-    // Checks to see if the passed in length is more than 0. If it is, then the
-    // ok button is enabled. If it is not, then the ok button is disabled.
+    // Checks to see if the passed in length is more than 0 and if the job name
+    // already exists. If the length is more than 0 and the name does not exist,
+    // then the ok button is enabled. The ok button is disabled if the opposite is
+    // true.
     //
     // Called when the text in the EditText used for the Job name is changed.
     //
 
-    private void handleEditTextJobTextChanged(int pLength) {
+    private void handleEditTextJobTextChanged(String pJobName, int pLength) {
 
         Boolean bool = false;
 
-        if (pLength > 0) { bool = true; }
+        if (pLength > 0 && !checkIfJobNameAlreadyExists(pJobName)) { bool = true; }
 
         Button okButton = (Button) findViewById(R.id.createJobOkButton);
+        TextView textView = (TextView) findViewById(R.id.jobNameAlreadyExistsTextView);
 
         okButton.setEnabled(bool);
 
         if (bool) {
             okButton.setTextAppearance(getApplicationContext(), R.style.whiteStyledButton);
+            textView.setVisibility(View.INVISIBLE);
         } else {
             okButton.setTextAppearance(getApplicationContext(), R.style.disabledStyledButton);
+            textView.setVisibility(View.VISIBLE);
         }
 
     }//end of CreateJobActivity::handleEditTextJobTextChanged
@@ -366,7 +418,7 @@ public class CreateJobActivity extends Activity {
         File jobsDir = getDir("jobsDir", Context.MODE_PRIVATE);
 
         // Retrieve/Create sub-directory thisJobDir
-        File thisJobDir = new File(jobsDir, job);
+        File thisJobDir = new File(jobsDir, "job=" + job);
         if (!thisJobDir.exists()) { Boolean success = thisJobDir.mkdir(); }
 
         // Get a file jobInfoTextFile within the dir thisJobDir.

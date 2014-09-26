@@ -74,7 +74,7 @@ public class JobInfoActivity extends Activity {
     private String facility;
     private String grade;
     private String job;
-    private String oldJob;
+    private String passedInJob;
     private String makeupAdjustment;
     private String rack;
     private String range;
@@ -124,13 +124,15 @@ public class JobInfoActivity extends Activity {
         createUiChangeListener();
 
         Bundle bundle = getIntent().getExtras();
-        job = bundle.getString(JOB_KEY);
+        passedInJob = bundle.getString(JOB_KEY);
 
         getJobInfoFromFile();
 
         ((TextView)findViewById(R.id.editTextJob)).addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable pE) {
-                handleEditTextJobTextChanged(pE.length());
+
+                handleEditTextJobTextChanged(pE.toString(), pE.length());
+
             }
 
             public void beforeTextChanged(CharSequence pS, int pStart, int pCount, int pAfter) {
@@ -197,6 +199,38 @@ public class JobInfoActivity extends Activity {
         Log.d(TAG, "Inside of JobInfoActivity onPause");
 
     }//end of JobInfoActivity::onPause
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobInfoActivity::checkIfJobNameAlreadyExists
+    //
+    // Searches through the jobs in the jobsDir directory to see if a job already
+    // has the passed in name.
+    //
+    // Returns true if name already exists. False if it doesn't.
+    //
+    //
+
+    private Boolean checkIfJobNameAlreadyExists(String pJobName) {
+
+        Boolean exists = false;
+
+        try {
+
+            File jobsDir = getDir("jobsDir", Context.MODE_PRIVATE);
+            File[] dirs = jobsDir.listFiles();
+
+            for (File f : dirs) {
+                if (f.isDirectory() && pJobName.equals(extractValueFromString(f.getName()))) {
+                    exists = true;
+                }
+            }
+
+        } catch (Exception e) {}
+
+        return exists;
+
+    }//end of JobInfoActivity::checkIfJobNameAlreadyExists
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -286,10 +320,10 @@ public class JobInfoActivity extends Activity {
     // string.
     //
 
-    private String extractValueFromString(String string) {
+    private String extractValueFromString(String pString) {
 
-        int startPos = string.indexOf("=") + 1;
-        return string.substring(startPos);
+        int startPos = pString.indexOf("=") + 1;
+        return pString.substring(startPos);
 
     }//end of JobInfoActivity::extractValueFromString
     //-----------------------------------------------------------------------------
@@ -306,7 +340,6 @@ public class JobInfoActivity extends Activity {
         diameter = ((EditText) findViewById(R.id.editTextDiameter)).getText().toString();
         facility = ((EditText) findViewById(R.id.editTextFacility)).getText().toString();
         grade = ((EditText) findViewById(R.id.editTextGrade)).getText().toString();
-        oldJob = job;
         job = ((EditText) findViewById(R.id.editTextJob)).getText().toString();
         makeupAdjustment = ((EditText)
                         findViewById(R.id.editTextProtectorMakeupAdjustment)).getText().toString();
@@ -327,8 +360,6 @@ public class JobInfoActivity extends Activity {
 
     private void getJobInfoFromFile() {
 
-        Log.d(TAG, "JOB: " + job);
-
         try {
             fileLines.clear();
 
@@ -336,7 +367,7 @@ public class JobInfoActivity extends Activity {
             File jobsDir = getDir("jobsDir", Context.MODE_PRIVATE);
 
             // Retrieve/Create sub-directory thisJobDir
-            File thisJobDir = new File(jobsDir, job);
+            File thisJobDir = new File(jobsDir, "job=" + passedInJob);
 
             // Get a file jobInfoTextFile within the dir thisJobDir.
             File jobInfoTextFile = new File(thisJobDir, "jobInfo.txt");
@@ -397,29 +428,55 @@ public class JobInfoActivity extends Activity {
     //-----------------------------------------------------------------------------
     // JobInfoActivity::handleEditTextJobTextChanged
     //
-    // Checks to see if the passed in length is more than 0. If it is, then the
-    // ok button is enabled. If it is not, then the ok button is disabled.
+    // Checks to see if the passed in length is more than 0 and if the job name
+    // already exists. If the length is more than 0 and the name does not exist,
+    // then the ok button is enabled. The ok button is disabled if the opposite is
+    // true.
     //
     // Called when the text in the EditText used for the Job name is changed.
     //
 
-    private void handleEditTextJobTextChanged(int pLength) {
+    private void handleEditTextJobTextChanged(String pJobName, int pLength) {
 
         Boolean bool = false;
+        Boolean jobExistsBool = false;
 
-        if (pLength > 0) { bool = true; }
+        if ((pLength > 0 && !checkIfJobNameAlreadyExists(pJobName))
+                || (pJobName.equals(passedInJob))) { bool = true; }
 
         Button okButton = (Button) findViewById(R.id.jobInfoOkButton);
+        TextView textView = (TextView) findViewById(R.id.jobNameAlreadyExistsTextView);
 
         okButton.setEnabled(bool);
 
         if (bool) {
             okButton.setTextAppearance(getApplicationContext(), R.style.whiteStyledButton);
+            textView.setVisibility(View.INVISIBLE);
         } else {
             okButton.setTextAppearance(getApplicationContext(), R.style.disabledStyledButton);
+            textView.setVisibility(View.VISIBLE);
+        }
+
+        if (jobExistsBool) {
+
         }
 
     }//end of JobInfoActivity::handleEditTextJobTextChanged
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobInfoActivity::handleMenuButtonPressed
+    //
+    // Starts the JobInfoMenu activity.
+    //
+
+    public void handleMenuButtonPressed(View pView) {
+
+        Intent intent = new Intent(this, JobInfoMenuActivity.class);
+        intent.putExtra(JOB_KEY, passedInJob);
+        startActivity(intent);
+
+    }//end of JobInfoActivity::handleMenuButtonPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -478,10 +535,10 @@ public class JobInfoActivity extends Activity {
         File jobsDir = getDir("jobsDir", Context.MODE_PRIVATE);
 
         // Retrieve/Create sub-directory thisJobDir
-        File thisJobDir = new File(jobsDir, oldJob);
-        if (!job.equals(oldJob)) {
-            Log.d(TAG, "Rename result: " + thisJobDir.renameTo(new File(jobsDir, job)));
-            thisJobDir = new File(jobsDir, job);
+        File thisJobDir = new File(jobsDir, "job=" + passedInJob);
+        if (!job.equals(passedInJob)) {
+            Log.d(TAG, "Rename result: " + thisJobDir.renameTo(new File(jobsDir, "job=" + job)));
+            thisJobDir = new File(jobsDir, "job=" + job);
         }
 
         // Get a file jobInfoTextFile within the dir thisJobDir.

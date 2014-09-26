@@ -1,14 +1,19 @@
 /******************************************************************************
-* Title: MainActivity.java
-* Author: Hunter Schoonover
-* Date: 7/22/14
-*
-* Purpose:
-*
-* This class creates the main activity for the application.
-* It is created and used upon app startup.
-*
-*/
+ * Title: JobInfoMenuActivity.java
+ * Author: Hunter Schoonover
+ * Date: 09/26/14
+ *
+ * Purpose:
+ *
+ * This class is used as an activity to display the menu for the Job Info
+ * activity.
+ * The menu displays buttons:
+ *      Open Existing Job
+ *      Create New Job
+ *      Close this Job
+ *      Delete this Job
+ *
+ */
 
 //-----------------------------------------------------------------------------
 
@@ -16,66 +21,46 @@ package com.yaboosh.ybtech.lasertally;
 
 //-----------------------------------------------------------------------------
 
-import android.app.ActionBar;
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.graphics.Color;
-import android.os.Binder;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
 import android.util.Log;
-import android.util.SparseIntArray;
 import android.view.View;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
+import android.view.WindowManager;
 
 import java.io.File;
-import java.lang.ref.WeakReference;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-// class MainActivity
+// class JobInfoMenuActivity
 //
 
-public class MainActivity extends Activity {
+public class JobInfoMenuActivity extends Activity {
 
-    public static final String TAG = "MainActivity";
+    public static final String TAG = "JobInfoMenuActivity";
 
     private View decorView;
     private int uiOptions;
 
-    private ArrayList<String> jobNames = new ArrayList<String>();
+    private String job;
 
     //-----------------------------------------------------------------------------
-    // MainActivity::MainActivity (constructor)
+    // JobInfoMenuActivity::JobInfoMenuActivity (constructor)
     //
 
-    public MainActivity() {
+    public JobInfoMenuActivity() {
 
         super();
 
-    }//end of MainActivity::MainActivity (constructor)
+    }//end of JobInfoMenuActivity::JobInfoMenuActivity (constructor)
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MainActivity::onCreate
+    // JobInfoMenuActivity::onCreate
     //
     // Automatically called when the activity is created.
-    // All functions that must be done upon instantiation should be called here.
+    // All functions that must be done upon creation should be called here.
     //
 
     @Override
@@ -83,26 +68,33 @@ public class MainActivity extends Activity {
 
         super.onCreate(savedInstanceState);
 
-        Log.d(TAG, "Inside of MainActivity onCreate");
+        Log.d(TAG, "Inside of onCreate :: " + TAG);
 
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_job_info_menu);
+
+        this.setFinishOnTouchOutside(false);
+
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         decorView = getWindow().getDecorView();
 
-        uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        uiOptions = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
 
         createUiChangeListener();
 
-    }//end of MainActivity::onCreate
+        Bundle bundle = getIntent().getExtras();
+        job = bundle.getString(JobInfoActivity.JOB_KEY);
+
+    }//end of JobInfoMenuActivity::onCreate
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MainActivity::onDestroy
+    // JobInfoMenuActivity::onDestroy
     //
     // Automatically called when the activity is destroyed.
     // All functions that must be done upon destruction should be called here.
@@ -112,15 +104,15 @@ public class MainActivity extends Activity {
     protected void onDestroy()
     {
 
-        Log.d(TAG, "Inside of MainActivity onDestroy");
+        Log.d(TAG, "Inside of onDestroy :: " + TAG);
 
         super.onDestroy();
 
-    }//end of MainActivity::onDestroy
+    }//end of JobInfoMenuActivity::onDestroy
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MainActivity::onResume
+    // JobInfoMenuActivity::onResume
     //
     // Automatically called when the activity is paused when it does not have
     // user's focus but it still partially visible.
@@ -132,15 +124,15 @@ public class MainActivity extends Activity {
 
         super.onResume();
 
-        Log.d(TAG, "Inside of MainActivity onResume");
+        Log.d(TAG, "Inside of onResume :: " + TAG);
 
         decorView.setSystemUiVisibility(uiOptions);
 
-    }//end of MainActivity::onResume
+    }//end of JobInfoMenuActivity::onResume
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MainActivity::onPause
+    // JobInfoMenuActivity::onPause
     //
     // Automatically called when the activity is paused when it does not have
     // user's focus but it still partially visible.
@@ -152,13 +144,13 @@ public class MainActivity extends Activity {
 
         super.onPause();
 
-        Log.d(TAG, "Inside of MainActivity onPause");
+        Log.d(TAG, "Inside of onPause :: " + TAG);
 
-    }//end of MainActivity::onPause
+    }//end of JobInfoMenuActivity::onPause
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MainActivity::createUiChangeListener
+    // JobInfoMenuActivity::createUiChangeListener
     //
     // Listens for visibility changes in the ui.
     //
@@ -182,14 +174,29 @@ public class MainActivity extends Activity {
 
                 });
 
-    }//end of MainActivity::createUiChangeListener
+    }//end of JobInfoMenuActivity::createUiChangeListener
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MainActivity::handleCreateANewJobButtonPressed
+    // JobInfoMenuActivity::handleCloseThisJobButtonPressed
+    //
+    // Starts the MainActivity.
+    // Should be called from the "Close this job." button onClick().
+    //
+
+    public void handleCloseThisJobButtonPressed(View pView) {
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+
+    }//end of JobInfoMenuActivity::handleCloseThisJobButtonPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobInfoMenuActivity::handleCreateANewJobButtonPressed
     //
     // Starts an activity for Job Info.
-    // Should be called from the "Create new job." button onClick().
+    // Should be called from the "Create a new job." button onClick().
     //
 
     public void handleCreateANewJobButtonPressed(View pView) {
@@ -197,24 +204,61 @@ public class MainActivity extends Activity {
         Intent intent = new Intent(this, CreateJobActivity.class);
         startActivity(intent);
 
-    }//end of MainActivity::handleCreateANewJobButtonPressed
+    }//end of JobInfoMenuActivity::handleCreateANewJobButtonPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MainActivity::handleOpenAnExistingJobButtonPressed
+    // JobInfoMenuActivity::handleDeleteThisJobButtonPressed
+    //
+    // Deletes the directory for the current job and launches the MainActivity.
+    // Should be called from the "Delete this job." button onClick().
+    //
+
+    public void handleDeleteThisJobButtonPressed(View pView) {
+
+        try {
+
+            File jobsDir = getDir("jobsDir", Context.MODE_PRIVATE);
+
+            File thisJobDir = new File(jobsDir, job);
+            Tools.deleteDirectory(thisJobDir);
+
+        } catch (Exception e) {}
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+
+    }//end of JobInfoMenuActivity::handleDeleteThisJobButtonPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobInfoMenuActivity::handleOpenJobButtonPressed
     //
     // Starts the OpenJobActivity.
     // Should be called from the "Open existing job." button onClick().
     //
 
-    public void handleOpenAnExistingJobButtonPressed(View pView) {
+    public void handleOpenJobButtonPressed(View pView) {
 
         Intent intent = new Intent(this, OpenJobActivity.class);
         startActivity(intent);
 
-    }//end of MainActivity::handleOpenAnExistingJobButtonPressed
+    }//end of JobInfoMenuActivity::handleOpenJobButtonPressed
     //-----------------------------------------------------------------------------
 
-}//end of class MainActivity
+    //-----------------------------------------------------------------------------
+    // JobInfoMenuActivity::handleRedXButtonPressed
+    //
+    // Exits the activity by calling exitActivityByCancel().
+    //
+
+    public void handleRedXButtonPressed(View pView) {
+
+        finish();
+
+    }//end of JobInfoMenuActivity::handleRedXButtonPressed
+    //-----------------------------------------------------------------------------
+
+}//end of class JobInfoMenuActivity
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------

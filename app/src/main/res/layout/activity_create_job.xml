@@ -40,8 +40,8 @@
                 android:layout_height="fill_parent"
                 android:padding="0dp"
                 android:textColor="#B2B2B2"
-                android:text="Job Info"
-                android:textSize="40dp" />
+                android:text="Create Job"
+                android:textSize="40sp" />
 
             <!-- horizontal spacer -->
             <View
@@ -92,65 +92,89 @@
                 android:padding="0dp" >
             </View>
 
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="0dp"
-                android:paddingLeft="0dp"
-                android:paddingRight="0dp"
-                android:paddingTop="0dp"
-                android:gravity="center" >
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="0dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:paddingTop="0dp"
+            android:gravity="center" >
+
+                <TextView
+                    android:id="@id/jobNameAlreadyExistsTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="25dp"
+                    android:text="A job with this name already exists."
+                    android:textColor="#FF0000"
+                    android:textSize="17sp"
+                    android:visibility="invisible" />
 
                 <LinearLayout
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
+                    android:orientation="horizontal"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:paddingBottom="0dp"
                     android:paddingLeft="0dp"
                     android:paddingRight="0dp"
                     android:paddingTop="0dp"
-                    android:gravity="end" >
+                    android:gravity="center" >
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="*"
-                        android:textColor="#666666"
-                        android:textSize="40sp"
-                        android:gravity="end" />
+                        android:paddingBottom="0dp"
+                        android:paddingLeft="0dp"
+                        android:paddingRight="0dp"
+                        android:paddingTop="0dp"
+                        android:gravity="end" >
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="*"
+                            android:textColor="#666666"
+                            android:textSize="40sp"
+                            android:gravity="end" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Job:"
+                            android:textColor="#000000"
+                            android:textSize="40sp"
+                            android:gravity="end" />
+
+                    </LinearLayout>
+
+                    <!-- horizontal spacer -->
+                    <View
+                        android:layout_width="10dp"
+                        android:layout_height="1dp" >
+                    </View>
+
+                    <EditText
+                        android:id="@id/editTextJob"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Job:"
                         android:textColor="#000000"
-                        android:textSize="40sp"
-                        android:gravity="end" />
+                        android:textSize="35sp"
+                        android:maxLength="30"
+                        android:paddingBottom="10dp"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:paddingTop="10dp"
+                        android:selectAllOnFocus="true"
+                        android:background="@drawable/black_border" >
+                    </EditText>
 
                 </LinearLayout>
-
-                <!-- horizontal spacer -->
-                <View
-                    android:layout_width="10dp"
-                    android:layout_height="1dp" >
-                </View>
-
-                <EditText
-                    android:id="@id/editTextJob"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:textColor="#000000"
-                    android:textSize="35sp"
-                    android:maxLength="30"
-                    android:paddingBottom="10dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="10dp"
-                    android:selectAllOnFocus="true"
-                    android:background="@drawable/black_border" >
-                </EditText>
 
             </LinearLayout>
 

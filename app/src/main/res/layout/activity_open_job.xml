@@ -1,0 +1,93 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_content"
+    android:layout_width="400dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#CFCFCF"
+    android:paddingBottom="0dp"
+    android:paddingLeft="0dp"
+    android:paddingRight="0dp"
+    android:paddingTop="0dp"
+    tools:context="com.yaboosh.ybtech.lasertally.OpenJobActivity"
+    android:gravity="center" >
+
+    <LinearLayout
+        android:background="#1A1A1A"
+        android:gravity="center"
+        android:layout_width="fill_parent"
+        android:layout_height="70dp"
+        android:orientation="horizontal"
+        android:paddingBottom="0dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="0dp" >
+
+        <TextView
+            android:id="@id/jobInfoActivityTitleTextView"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:padding="0dp"
+            android:textColor="#B2B2B2"
+            android:text="Open Job"
+            android:textSize="40sp" />
+
+        <!-- horizontal spacer -->
+        <View
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="1dp" >
+        </View>
+
+        <Button
+            android:background="@drawable/close_x_button"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="handleRedXButtonPressed"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="400dp"
+        android:paddingBottom="0dp"
+        android:paddingLeft="0dp"
+        android:paddingRight="0dp"
+        android:paddingTop="0dp"
+        android:gravity="top" >
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="15dp"
+            android:text="Select a job:"
+            android:textColor="#666666"
+            android:textSize="25sp" />
+
+        <TextView
+            android:id="@id/noJobsTextView"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="@drawable/black_border"
+            android:gravity="center"
+            android:text="no jobs found"
+            android:textColor="#666666"
+            android:textSize="30sp"
+            android:visibility="gone" />
+
+        <ListView
+            android:id="@id/jobNamesListView"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:divider="#000000"
+            android:dividerHeight="0dp"
+            android:fadeScrollbars="false"
+            android:footerDividersEnabled="true"
+            android:visibility="gone" ></ListView>
+
+    </LinearLayout>
+
+</LinearLayout>

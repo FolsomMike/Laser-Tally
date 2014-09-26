@@ -40,7 +40,10 @@
     <item type="id" name="jobInfoActivityTitleTextView" />
     <item type="id" name="jobInfoCancelButton" />
     <item type="id" name="jobInfoOkButton" />
+    <item type="id" name="jobNameAlreadyExistsTextView" />
+    <item type="id" name="jobNamesListView" />
     <item type="id" name="jobTitleTextView" />
+    <item type="id" name="noJobsTextView" />
     <item type="id" name="renumberAllBelowCheckbox" />
     <item type="id" name="tableRowEditorRedXButton" />
     <item type="id" name="tableRowEditorCancelButton" />

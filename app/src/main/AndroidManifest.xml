@@ -105,6 +105,20 @@
             android:theme="@style/activityDialog" >
         </activity>
 
+        <activity
+            android:name=".JobInfoMenuActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_job_menu_info"
+            android:theme="@style/activityDialog" >
+        </activity>
+
+        <activity
+            android:name=".OpenJobActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_open_job"
+            android:theme="@style/activityDialog" >
+        </activity>
+
         <service android:name="com.yaboosh.ybtech.lasertally.BluetoothLeService" >
         </service>
 
