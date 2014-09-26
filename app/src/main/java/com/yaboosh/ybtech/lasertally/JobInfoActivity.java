@@ -71,6 +71,7 @@ public class JobInfoActivity extends Activity {
     private String facility;
     private String grade;
     private String job;
+    private String oldJob;
     private String makeupAdjustment;
     private String rack;
     private String range;
@@ -240,9 +241,8 @@ public class JobInfoActivity extends Activity {
 
         getAndStoreJobInfoFromUserInput();
 
-        //debug hss//saveInformationToFile();
+        saveInformationToFile();
 
-        //debug hss//
         extractValueFromString("j=fall");
 
         Intent resultIntent = new Intent();
@@ -291,6 +291,7 @@ public class JobInfoActivity extends Activity {
         diameter = ((EditText) findViewById(R.id.editTextDiameter)).getText().toString();
         facility = ((EditText) findViewById(R.id.editTextFacility)).getText().toString();
         grade = ((EditText) findViewById(R.id.editTextGrade)).getText().toString();
+        oldJob = job;
         job = ((EditText) findViewById(R.id.editTextJob)).getText().toString();
         makeupAdjustment = ((EditText)
                         findViewById(R.id.editTextProtectorMakeupAdjustment)).getText().toString();
@@ -434,8 +435,11 @@ public class JobInfoActivity extends Activity {
         File jobsDir = getDir("jobsDir", Context.MODE_PRIVATE);
 
         // Retrieve/Create sub-directory thisJobDir
-        File thisJobDir = new File(jobsDir, job);
-        if (!thisJobDir.exists()) { Boolean success = thisJobDir.mkdir(); }
+        File thisJobDir = new File(jobsDir, oldJob);
+        if (!job.equals(oldJob)) {
+            Log.d(TAG, "Rename result: " + thisJobDir.renameTo(new File(jobsDir, job)));
+            thisJobDir = new File(jobsDir, job);
+        }
 
         // Get a file jobInfoTextFile within the dir thisJobDir.
         File jobInfoTextFile = new File(thisJobDir, "jobInfo.txt");
