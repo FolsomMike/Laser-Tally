@@ -304,7 +304,7 @@ public class CreateJobActivity extends Activity {
     // CreateJobActivity::handleEditTextJobTextChanged
     //
     // Checks to see if the passed in length is more than 0. If it is, then the
-    // ok button is enabled.
+    // ok button is enabled. If it is not, then the ok button is disabled.
     //
     // Called when the text in the EditText used for the Job name is changed.
     //

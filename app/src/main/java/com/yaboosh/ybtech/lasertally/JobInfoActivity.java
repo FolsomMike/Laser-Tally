@@ -20,10 +20,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -124,6 +127,18 @@ public class JobInfoActivity extends Activity {
         job = bundle.getString(JOB_KEY);
 
         getJobInfoFromFile();
+
+        ((TextView)findViewById(R.id.editTextJob)).addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable pE) {
+                handleEditTextJobTextChanged(pE.length());
+            }
+
+            public void beforeTextChanged(CharSequence pS, int pStart, int pCount, int pAfter) {
+            }
+
+            public void onTextChanged(CharSequence pS, int pStart, int pBefore, int pCount) {
+            }
+        });
 
     }//end of JobInfoActivity::onCreate
     //-----------------------------------------------------------------------------
@@ -377,6 +392,34 @@ public class JobInfoActivity extends Activity {
         exitActivityByCancel();
 
     }//end of JobInfoActivity::handleCancelButtonPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobInfoActivity::handleEditTextJobTextChanged
+    //
+    // Checks to see if the passed in length is more than 0. If it is, then the
+    // ok button is enabled. If it is not, then the ok button is disabled.
+    //
+    // Called when the text in the EditText used for the Job name is changed.
+    //
+
+    private void handleEditTextJobTextChanged(int pLength) {
+
+        Boolean bool = false;
+
+        if (pLength > 0) { bool = true; }
+
+        Button okButton = (Button) findViewById(R.id.jobInfoOkButton);
+
+        okButton.setEnabled(bool);
+
+        if (bool) {
+            okButton.setTextAppearance(getApplicationContext(), R.style.whiteStyledButton);
+        } else {
+            okButton.setTextAppearance(getApplicationContext(), R.style.disabledStyledButton);
+        }
+
+    }//end of JobInfoActivity::handleEditTextJobTextChanged
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

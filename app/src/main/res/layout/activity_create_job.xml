@@ -23,60 +23,42 @@
         android:background="#1A1A1A" >
 
         <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
+            android:background="#1A1A1A"
+            android:gravity="center"
+            android:layout_width="fill_parent"
+            android:layout_height="70dp"
+            android:orientation="horizontal"
             android:paddingBottom="0dp"
-            android:paddingLeft="0dp"
-            android:paddingRight="0dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:paddingTop="0dp" >
-
-            <!-- vertical spacer -->
-            <View
-                android:layout_width="0dp"
-                android:layout_height="5dp" >
-            </View>
 
             <TextView
+                android:id="@id/jobInfoActivityTitleTextView"
+                android:gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
+                android:padding="0dp"
                 android:textColor="#B2B2B2"
-                android:text="Create Job"
+                android:text="Job Info"
                 android:textSize="40dp" />
 
-        </LinearLayout>
-
-        <!-- horizontal spacer -->
-        <View
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="1dp" >
-        </View>
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:paddingBottom="0dp"
-            android:paddingLeft="0dp"
-            android:paddingRight="0dp"
-            android:paddingTop="0dp" >
-
-            <!-- vertical spacer -->
+            <!-- horizontal spacer -->
             <View
+                android:layout_weight="1"
                 android:layout_width="0dp"
-                android:layout_height="15dp" >
+                android:layout_height="1dp" >
             </View>
 
             <Button
                 android:id="@id/tableRowEditorRedXButton"
                 android:background="@drawable/close_x_button"
+                android:gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="handleRedXButtonPressed"/>
 
         </LinearLayout>
-
     </LinearLayout>
 
     <ScrollView
@@ -98,7 +80,7 @@
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="* Required Fields"
+                android:text="* Must not be left blank"
                 android:textColor="#666666"
                 android:textSize="20sp"
                 android:gravity="center" />
