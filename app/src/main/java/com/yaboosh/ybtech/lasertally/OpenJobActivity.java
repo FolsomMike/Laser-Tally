@@ -269,50 +269,6 @@ public class OpenJobActivity extends Activity {
     }//end of OpenJobActivity::getAndStoreJobs
     //-----------------------------------------------------------------------------
 
-    //-----------------------------------------------------------------------------
-    // OpenJobActivity::handleJobSelected
-    //
-    // Starts the JobDisplayActivity, putting the job information (gotten from the
-    // jobInfo.txt file) of the selected job into the intent extras.
-    //
-
-    private void handleJobSelected(String pJobName) {
-
-        selectedJob = pJobName;
-
-        getJobInfoFromFile();
-
-        Intent intent = new Intent(this, JobDisplayActivity.class);
-
-        intent.putExtra(Keys.JOB_INFO_INCLUDED_KEY, true);
-        intent.putExtra(Keys.COMPANY_NAME_KEY, companyName);
-        intent.putExtra(Keys.DIAMETER_KEY, diameter);
-        intent.putExtra(Keys.FACILITY_KEY, facility);
-        intent.putExtra(Keys.GRADE_KEY,  grade);
-        intent.putExtra(Keys.JOB_KEY, job);
-        intent.putExtra(Keys.MAKEUP_ADJUSTMENT_KEY, makeupAdjustment);
-        intent.putExtra(Keys.RACK_KEY, rack);
-        intent.putExtra(Keys.RANGE_KEY, range);
-        intent.putExtra(Keys.RIG_KEY, rig);
-        intent.putExtra(Keys.WALL_KEY, wall);
-
-        startActivity(intent);
-
-    }//end of OpenJobActivity::handleJobSelected
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // OpenJobActivity::handleRedXButtonPressed
-    //
-    // Exits the activity by finish().
-    //
-
-    public void handleRedXButtonPressed(View pView) {
-
-        finish();
-
-    }//end of OpenJobActivity::handleRedXButtonPressed
-    //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
     // OpenJobActivity::getJobInfoFromFile
@@ -363,6 +319,51 @@ public class OpenJobActivity extends Activity {
         wall = Tools.getValueFromList("Wall", fileLines);
 
     }//end of OpenJobActivity::getJobInfoFromFile
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // OpenJobActivity::handleJobSelected
+    //
+    // Starts the JobDisplayActivity, putting the job information (gotten from the
+    // jobInfo.txt file) of the selected job into the intent extras.
+    //
+
+    private void handleJobSelected(String pJobName) {
+
+        selectedJob = pJobName;
+
+        getJobInfoFromFile();
+
+        Intent intent = new Intent(this, JobDisplayActivity.class);
+
+        intent.putExtra(Keys.JOB_INFO_INCLUDED_KEY, true);
+        intent.putExtra(Keys.COMPANY_NAME_KEY, companyName);
+        intent.putExtra(Keys.DIAMETER_KEY, diameter);
+        intent.putExtra(Keys.FACILITY_KEY, facility);
+        intent.putExtra(Keys.GRADE_KEY,  grade);
+        intent.putExtra(Keys.JOB_KEY, job);
+        intent.putExtra(Keys.MAKEUP_ADJUSTMENT_KEY, makeupAdjustment);
+        intent.putExtra(Keys.RACK_KEY, rack);
+        intent.putExtra(Keys.RANGE_KEY, range);
+        intent.putExtra(Keys.RIG_KEY, rig);
+        intent.putExtra(Keys.WALL_KEY, wall);
+
+        startActivity(intent);
+
+    }//end of OpenJobActivity::handleJobSelected
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // OpenJobActivity::handleRedXButtonPressed
+    //
+    // Exits the activity by finish().
+    //
+
+    public void handleRedXButtonPressed(View pView) {
+
+        finish();
+
+    }//end of OpenJobActivity::handleRedXButtonPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

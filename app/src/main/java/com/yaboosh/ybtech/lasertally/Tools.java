@@ -22,6 +22,7 @@ package com.yaboosh.ybtech.lasertally;
 //class Tools
 //
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.File;

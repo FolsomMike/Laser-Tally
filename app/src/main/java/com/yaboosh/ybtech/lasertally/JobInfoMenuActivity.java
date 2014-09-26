@@ -151,6 +151,35 @@ public class JobInfoMenuActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // JobInfoMenuActivity::onActivityResult
+    //
+    // Listens for activity results and decides what actions to take depending on
+    // their request codes and requests' result codes.
+    //
+
+    @Override
+    public void onActivityResult(int pRequestCode, int pResultCode, Intent pData)
+    {
+
+        if (pRequestCode == Keys.ACTIVITY_RESULT_VERIFY_ACTION) {
+
+            if (pResultCode == RESULT_OK) {
+                handleVerifyActionResultOk();
+            }
+            else if (pResultCode == RESULT_CANCELED) {
+                handleVerifyActionResultCancel();
+            }
+
+        }
+
+        else {
+            super.onActivityResult(pRequestCode, pResultCode, pData);
+        }
+
+    }//end of JobInfoMenuActivity::onActivityResult
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // JobInfoMenuActivity::createUiChangeListener
     //
     // Listens for visibility changes in the ui.
@@ -176,6 +205,26 @@ public class JobInfoMenuActivity extends Activity {
                 });
 
     }//end of JobInfoMenuActivity::createUiChangeListener
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobInfoMenuActivity::deleteJob
+    //
+    // Deletes the job with the passed in name.
+    //
+
+    private void deleteJob(String pJobName) {
+
+        try {
+
+            File jobsDir = getDir("jobsDir", Context.MODE_PRIVATE);
+
+            File jobDir = new File(jobsDir, "job=" + pJobName);
+            Tools.deleteDirectory(jobDir);
+
+        } catch (Exception e) {}
+
+    }//end of JobInfoMenuActivity::deleteJob
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -221,19 +270,7 @@ public class JobInfoMenuActivity extends Activity {
         intent.putExtra(VerifyActionActivity.TEXT_VIEW_TEXT,
                             "Are you sure that you want to delete "
                                             + "the job \"" + job + "\"?  This cannot be undone.");
-        startActivity(intent);
-
-       /* //debug hss// try {
-
-            File jobsDir = getDir("jobsDir", Context.MODE_PRIVATE);
-
-            File thisJobDir = new File(jobsDir, "job=" + job);
-            Tools.deleteDirectory(thisJobDir);
-
-        } catch (Exception e) {}
-
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);*/
+        startActivityForResult(intent, Keys.ACTIVITY_RESULT_VERIFY_ACTION);
 
     }//end of JobInfoMenuActivity::handleDeleteThisJobButtonPressed
     //-----------------------------------------------------------------------------
@@ -264,6 +301,33 @@ public class JobInfoMenuActivity extends Activity {
         finish();
 
     }//end of JobInfoMenuActivity::handleRedXButtonPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // OpenJobActivity::handleVerifyActionResultCancel
+    //
+    // Does nothing.
+    //
+
+    public void handleVerifyActionResultCancel() {
+
+    }//end of OpenJobActivity::handleVerifyActionResultCancel
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // OpenJobActivity::handleVerifyActionResultOk
+    //
+    // Deletes the current job.
+    //
+
+    public void handleVerifyActionResultOk() {
+
+        deleteJob(job);
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+
+    }//end of OpenJobActivity::handleVerifyActionResultOk
     //-----------------------------------------------------------------------------
 
 }//end of class JobInfoMenuActivity
