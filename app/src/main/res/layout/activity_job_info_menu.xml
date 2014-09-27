@@ -66,7 +66,7 @@
             android:layout_height="wrap_content"
             android:paddingBottom="10dp"
             android:paddingTop="10dp"
-            android:text="Open existing job."
+            android:text="open existing job"
             android:textSize="30sp"
             style="@style/whiteStyledButton"
             android:onClick="handleOpenJobButtonPressed" />
@@ -81,7 +81,7 @@
             android:background="@drawable/white_styled_button_dark_gray_border"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Create a new job."
+            android:text="create new job"
             android:textSize="30sp"
             style="@style/whiteStyledButton"
             android:onClick="handleCreateANewJobButtonPressed" />
@@ -96,7 +96,7 @@
             android:background="@drawable/white_styled_button_dark_gray_border"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Close this job."
+            android:text="close this job"
             android:textSize="30sp"
             style="@style/whiteStyledButton"
             android:onClick="handleCloseThisJobButtonPressed" />
@@ -111,7 +111,7 @@
             android:background="@drawable/white_styled_button_dark_gray_border"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Delete this job."
+            android:text="delete this job"
             android:textSize="30sp"
             style="@style/whiteStyledButton"
             android:onClick="handleDeleteThisJobButtonPressed" />

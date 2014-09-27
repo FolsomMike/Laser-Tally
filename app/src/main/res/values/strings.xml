@@ -12,10 +12,10 @@
     <string name="no_devices">No devices found.</string>
 
     <!-- Strings for button texts -->
-    <string name="jobInfoButtonText">Job Info</string>
-    <string name="moreButtonText">More</string>
-    <string name="redoButtonText">Redo</string>
-    <string name="measureButtonText">Measure</string>
+    <string name="jobInfoButtonText">job info</string>
+    <string name="moreButtonText">more</string>
+    <string name="redoButtonText">redo</string>
+    <string name="measureButtonText">measure</string>
 
     <color name="backgroundColor">#B6B6B6</color>
     <color name="headerTableColumnDividerColor">#505050</color>

@@ -12,7 +12,7 @@
             android:background="@drawable/white_styled_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Create new job."
+            android:text="create new job"
             android:textSize="30sp"
             style="@style/whiteStyledButton"
             android:onClick="handleCreateANewJobButtonPressed" />
@@ -27,7 +27,7 @@
             android:background="@drawable/white_styled_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Open existing job."
+            android:text="open existing job"
             android:textSize="30sp"
             style="@style/whiteStyledButton"
             android:onClick="handleOpenAnExistingJobButtonPressed" />

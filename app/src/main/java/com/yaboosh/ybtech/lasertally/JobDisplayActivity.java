@@ -67,8 +67,8 @@ public class JobDisplayActivity extends Activity {
 
     TableLayout measurementsTable;
 
-    final String connectButtonText = "Connect";
-    final String measureButtonText = "Measure";
+    final String connectButtonText = "connect";
+    final String measureButtonText = "measure";
 
     private float protectorMakeupValue = 0;
 
