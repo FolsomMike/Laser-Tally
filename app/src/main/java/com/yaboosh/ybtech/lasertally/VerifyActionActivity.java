@@ -1,17 +1,12 @@
 /******************************************************************************
- * Title: JobInfoMenuActivity.java
+ * Title: VerifyActionActivity.java
  * Author: Hunter Schoonover
- * Date: 09/26/14
+ * Date: 09/27/14
  *
  * Purpose:
  *
- * This class is used as an activity to display the menu for the Job Info
- * activity.
- * The menu displays buttons:
- *      Open Existing Job
- *      Create New Job
- *      Close this Job
- *      Delete this Job
+ * This class is used as an activity dialog to display an action to the user
+ * for verification. The user can click ok, cancel, or the red x button.
  *
  */
 
@@ -28,37 +23,48 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Scanner;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-// class JobInfoMenuActivity
+// class VerifyActionActivity
 //
 
-public class JobInfoMenuActivity extends Activity {
+public class VerifyActionActivity extends Activity {
 
-    public static final String TAG = "JobInfoMenuActivity";
+    public static final String TAG = "VerifyActionActivity";
 
     private View decorView;
     private int uiOptions;
 
-    private String job;
+    public static final String TEXT_VIEW_TEXT = "TEXT_VIEW_TEXT";
+
+    private String textViewText;
 
     //-----------------------------------------------------------------------------
-    // JobInfoMenuActivity::JobInfoMenuActivity (constructor)
+    // VerifyActionActivity::VerifyActionActivity (constructor)
     //
 
-    public JobInfoMenuActivity() {
+    public VerifyActionActivity() {
 
         super();
 
-    }//end of JobInfoMenuActivity::JobInfoMenuActivity (constructor)
+    }//end of VerifyActionActivity::VerifyActionActivity (constructor)
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoMenuActivity::onCreate
+    // VerifyActionActivity::onCreate
     //
     // Automatically called when the activity is created.
     // All functions that must be done upon creation should be called here.
@@ -71,7 +77,7 @@ public class JobInfoMenuActivity extends Activity {
 
         Log.d(TAG, "Inside of onCreate :: " + TAG);
 
-        setContentView(R.layout.activity_job_info_menu);
+        setContentView(R.layout.activity_verify_action);
 
         this.setFinishOnTouchOutside(false);
 
@@ -81,21 +87,23 @@ public class JobInfoMenuActivity extends Activity {
         decorView = getWindow().getDecorView();
 
         uiOptions = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
 
         createUiChangeListener();
 
         Bundle bundle = getIntent().getExtras();
-        job = bundle.getString(JobInfoActivity.JOB_KEY);
+        textViewText = bundle.getString(TEXT_VIEW_TEXT);
 
-    }//end of JobInfoMenuActivity::onCreate
+        ((TextView)findViewById(R.id.verifyActionTextView)).setText(textViewText);
+
+    }//end of VerifyActionActivity::onCreate
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoMenuActivity::onDestroy
+    // VerifyActionActivity::onDestroy
     //
     // Automatically called when the activity is destroyed.
     // All functions that must be done upon destruction should be called here.
@@ -109,11 +117,11 @@ public class JobInfoMenuActivity extends Activity {
 
         super.onDestroy();
 
-    }//end of JobInfoMenuActivity::onDestroy
+    }//end of VerifyActionActivity::onDestroy
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoMenuActivity::onResume
+    // VerifyActionActivity::onResume
     //
     // Automatically called when the activity is paused when it does not have
     // user's focus but it still partially visible.
@@ -129,11 +137,11 @@ public class JobInfoMenuActivity extends Activity {
 
         decorView.setSystemUiVisibility(uiOptions);
 
-    }//end of JobInfoMenuActivity::onResume
+    }//end of VerifyActionActivity::onResume
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoMenuActivity::onPause
+    // VerifyActionActivity::onPause
     //
     // Automatically called when the activity is paused when it does not have
     // user's focus but it still partially visible.
@@ -145,13 +153,13 @@ public class JobInfoMenuActivity extends Activity {
 
         super.onPause();
 
-        Log.d(TAG, "Inside of onPause :: " + TAG);
+        Log.d(TAG, "Inside of onDestroy :: " + TAG);
 
-    }//end of JobInfoMenuActivity::onPause
+    }//end of VerifyActionActivity::onPause
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoMenuActivity::createUiChangeListener
+    // VerifyActionActivity::createUiChangeListener
     //
     // Listens for visibility changes in the ui.
     //
@@ -175,97 +183,80 @@ public class JobInfoMenuActivity extends Activity {
 
                 });
 
-    }//end of JobInfoMenuActivity::createUiChangeListener
+    }//end of VerifyActionActivity::createUiChangeListener
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoMenuActivity::handleCloseThisJobButtonPressed
+    // VerifyActionActivity::exitActivityByCancel
     //
-    // Starts the MainActivity.
-    // Should be called from the "Close this job." button onClick().
-    //
-
-    public void handleCloseThisJobButtonPressed(View pView) {
-
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-
-    }//end of JobInfoMenuActivity::handleCloseThisJobButtonPressed
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobInfoMenuActivity::handleCreateANewJobButtonPressed
-    //
-    // Starts an activity for Job Info.
-    // Should be called from the "Create a new job." button onClick().
+    // Used when the user closes the activity using the cancel or red x button.
+    // Sets the result to canceled and finishes the activity.
     //
 
-    public void handleCreateANewJobButtonPressed(View pView) {
+    private void exitActivityByCancel() {
 
-        Intent intent = new Intent(this, CreateJobActivity.class);
-        startActivity(intent);
+        Intent resultIntent = new Intent();
+        setResult(Activity.RESULT_CANCELED, resultIntent);
+        finish();
 
-    }//end of JobInfoMenuActivity::handleCreateANewJobButtonPressed
+    }//end of VerifyActionActivity::exitActivityByCancel
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoMenuActivity::handleDeleteThisJobButtonPressed
+    // VerifyActionActivity::exitActivityByOk
     //
-    // Deletes the directory for the current job and launches the MainActivity.
-    // Should be called from the delete this job button onClick().
-    //
-
-    public void handleDeleteThisJobButtonPressed(View pView) {
-
-        Intent intent = new Intent(this, VerifyActionActivity.class);
-        intent.putExtra(VerifyActionActivity.TEXT_VIEW_TEXT,
-                            "Are you sure that you want to delete "
-                                            + "the job \"" + job + "\"?  This cannot be undone.");
-        startActivity(intent);
-
-       /* //debug hss// try {
-
-            File jobsDir = getDir("jobsDir", Context.MODE_PRIVATE);
-
-            File thisJobDir = new File(jobsDir, "job=" + job);
-            Tools.deleteDirectory(thisJobDir);
-
-        } catch (Exception e) {}
-
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);*/
-
-    }//end of JobInfoMenuActivity::handleDeleteThisJobButtonPressed
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobInfoMenuActivity::handleOpenJobButtonPressed
-    //
-    // Starts the OpenJobActivity.
-    // Should be called from the open existing job button onClick().
+    // Used when the user closes the activity using the ok button.
+    // Sets the result to ok and finishes the activity.
     //
 
-    public void handleOpenJobButtonPressed(View pView) {
+    private void exitActivityByOk() {
 
-        Intent intent = new Intent(this, OpenJobActivity.class);
-        startActivity(intent);
+        Intent resultIntent = new Intent();
+        setResult(Activity.RESULT_OK, resultIntent);
+        finish();
 
-    }//end of JobInfoMenuActivity::handleOpenJobButtonPressed
+    }//end of VerifyActionActivity::exitActivityByCancel
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoMenuActivity::handleRedXButtonPressed
+    // VerifyActionActivity::handleCancelButtonPressed
     //
     // Exits the activity by calling exitActivityByCancel().
     //
 
-    public void handleRedXButtonPressed(View pView) {
+    public void handleCancelButtonPressed(View pView) {
 
-        finish();
+        exitActivityByCancel();
 
-    }//end of JobInfoMenuActivity::handleRedXButtonPressed
+    }//end of VerifyActionActivity::handleCancelButtonPressed
     //-----------------------------------------------------------------------------
 
-}//end of class JobInfoMenuActivity
+    //-----------------------------------------------------------------------------
+    // JobInfoActivity::handleOkButtonPressed
+    //
+    // Exits the activity by calling exitActivityByOk().
+    //
+
+    public void handleOkButtonPressed(View pView) {
+
+        exitActivityByOk();
+
+    }//end of JobInfoActivity::handleOkButtonPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // OpenJobActivity::handleRedXButtonPressed
+    //
+    // Exits the activity by finish().
+    //
+
+    public void handleRedXButtonPressed(View pView) {
+
+        exitActivityByCancel();
+
+    }//end of OpenJobActivity::handleRedXButtonPressed
+    //-----------------------------------------------------------------------------
+
+}//end of class OpenJobActivity
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------

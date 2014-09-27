@@ -46,5 +46,6 @@
     <item type="id" name="renumberAllBelowCheckbox" />
     <item type="id" name="tableRowEditorRedXButton" />
     <item type="id" name="tableRowEditorCancelButton" />
+    <item type="id" name="verifyActionTextView" />
 
 </resources>
