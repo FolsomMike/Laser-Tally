@@ -60,7 +60,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class TallyDeviceService extends Service {
 
-    public static final String TAG = "BluetoothLeService";
+    public static final String TAG = "TallyDeviceService";
     static final int MSG_REGISTER_JOB_DISPLAY_ACTIVITY = 1;
     static final int MSG_REGISTER_MESSAGE_ACTIVITY = 2;
     static final int MSG_REGISTER_TALLY_DEVICE_SCAN_ACTIVITY = 3;
@@ -340,7 +340,7 @@ public class TallyDeviceService extends Service {
 
     //-----------------------------------------------------------------------------
     //-----------------------------------------------------------------------------
-    // class BluetoothLeService::IncomingHandler
+    // class TallyDeviceService::IncomingHandler
     //
     // Purpose:
     //
@@ -428,10 +428,10 @@ public class TallyDeviceService extends Service {
         }//end of IncomingHandler::handleMessage
         //-----------------------------------------------------------------------------
 
-    }//end of class BluetoothLeService::IncomingHandler
+    }//end of class TallyDeviceService::IncomingHandler
     //-----------------------------------------------------------------------------
     //-----------------------------------------------------------------------------
 
-}// end of class BluetoothLeService
+}// end of class TallyDeviceService
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
