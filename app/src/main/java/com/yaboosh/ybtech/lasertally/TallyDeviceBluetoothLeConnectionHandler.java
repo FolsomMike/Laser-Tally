@@ -68,7 +68,7 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
     //
 
     @Override
-    public Boolean connectToTallyDevice(String pDeviceName) {
+    public boolean connectToTallyDevice(String pDeviceName) {
 
         //hss wip//
 
@@ -82,7 +82,7 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
     //
 
     @Override
-    public Boolean disconnectFromTallyDevice() {
+    public boolean disconnectFromTallyDevice() {
 
         //hss wip//
 
@@ -110,7 +110,7 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
     //
 
     @Override
-    public Boolean sendMeasureCommandToTallyDevice() {
+    public boolean sendMeasureCommandToTallyDevice() {
 
         //hss wip//
 
@@ -125,7 +125,7 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
     //
 
     @Override
-    public Boolean startScanForTallyDevices(long pScanPeriod) {
+    public boolean startScanForTallyDevices(long pScanPeriod) {
 
         tallyDevices.clear();
 
@@ -169,14 +169,15 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyDeviceConnectionHandler::startScanForTallyDevices
+    // TallyDeviceBluetoothLeConnectionHandler::stopScanForTallyDevices
     //
 
-    public Boolean stopScanForTallyDevices() {
+    @Override
+    public boolean stopScanForTallyDevices() {
 
         return null;
 
-    }//end of TallyDeviceConnectionHandler::startScanForTallyDevices
+    }//end of TallyDeviceBluetoothLeConnectionHandler::stopScanForTallyDevices
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

@@ -43,9 +43,9 @@ public class TallyDeviceConnectionHandler {
     // TallyDeviceConnectionHandler::connectToTallyDevice
     //
 
-    public Boolean connectToTallyDevice(String pDeviceName) {
+    public boolean connectToTallyDevice(String pDeviceName) {
 
-        return null;
+        return false;
 
     }//end of TallyDeviceConnectionHandler::connectToTallyDevice
     //-----------------------------------------------------------------------------
@@ -54,9 +54,9 @@ public class TallyDeviceConnectionHandler {
     // TallyDeviceConnectionHandler::disconnectFromTallyDevice
     //
 
-    public Boolean disconnectFromTallyDevice() {
+    public boolean disconnectFromTallyDevice() {
 
-        return null;
+        return false;
 
     }//end of TallyDeviceConnectionHandler::disconnectFromTallyDevice
     //-----------------------------------------------------------------------------
@@ -76,9 +76,9 @@ public class TallyDeviceConnectionHandler {
     // TallyDeviceConnectionHandler::sendMeasureCommandToTallyDevice
     //
 
-    public Boolean sendMeasureCommandToTallyDevice() {
+    public boolean sendMeasureCommandToTallyDevice() {
 
-        return null;
+        return false;
 
     }//end of TallyDeviceConnectionHandler::sendMeasureCommandToTallyDevice
     //-----------------------------------------------------------------------------
@@ -87,9 +87,9 @@ public class TallyDeviceConnectionHandler {
     // TallyDeviceConnectionHandler::startScanForTallyDevices
     //
 
-    public Boolean startScanForTallyDevices() {
+    public boolean startScanForTallyDevices() {
 
-        return null;
+        return false;
 
     }//end of TallyDeviceConnectionHandler::startScanForTallyDevices
     //-----------------------------------------------------------------------------
@@ -98,9 +98,9 @@ public class TallyDeviceConnectionHandler {
     // TallyDeviceConnectionHandler::stopScanForTallyDevices
     //
 
-    public Boolean stopScanForTallyDevices() {
+    public boolean stopScanForTallyDevices() {
 
-        return null;
+        return false;
 
     }//end of TallyDeviceConnectionHandler::stopScanForTallyDevices
     //-----------------------------------------------------------------------------
