@@ -19,7 +19,6 @@
 
 //-----------------------------------------------------------------------------
 
-
 package com.yaboosh.ybtech.lasertally;
 
 //-----------------------------------------------------------------------------
@@ -93,6 +92,17 @@ public class TallyDeviceConnectionHandler {
         return null;
 
     }//end of TallyDeviceConnectionHandler::startScanForTallyDevices
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceConnectionHandler::stopScanForTallyDevices
+    //
+
+    public Boolean stopScanForTallyDevices() {
+
+        return null;
+
+    }//end of TallyDeviceConnectionHandler::stopScanForTallyDevices
     //-----------------------------------------------------------------------------
 
     }// end of class TallyDeviceConnectionHandler
