@@ -28,6 +28,8 @@ package com.yaboosh.ybtech.lasertally;
 // class TallyDeviceConnectionHandler
 //
 
+import android.content.Intent;
+
 public class TallyDeviceConnectionHandler {
 
     //-----------------------------------------------------------------------------
@@ -73,6 +75,17 @@ public class TallyDeviceConnectionHandler {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // TallyDeviceConnectionHandler::handleActivityResult
+    //
+
+    public void handleActivityResult(int pRequestCode, int pResultCode, Intent pData) {
+
+        return;
+
+    }//end of TallyDeviceConnectionHandler::handleActivityResult
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // TallyDeviceConnectionHandler::sendMeasureCommandToTallyDevice
     //
 
@@ -87,9 +100,9 @@ public class TallyDeviceConnectionHandler {
     // TallyDeviceConnectionHandler::startScanForTallyDevices
     //
 
-    public boolean startScanForTallyDevices() {
+    public void startScanForTallyDevices() {
 
-        return false;
+        return;
 
     }//end of TallyDeviceConnectionHandler::startScanForTallyDevices
     //-----------------------------------------------------------------------------

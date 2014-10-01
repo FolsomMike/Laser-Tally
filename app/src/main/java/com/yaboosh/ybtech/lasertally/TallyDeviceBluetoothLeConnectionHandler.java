@@ -9,6 +9,9 @@
 * This class is a child of TallyDeviceConnectionHandler and is used for
 * connecting to a laser tally device via Bluetooth Low Energy.
 *
+* The connection properties in this class are specifically designed for the
+* DISTO Laser Measurement device.
+*
 */
 
 //-----------------------------------------------------------------------------
@@ -23,10 +26,16 @@ package com.yaboosh.ybtech.lasertally;
 //
 
 import android.app.Activity;
+import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothGattCallback;
+import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
+import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
+import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -34,28 +43,48 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnectionHandler
                                                     implements BluetoothAdapter.LeScanCallback {
 
     public static final String TAG = "TallyDeviceBluetoothLeConnectionHandler";
 
+    // Standard activity result: operation canceled.
+    public static final int ACTIVITY_RESULT_CANCELED = 0;
+    // Standard activity result: operation succeeded.
+    public static final int ACTIVITY_RESULT_OK = -1;
+
     private Context context;
+    private TallyDeviceService parentService;
     private BluetoothGatt gatt = null;
     private BluetoothAdapter bluetoothAdapter = null;
+    private Stack<BluetoothGattCharacteristic> subscribeStack = new Stack<BluetoothGattCharacteristic>();
 
-    private final Map<String, RemoteLeDevice> tallyDevices = new HashMap<String, RemoteLeDevice>();
+    private DecimalFormat tallyFormat = new DecimalFormat("#.##");
+
+    private Map<String, RemoteLeDevice> tallyDevices = new HashMap<String, RemoteLeDevice>();
+
+    private boolean scanning = false;
+    private boolean connectedToTallyDevice = false;
+    private boolean userDisconnectedFromDevice = false;
+    private String connectedTallyDeviceName;
 
     //-----------------------------------------------------------------------------
     // TallyDeviceBluetoothLeConnectionHandler::TallyDeviceBluetoothLeConnectionHandler
     // (constructor)
     //
 
-    public TallyDeviceBluetoothLeConnectionHandler(Context pContext) {
+    public TallyDeviceBluetoothLeConnectionHandler(Context pContext, TallyDeviceService pService) {
 
         context = pContext;
+        parentService = pService;
 
     }//end of TallyDeviceBluetoothLeConnectionHandler::TallyDeviceBluetoothLeConnectionHandler
     // (constructor)
@@ -70,7 +99,16 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
     @Override
     public boolean connectToTallyDevice(String pDeviceName) {
 
-        //hss wip//
+        RemoteLeDevice tempDevice = tallyDevices.get(pDeviceName);
+        if (tempDevice == null) { return false; }
+
+        if (scanning) { stopBluetoothLeScan(); }
+
+        GattCallback gattCallback = new GattCallback(this);
+        gatt = tempDevice.getDevice().connectGatt(context, false, gattCallback);
+        connectedTallyDeviceName = pDeviceName;
+
+        return true;
 
     }//end of TallyDeviceBluetoothLeConnectionHandler::connectToTallyDevice
     //-----------------------------------------------------------------------------
@@ -84,7 +122,17 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
     @Override
     public boolean disconnectFromTallyDevice() {
 
-        //hss wip//
+        userDisconnectedFromDevice = true;
+
+        // Still returns true because although this function
+        // did not disconnect from the tally device, the device
+        // is still no longer connected
+        if (!connectedToTallyDevice || gatt == null) { return true; }
+
+        gatt.disconnect();
+        gatt.close();
+
+        return true;
 
     }//end of TallyDeviceBluetoothLeConnectionHandler::disconnectFromTallyDevice
     //-----------------------------------------------------------------------------
@@ -98,9 +146,33 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
     @Override
     public String getConnectedTallyDeviceName() {
 
-        //hss wip//
+        return connectedTallyDeviceName;
 
     }//end of TallyDeviceBluetoothLeConnectionHandler::getConnectedTallyDeviceName
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceBluetoothLeConnectionHandler::handleActivityResult
+    //
+    // Performs different actions depending on the performs depending on the passed
+    // in request and result codes.
+    //
+
+    @Override
+    public void handleActivityResult(int pRequestCode, int pResultCode, Intent pData) {
+
+        switch (pRequestCode) {
+
+            case Keys.ZZZ: //HSS WIP// need name from keys file
+                if (pResultCode == ACTIVITY_RESULT_OK ) {
+                    handleBluetoothTurnedOn();
+                }
+                else if (pResultCode == ACTIVITY_RESULT_CANCELED ) {
+                    handleBluetoothTurnedOff();
+                }
+        }
+
+    }//end of TallyDeviceBluetoothLeConnectionHandler::handleActivityResult
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -112,7 +184,7 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
     @Override
     public boolean sendMeasureCommandToTallyDevice() {
 
-        //hss wip//
+        return sendCommand(BluetoothLeVars.TRIGGER_DISTANCE_MEASUREMENT);
 
     }//end of TallyDeviceBluetoothLeConnectionHandler::sendMeasureCommandToTallyDevice
     //-----------------------------------------------------------------------------
@@ -120,49 +192,50 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
     //-----------------------------------------------------------------------------
     // TallyDeviceBluetoothLeConnectionHandler::startScanForTallyDevices
     //
-    // Starts a Bluetooth LE scan for tally devices in the area by hosting a GATT
-    // server.
+    // If the Bluetooth is enabled, a Bluetooth LE scan is started for tally
+    // devices in the area by hosting a GATT server.
+    //
+    // If the Bluetooth is not enabled, a request is sent to the user to enable it.
     //
 
     @Override
-    public boolean startScanForTallyDevices(long pScanPeriod) {
+    public void startScanForTallyDevices() {
 
         tallyDevices.clear();
 
+
         if (bluetoothAdapter == null) {
+
+            // bluetoothAdapter was null -- attempt to initialize it
             BluetoothManager bluetoothMgr = (BluetoothManager)
                                                 context.getSystemService(Context.BLUETOOTH_SERVICE);
             bluetoothAdapter = bluetoothMgr.getAdapter();
+
         }
 
         if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
 
             // Bluetooth was not enabled -- send request to user
-            parentService.startActivityForResult(BluetoothAdapter.ACTION_REQUEST_ENABLE, Keys.ENABLE_BT);
+            parentService.startActivityForResult(BluetoothAdapter.ACTION_REQUEST_ENABLE, Keys.zzz); //hss wip// needs to use value from keys file
 
         }
         else {
 
             // bluetooth was enabled -- start scan
-            bluetooth.startLeScan(this);
 
-            // turn off the scan in the passed
-            // in amount of time (pScanPeriod)
-            timerHandler.postDelayed(new Runnable() {
+            if (startBluetoothLeScan()) {
 
-                @Override
-                public void run() {
+                // bluetooth scan was started successfully
+                // -- call function in parentService
+                parentService.handleStartScanForTallyDevicesSuccess();
 
-                    if (scanning) {
-                        bluetoothAdapter.stopLeScan(TallyDeviceBluetoothLeConnectionHandler.this);
+            } else {
 
-                    }
+                // bluetooth scan was not started successfully
+                // -- call function in parentService
+                parentService.handleStartScanForTallyDevicesFailure();
+            }
 
-                }
-
-            }, pScanPeriod);
-
-            setState(BluetoothLeVars.State.SCANNING);
         }
 
     }//end of TallyDeviceBluetoothLeConnectionHandler::startScanForTallyDevices
@@ -171,11 +244,13 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
     //-----------------------------------------------------------------------------
     // TallyDeviceBluetoothLeConnectionHandler::stopScanForTallyDevices
     //
+    // Stops the Bluetooth LE scan.
+    //
 
     @Override
     public boolean stopScanForTallyDevices() {
 
-        return null;
+        return stopBluetoothLeScan();
 
     }//end of TallyDeviceBluetoothLeConnectionHandler::stopScanForTallyDevices
     //-----------------------------------------------------------------------------
@@ -193,46 +268,442 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
     @Override
     public void onLeScan(final BluetoothDevice pDevice, int pRssi, byte[] pScanRecord) {
 
-        Log.d(TAG, "Found a device");
-
-        //Checks to make sure that pDevice is not null, is already stored,
-        //if the device name is null.
-        //Then checks to make sure that the device name has the word "DISTO"
-        //within it. This is done in a separate if statement after the other
-        //conditions have already been checked for because indexOf() throws
-        //an exception if the string is not found; the first if statement
-        //checks to make sure that the string exists.
-        /*//debug hss//if (pDevice == null || pDevice.getName() == null) {
-            Log.d(TAG, "Device name did not contain 'DISTO'");
-            return;
-        }*/
-
-        if (!pDevice.getName().contains("DISTO")) {
-            Log.d(TAG, "Device name did not contain 'DISTO'");
+        if (pDevice == null || pDevice.getName() == null || !pDevice.getName().contains("disto")) {
+            // device was null, device name was null, or the name did not contain disto -- return
             return;
         }
 
-        RemoteLeDevice tempDevice = new RemoteLeDevice(pDevice, pDevice.getAddress(),
-                pDevice.getName());
-        devices.put(tempDevice.getName(), tempDevice);
-        Log.d(TAG, "Added " + tempDevice.getName() + ": " + tempDevice.getAddress());
-
-        Message msg = Message.obtain(null, MSG_DEVICE_FOUND);
-        if (msg != null) {
-            Bundle bundle = new Bundle();
-
-            String[] tempNames = devices.keySet().toArray(new String[devices.size()]);
-            bundle.putStringArray(KEY_NAMES, tempNames);
-            //debug hss//
-            Log.d(TAG, "Sent " + tempNames[0] + " to BluetoothScanActivity");
-
-            msg.setData(bundle);
-            sendMessage(msg);
-        }
+        handleTallyDeviceFound(pDevice);
 
     }//end of TallyDeviceBluetoothLeConnectionHandler::onLeScan
     //-----------------------------------------------------------------------------
 
-    }// end of class TallyDeviceBluetoothLeConnectionHandler
+    //-----------------------------------------------------------------------------
+    // TallyDeviceBluetoothLeConnectionHandler::handleBluetoothTurnedOn
+    //
+    // Start a BLE scan and and call a handling function in the parentService.
+    //
+
+    private void handleBluetoothTurnedOn() {
+
+        if (startBluetoothLeScan()) {
+            parentService.handleStartScanForTallyDevicesSuccess();
+        }
+
+    }//end of TallyDeviceBluetoothLeConnectionHandler::handleBluetoothTurnedOn
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceBluetoothLeConnectionHandler::handleBluetoothTurnedOff
+    //
+    // Call a handling function in the parentService.
+    //
+
+    private void handleBluetoothTurnedOff() {
+
+        if (startBluetoothLeScan()) {
+            parentService.handleStartScanForTallyDevicesFailure();
+        }
+
+    }//end of TallyDeviceBluetoothLeConnectionHandler::handleBluetoothTurnedOff
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceBluetoothLeConnectionHandler::handleCharacteristicChanged
+    //
+    // Performs different operations depending on the passed in characteristic's
+    // UUID.
+    //
+
+    public void handleCharacteristicChanged(BluetoothGattCharacteristic pCharacteristic) {
+
+        if (pCharacteristic.getUuid() == BluetoothLeVars.DISTO_CHARACTERISTIC_DISTANCE) {
+
+            // The characteristic's UUID matched the distance characteristic
+
+            float distance = ByteBuffer.wrap(pCharacteristic.getValue()).order
+                                                            (ByteOrder.LITTLE_ENDIAN).getFloat();
+
+            // Convert the value from meters to inches with the proper decimal format
+            Double distanceValue = distance * BluetoothLeVars.METERS_FEET_CONVERSION_FACTOR;
+            String distanceValueString = tallyFormat.format(distanceValue);
+
+            parentService.handleNewDistanceValue(distanceValueString);
+
+        }
+
+    }//end of TallyDeviceBluetoothLeConnectionHandler::handleCharacteristicChanged
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceBluetoothLeConnectionHandler::handleCharacteristicWriteSuccess
+    //
+    // Currently has no functionality.
+    //
+
+    public void handleCharacteristicWriteSuccess() {
+
+    }//end of TallyDeviceBluetoothLeConnectionHandler::handleCharacteristicWriteSuccess
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceBluetoothLeConnectionHandler::handleConnectedToTallyDevice
+    //
+    // Sets the connected boolean to true and calls a handing function in the
+    // parentService.
+    //
+
+    public void handleConnectedToTallyDevice() {
+
+        connectedToTallyDevice = true;
+        gatt.discoverServices();
+
+    }//end of TallyDeviceBluetoothLeConnectionHandler::handleConnectedToTallyDevice
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceBluetoothLeConnectionHandler::handleDescriptorWriteSuccess
+    //
+    // If the subscribe stack is empty, call a handling function in the parentService
+    // that handles being connected to the tally device.
+    //
+    // If the subscribe stack is not empty, subscribe to the next characteristic
+    // in the stack.
+    //
+
+    public void handleDescriptorWriteSuccess() {
+
+        if (subscribeStack.empty()) { parentService.handleConnectedToTallyDevice(); return; }
+
+        new CharacteristicSubscriber(gatt, subscribeStack.pop());
+
+    }//end of TallyDeviceBluetoothLeConnectionHandler::handleDescriptorWriteSuccess
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceBluetoothLeConnectionHandler::handleDisconnectedFromTallyDevice
+    //
+    // Sets the connected boolean to false and calls a handing function in the
+    // parentService.
+    //
+
+    public void handleDisconnectedFromTallyDevice() {
+
+        connectedToTallyDevice = false;
+
+        // If the disconnect was not initiated by the user,
+        // then reconnect to the device
+        if (!userDisconnectedFromDevice) { connectToTallyDevice(connectedTallyDeviceName); }
+
+        parentService.handleDisconnectedFromTallyDevice();
+
+    }//end of TallyDeviceBluetoothLeConnectionHandler::handleDisconnectedFromTallyDevice
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceBluetoothLeConnectionHandler::handleDiscoverServicesFailed
+    //
+    // Calls a handling function in the parentService.
+    //
+
+    public void handleDiscoverServicesFailed() {
+
+        parentService.handleConnectToTallyDeviceFailed();
+
+    }//end of TallyDeviceBluetoothLeConnectionHandler::handleDiscoverServicesFailed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceBluetoothLeConnectionHandler::handleDiscoverServicesSuccess
+    //
+    // Subscribe to the distance characteristic.
+    //
+
+    public void handleDiscoverServicesSuccess() {
+
+        BluetoothGattService tempBluetoothGattService =
+                                                    gatt.getService(BluetoothLeVars.DISTO_SERVICE);
+        if (tempBluetoothGattService == null) { return; }
+
+        new CharacteristicSubscriber(gatt, tempBluetoothGattService.getCharacteristic
+                                                (BluetoothLeVars.DISTO_CHARACTERISTIC_DISTANCE));
+
+    }//end of TallyDeviceBluetoothLeConnectionHandler::handleDiscoverServicesSuccess
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceBluetoothLeConnectionHandler::handleTallyDeviceFound
+    //
+    // Stores the passed in device and its information.
+    //
+
+    private void handleTallyDeviceFound(BluetoothDevice pDevice) {
+
+        // Store the device for later use
+        RemoteLeDevice tempDevice = new RemoteLeDevice(pDevice,
+                                                        pDevice.getAddress(),
+                                                        pDevice.getName());
+        tallyDevices.put(tempDevice.getName(), tempDevice);
+
+        parentService.handleTallyDeviceFound(pDevice.getName());
+
+    }//end of TallyDeviceBluetoothLeConnectionHandler::handleTallyDeviceFound
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceBluetoothLeConnectionHandler::sendCommand
+    //
+    // Sends the passed in string command to the DISTO.
+    //
+
+    private synchronized boolean sendCommand(String pCmd) {
+
+        boolean success = false;
+
+        BluetoothGattService tempBluetoothGattService =
+                                                    gatt.getService(BluetoothLeVars.DISTO_SERVICE);
+        if (tempBluetoothGattService == null) { success = false; return success; }
+
+        BluetoothGattCharacteristic tempBluetoothGattCharacteristic =
+            tempBluetoothGattService.getCharacteristic(BluetoothLeVars.DISTO_CHARACTERISTIC_COMMAND);
+        if (tempBluetoothGattCharacteristic == null) { success = false; return success; }
+
+        byte[] tempBytes = null;
+        try {
+            tempBytes = pCmd.getBytes("UTF-8");
+        } catch(Exception e) {}
+
+        if (tempBytes == null) { success = false; return success; }
+
+        success = tempBluetoothGattCharacteristic.setValue(tempBytes);
+        success = gatt.writeCharacteristic(tempBluetoothGattCharacteristic);
+
+        return success;
+
+    }//end of TallyDeviceBluetoothLeConnectionHandler::sendCommand
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceBluetoothLeConnectionHandler::startBluetoothLeScan
+    //
+    // Start a Bluetooth Le scan.
+    //
+
+    private boolean startBluetoothLeScan() {
+
+        scanning = true;
+        return bluetoothAdapter.startLeScan(this);
+
+    }//end of TallyDeviceBluetoothLeConnectionHandler::startBluetoothLeScan
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceBluetoothLeConnectionHandler::stopBluetoothLeScan
+    //
+    // Stops a Bluetooth Le scan if one is in process.
+    //
+
+    private boolean stopBluetoothLeScan() {
+
+        if (scanning) {
+            scanning = false;
+            bluetoothAdapter.stopLeScan(this);
+        }
+        return true;
+
+    }//end of TallyDeviceBluetoothLeConnectionHandler::stopBluetoothLeScan
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------
+    // class TallyDeviceBluetoothLeConnectionHandler::CharacteristicSubscriber
+    //
+    // Purpose:
+    //
+    // This class uses a thread separate from the UI thread to enable the
+    // notification status/subscribe to the passed in characteristic found on the
+    // passed in gatt.
+    //
+    // Continues attempting to retrieve the DISTO_DESCRIPTOR until it does not
+    // return null; Continues writing until success.
+    //
+    //
+
+    class CharacteristicSubscriber implements Runnable {
+
+        final BluetoothGattCharacteristic classChar;
+        final BluetoothGatt classGatt;
+
+        //-----------------------------------------------------------------------------
+        // CharacteristicSubscriber::CharacteristicSubscriber (constructor)
+        //
+
+        CharacteristicSubscriber(BluetoothGatt pGatt, BluetoothGattCharacteristic pChar) {
+
+            classGatt= pGatt;
+            classChar = pChar;
+
+        }// CharacteristicSubscriber::CharacteristicSubscriber (constructor)
+        //-----------------------------------------------------------------------------
+
+        //-----------------------------------------------------------------------------
+        // CharacteristicSubscriber::run
+        //
+
+        public void run() {
+
+            boolean bool = false;
+
+            do {
+                BluetoothGattDescriptor tempDes;
+
+                do {
+                    classGatt.setCharacteristicNotification(classChar, true);
+                    tempDes = classChar.getDescriptor(BluetoothLeVars.DISTO_DESCRIPTOR);
+                } while (tempDes == null);
+
+                tempDes.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+                bool = classGatt.writeDescriptor(tempDes);
+            } while (!bool);
+
+        }// CharacteristicSubscriber::run
+        //-----------------------------------------------------------------------------
+
+    }//end of class TallyDeviceBluetoothLeConnectionHandler::CharacteristicSubscriber
+    //-----------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------
+    // class GattCallback
+    //
+    // Purpose:
+    //
+    // This class serves as a customized GattCallback for whichever GATT an
+    // instance of this class was assigned to when connecting to a remote device.
+    //
+
+    public class GattCallback extends BluetoothGattCallback {
+
+        TallyDeviceBluetoothLeConnectionHandler parentHandler;
+
+        public static final String TAG = "GattCallback";
+
+        //-----------------------------------------------------------------------------
+        // GattCallback::GattCallback (constructor)
+        //
+
+        public GattCallback(TallyDeviceBluetoothLeConnectionHandler pHandler) {
+
+            parentHandler = pHandler;
+
+        }//end of GattCallback::GattCallback (constructor)
+        //-----------------------------------------------------------------------------
+
+        //-----------------------------------------------------------------------------
+        // GattCallback::onConnectionStateChange
+        //
+        // Performs different actions based on the different connection states.
+        //
+        // Automatically called when the connection state changes.
+        //
+
+        @Override
+        public void onConnectionStateChange(BluetoothGatt pGatt, int pStatus, int pNewState) {
+
+            super.onConnectionStateChange(pGatt, pStatus, pNewState);
+
+            if (pNewState == BluetoothProfile.STATE_CONNECTED) {
+                parentHandler.handleConnectedToTallyDevice();
+            }
+            else if (pNewState == BluetoothProfile.STATE_DISCONNECTED) {
+                parentHandler.handleDisconnectedFromTallyDevice();
+            }
+
+        }//end of GattCallback::onConnectionStateChange
+        //-----------------------------------------------------------------------------
+
+        //-----------------------------------------------------------------------------
+        // GattCallback::onServicesDiscovered
+        //
+        // If discovering the services was successful, calls a function in the parent
+        // service that handles when the services have been discovered.
+        //
+        // Automatically when the services discovered status changes.
+        //
+
+        @Override
+        public void onServicesDiscovered(BluetoothGatt pGatt, int pStatus) {
+
+            if (pStatus != BluetoothGatt.GATT_SUCCESS) {
+                parentHandler.handleDiscoverServicesFailed();
+            }
+
+            parentHandler.handleDiscoverServicesSuccess();
+
+        }//end of GattCallback::onServicesDiscovered
+        //-----------------------------------------------------------------------------
+
+        //-----------------------------------------------------------------------------
+        // GattCallback::onCharacteristicChanged
+        //
+        // Calls a function in the parent service to read the characteristic.
+        //
+        // Automatically called when a characteristic is changed.
+        //
+
+        @Override
+        public void onCharacteristicChanged(BluetoothGatt pGatt,
+                                            BluetoothGattCharacteristic pCharacteristic) {
+
+            parentHandler.handleCharacteristicChanged(pCharacteristic);
+
+        }//end of GattCallback::onCharacteristicChanged
+        //-----------------------------------------------------------------------------
+
+        //-----------------------------------------------------------------------------
+        // GattCallback::onCharacteristicWrite
+        //
+        // Takes different actions depending on the status of the characteristic write.
+        //
+        // Automatically called when a characteristic is written to.
+        //
+
+        @Override
+        public void onCharacteristicWrite(BluetoothGatt pGatt,
+                                          BluetoothGattCharacteristic pCharacteristic, int pStatus) {
+
+            if (pStatus == BluetoothGatt.GATT_SUCCESS) {
+                parentHandler.handleCharacteristicWriteSuccess();
+            }
+
+        }//end of GattCallback::onCharacteristicWrite
+        //-----------------------------------------------------------------------------
+
+        //-----------------------------------------------------------------------------
+        // GattCallback::onDescriptorWrite
+        //
+        // Takes different actions depending on the status of the descriptor write.
+        //
+        // Automatically when a descriptor is written to.
+        //
+
+        @Override
+        public void onDescriptorWrite(BluetoothGatt pGatt,
+                                      BluetoothGattDescriptor pDescriptor,
+                                      int pStatus) {
+
+            if (pStatus == BluetoothGatt.GATT_SUCCESS) {
+                parentHandler.handleDescriptorWriteSuccess();
+            }
+
+        }//end of GattCallback::onDescriptorWrite
+        //-----------------------------------------------------------------------------
+
+    }// end of class GattCallback::TallyDeviceBluetoothLeConnectionHandler
+    //-----------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------
+
+}// end of class TallyDeviceBluetoothLeConnectionHandler
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
