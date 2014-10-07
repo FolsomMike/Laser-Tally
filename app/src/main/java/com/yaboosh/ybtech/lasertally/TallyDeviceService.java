@@ -69,8 +69,6 @@ public class TallyDeviceService extends Service {
     static final int MSG_UNREGISTER_TALLY_DEVICE_SCAN_ACTIVITY = 6;
     static final int MSG_CONNECT_TO_TALLY_DEVICE = 7;
     static final int MSG_DISCONNECT_FROM_TALLY_DEVICE = 8;
-    static final int MSG_CONNECTED_TO_TALLY_DEVICE = 9;
-    static final int MSG_DISCONNECTED_FROM_TALLY_DEVICE = 10;
     static final int MSG_START_SCAN_FOR_TALLY_DEVICES = 11;
     static final int MSG_SEND_MEASURE_COMMAND_TO_TALLY_DEVICE = 12;
     static final int MSG_MEASUREMENT_VALUE = 14;
