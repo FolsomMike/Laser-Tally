@@ -50,16 +50,39 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.UUID;
 
 public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnectionHandler
                                                     implements BluetoothAdapter.LeScanCallback {
 
     public static final String TAG = "TallyDeviceBluetoothLeConnectionHandler";
 
+    // Bluetooth Le Variables specific to the Disto //
+    private final UUID DISTO_SERVICE = UUID.fromString("3ab10100-f831-4395-b29d-570977d5bf94");
+    private final UUID DISTO_CHARACTERISTIC_DISTANCE = UUID.fromString("3ab10101-f831-4395-b29d-570977d5bf94");
+    private final UUID DISTO_CHARACTERISTIC_DISTANCE_DISPLAY_UNIT = UUID.fromString("3ab10102-f831-4395-b29d-570977d5bf94");
+    private final UUID DISTO_CHARACTERISTIC_INCLINATION = UUID.fromString("3ab10103-f831-4395-b29d-570977d5bf94");
+    private final UUID DISTO_CHARACTERISTIC_INCLINATION_DISPLAY_UNIT = UUID.fromString("3ab10104-f831-4395-b29d-570977d5bf94");
+    private final UUID DISTO_CHARACTERISTIC_GEOGRAPHIC_DIRECTION = UUID.fromString("3ab10105-f831-4395-b29d-570977d5bf94");
+    private final UUID DISTO_CHARACTERISTIC_GEOGRAPHIC_DIRECTION_DISTPLAY_UNIT = UUID.fromString("3ab10106-f831-4395-b29d-570977d5bf94");
+    private final UUID DISTO_CHARACTERISTIC_HORIZONTAL_INCLINE = UUID.fromString("3ab10107-f831-4395-b29d-570977d5bf94");
+    private final UUID DISTO_CHARACTERISTIC_VERTICAL_INCLINE = UUID.fromString("3ab10108-f831-4395-b29d-570977d5bf94");
+    private final UUID DISTO_CHARACTERISTIC_COMMAND = UUID.fromString("3ab10109-f831-4395-b29d-570977d5bf94");
+    private final UUID DISTO_CHARACTERISTIC_STATE_RESPONSE = UUID.fromString("3ab1010A-f831-4395-b29d-570977d5bf94");
+    private final UUID DISTO_DESCRIPTOR = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
+
+    private final String TURN_LASER_ON_CMD = "o";
+    private final String TURN_LASER_OFF_CMD = "p";
+    private final String TRIGGER_DISTANCE_MEASUREMENT = "g";
+    // End of variables specific to the Disto //
+
+    //Meters to feet conversion factor
+    private final Double METERS_FEET_CONVERSION_FACTOR = 3.2808;
+
     // Standard activity result: operation canceled.
-    public static final int ACTIVITY_RESULT_CANCELED = 0;
+    private final int ACTIVITY_RESULT_CANCELED = 0;
     // Standard activity result: operation succeeded.
-    public static final int ACTIVITY_RESULT_OK = -1;
+    private final int ACTIVITY_RESULT_OK = -1;
 
     private Context context;
     private TallyDeviceService parentService;
@@ -184,7 +207,7 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
     @Override
     public boolean sendMeasureCommandToTallyDevice() {
 
-        return sendCommand(BluetoothLeVars.TRIGGER_DISTANCE_MEASUREMENT);
+        return sendCommand(TRIGGER_DISTANCE_MEASUREMENT);
 
     }//end of TallyDeviceBluetoothLeConnectionHandler::sendMeasureCommandToTallyDevice
     //-----------------------------------------------------------------------------
@@ -318,7 +341,7 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
 
     public void handleCharacteristicChanged(BluetoothGattCharacteristic pCharacteristic) {
 
-        if (pCharacteristic.getUuid() == BluetoothLeVars.DISTO_CHARACTERISTIC_DISTANCE) {
+        if (pCharacteristic.getUuid() == DISTO_CHARACTERISTIC_DISTANCE) {
 
             // The characteristic's UUID matched the distance characteristic
 
@@ -326,7 +349,7 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
                                                             (ByteOrder.LITTLE_ENDIAN).getFloat();
 
             // Convert the value from meters to inches with the proper decimal format
-            Double distanceValue = distance * BluetoothLeVars.METERS_FEET_CONVERSION_FACTOR;
+            Double distanceValue = distance * METERS_FEET_CONVERSION_FACTOR;
             String distanceValueString = tallyFormat.format(distanceValue);
 
             parentService.handleNewDistanceValue(distanceValueString);
@@ -427,11 +450,11 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
     public void handleDiscoverServicesSuccess() {
 
         BluetoothGattService tempBluetoothGattService =
-                                                    gatt.getService(BluetoothLeVars.DISTO_SERVICE);
+                                                    gatt.getService(DISTO_SERVICE);
         if (tempBluetoothGattService == null) { return; }
 
         new CharacteristicSubscriber(gatt, tempBluetoothGattService.getCharacteristic
-                                                (BluetoothLeVars.DISTO_CHARACTERISTIC_DISTANCE));
+                                                (DISTO_CHARACTERISTIC_DISTANCE));
 
     }//end of TallyDeviceBluetoothLeConnectionHandler::handleDiscoverServicesSuccess
     //-----------------------------------------------------------------------------
@@ -465,12 +488,11 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
 
         boolean success = false;
 
-        BluetoothGattService tempBluetoothGattService =
-                                                    gatt.getService(BluetoothLeVars.DISTO_SERVICE);
+        BluetoothGattService tempBluetoothGattService =gatt.getService(DISTO_SERVICE);
         if (tempBluetoothGattService == null) { success = false; return success; }
 
         BluetoothGattCharacteristic tempBluetoothGattCharacteristic =
-            tempBluetoothGattService.getCharacteristic(BluetoothLeVars.DISTO_CHARACTERISTIC_COMMAND);
+            tempBluetoothGattService.getCharacteristic(DISTO_CHARACTERISTIC_COMMAND);
         if (tempBluetoothGattCharacteristic == null) { success = false; return success; }
 
         byte[] tempBytes = null;
@@ -564,7 +586,7 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
 
                 do {
                     classGatt.setCharacteristicNotification(classChar, true);
-                    tempDes = classChar.getDescriptor(BluetoothLeVars.DISTO_DESCRIPTOR);
+                    tempDes = classChar.getDescriptor(DISTO_DESCRIPTOR);
                 } while (tempDes == null);
 
                 tempDes.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
