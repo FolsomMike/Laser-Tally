@@ -74,7 +74,7 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
     private boolean scanning = false;
     private boolean connectedToTallyDevice = false;
     private boolean userDisconnectedFromDevice = false;
-    private String connectedTallyDeviceName;
+    private String connectedTallyDeviceName = null;
 
     //-----------------------------------------------------------------------------
     // TallyDeviceBluetoothLeConnectionHandler::TallyDeviceBluetoothLeConnectionHandler
