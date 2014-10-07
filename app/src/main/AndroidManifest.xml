@@ -21,16 +21,10 @@
         android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
 
         <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="landscape" >
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-
+            android:name=".CreateJobActivity"
+            android:screenOrientation="landscape"
+            android:label="@string/title_activity_create_job"
+            android:theme="@style/activityDialog" >
         </activity>
 
         <activity
@@ -47,49 +41,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.yaboosh.ybtech.lasertally.ItemListActivity" />
 
-        </activity>
-
-        <activity
-            android:name=".BluetoothScanActivity"
-            android:parentActivityName=".MainActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_bluetooth_scan"
-            android:theme="@style/activityDialog" >
-
-                <intent-filter>
-                    <action android:name="android.intent.action.MAIN"/>
-
-                    <category android:name="android.intent.category.LAUNCHER"/>
-                </intent-filter>
-
-        </activity>
-
-        <activity
-            android:name=".MessageActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_bluetooth_message"
-            android:theme="@style/activityDialog" >
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-
-        </activity>
-
-        <activity
-            android:name=".TableRowEditorActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_table_row_editor"
-            android:theme="@style/activityDialog" >
-        </activity>
-
-        <activity
-            android:name=".CreateJobActivity"
-            android:screenOrientation="landscape"
-            android:label="@string/title_activity_create_job"
-            android:theme="@style/activityDialog" >
         </activity>
 
         <activity
@@ -113,9 +64,44 @@
         </activity>
 
         <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="landscape" >
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
+
+        <activity
             android:name=".OpenJobActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_open_job"
+            android:theme="@style/activityDialog" >
+        </activity>
+
+        <activity
+            android:name=".TallyDeviceConnectionStatusMessageActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_tally_device_connection_status_message"
+            android:theme="@style/activityDialog" >
+        </activity>
+
+        <activity
+            android:name=".TallyDeviceScanActivity"
+            android:parentActivityName=".MainActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_tally_device_scan"
+            android:theme="@style/activityDialog" >
+        </activity>
+
+        <activity
+            android:name=".TableRowEditorActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_table_row_editor"
             android:theme="@style/activityDialog" >
         </activity>
 
@@ -126,7 +112,7 @@
             android:theme="@style/activityDialog" >
         </activity>
 
-        <service android:name="com.yaboosh.ybtech.lasertally.BluetoothLeService" >
+        <service android:name="com.yaboosh.ybtech.lasertally.TallyDeviceService" >
         </service>
 
     </application>

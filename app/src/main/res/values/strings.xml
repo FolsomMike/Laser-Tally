@@ -24,18 +24,19 @@
     <color name="tableBottomBorderLineColor">#000000</color>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_item_list">Items</string>
-    <string name="title_item_detail">Item Detail</string>
-    <string name="title_activity_bluetooth_scan">BluetoothScanActivity</string>
-    <string name="title_activity_bluetooth_message">BluetoothMessageActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+
     <string name="title_activity_create_job">CreateJobActivity</string>
     <string name="title_activity_job_display">JobDisplayActivity</string>
     <string name="title_activity_job_info">JobInfoActivity</string>
     <string name="title_activity_job_menu_info">JobInfoMenuActivity</string>
     <string name="title_activity_open_job">OpenJobActivity</string>
     <string name="title_activity_table_row_editor">TableRowEditorActivity</string>
+    <string name="title_activity_tally_device_connection_status_message">TallyDeviceConnectionStatusMessageActivity</string>
+    <string name="title_activity_tally_device_scan">TallyDeviceActivity</string>
     <string name="title_activity_verify_action">VerifyActionActivity</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_item_list">Items</string>
+    <string name="title_item_detail">Item Detail</string>
 
 </resources>
