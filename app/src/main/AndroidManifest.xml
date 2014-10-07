@@ -65,7 +65,7 @@
         </activity>
 
         <activity
-            android:name=".BluetoothMessageActivity"
+            android:name=".MessageActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_bluetooth_message"
             android:theme="@style/activityDialog" >

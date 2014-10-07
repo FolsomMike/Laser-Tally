@@ -30,7 +30,7 @@ import android.os.Handler;
 import java.text.DecimalFormat;
 import java.util.Random;
 
-public class TallyDeviceSimulationConnectionHandler extends TallyDeviceConnectionHandler
+public class TallyDeviceSimulationConnectionHandler extends TallyDeviceConnectionHandler {
 
     private Handler timerHandler = new Handler();
     private TallyDeviceService parentService;

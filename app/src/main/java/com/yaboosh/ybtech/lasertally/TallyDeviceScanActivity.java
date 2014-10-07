@@ -1,15 +1,13 @@
 /******************************************************************************
- * Title: BluetoothScanActivity.java
+ * Title: TallyDeviceScanActivity.java
  * Author: Hunter Schoonover
- * Date: 7/27/14
+ * Date: 10/01/14
  *
  * Purpose:
  *
- * This class is an activity used to scan for Bluetooth Le devices. Upon user
- * selection, a remote device is connected to and this activity is closed.
+ * This class is an activity used to scan for and display tally devices. Upon
+ * user selection, a remote device is connected to and this activity is closed.
  *
- * The connection is passed back to the MainActivity to be
- * used for interaction.
  *
  */
 
@@ -35,6 +33,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
@@ -48,18 +47,18 @@ import java.util.Map;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-// class BluetoothScanActivity
+// class TallyDeviceScanActivity
 //
 
-public class BluetoothScanActivity extends Activity implements AbsListView.OnItemClickListener {
+public class TallyDeviceScanActivity extends Activity implements AbsListView.OnItemClickListener {
 
-    public static final String TAG = "BluetoothScanActivity";
+    public static final String TAG = "DeviceScanActivity";
 
     private View decorView;
     private int uiOptions;
 
     private final int ENABLE_BT = 1;
-    private BluetoothLeVars.State state = BluetoothLeVars.State.UNKNOWN;
+    private TallyDeviceService.State state = TallyDeviceService.State.UNKNOWN;
     private final Messenger messenger;
     private Intent serviceIntent;
     private Messenger service = null;
@@ -71,26 +70,23 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
     private AbsListView listView;
     private TextView emptyView;
 
-    private ListAdapter adapter;
-
-    private String[] deviceNames = null;
-    private boolean bluetoothRequestActive = false;
+    private List<String> deviceNames = null;
 
     //-----------------------------------------------------------------------------
-    // BluetoothScanActivity::BluetoothScanActivity (constructor)
+    // TallyDeviceScanActivity::TallyDeviceScanActivity (constructor)
     //
 
-    public BluetoothScanActivity() {
+    public TallyDeviceScanActivity() {
 
         super();
 
         messenger = new Messenger(new IncomingHandler(this));
 
-    }//end of BluetoothScanActivity::BluetoothScanActivity (constructor)
+    }//end of TallyDeviceScanActivity::TallyDeviceScanActivity (constructor)
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothScanActivity::onCreate
+    // TallyDeviceScanActivity::onCreate
     //
     // Automatically called when the activity is created.
     // All functions that must be done upon creation should be called here.
@@ -100,8 +96,6 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-
-        Log.d(TAG, "Inside of BluetoothScanActivity onCreate");
 
         setContentView(R.layout.activity_bluetooth_scan);
 
@@ -120,7 +114,6 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
 
         serviceIntent = new Intent(this, BluetoothLeService.class);
 
-        // Set the adapter
         listView = (AbsListView) findViewById(android.R.id.list);
 
         emptyView = (TextView) findViewById(android.R.id.empty);
@@ -129,11 +122,11 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
         // Set OnItemClickListener so we can be notified on item clicks
         listView.setOnItemClickListener(this);
 
-    }//end of BluetoothScanActivity::onCreate
+    }//end of TallyDeviceScanActivity::onCreate
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothScanActivity::onDestroy
+    // TallyDeviceScanActivity::onDestroy
     //
     // Automatically called when the activity is destroyed.
     // All functions that must be done upon destruction should be called here.
@@ -143,36 +136,13 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
     protected void onDestroy()
     {
 
-        Log.d(TAG, "Inside of BluetoothScanActivity onDestroy");
-
         super.onDestroy();
 
-        try {
-            unbindService(connection);
-        } catch (Exception e) {}
-
-        if (service == null) {
-            Log.d(TAG, "service was null -- return from function");
-            return;
-        }
-
-        try {
-            Message msg = Message.obtain(null, BluetoothLeService.MSG_UNREGISTER_BLUETOOTH_SCAN_ACTIVITY);
-            if (msg != null) {
-                Log.d(TAG, "msg was not null -- sending unregister scan message");
-                msg.replyTo = messenger;
-                service.send(msg);
-            }
-        } catch (Exception e) {
-            Log.w(TAG, "Error unregistering with BleService", e);
-            service = null;
-        }
-
-    }//end of BluetoothScanActivity::onDestroy
+    }//end of TallyDeviceScanActivity::onDestroy
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothScanActivity::onResume
+    // TallyDeviceScanActivity::onResume
     //
     // Automatically called when the activity is paused when it does not have
     // user's focus but it still partially visible.
@@ -184,17 +154,15 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
 
         super.onResume();
 
-        Log.d(TAG, "Inside of BluetoothScanActivity onResume");
-
         decorView.setSystemUiVisibility(uiOptions);
 
         bindService(serviceIntent, connection, BIND_AUTO_CREATE);
 
-    }//end of BluetoothScanActivity::onResume
+    }//end of TallyDeviceScanActivity::onResume
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothScanActivity::onPause
+    // TallyDeviceScanActivity::onPause
     //
     // Automatically called when the activity is paused when it does not have
     // user's focus but it still partially visible.
@@ -204,34 +172,67 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
     @Override
     protected void onPause() {
 
-        Log.d(TAG, "Inside of BluetoothScanActivity onPause");
-
         super.onPause();
 
-        unbindService(connection);
+        try { unbindService(connection); } catch (Exception e) {}
 
-        if (service == null) {
-            Log.d(TAG, "service was null -- return from function");
-            return;
-        }
+        if (service == null) { return; }
 
         try {
-            Message msg = Message.obtain(null, BluetoothLeService.MSG_UNREGISTER_BLUETOOTH_SCAN_ACTIVITY);
-            if (msg != null) {
-                Log.d(TAG, "msg was not null -- sending unregister scan message");
-                msg.replyTo = messenger;
-                service.send(msg);
-            }
-        } catch (Exception e) {
-            Log.w(TAG, "Error unregistering with BleService", e);
-            service = null;
-        }
 
-    }//end of BluetoothScanActivity::onPause
+            Message msg = Message.obtain(null,
+                                        TallyDeviceService.MSG_REGISTER_TALLY_DEVICE_SCAN_ACTIVITY);
+            if (msg == null) { return; }
+            msg.replyTo = messenger;
+            service.send(msg);
+
+        } catch (Exception e) { service = null; }
+
+    }//end of TallyDeviceScanActivity::onPause
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothScanActivity::connection
+    // TallyDeviceScanActivity::onActivityResult
+    //
+    // Listens for activity results and performs different actions depending
+    // on their request and result codes.
+    //
+
+    @Override
+    protected void onActivityResult(int pRequestCode, int pResultCode, Intent pData) {
+
+        // This activity does not have a need for any
+        // activity results, so it sends them to the
+        // tally device service.
+        Message msg = Message.obtain(null, TallyDeviceService.MSG_ACTIVITY_RESULT);
+        if (msg == null) { return; }
+        msg.arg1 = pRequestCode;
+        msg.arg2 = pResultCode;
+        msg.obj = pData;
+        try { service.send(msg); } catch (Exception e) { unbindService(connection); }
+
+    }//end of TallyDeviceScanActivity::onActivityResult
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceScanActivity::onItemClick
+    //
+    // Notifies the active callbacks interface (the activity, if the
+    // fragment is attached to one) that an item has been selected.
+    //
+    // Automatically called when an item is clicked on.
+    //
+
+    @Override
+    public void onItemClick(AdapterView<?> pParent, View pView, int pPosition, long pId) {
+
+        handleDeviceClick(deviceNames.get(pPosition));
+
+    }//end of TallyDeviceScanActivity::onItemClick
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceScanActivity::connection
     //
     // Not really a function
     //
@@ -244,48 +245,34 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
         @Override
         public void onServiceConnected(ComponentName pName, IBinder pService) {
 
-            Log.d(TAG, "Service connected to BluetoothScanActivity");
-
             service = new Messenger(pService);
 
             try {
 
                 Message msg = Message.obtain(null,
-                                        BluetoothLeService.MSG_REGISTER_BLUETOOTH_SCAN_ACTIVITY);
-                if (msg != null) {
-                    msg.replyTo = messenger;
-                    service.send(msg);
-                } else {
-                    Log.d(TAG, "service is null");
-                    service = null;
-                }
+                                        TallyDeviceService.MSG_REGISTER_TALLY_DEVICE_SCAN_ACTIVITY);
+                if (msg == null) { return; }
+                msg.replyTo = messenger;
+                service.send(msg);
 
-            } catch (Exception e) {
-                Log.w(TAG, "Error connecting to BleService",
-                        e);
-                service = null;
-            }
+            } catch (Exception e) { service = null; }
 
-            if (service != null) {
-                startScan();
-            }
+            if (service != null) { startScan(); }
 
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
 
-            Log.d(TAG, "Service disconnected");
-
             service = null;
 
         }
 
-    };//end of BluetoothScanActivity::connection
+    };//end of TallyDeviceScanActivity::connection
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothScanActivity::createUiChangeListener
+    // TallyDeviceScanActivity::createUiChangeListener
     //
     // Listens for visibility changes in the ui.
     //
@@ -309,11 +296,11 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
 
                 });
 
-    }//end of BluetoothScanActivity::createUiChangeListener
+    }//end of TallyDeviceScanActivity::createUiChangeListener
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothScanActivity::exitActivity
+    // TallyDeviceScanActivity::exitActivity
     //
     // Finishes and closes the activity.
     //
@@ -322,39 +309,27 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
 
         finish();
 
-    }//end of BluetoothScanActivity::exitActivity
+    }//end of TallyDeviceScanActivity::exitActivity
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothScanActivity::handleBluetoothOffState
+    // TallyDeviceScanActivity::finishActivityAndStartMessageActivity
     //
-    // Starts an intent to request for the user to enable the Bluetooth
-    // capabilities for this device.
+    // Closes this activity and starts the MessageActivity.
     //
 
-    public void handleBluetoothOffState() {
+    private void finishActivityAndStartMessageActivity() {
 
-        //debug hss//
-        Log.d(TAG, "made it to handleBluetoothOffState()");
+        Intent intent = new Intent(this, MessageActivity.class);
+        startActivity(intent);
 
-        ProgressBar tempBar = (ProgressBar) findViewById(R.id.bluetoothScanProgressBar);
-        TextView tempText = (TextView) findViewById(R.id.bluetoothScanningText);
-        View tempHorizontalSpacer = findViewById(R.id.specialHorizontalSpacer);
+        exitActivity();
 
-        setEmptyText(getString(R.string.empty_view_no_text));
-        tempBar.setVisibility(View.GONE);
-        tempHorizontalSpacer.setVisibility(View.GONE);
-        tempText.setText("Waiting for Bluetooth to be turned on.");
-
-        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-        startActivityForResult(enableBtIntent, ENABLE_BT);
-        bluetoothRequestActive = true;
-
-    }//end of BluetoothScanActivity::handleBluetoothOffState
+    }//end of TallyDeviceScanActivity::finishActivityAndStart\MessageActivity
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothScanActivity::handleCloseXButtonPressed
+    // TallyDeviceScanActivity::handleCloseXButtonPressed
     //
     // Closes the activity.
     //
@@ -363,37 +338,32 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
 
         exitActivity();
 
-    }//end of BluetoothScanActivity::handleCloseXButtonPressed
+    }//end of TallyDeviceScanActivity::handleCloseXButtonPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothScanActivity::handleDeviceClick
+    // TallyDeviceScanActivity::handleDeviceClick
     //
-    // Sends the passed in a message to the BluetoothLeService.
+    // Sends the passed in a message to the TallyDeviceService.
     //
 
     public void handleDeviceClick(String pName) {
 
         Log.d(TAG, "User clicked on " + pName);
 
-        Message msg = Message.obtain(null, BluetoothLeService.MSG_DEVICE_CONNECT);
+        Message msg = Message.obtain(null, TallyDeviceService.MSG_CONNECT_TO_TALLY_DEVICE);
         if (msg == null) { return; }
 
         msg.obj = pName;
-        try {
-            service.send(msg);
-        } catch (RemoteException e) {
-            Log.w(TAG, "Lost connection to service", e);
-            unbindService(connection);
-        }
+        try { service.send(msg); } catch (Exception e) { unbindService(connection); }
 
-        finishActivityAndStartBluetoothMessageActivity();
+        finishActivityAndStartMessageActivity();
 
-    }//end of BluetoothScanActivity::handleDeviceClick
+    }//end of TallyDeviceScanActivity::handleDeviceClick
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothScanActivity::handleIdleState
+    // TallyDeviceScanActivity::handleIdleState
     //
     // Sets the scanning state of deviceList to false and sets the progress bar's
     // visible state to false.
@@ -403,143 +373,91 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
 
         setScanning(false);
 
-    }//end of BluetoothScanActivity::handleIdleState
+    }//end of TallyDeviceScanActivity::handleIdleState
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothScanActivity::finishActivityAndStartBluetoothMessageActivity
+    // TallyDeviceScanActivity::handleStartActivityForResultMessage
     //
-    // Closes this activity and starts the BluetoothMessageActivity.
+    // Starts an activity using the data obtained from the passed in message for
+    // the action and the request code.
     //
 
-    private void finishActivityAndStartBluetoothMessageActivity() {
+    private void handleStartActivityForResultMessage(Message pMsg) {
 
-        Intent intent = new Intent(this, MessageActivity.class);
-        startActivity(intent);
+        if (pMsg == null) { return; }
+        Intent intent = new Intent((String)pMsg.obj);
+        startActivityForResult(intent, pMsg.arg1);
 
-        exitActivity();
-
-    }//end of BluetoothScanActivity::finishActivityAndStartBluetoothMessageActivity
+    }//end of TallyDeviceScanActivity::handleStartActivityForResultMessage
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothScanActivity::handleScanningState
+    // TallyDeviceScanActivity::handleScanningState
     //
-    // Sets the scanning state of deviceList to true and sets the progress bar's
-    // visible state to false.
+    // Sets the scanning state to true.
     //
 
-    public void handleScanningState() {
+    private void handleScanningState() {
 
         setScanning(true);
 
-    }//end of BluetoothScanActivity::handleScanningState
+    }//end of TallyDeviceScanActivity::handleScanningState
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothScanActivity::onActivityResult
+    // TallyDeviceScanActivity::handleTallyDeviceNameMessage
     //
-    // Listens for activity results and performs different actions depending
-    // on their request and result codes.
+    // Adds the name gotten from the message to the tally device name list and
+    // displays the list of names to the user.
     //
 
-    @Override
-    protected void onActivityResult(int pRequestCode, int pResultCode, Intent pData) {
+    private void handleTallyDeviceNameMessage(Message pMsg) {
 
-        if (pRequestCode == ENABLE_BT) {
+        addDeviceName(this, (String)pMsg.obj);
 
-            bluetoothRequestActive = false;
-
-            if (pResultCode == RESULT_OK) {
-                startScan();
-            }
-            else {
-                //The user has elected not to turn on
-                //Bluetooth. There's nothing we can do
-                //without it, so we exit the activity
-                exitActivity();
-            }
-
-        }
-        else {
-            super.onActivityResult(pRequestCode, pResultCode, pData);
-        }
-
-    }//end of BluetoothScanActivity::onActivityResult
+    }//end of TallyDeviceScanActivity::handleTallyDeviceNameMessage
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothScanActivity::onItemClick
+    // TallyDeviceScanActivity::addDeviceName
     //
-    // Notifies the active callbacks interface (the activity, if the
-    // fragment is attached to one) that an item has been selected.
-    //
-    // Automatically called when an item is clicked on.
+    // Adds the passed in device to the listView.
     //
 
-    @Override
-    public void onItemClick(AdapterView<?> pParent, View pView, int pPosition, long pId) {
+    public void addDeviceName(Context pContext, String pName) {
 
-        handleDeviceClick(deviceNames[pPosition]);
+        if (pName == null) { return; }
 
-    }//end of BluetoothScanActivity::onItemClick
-    //-----------------------------------------------------------------------------
+        deviceNames.add(pName);
 
-    //-----------------------------------------------------------------------------
-    // BluetoothScanActivity::setDevices
-    //
-    // Adds the passed in devices to the listView.
-    //
-
-    public void setDevices(Context pContext, String[] pNames) {
-
-        //debug hss//
-        Log.d(TAG, "Setting device names -- inside of setDevices()");
-
-        deviceNames = pNames;
-
-        if (deviceNames == null) {
-            //debug hss//
-            Log.d(TAG, "deviceNames was null -- return");
-            return;
-        }
-
-        List<Map<String, String>> items = new ArrayList<Map<String, String>>();
-
-        for (String names : deviceNames) {
-            Map<String, String> item = new HashMap<String, String>();
-            item.put(KEY_NAMES, names);
-            items.add(item);
-        }
-
-        adapter = new SimpleAdapter(pContext, items, R.layout.device_list_item, KEYS, IDS);
+        ListAdapter adapter = new ArrayAdapter<String>(pContext, R.layout.device_list_item, deviceNames);
 
         listView.setAdapter(adapter);
 
-    }//end of BluetoothScanActivity::setDevices
+    }//end of TallyDeviceScanActivity::addDeviceName
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // DeviceListFragment::setEmptyText
+    // TallyDeviceScanActivity::setEmptyText
     //
     // Sets the text of the emptyView to the passed in CharSequence.
     //
 
     public void setEmptyText(CharSequence pEmptyText) {
 
-        if (emptyView == null) {
-            return;
-        }
+        if (emptyView == null) { return; }
 
         emptyView.setText(pEmptyText);
 
-    }//end of DeviceListFragment::setEmptyText
+    }//end of TallyDeviceScanActivity::setEmptyText
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothScanActivity::setScanning
+    // TallyDeviceScanActivity::setScanning
     //
-    // Adds the passed in devices to the listView.
+    // Sets the scanning state of deviceList to true and sets the progress bar's
+    // visible state to false.
     //
 
     public void setScanning(boolean pScanning) {
@@ -562,13 +480,13 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
             tempText.setText(R.string.not_scanning);
         }
 
-    }//end of BluetoothScanActivity::setScanning
+    }//end of TallyDeviceScanActivity::setScanning
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothScanActivity::startScan
+    // TallyDeviceScanActivity::startScan
     //
-    // Goes through the process of starting a scan for remote devices.
+    // Goes through the process of starting a scan for tally devices.
     //
 
     private void startScan() {
@@ -576,59 +494,49 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
         setDevices(this, null);
         setScanning(true);
 
-        Message msg = Message.obtain(null, BluetoothLeService.MSG_START_SCAN);
-        if (msg != null) {
-            try {
-                service.send(msg);
-            } catch (RemoteException e) {
-                Log.w(TAG, "Lost connection to service", e);
-                unbindService(connection);
-            }
-        }
+        Message msg = Message.obtain(null, TallyDeviceService.MSG_START_SCAN_FOR_TALLY_DEVICES);
+        if (msg == null) { return; }
+        try { service.send(msg); } catch (Exception e) { unbindService(connection); }
 
-    }//end of BluetoothScanActivity::startScan
+    }//end of TallyDeviceScanActivity::startScan
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothScanActivity::stateChanged
+    // TallyDeviceScanActivity::stateChanged
     //
     // Performs different operations depending on the passed in state.
     //
 
-    private void stateChanged(BluetoothLeVars.State pNewState) {
-
-        //debug hss//
-        Log.d(TAG, "state changed message received");
+    private void stateChanged(TallyDeviceService.State pNewState) {
 
         state = pNewState;
-        if (state == BluetoothLeVars.State.SCANNING) { handleScanningState(); }
-        else if (state == BluetoothLeVars.State.BLUETOOTH_OFF) { handleBluetoothOffState(); }
-        else if (state == BluetoothLeVars.State.IDLE) { handleIdleState(); }
+        if (state == TallyDeviceService.State.SCANNING) { handleScanningState(); }
+        else if (state == TallyDeviceService.State.IDLE) { handleIdleState(); }
 
-    }//end of BluetoothScanActivity::stateChanged
+    }//end of TallyDeviceScanActivity::stateChanged
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
     //-----------------------------------------------------------------------------
-    // class MainActivity::IncomingHandler
+    // class TallyDeviceScanActivity::IncomingHandler
     //
     // Purpose:
     //
-    // This class handles incoming messages given to the mesenger to which it
+    // This class handles incoming messages given to the messenger to which it
     // was passed.
     //
 
     private static class IncomingHandler extends Handler {
 
-        private final WeakReference<BluetoothScanActivity> activity;
+        private final WeakReference<TallyDeviceScanActivity> activity;
 
         //-----------------------------------------------------------------------------
         // IncomingHandler::IncomingHandler (constructor)
         //
 
-        public IncomingHandler(BluetoothScanActivity pActivity) {
+        public IncomingHandler(TallyDeviceScanActivity pActivity) {
 
-            activity = new WeakReference<BluetoothScanActivity>(pActivity);
+            activity = new WeakReference<TallyDeviceScanActivity>(pActivity);
 
         }//end of IncomingHandler::IncomingHandler (constructor)
         //-----------------------------------------------------------------------------
@@ -642,28 +550,21 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
         @Override
         public void handleMessage(Message pMsg) {
 
-            Log.d(TAG, "Message received");
-
-            BluetoothScanActivity tempActivity = activity.get();
+            TallyDeviceScanActivity tempActivity = activity.get();
             if (tempActivity != null) {
 
                 switch (pMsg.what) {
-                    case BluetoothLeService.MSG_BT_STATE:
-                        tempActivity.stateChanged(BluetoothLeVars.State.values()[pMsg.arg1]);
+
+                    case TallyDeviceService.MSG_CONNECTION_STATE:
+                        tempActivity.stateChanged(TallyDeviceService.State.values()[pMsg.arg1]);
                         break;
 
-                    case BluetoothLeService.MSG_DEVICE_FOUND:
-                        Bundle data = pMsg.getData();
-                        if (data != null && data.containsKey(BluetoothLeService.KEY_NAMES)) {
-
-                            tempActivity.setDevices(tempActivity,
-                                                data.getStringArray(BluetoothLeService.KEY_NAMES));
-
-                        }
+                    case TallyDeviceService.MSG_START_ACTIVITY_FOR_RESULT:
+                        tempActivity.handleStartActivityForResultMessage(pMsg);
                         break;
 
-                    case BluetoothLeService.MSG_EXIT_SCAN_ACTIVITY:
-                        tempActivity.exitActivity();
+                    case TallyDeviceService.MSG_TALLY_DEVICE_NAME:
+                        tempActivity.handleTallyDeviceNameMessage(pMsg);
                         break;
 
                 }
@@ -675,10 +576,10 @@ public class BluetoothScanActivity extends Activity implements AbsListView.OnIte
         }//end of IncomingHandler::handleMessage
         //-----------------------------------------------------------------------------
 
-    }//end of class MainActivity::IncomingHandler
+    }//end of class TallyDeviceScanActivity::IncomingHandler
     //-----------------------------------------------------------------------------
     //-----------------------------------------------------------------------------
 
-}//end of class BluetoothScanActivity
+}//end of class TallyDeviceScanActivity
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------

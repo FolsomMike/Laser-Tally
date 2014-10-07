@@ -18,7 +18,6 @@ package com.yaboosh.ybtech.lasertally;
 //-----------------------------------------------------------------------------
 
 import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -29,8 +28,6 @@ import android.os.Message;
 import android.os.Messenger;
 import android.util.Log;
 import android.view.View;
-import android.widget.AbsListView;
-import android.widget.ListAdapter;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -41,7 +38,7 @@ import java.lang.ref.WeakReference;
 // class BluetoothMessageActivity
 //
 
-public class BluetoothMessageActivity extends Activity {
+public class MessageActivity extends Activity {
 
     public static final String TAG = "MessageActivity";
 
@@ -60,7 +57,7 @@ public class BluetoothMessageActivity extends Activity {
     // BluetoothMessageActivity::BluetoothMessageActivity (constructor)
     //
 
-    public BluetoothMessageActivity() {
+    public MessageActivity() {
 
         super();
 
@@ -443,15 +440,15 @@ public class BluetoothMessageActivity extends Activity {
 
     private static class IncomingHandler extends Handler {
 
-        private final WeakReference<BluetoothMessageActivity> activity;
+        private final WeakReference<MessageActivity> activity;
 
         //-----------------------------------------------------------------------------
         // IncomingHandler::IncomingHandler (constructor)
         //
 
-        public IncomingHandler(BluetoothMessageActivity pActivity) {
+        public IncomingHandler(MessageActivity pActivity) {
 
-            activity = new WeakReference<BluetoothMessageActivity>(pActivity);
+            activity = new WeakReference<MessageActivity>(pActivity);
 
         }//end of IncomingHandler::IncomingHandler (constructor)
         //-----------------------------------------------------------------------------
@@ -467,7 +464,7 @@ public class BluetoothMessageActivity extends Activity {
 
             Log.d(TAG, "Message received");
 
-            BluetoothMessageActivity tempActivity = activity.get();
+            MessageActivity tempActivity = activity.get();
             if (tempActivity != null) {
 
                 switch (pMsg.what) {
