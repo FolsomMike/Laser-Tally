@@ -12,8 +12,8 @@
 * The service should only be started once from JobDisplayActivity. Once the
 * service is started, activities can bind to it until it is stopped.
 *
-* Only activities that need access to connection information need to bind the
-* service.
+* Only activities that need access to connection information need to bind with
+* the service.
 *
 */
 
@@ -76,7 +76,6 @@ public class TallyDeviceService extends Service {
     static final int MSG_MEASUREMENT_VALUE = 14;
     static final int MSG_CONNECTION_STATE = 15;
     static final int MSG_CONNECTED_TALLY_DEVICE_NAME = 16;
-    static final int MSG_MESSAGE_ACTIVITY_TEXT_TO_DISPLAY = 17;
     static final int MSG_START_ACTIVITY_FOR_RESULT = 18;
     static final int MSG_ACTIVITY_RESULT = 19;
     static final int MSG_TALLY_DEVICE_NAME = 20;
@@ -105,6 +104,8 @@ public class TallyDeviceService extends Service {
     private Messenger messengerClient;
 
     private State connectionState = State.UNKNOWN;
+
+    private String connectedTallyDeviceName = null;
 
     //-----------------------------------------------------------------------------
     // TallyDeviceService::TallyDeviceService (constructor)
@@ -162,8 +163,9 @@ public class TallyDeviceService extends Service {
     // Sets the state to connected.
     //
 
-    public void handleConnectedToTallyDevice() {
+    public void handleConnectedToTallyDevice(String pDeviceName) {
 
+        connectedTallyDeviceName = pDeviceName;
         setState(State.CONNECTED);
 
     }//end of TallyDeviceService::handleConnectedToTallyDevice
@@ -204,6 +206,7 @@ public class TallyDeviceService extends Service {
 
     public void handleDisconnectedFromTallyDevice() {
 
+        connectedTallyDeviceName = null;
         setState(State.DISCONNECTED);
 
     }//end of TallyDeviceService::handleDisconnectedFromTallyDevice
@@ -369,9 +372,12 @@ public class TallyDeviceService extends Service {
 
         messengerClient = pMsg.replyTo;
 
-        Message msg = Message.obtain(null, MSG_MESSAGE_ACTIVITY_TEXT_TO_DISPLAY);
-        if (msg == null) { return; }
-        msg.obj = "Connecting to " + tallyDeviceConnectionHandler.getConnectedTallyDeviceName();
+        Message msg = getStateMessage();
+        if (msg != null) { sendMessageToMessengerClient(msg); }
+
+        Message msg2 = Message.obtain(null, MSG_TALLY_DEVICE_NAME);
+        if (msg2 == null) { return; }
+        msg2.obj = connectedTallyDeviceName;
         sendMessageToMessengerClient(msg);
 
     }//end of TallyDeviceService::handleRegisterMessageActivityMessage
