@@ -9,7 +9,7 @@
     android:paddingLeft="0dp"
     android:paddingRight="0dp"
     android:paddingTop="0dp"
-    tools:context="com.yaboosh.ybtech.lasertally.BluetoothScanActivity" >
+    tools:context="com.yaboosh.ybtech.lasertally.TallyDeviceScanActivity" >
 
     <LinearLayout
         android:orientation="horizontal"
@@ -97,7 +97,7 @@
         </View>
 
         <ProgressBar
-            android:id="@id/bluetoothScanProgressBar"
+            android:id="@id/tallyDeviceScanProgressBar"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             style="@android:style/Widget.ProgressBar"
@@ -111,7 +111,7 @@
         </View>
 
         <TextView
-            android:id="@id/bluetoothScanningText"
+            android:id="@id/tallyDeviceScanningText"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:textSize="20dp"
