@@ -57,15 +57,10 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
     private View decorView;
     private int uiOptions;
 
-    private final int ENABLE_BT = 1;
     private TallyDeviceService.State state = TallyDeviceService.State.UNKNOWN;
     private final Messenger messenger;
     private Intent serviceIntent;
     private Messenger service = null;
-
-    public static final String KEY_NAMES = "KEY_NAMES";
-    private static final String[] KEYS = {KEY_NAMES};
-    private static final int[] IDS = {android.R.id.text1};
 
     private AbsListView listView;
     private TextView emptyView;
@@ -104,11 +99,11 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
         decorView = getWindow().getDecorView();
 
         uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
         createUiChangeListener();
 
@@ -349,8 +344,6 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
 
     public void handleDeviceClick(String pName) {
 
-        Log.d(TAG, "User clicked on " + pName);
-
         Message msg = Message.obtain(null, TallyDeviceService.MSG_CONNECT_TO_TALLY_DEVICE);
         if (msg == null) { return; }
 
@@ -422,20 +415,39 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
     //-----------------------------------------------------------------------------
     // TallyDeviceScanActivity::addDeviceName
     //
-    // Adds the passed in device to the listView.
+    // Adds the passed in device to the device names list and then sets the devices
+    // displayed in the ListView to the list.
     //
 
-    public void addDeviceName(Context pContext, String pName) {
+    private void addDeviceName(Context pContext, String pName) {
 
         if (pName == null) { return; }
 
         deviceNames.add(pName);
 
-        ListAdapter adapter = new ArrayAdapter<String>(pContext, R.layout.device_list_item, deviceNames);
+        setDevices(pContext, deviceNames);
+
+    }//end of TallyDeviceScanActivity::addDeviceName
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceScanActivity::setDevices
+    //
+    // Sets the list view to the passed in list.
+    //
+
+    private void setDevices(Context pContext, List<String> pNamesList) {
+
+        deviceNames = pNamesList;
+
+        if (deviceNames == null) { return; }
+
+        ListAdapter adapter = new ArrayAdapter<String>(pContext, R.layout.device_list_item,
+                                                                                    deviceNames);
 
         listView.setAdapter(adapter);
 
-    }//end of TallyDeviceScanActivity::addDeviceName
+    }//end of TallyDeviceScanActivity::setDevices
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -462,8 +474,8 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
 
     public void setScanning(boolean pScanning) {
 
-        ProgressBar tempBar = (ProgressBar) findViewById(R.id.bluetoothScanProgressBar);
-        TextView tempText = (TextView) findViewById(R.id.bluetoothScanningText);
+        ProgressBar tempBar = (ProgressBar) findViewById(R.id.tallyDeviceScanProgressBar);
+        TextView tempText = (TextView) findViewById(R.id.tallyDeviceScanningText);
         View tempHorizontalSpacer = findViewById(R.id.specialHorizontalSpacer);
 
         if (pScanning) {
