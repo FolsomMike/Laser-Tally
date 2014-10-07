@@ -75,7 +75,6 @@ public class TallyDeviceService extends Service {
     static final int MSG_SEND_MEASURE_COMMAND_TO_TALLY_DEVICE = 12;
     static final int MSG_MEASUREMENT_VALUE = 14;
     static final int MSG_CONNECTION_STATE = 15;
-    static final int MSG_CONNECTED_TALLY_DEVICE_NAME = 16;
     static final int MSG_START_ACTIVITY_FOR_RESULT = 18;
     static final int MSG_ACTIVITY_RESULT = 19;
     static final int MSG_TALLY_DEVICE_NAME = 20;
@@ -105,6 +104,7 @@ public class TallyDeviceService extends Service {
 
     private State connectionState = State.UNKNOWN;
 
+    private String attemptingConnectionToTallyDeviceName = null;
     private String connectedTallyDeviceName = null;
 
     //-----------------------------------------------------------------------------
@@ -138,7 +138,8 @@ public class TallyDeviceService extends Service {
 
     private void connectToDeviceByName(String pDeviceName) {
 
-        tallyDeviceConnectionHandler.connectToTallyDevice(pDeviceName);
+        attemptingConnectionToTallyDeviceName = pDeviceName;
+        tallyDeviceConnectionHandler.connectToTallyDevice(attemptingConnectionToTallyDeviceName);
 
     }//end of TallyDeviceService::connectToDeviceByName
     //-----------------------------------------------------------------------------
@@ -193,7 +194,7 @@ public class TallyDeviceService extends Service {
 
     public void handleConnectToTallyDeviceMessage(Message pMsg) {
 
-        connectToDeviceByName((String) pMsg.obj);
+        connectToDeviceByName((String)pMsg.obj);
 
     }//end of TallyDeviceService::handleConnectToTallyDeviceMessage
     //-----------------------------------------------------------------------------
@@ -375,9 +376,6 @@ public class TallyDeviceService extends Service {
         Message msg = getStateMessage();
         if (msg != null) { sendMessageToMessengerClient(msg); }
 
-        Message msg2 = Message.obtain(null, MSG_TALLY_DEVICE_NAME);
-        if (msg2 == null) { return; }
-        msg2.obj = connectedTallyDeviceName;
         sendMessageToMessengerClient(msg);
 
     }//end of TallyDeviceService::handleRegisterMessageActivityMessage
@@ -476,6 +474,15 @@ public class TallyDeviceService extends Service {
         Message msg = Message.obtain(null, MSG_CONNECTION_STATE);
         if (msg == null) { return null; }
         msg.arg1 = connectionState.ordinal();
+
+        // Put the appropriate name in the message
+        // if the status is CONNECTED or CONNECTING.
+        if (connectionState == State.CONNECTED) {
+            msg.obj = connectedTallyDeviceName;
+        }
+        else if (connectionState == State.CONNECTING) {
+            msg.obj = attemptingConnectionToTallyDeviceName;
+        }
 
         return msg;
 

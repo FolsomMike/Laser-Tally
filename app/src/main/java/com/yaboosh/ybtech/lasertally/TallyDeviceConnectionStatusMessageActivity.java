@@ -52,7 +52,7 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
     private Messenger service = null;
     Handler timerHandler = new Handler();
 
-    private static String deviceName;
+    private static String tallyDeviceName;
 
     //-----------------------------------------------------------------------------
     // TallyDeviceConnectionStatusMessageActivity::MessageActivity (constructor)
@@ -254,7 +254,7 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
 
         setProgressBarVisible(false);
         setGreenCheckMarkVisible(true);
-        setMessageText("Connected to " + deviceName);
+        setMessageText("Connected to " + tallyDeviceName);
 
         // Waits for five seconds so that the user
         // can see the message and then exits the
@@ -284,22 +284,9 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
 
         setProgressBarVisible(true);
         setGreenCheckMarkVisible(false);
-        setMessageText("Connecting to " + deviceName);
+        setMessageText("Connecting to " + tallyDeviceName);
 
     }//end of TallyDeviceConnectionStatusMessageActivity::handleConnectingState
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // TallyDeviceConnectionStatusMessageActivity::setDeviceName
-    //
-    // Sets the device name to the passed in string.
-    //
-
-    private void setDeviceName(String pName) {
-
-        deviceName = pName;
-
-    }//end of TallyDeviceConnectionStatusMessageActivity::setDeviceName
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -366,12 +353,18 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
     // Performs different operations depending on the passed in state.
     //
 
-    private void stateChanged(TallyDeviceService.State pNewState) {
+    private void stateChanged(TallyDeviceService.State pNewState, Message pMsg) {
 
         state = pNewState;
 
-        if (state == TallyDeviceService.State.CONNECTED) { handleConnectedState(); }
-        else if (state == TallyDeviceService.State.CONNECTING) { handleConnectingState(); }
+        if (state == TallyDeviceService.State.CONNECTED) {
+            tallyDeviceName = (String)pMsg.obj;
+            handleConnectedState();
+        }
+        else if (state == TallyDeviceService.State.CONNECTING) {
+            tallyDeviceName = (String)pMsg.obj;
+            handleConnectingState();
+        }
 
     }//end of TallyDeviceConnectionStatusMessageActivity::stateChanged
     //-----------------------------------------------------------------------------
@@ -416,11 +409,7 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
                 switch (pMsg.what) {
 
                     case TallyDeviceService.MSG_CONNECTION_STATE:
-                        tempActivity.stateChanged(TallyDeviceService.State.values()[pMsg.arg1]);
-                        break;
-
-                    case TallyDeviceService.MSG_TALLY_DEVICE_NAME:
-                        tempActivity.setDeviceName((String) pMsg.obj);
+                        tempActivity.stateChanged(TallyDeviceService.State.values()[pMsg.arg1], pMsg);
                         break;
 
                 }
