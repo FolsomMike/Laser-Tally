@@ -1,12 +1,14 @@
 /******************************************************************************
- * Title: BluetoothMessageActivity.java
+ * Title: TallyDeviceConnectionStatusMessageActivity.java
  * Author: Hunter Schoonover
- * Date: 08/20/14
+ * Date: 10/09/14
  *
  * Purpose:
  *
- * This class is an activity used to display messages to users about the
- * current Bluetooth status.
+ * This class is an activity used to display messages about the tally device
+ * connection status to the user.
+ * The device name and connection status are sent from the TallyDeviceService.
+ *
  * The activity takes the form of an activity dialog.
  *
  */
@@ -35,17 +37,17 @@ import java.lang.ref.WeakReference;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-// class BluetoothMessageActivity
+// class TallyDeviceConnectionStatusMessageActivity
 //
 
-public class MessageActivity extends Activity {
+public class TallyDeviceConnectionStatusMessageActivity extends Activity {
 
-    public static final String TAG = "MessageActivity";
+    public static final String TAG = "TallyDeviceConnectionStatusMessageActivity";
 
     private View decorView;
     private int uiOptions;
 
-    private BluetoothLeVars.State state = BluetoothLeVars.State.UNKNOWN;
+    private TallyDeviceService.State state = TallyDeviceService.State.UNKNOWN;
     private final Messenger messenger;
     private Intent serviceIntent;
     private Messenger service = null;
@@ -54,20 +56,20 @@ public class MessageActivity extends Activity {
     private static String deviceName;
 
     //-----------------------------------------------------------------------------
-    // BluetoothMessageActivity::BluetoothMessageActivity (constructor)
+    // TallyDeviceConnectionStatusMessageActivity::MessageActivity (constructor)
     //
 
-    public MessageActivity() {
+    public TallyDeviceConnectionStatusMessageActivity() {
 
         super();
 
         messenger = new Messenger(new IncomingHandler(this));
 
-    }//end of BluetoothMessageActivity::BluetoothMessageActivity (constructor)
+    }//end of TallyDeviceConnectionStatusMessageActivity::MessageActivity (constructor)
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothMessageActivity::onCreate
+    // TallyDeviceConnectionStatusMessageActivity::onCreate
     //
     // Automatically called when the activity is created.
     // All functions that must be done upon creation should be called here.
@@ -78,8 +80,6 @@ public class MessageActivity extends Activity {
 
         super.onCreate(savedInstanceState);
 
-        Log.d(TAG, "Inside of BluetoothMessageActivity onCreate");
-
         setContentView(R.layout.activity_bluetooth_message);
 
         this.setFinishOnTouchOutside(false);
@@ -87,21 +87,21 @@ public class MessageActivity extends Activity {
         decorView = getWindow().getDecorView();
 
         uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
         createUiChangeListener();
 
         serviceIntent = new Intent(this, BluetoothLeService.class);
 
-    }//end of BluetoothMessageActivity::onCreate
+    }//end of TallyDeviceConnectionStatusMessageActivity::onCreate
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothMessageActivity::onDestroy
+    // TallyDeviceConnectionStatusMessageActivity::onDestroy
     //
     // Automatically called when the activity is destroyed.
     // All functions that must be done upon destruction should be called here.
@@ -111,19 +111,17 @@ public class MessageActivity extends Activity {
     protected void onDestroy()
     {
 
-        Log.d(TAG, "Inside of BluetoothMessageActivity onDestroy");
-
         super.onDestroy();
 
-    }//end of BluetoothMessageActivity::onDestroy
+    }//end of TallyDeviceConnectionStatusMessageActivity::onDestroy
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothMessageActivity::onResume
+    // TallyDeviceConnectionStatusMessageActivity::onResume
     //
     // Automatically called when the activity is paused when it does not have
     // user's focus but it still partially visible.
-    // All functions that must be done upon instantiation should be called here.
+    // All functions that must be done upon resume should be called here.
     //
 
     @Override
@@ -131,17 +129,15 @@ public class MessageActivity extends Activity {
 
         super.onResume();
 
-        Log.d(TAG, "Inside of BluetoothMessageActivity onResume");
-
         decorView.setSystemUiVisibility(uiOptions);
 
         bindService(serviceIntent, connection, BIND_AUTO_CREATE);
 
-    }//end of BluetoothMessageActivity::onResume
+    }//end of TallyDeviceConnectionStatusMessageActivity::onResume
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothMessageActivity::onPause
+    // TallyDeviceConnectionStatusMessageActivity::onPause
     //
     // Automatically called when the activity is paused when it does not have
     // user's focus but it still partially visible.
@@ -153,32 +149,24 @@ public class MessageActivity extends Activity {
 
         super.onPause();
 
-        Log.d(TAG, "Inside of BluetoothMessageActivity onPause");
+        try { unbindService(connection); } catch (Exception e) {}
 
-        unbindService(connection);
-
-        if (service == null) {
-            Log.d(TAG, "service was null -- return from function");
-            return;
-        }
+        if (service == null) { return; }
 
         try {
-            Message msg = Message.obtain(null,
-                                    BluetoothLeService.MSG_UNREGISTER_BLUETOOTH_MESSAGE_ACTIVITY);
-            if (msg != null) {
-                msg.replyTo = messenger;
-                service.send(msg);
-            }
-        } catch (Exception e) {
-            Log.w(TAG, "Error unregistering with BleService", e);
-            service = null;
-        }
 
-    }//end of BluetoothMessageActivity::onPause
+            Message msg = Message.obtain(null, TallyDeviceService.MSG_UNREGISTER_MESSAGE_ACTIVITY);
+            if (msg == null) { return; }
+            msg.replyTo = messenger;
+            service.send(msg);
+
+        } catch (Exception e) { service = null; }
+
+    }//end of TallyDeviceConnectionStatusMessageActivity::onPause
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothMessageActivity::connection
+    // TallyDeviceConnectionStatusMessageActivity::connection
     //
     // Not really a function
     //
@@ -191,43 +179,32 @@ public class MessageActivity extends Activity {
         @Override
         public void onServiceConnected(ComponentName pName, IBinder pService) {
 
-            Log.d(TAG, "Service connected");
-
             service = new Messenger(pService);
 
             try {
 
                 Message msg = Message.obtain(null,
-                        BluetoothLeService.MSG_REGISTER_BLUETOOTH_MESSAGE_ACTIVITY);
-                if (msg != null) {
-                    msg.replyTo = messenger;
-                    service.send(msg);
-                } else {
-                    Log.d(TAG, "service is null");
-                    service = null;
-                }
+                        TallyDeviceService.MSG_REGISTER_TALLY_DEVICE_SCAN_ACTIVITY);
+                if (msg == null) { return; }
+                msg.replyTo = messenger;
+                service.send(msg);
 
-            } catch (Exception e) {
-                Log.w(TAG, "Error connecting to BleService", e);
-                service = null;
-            }
+            } catch (Exception e) { service = null; }
 
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
 
-            Log.d(TAG, "Service disconnected");
-
             service = null;
 
         }
 
-    };//end of BluetoothMessageActivity::connection
+    };//end of TallyDeviceConnectionStatusMessageActivity::connection
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothMessageActivity::createUiChangeListener
+    // TallyDeviceConnectionStatusMessageActivity::createUiChangeListener
     //
     // Listens for visibility changes in the ui.
     //
@@ -251,11 +228,11 @@ public class MessageActivity extends Activity {
 
                 });
 
-    }//end of BluetoothMessageActivity::createUiChangeListener
+    }//end of TallyDeviceConnectionStatusMessageActivity::createUiChangeListener
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothMessageActivity::exitActivity
+    // TallyDeviceConnectionStatusMessageActivity::exitActivity
     //
     // Finishes and closes the activity.
     //
@@ -264,11 +241,11 @@ public class MessageActivity extends Activity {
 
         finish();
 
-    }//end of BluetoothMessageActivity::exitActivity
+    }//end of TallyDeviceConnectionStatusMessageActivity::exitActivity
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothMessageActivity::handleConnectedState
+    // TallyDeviceConnectionStatusMessageActivity::handleConnectedState
     //
     // Displays text to the user about being connected to the remote device with
     // the preset name.
@@ -279,6 +256,10 @@ public class MessageActivity extends Activity {
         setProgressBarVisible(false);
         setGreenCheckMarkVisible(true);
         setMessageText("Connected to " + deviceName);
+
+        // Waits for five seconds so that the user
+        // can see the message and then exits the
+        // activity
         timerHandler.postDelayed(new Runnable() {
 
             @Override
@@ -288,13 +269,13 @@ public class MessageActivity extends Activity {
 
             }
 
-        }, 10000);
+        }, 5000);
 
-    }//end of BluetoothMessageActivity::handleConnectedState
+    }//end of TallyDeviceConnectionStatusMessageActivity::handleConnectedState
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothMessageActivity::handleConnectingState
+    // TallyDeviceConnectionStatusMessageActivity::handleConnectingState
     //
     // Displays text to the user about connecting to the remote device with the
     // preset name.
@@ -306,30 +287,11 @@ public class MessageActivity extends Activity {
         setGreenCheckMarkVisible(false);
         setMessageText("Connecting to " + deviceName);
 
-    }//end of BluetoothMessageActivity::handleConnectingState
+    }//end of TallyDeviceConnectionStatusMessageActivity::handleConnectingState
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothMessageActivity::handleDescriptorWriteSuccess
-    //
-    // Sets the message text to represent a connected state to the remote device.
-    //
-    // The message text isn't set until now because of some connecting problems.
-    // If the descriptor has a successful write, then it signifies that the
-    // remote device is properly connected.
-    //
-
-    private void handleDescriptorWriteSuccess() {
-
-        Log.d(TAG, "handleDescriptorWriteSuccess::Descriptor write success");
-
-        handleConnectedState();
-
-    }//end of BluetoothMessageActivity::handleDescriptorWriteSuccess
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // BluetoothMessageActivity::setDeviceName
+    // TallyDeviceConnectionStatusMessageActivity::setDeviceName
     //
     // Sets the device name to the passed in string.
     //
@@ -338,11 +300,11 @@ public class MessageActivity extends Activity {
 
         deviceName = pName;
 
-    }//end of BluetoothMessageActivity::setDeviceName
+    }//end of TallyDeviceConnectionStatusMessageActivity::setDeviceName
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothMessageActivity::setGreenCheckMarkVisible
+    // TallyDeviceConnectionStatusMessageActivity::setGreenCheckMarkVisible
     //
     // Gets the green check mark.
     //
@@ -361,11 +323,11 @@ public class MessageActivity extends Activity {
             tempCheck.setVisibility(View.GONE);
         }
 
-    }//end of BluetoothMessageActivity::setGreenCheckMarkVisible
+    }//end of TallyDeviceConnectionStatusMessageActivity::setGreenCheckMarkVisible
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothMessageActivity::setMessageText
+    // TallyDeviceConnectionStatusMessageActivity::setMessageText
     //
     // Gets the text view used for messages and sets its text to the passed in
     // message.
@@ -377,11 +339,11 @@ public class MessageActivity extends Activity {
 
         tempText.setText(pMessage);
 
-    }//end of BluetoothMessageActivity::setMessageText
+    }//end of TallyDeviceConnectionStatusMessageActivity::setMessageText
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothMessageActivity::setProgressBarVisible
+    // TallyDeviceConnectionStatusMessageActivity::setProgressBarVisible
     //
     // Gets the progress bar.
     //
@@ -393,62 +355,49 @@ public class MessageActivity extends Activity {
 
         ProgressBar tempBar = (ProgressBar) findViewById(R.id.bluetoothMessageProgressBar);
 
-        if (pBool) {
-            tempBar.setVisibility(View.VISIBLE);
-        }
-        else {
-            tempBar.setVisibility(View.GONE);
-        }
+        if (pBool) { tempBar.setVisibility(View.VISIBLE); }
+        else { tempBar.setVisibility(View.GONE); }
 
-    }//end of BluetoothMessageActivity::setProgressBarVisible
+    }//end of TallyDeviceConnectionStatusMessageActivity::setProgressBarVisible
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // BluetoothMessageActivity::stateChanged
+    // TallyDeviceConnectionStatusMessageActivity::stateChanged
     //
     // Performs different operations depending on the passed in state.
     //
 
-    private void stateChanged(BluetoothLeVars.State pNewState) {
+    private void stateChanged(TallyDeviceService.State pNewState) {
 
         state = pNewState;
 
-        if (state == BluetoothLeVars.State.CONNECTED) {
-            Log.d(TAG, "state connected");
-        }
-        else if (state == BluetoothLeVars.State.CONNECTING) {
-            Log.d(TAG, "state connecting");
-            handleConnectingState();
-        }
-        else {
-            Log.d(TAG, "else state");
-            handleConnectingState();
-        }
+        if (state == TallyDeviceService.State.CONNECTED) { handleConnectedState(); }
+        else if (state == TallyDeviceService.State.CONNECTING) { handleConnectingState(); }
 
-    }//end of BluetoothMessageActivity::stateChanged
+    }//end of TallyDeviceConnectionStatusMessageActivity::stateChanged
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
     //-----------------------------------------------------------------------------
-    // class BluetoothMessageActivity::IncomingHandler
+    // class TallyDeviceConnectionStatusMessageActivity::IncomingHandler
     //
     // Purpose:
     //
-    // This class handles incoming messages given to the mesenger to which it
+    // This class handles incoming messages given to the messenger to which it
     // was passed.
     //
 
     private static class IncomingHandler extends Handler {
 
-        private final WeakReference<MessageActivity> activity;
+        private final WeakReference<TallyDeviceConnectionStatusMessageActivity> activity;
 
         //-----------------------------------------------------------------------------
         // IncomingHandler::IncomingHandler (constructor)
         //
 
-        public IncomingHandler(MessageActivity pActivity) {
+        public IncomingHandler(TallyDeviceConnectionStatusMessageActivity pActivity) {
 
-            activity = new WeakReference<MessageActivity>(pActivity);
+            activity = new WeakReference<TallyDeviceConnectionStatusMessageActivity>(pActivity);
 
         }//end of IncomingHandler::IncomingHandler (constructor)
         //-----------------------------------------------------------------------------
@@ -462,26 +411,17 @@ public class MessageActivity extends Activity {
         @Override
         public void handleMessage(Message pMsg) {
 
-            Log.d(TAG, "Message received");
-
-            MessageActivity tempActivity = activity.get();
+            TallyDeviceConnectionStatusMessageActivity tempActivity = activity.get();
             if (tempActivity != null) {
 
                 switch (pMsg.what) {
 
-                    case BluetoothLeService.MSG_BT_STATE:
-                        Log.d(TAG, "Received Bluetooth state message");
-                        tempActivity.stateChanged(BluetoothLeVars.State.values()[pMsg.arg1]);
+                    case TallyDeviceService.MSG_CONNECTION_STATE:
+                        tempActivity.stateChanged(TallyDeviceService.State.values()[pMsg.arg1]);
                         break;
 
-                    case BluetoothLeService.MSG_DESCRIPTOR_WRITE_SUCCESS:
-                        Log.d(TAG, "Received descriptor write success message");
-                        tempActivity.handleDescriptorWriteSuccess();
-                        break;
-
-                    case BluetoothLeService.MSG_REMOTE_DEVICE_NAME:
-                        Log.d(TAG, "Received remote device name message: " + pMsg.obj);
-                        //debug hss//tempActivity.setDeviceName((String) pMsg.obj);
+                    case TallyDeviceService.MSG_TALLY_DEVICE_NAME:
+                        tempActivity.setDeviceName((String) pMsg.obj);
                         break;
 
                 }
@@ -493,10 +433,10 @@ public class MessageActivity extends Activity {
         }//end of IncomingHandler::handleMessage
         //-----------------------------------------------------------------------------
 
-    }//end of class BluetoothMessageActivity::IncomingHandler
+    }//end of class TallyDeviceConnectionStatusMessageActivity::IncomingHandler
     //-----------------------------------------------------------------------------
     //-----------------------------------------------------------------------------
 
-}//end of class BluetoothMessageActivity
+}//end of class TallyDeviceConnectionStatusMessageActivity
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
