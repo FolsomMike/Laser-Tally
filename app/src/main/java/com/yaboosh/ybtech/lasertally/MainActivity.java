@@ -189,7 +189,7 @@ public class MainActivity extends Activity {
     // MainActivity::handleCreateANewJobButtonPressed
     //
     // Starts an activity for Job Info.
-    // Should be called from the "Create a new job." button onClick().
+    // Should be called from the "Create new job." button onClick().
     //
 
     public void handleCreateANewJobButtonPressed(View pView) {
@@ -203,35 +203,14 @@ public class MainActivity extends Activity {
     //-----------------------------------------------------------------------------
     // MainActivity::handleOpenAnExistingJobButtonPressed
     //
-    // //hss wip//
+    // Starts the OpenJobActivity.
+    // Should be called from the "Open existing job." button onClick().
     //
 
     public void handleOpenAnExistingJobButtonPressed(View pView) {
 
-        // Retrieve directory from internal memory;
-        File jobsDir = getDir("jobsDir", Context.MODE_PRIVATE);
-        File[] dirs = jobsDir.listFiles();
-        for (File f : dirs) {
-            if (f.isDirectory()) {
-                Log.d(TAG, "Directory found to delete: " + f.getName() + " :: Result of deletion: " + f.delete());
-            }
-        }
-
-        // Retrieve/Create sub-directory thisJobDir
-        File testDir1 = new File(jobsDir, "test 1");
-        if (!testDir1.exists()) { Boolean success = testDir1.mkdir(); }
-        File testDir2 = new File(jobsDir, "test 2");
-        if (!testDir2.exists()) { Boolean success = testDir2.mkdir(); }
-        File testDir3 = new File(jobsDir, "test 3");
-        if (!testDir3.exists()) { Boolean success = testDir3.mkdir(); }
-
-        File[] files = jobsDir.listFiles();
-        for (File f : files) {
-            if (f.isDirectory()) {
-                Log.d(TAG, "Directory found: " + f.getName());
-                jobNames.add(f.getName());
-            }
-        }
+        Intent intent = new Intent(this, OpenJobActivity.class);
+        startActivity(intent);
 
     }//end of MainActivity::handleOpenAnExistingJobButtonPressed
     //-----------------------------------------------------------------------------

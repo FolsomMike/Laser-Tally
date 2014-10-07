@@ -20,10 +20,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -53,17 +56,6 @@ public class JobInfoActivity extends Activity {
     private View decorView;
     private int uiOptions;
 
-    public static final String COMPANY_NAME_KEY = "COMPANY_NAME_KEY";
-    public static final String DIAMETER_KEY = "DIAMETER_KEY";
-    public static final String FACILITY_KEY = "FACILITY_KEY";
-    public static final String GRADE_KEY = "GRADE_KEY";
-    public static final String JOB_KEY =  "JOB_KEY";
-    public static final String MAKEUP_ADJUSTMENT_KEY = "PROTECTOR_MAKE_UP_ADJUSTMENT_KEY";
-    public static final String RACK_KEY = "RACK_KEY";
-    public static final String RANGE_KEY = "RANGE_KEY";
-    public static final String RIG_KEY = "RIG_KEY";
-    public static final String WALL_KEY = "WALL_KEY";
-
     ArrayList<String> fileLines = new ArrayList<String>();
 
     private String companyName;
@@ -71,7 +63,7 @@ public class JobInfoActivity extends Activity {
     private String facility;
     private String grade;
     private String job;
-    private String oldJob;
+    private String passedInJob;
     private String makeupAdjustment;
     private String rack;
     private String range;
@@ -121,9 +113,23 @@ public class JobInfoActivity extends Activity {
         createUiChangeListener();
 
         Bundle bundle = getIntent().getExtras();
-        job = bundle.getString(JOB_KEY);
+        passedInJob = bundle.getString(Keys.JOB_KEY);
 
         getJobInfoFromFile();
+
+        ((TextView)findViewById(R.id.editTextJob)).addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable pE) {
+
+                handleEditTextJobTextChanged(pE.toString(), pE.length());
+
+            }
+
+            public void beforeTextChanged(CharSequence pS, int pStart, int pCount, int pAfter) {
+            }
+
+            public void onTextChanged(CharSequence pS, int pStart, int pBefore, int pCount) {
+            }
+        });
 
     }//end of JobInfoActivity::onCreate
     //-----------------------------------------------------------------------------
@@ -185,6 +191,38 @@ public class JobInfoActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // JobInfoActivity::checkIfJobNameAlreadyExists
+    //
+    // Searches through the jobs in the jobsDir directory to see if a job already
+    // has the passed in name.
+    //
+    // Returns true if name already exists. False if it doesn't.
+    //
+    //
+
+    private Boolean checkIfJobNameAlreadyExists(String pJobName) {
+
+        Boolean exists = false;
+
+        try {
+
+            File jobsDir = getDir("jobsDir", Context.MODE_PRIVATE);
+            File[] dirs = jobsDir.listFiles();
+
+            for (File f : dirs) {
+                if (f.isDirectory() && pJobName.equals(Tools.extractValueFromString(f.getName()))) {
+                    exists = true;
+                }
+            }
+
+        } catch (Exception e) {}
+
+        return exists;
+
+    }//end of JobInfoActivity::checkIfJobNameAlreadyExists
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // JobInfoActivity::createUiChangeListener
     //
     // Listens for visibility changes in the ui.
@@ -243,40 +281,23 @@ public class JobInfoActivity extends Activity {
 
         saveInformationToFile();
 
-        extractValueFromString("j=fall");
-
         Intent resultIntent = new Intent();
 
-        resultIntent.putExtra(COMPANY_NAME_KEY, companyName);
-        resultIntent.putExtra(DIAMETER_KEY, diameter);
-        resultIntent.putExtra(FACILITY_KEY, facility);
-        resultIntent.putExtra(GRADE_KEY,  grade);
-        resultIntent.putExtra(JOB_KEY, job);
-        resultIntent.putExtra(MAKEUP_ADJUSTMENT_KEY, makeupAdjustment);
-        resultIntent.putExtra(RACK_KEY, rack);
-        resultIntent.putExtra(RANGE_KEY, range);
-        resultIntent.putExtra(RIG_KEY, rig);
-        resultIntent.putExtra(WALL_KEY, wall);
+        resultIntent.putExtra(Keys.COMPANY_NAME_KEY, companyName);
+        resultIntent.putExtra(Keys.DIAMETER_KEY, diameter);
+        resultIntent.putExtra(Keys.FACILITY_KEY, facility);
+        resultIntent.putExtra(Keys.GRADE_KEY,  grade);
+        resultIntent.putExtra(Keys.JOB_KEY, job);
+        resultIntent.putExtra(Keys.MAKEUP_ADJUSTMENT_KEY, makeupAdjustment);
+        resultIntent.putExtra(Keys.RACK_KEY, rack);
+        resultIntent.putExtra(Keys.RANGE_KEY, range);
+        resultIntent.putExtra(Keys.RIG_KEY, rig);
+        resultIntent.putExtra(Keys.WALL_KEY, wall);
 
         setResult(Activity.RESULT_OK, resultIntent);
         finish();
 
     }//end of JobInfoActivity::exitActivityByOk
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobInfoActivity::extractValueFromString
-    //
-    // Extracts and returns the value after the equals sign from the passed in
-    // string.
-    //
-
-    private String extractValueFromString(String string) {
-
-        int startPos = string.indexOf("=") + 1;
-        return string.substring(startPos);
-
-    }//end of JobInfoActivity::extractValueFromString
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -291,7 +312,6 @@ public class JobInfoActivity extends Activity {
         diameter = ((EditText) findViewById(R.id.editTextDiameter)).getText().toString();
         facility = ((EditText) findViewById(R.id.editTextFacility)).getText().toString();
         grade = ((EditText) findViewById(R.id.editTextGrade)).getText().toString();
-        oldJob = job;
         job = ((EditText) findViewById(R.id.editTextJob)).getText().toString();
         makeupAdjustment = ((EditText)
                         findViewById(R.id.editTextProtectorMakeupAdjustment)).getText().toString();
@@ -312,8 +332,6 @@ public class JobInfoActivity extends Activity {
 
     private void getJobInfoFromFile() {
 
-        Log.d(TAG, "JOB: " + job);
-
         try {
             fileLines.clear();
 
@@ -321,7 +339,7 @@ public class JobInfoActivity extends Activity {
             File jobsDir = getDir("jobsDir", Context.MODE_PRIVATE);
 
             // Retrieve/Create sub-directory thisJobDir
-            File thisJobDir = new File(jobsDir, job);
+            File thisJobDir = new File(jobsDir, "job=" + passedInJob);
 
             // Get a file jobInfoTextFile within the dir thisJobDir.
             File jobInfoTextFile = new File(thisJobDir, "jobInfo.txt");
@@ -343,25 +361,25 @@ public class JobInfoActivity extends Activity {
         if (fileLines.size() == 0) { return; }
 
         ((EditText) findViewById(R.id.editTextCompanyName)).setText
-                (getValueFromList("Company Name", fileLines));
+                (Tools.getValueFromList("Company Name", fileLines));
         ((EditText) findViewById(R.id.editTextDiameter)).setText
-                                                    (getValueFromList("Diameter", fileLines));
+                                                    (Tools.getValueFromList("Diameter", fileLines));
         ((EditText) findViewById(R.id.editTextFacility)).setText
-                                                    (getValueFromList("Facility", fileLines));
+                                                    (Tools.getValueFromList("Facility", fileLines));
         ((EditText) findViewById(R.id.editTextGrade)).setText
-                                                    (getValueFromList("Grade", fileLines));
+                                                    (Tools.getValueFromList("Grade", fileLines));
         ((EditText) findViewById(R.id.editTextJob)).setText
-                (getValueFromList("Job", fileLines));
+                (Tools.getValueFromList("Job", fileLines));
         ((EditText) findViewById(R.id.editTextProtectorMakeupAdjustment)).setText
-                (getValueFromList("Makeup Adjustment", fileLines));
+                (Tools.getValueFromList("Makeup Adjustment", fileLines));
         ((EditText) findViewById(R.id.editTextRack)).setText
-                (getValueFromList("Rack", fileLines));
+                (Tools.getValueFromList("Rack", fileLines));
         ((EditText) findViewById(R.id.editTextRange)).setText
-                (getValueFromList("Range", fileLines));
+                (Tools.getValueFromList("Range", fileLines));
         ((EditText) findViewById(R.id.editTextRig)).setText
-                (getValueFromList("Rig", fileLines));
+                (Tools.getValueFromList("Rig", fileLines));
         ((EditText) findViewById(R.id.editTextWall)).setText
-                (getValueFromList("Wall", fileLines));
+                (Tools.getValueFromList("Wall", fileLines));
 
     }//end of JobInfoActivity::getJobInfoFromFile
     //-----------------------------------------------------------------------------
@@ -380,6 +398,64 @@ public class JobInfoActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // JobInfoActivity::handleEditTextJobTextChanged
+    //
+    // Determines whether or not the ok button should be enabled and whether or
+    // not the jobNameAlreadyTextView should be set visible.
+    //
+    // Called when the text in the EditText used for the Job name is changed.
+    //
+
+    private void handleEditTextJobTextChanged(String pJobName, int pLength) {
+
+        Boolean enableOkButton = false;
+        Boolean jobExistsBool = false;
+
+        // Check to see if the job name already exists and to see if the
+        // user did not just retype the original name of the job.
+        if (checkIfJobNameAlreadyExists(pJobName) && !pJobName.equals(passedInJob)) {
+            jobExistsBool = true;
+        }
+
+        // Check to see if the length of the edit text is greater than
+        // 0 and to see if the job does not already exist.
+        if (pLength > 0 && !jobExistsBool) { enableOkButton = true; }
+
+        Button okButton = (Button) findViewById(R.id.okButton);
+        TextView textView = (TextView) findViewById(R.id.jobNameAlreadyExistsTextView);
+
+        okButton.setEnabled(enableOkButton);
+        if (enableOkButton) {
+            okButton.setTextAppearance(getApplicationContext(), R.style.whiteStyledButton);
+        } else {
+            okButton.setTextAppearance(getApplicationContext(), R.style.disabledStyledButton);
+        }
+
+        if (jobExistsBool) {
+            textView.setVisibility(View.VISIBLE);
+        } else {
+            textView.setVisibility(View.INVISIBLE);
+        }
+
+    }//end of JobInfoActivity::handleEditTextJobTextChanged
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobInfoActivity::handleMenuButtonPressed
+    //
+    // Starts the JobInfoMenu activity.
+    //
+
+    public void handleMenuButtonPressed(View pView) {
+
+        Intent intent = new Intent(this, JobInfoMenuActivity.class);
+        intent.putExtra(Keys.JOB_KEY, passedInJob);
+        startActivity(intent);
+
+    }//end of JobInfoActivity::handleMenuButtonPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // JobInfoActivity::handleOkButtonPressed
     //
     // Exits the activity by calling exitActivityByOk().
@@ -390,24 +466,6 @@ public class JobInfoActivity extends Activity {
         exitActivityByOk();
 
     }//end of JobInfoActivity::handleOkButtonPressed
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobInfoActivity::getValueFromList
-    //
-    // Scans through the passed in List for the passed in Key and returns the
-    // value found at that string. Returns null if the Key is not found.
-    //
-
-    private String getValueFromList(String pKey, ArrayList<String> pList) {
-
-        // If the key is found in the list, the value for the
-        // key is extracted from the line and returned.
-        for (String s : pList) { if (s.contains(pKey)) { return extractValueFromString(s);} }
-
-        return null;
-
-    }//end of JobInfoActivity::getValueFromList
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -435,10 +493,10 @@ public class JobInfoActivity extends Activity {
         File jobsDir = getDir("jobsDir", Context.MODE_PRIVATE);
 
         // Retrieve/Create sub-directory thisJobDir
-        File thisJobDir = new File(jobsDir, oldJob);
-        if (!job.equals(oldJob)) {
-            Log.d(TAG, "Rename result: " + thisJobDir.renameTo(new File(jobsDir, job)));
-            thisJobDir = new File(jobsDir, job);
+        File thisJobDir = new File(jobsDir, "job=" + passedInJob);
+        if (!job.equals(passedInJob)) {
+            Log.d(TAG, "Rename result: " + thisJobDir.renameTo(new File(jobsDir, "job=" + job)));
+            thisJobDir = new File(jobsDir, "job=" + job);
         }
 
         // Get a file jobInfoTextFile within the dir thisJobDir.

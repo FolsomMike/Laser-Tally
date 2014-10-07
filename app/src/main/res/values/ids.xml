@@ -24,7 +24,6 @@
     <item type="id" name="measurementsTableRowDivider" />
 
     <item type="id" name="checkBoxRenumberAllBelow" />
-    <item type="id" name="createJobOkButton" />
     <item type="id" name="editTextCompanyName" />
     <item type="id" name="editTextDiameter" />
     <item type="id" name="editTextFacility" />
@@ -38,10 +37,15 @@
     <item type="id" name="editTextTotalLength" />
     <item type="id" name="editTextWall" />
     <item type="id" name="jobInfoActivityTitleTextView" />
+    <item type="id" name="jobInfoCancelButton" />
+    <item type="id" name="jobNameAlreadyExistsTextView" />
+    <item type="id" name="jobNamesListView" />
     <item type="id" name="jobTitleTextView" />
+    <item type="id" name="noJobsTextView" />
+    <item type="id" name="okButton" />
     <item type="id" name="renumberAllBelowCheckbox" />
     <item type="id" name="tableRowEditorRedXButton" />
     <item type="id" name="tableRowEditorCancelButton" />
-    <item type="id" name="tableRowEditorOkButton" />
+    <item type="id" name="verifyActionTextView" />
 
 </resources>

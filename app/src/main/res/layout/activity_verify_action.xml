@@ -1,0 +1,128 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_content"
+    android:layout_width="575dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#CFCFCF"
+    android:paddingBottom="0dp"
+    android:paddingLeft="0dp"
+    android:paddingRight="0dp"
+    android:paddingTop="0dp"
+    tools:context="com.yaboosh.ybtech.lasertally.VerifyActionActivity"
+    android:gravity="center" >
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="70dp"
+        android:paddingBottom="0dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="0dp"
+        android:background="#1A1A1A" >
+
+        <LinearLayout
+            android:background="#1A1A1A"
+            android:gravity="center"
+            android:layout_width="fill_parent"
+            android:layout_height="70dp"
+            android:orientation="horizontal"
+            android:paddingBottom="0dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="0dp" >
+
+            <TextView
+                android:id="@id/jobInfoActivityTitleTextView"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:padding="0dp"
+                android:textColor="#B2B2B2"
+                android:text="Are you sure?"
+                android:textSize="40sp" />
+
+            <!-- horizontal spacer -->
+            <View
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="1dp" >
+            </View>
+
+            <Button
+                android:id="@id/tableRowEditorRedXButton"
+                android:background="@drawable/close_x_button"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="handleRedXButtonPressed"/>
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="30dp"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:paddingTop="30dp"
+        android:gravity="start" >
+
+        <TextView
+            android:id="@id/verifyActionTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000000"
+            android:textSize="30sp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="10dp"
+        android:paddingLeft="0dp"
+        android:paddingRight="0dp"
+        android:paddingTop="3dp"
+        android:gravity="center" >
+
+        <Button
+            android:background="@drawable/white_styled_button_dark_gray_border"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="10dp"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:paddingTop="10dp"
+            android:text="cancel"
+            android:textSize="30sp"
+            style="@style/whiteStyledButton"
+            android:onClick="handleCancelButtonPressed" />
+
+        <!-- horizontal spacer -->
+        <View
+            android:layout_width="60dp"
+            android:layout_height="1dp" >
+        </View>
+
+        <Button
+            android:id="@id/okButton"
+            android:background="@drawable/white_styled_button_dark_gray_border"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="10dp"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:paddingTop="10dp"
+            android:text="I'm sure"
+            android:textSize="30sp"
+            style="@style/whiteStyledButton"
+            android:onClick="handleOkButtonPressed" />
+
+    </LinearLayout>
+
+</LinearLayout>

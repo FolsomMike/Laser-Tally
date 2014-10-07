@@ -12,10 +12,10 @@
     <string name="no_devices">No devices found.</string>
 
     <!-- Strings for button texts -->
-    <string name="jobInfoButtonText">Job Info</string>
-    <string name="moreButtonText">More</string>
-    <string name="redoButtonText">Redo</string>
-    <string name="measureButtonText">Measure</string>
+    <string name="jobInfoButtonText">job info</string>
+    <string name="moreButtonText">more</string>
+    <string name="redoButtonText">redo</string>
+    <string name="measureButtonText">measure</string>
 
     <color name="backgroundColor">#B6B6B6</color>
     <color name="headerTableColumnDividerColor">#505050</color>
@@ -31,7 +31,10 @@
     <string name="title_activity_create_job">CreateJobActivity</string>
     <string name="title_activity_job_display">JobDisplayActivity</string>
     <string name="title_activity_job_info">JobInfoActivity</string>
+    <string name="title_activity_job_menu_info">JobInfoMenuActivity</string>
+    <string name="title_activity_open_job">OpenJobActivity</string>
     <string name="title_activity_table_row_editor">TableRowEditorActivity</string>
+    <string name="title_activity_verify_action">VerifyActionActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
 
