@@ -196,8 +196,8 @@ public class OpenJobActivity extends Activity {
         textView.setVisibility(View.GONE);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                                                                    R.layout.text_view_template,
-                                                                    jobNames);
+                                                            R.layout.text_view_template,
+                                                            jobNames);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
 
