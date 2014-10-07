@@ -163,7 +163,7 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
 
         switch (pRequestCode) {
 
-            case Keys.ZZZ: //HSS WIP// need name from keys file
+            case Keys.ACTIVITY_RESULT_ENABLE_BT:
                 if (pResultCode == ACTIVITY_RESULT_OK ) {
                     handleBluetoothTurnedOn();
                 }
@@ -216,7 +216,8 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
         if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
 
             // Bluetooth was not enabled -- send request to user
-            parentService.startActivityForResult(BluetoothAdapter.ACTION_REQUEST_ENABLE, Keys.zzz); //hss wip// needs to use value from keys file
+            parentService.startActivityForResult(BluetoothAdapter.ACTION_REQUEST_ENABLE,
+                                                                    Keys.ACTIVITY_RESULT_ENABLE_BT);
 
         }
         else {
@@ -373,7 +374,10 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
 
     public void handleDescriptorWriteSuccess() {
 
-        if (subscribeStack.empty()) { parentService.handleConnectedToTallyDevice(); return; }
+        if (subscribeStack.empty()) {
+            parentService.handleConnectedToTallyDevice(connectedTallyDeviceName);
+            return;
+        }
 
         new CharacteristicSubscriber(gatt, subscribeStack.pop());
 
@@ -392,9 +396,10 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
         connectedToTallyDevice = false;
 
         // If the disconnect was not initiated by the user,
-        // then reconnect to the device
-        if (!userDisconnectedFromDevice) { connectToTallyDevice(connectedTallyDeviceName); }
+        // then attempt to reconnect to the device
+        if (!userDisconnectedFromDevice) { connectToTallyDevice(connectedTallyDeviceName); return; }
 
+        connectedTallyDeviceName = null;
         parentService.handleDisconnectedFromTallyDevice();
 
     }//end of TallyDeviceBluetoothLeConnectionHandler::handleDisconnectedFromTallyDevice
@@ -575,7 +580,7 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
 
     //-----------------------------------------------------------------------------
     //-----------------------------------------------------------------------------
-    // class GattCallback
+    // class TallyDeviceBluetoothLeConnectionHandler::GattCallback
     //
     // Purpose:
     //
@@ -587,7 +592,7 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
 
         TallyDeviceBluetoothLeConnectionHandler parentHandler;
 
-        public static final String TAG = "GattCallback";
+        public static final String TAG = "TallyDeviceBluetoothLeConnectionHandler::GattCallback";
 
         //-----------------------------------------------------------------------------
         // GattCallback::GattCallback (constructor)
@@ -700,7 +705,7 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
         }//end of GattCallback::onDescriptorWrite
         //-----------------------------------------------------------------------------
 
-    }// end of class GattCallback::TallyDeviceBluetoothLeConnectionHandler
+    }// end of class TallyDeviceBluetoothLeConnectionHandler::GattCallback
     //-----------------------------------------------------------------------------
     //-----------------------------------------------------------------------------
 
