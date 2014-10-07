@@ -18,7 +18,6 @@ package com.yaboosh.ybtech.lasertally;
 //-----------------------------------------------------------------------------
 
 import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -28,22 +27,16 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
-import android.os.RemoteException;
-import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ProgressBar;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -92,7 +85,7 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
 
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_bluetooth_scan);
+        setContentView(R.layout.activity_tally_device_scan);
 
         this.setFinishOnTouchOutside(false);
 
@@ -176,7 +169,7 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
         try {
 
             Message msg = Message.obtain(null,
-                                        TallyDeviceService.MSG_REGISTER_TALLY_DEVICE_SCAN_ACTIVITY);
+                                    TallyDeviceService.MSG_UNREGISTER_TALLY_DEVICE_SCAN_ACTIVITY);
             if (msg == null) { return; }
             msg.replyTo = messenger;
             service.send(msg);
@@ -315,7 +308,7 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
 
     private void finishActivityAndStartMessageActivity() {
 
-        Intent intent = new Intent(this, MessageActivity.class);
+        Intent intent = new Intent(this, TallyDeviceConnectionStatusMessageActivity.class);
         startActivity(intent);
 
         exitActivity();
