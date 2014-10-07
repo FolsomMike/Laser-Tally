@@ -28,6 +28,7 @@ public class Keys {
     public static final int ACTIVITY_RESULT_JOB_INFO = 1230;
     public static final int ACTIVITY_RESULT_TABLE_ROW_EDITOR = 1231;
     public static final int ACTIVITY_RESULT_VERIFY_ACTION = 1233;
+    public static final int ACTIVITY_RESULT_ENABLE_BT = 1234;
 
     public static final String COMPANY_NAME_KEY = "COMPANY_NAME_KEY";
     public static final String DIAMETER_KEY = "DIAMETER_KEY";
