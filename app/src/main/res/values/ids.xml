@@ -2,16 +2,15 @@
 
 <resources>
 
-    //Ids used for the BluetoothScanActivity/activity_bluetooth_scan
-    <item type="id" name="bluetoothScanProgressBar" />
-    <item type="id" name="bluetoothScanningText" />
+    //Ids used for the TallyDeviceScanActivity/activity_tally_device_scan
+    <item type="id" name="tallyDeviceScanProgressBar" />
+    <item type="id" name="tallyDeviceScanningText" />
     <item type="id" name="specialHorizontalSpacer" />
 
-    //Ids used for the BluetoothActivityMessage
-    <item type="id" name="bluetoothMessageProgressBar" />
-    <item type="id" name="bluetoothGreenCheckMark" />
-    <item type="id" name="bluetoothMessageTextView" />
-    <item type="id" name="bluetoothMessageVerticalSpacer" />
+    //Ids used for the TallyDeviceConnectionStatusActivityMessage
+    <item type="id" name="tallyDeviceConnectionStatusMessageProgressBar" />
+    <item type="id" name="tallyDeviceConnectionStatusMessageGreenCheckMark" />
+    <item type="id" name="tallyDeviceConnectionStatusMessageTextView" />
 
     <item type="id" name="measureConnectButton" />
     <item type="id" name="redoButton" />

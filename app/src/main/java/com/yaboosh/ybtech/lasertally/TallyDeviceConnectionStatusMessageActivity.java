@@ -28,7 +28,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -80,7 +79,7 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
 
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_bluetooth_message);
+        setContentView(R.layout.activity_tally_device_connection_status_message);
 
         this.setFinishOnTouchOutside(false);
 

@@ -9,7 +9,7 @@
     android:paddingLeft="0dp"
     android:paddingRight="0dp"
     android:paddingTop="0dp"
-    tools:context="com.yaboosh.ybtech.lasertally.MessageActivity"
+    tools:context="com.yaboosh.ybtech.lasertally.TallyDeviceConnectionStatusMessageActivity"
     android:gravity="center" >
 
     <LinearLayout
@@ -23,7 +23,7 @@
         android:gravity="center" >
 
         <ProgressBar
-            android:id="@id/bluetoothMessageProgressBar"
+            android:id="@id/tallyDeviceConnectionStatusMessageProgressBar"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             style="@android:style/Widget.ProgressBar.Large"
@@ -31,7 +31,7 @@
             android:visibility="visible" />
 
         <View
-            android:id="@id/bluetoothGreenCheckMark"
+            android:id="@id/tallyDeviceConnectionStatusMessageGreenCheckMark"
             android:background="@drawable/green_check_mark"
             android:layout_width="100dp"
             android:layout_height="100dp"
@@ -41,7 +41,7 @@
     </LinearLayout>
 
     <TextView
-        android:id="@id/bluetoothMessageTextView"
+        android:id="@id/tallyDeviceConnectionStatusMessageTextView"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
