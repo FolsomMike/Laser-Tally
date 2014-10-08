@@ -54,14 +54,10 @@ public class JobDisplayActivity extends Activity {
     Button measureConnectButton;
     Button redoButton;
 
-    private DecimalFormat tallyFormat = new DecimalFormat("#.##");
-
-    BluetoothLeClient bluetoothLeClient = null;
-
     private final Messenger messenger;
     private Intent serviceIntent;
     private Messenger service = null;
-    private BluetoothLeVars.State state = BluetoothLeVars.State.UNKNOWN;
+    private TallyDeviceService.State state = TallyDeviceService.State.UNKNOWN;
 
     TableLayout measurementsTable;
 
@@ -97,8 +93,6 @@ public class JobDisplayActivity extends Activity {
 
         super.onCreate(savedInstanceState);
 
-        Log.d(TAG, "Inside of JobDisplayActivity onCreate");
-
         setContentView(R.layout.activity_job_display);
 
         decorView = getWindow().getDecorView();
@@ -132,16 +126,8 @@ public class JobDisplayActivity extends Activity {
 
         }
 
-        serviceIntent = new Intent(this, BluetoothLeService.class);
+        serviceIntent = new Intent(this, TallyDeviceService.class);
         startService(serviceIntent);
-
-        handleNewDistanceValue((float)4.04);
-        handleNewDistanceValue((float)5.06);
-        handleNewDistanceValue((float)3434);
-        handleNewDistanceValue((float)5.43);
-        handleNewDistanceValue((float)6.54);
-        handleNewDistanceValue((float)6.34);
-        handleNewDistanceValue((float)6.34);
 
     }//end of JobDisplayActivity::onCreate
     //-----------------------------------------------------------------------------
@@ -156,8 +142,6 @@ public class JobDisplayActivity extends Activity {
     @Override
     protected void onDestroy()
     {
-
-        Log.d(TAG, "Inside of JobDisplayActivity onDestroy");
 
         stopService(serviceIntent);
 
@@ -179,8 +163,6 @@ public class JobDisplayActivity extends Activity {
 
         super.onResume();
 
-        Log.d(TAG, "Inside of JobDisplayActivity onResume");
-
         decorView.setSystemUiVisibility(uiOptions);
 
         bindService(serviceIntent, connection, BIND_AUTO_CREATE);
@@ -199,27 +181,21 @@ public class JobDisplayActivity extends Activity {
     @Override
     protected void onPause() {
 
-        super.onPause();
+        try { unbindService(connection); } catch (Exception e) {}
 
-        Log.d(TAG, "Inside of JobDisplayActivity onPause");
-
-        unbindService(connection);
-
-        if (service == null) {
-            Log.d(TAG, "service was null -- return from function");
-            return;
-        }
+        if (service == null) { return; }
 
         try {
-            Message msg = Message.obtain(null, BluetoothLeService.MSG_UNREGISTER_MAIN_ACTIVITY);
-            if (msg != null) {
-                msg.replyTo = messenger;
-                service.send(msg);
-            }
-        } catch (Exception e) {
-            Log.w(TAG, "Error unregistering with BleService", e);
-            service = null;
-        }
+
+            Message msg = Message.obtain(null,
+                                            TallyDeviceService.MSG_UNREGISTER_JOB_DISPLAY_ACTIVITY);
+            if (msg == null) { return; }
+            msg.replyTo = messenger;
+            service.send(msg);
+
+        } catch (Exception e) { service = null; }
+
+        super.onPause();
 
     }//end of JobDisplayActivity::onPause
     //-----------------------------------------------------------------------------
@@ -235,7 +211,18 @@ public class JobDisplayActivity extends Activity {
     public void onActivityResult(int pRequestCode, int pResultCode, Intent pData)
     {
 
-        if (pRequestCode == Keys.ACTIVITY_RESULT_TABLE_ROW_EDITOR) {
+        if (pRequestCode == Keys.ACTIVITY_RESULT_JOB_INFO) {
+
+            if (pResultCode == RESULT_OK) {
+                handleJobInfoActivityResultOk(pData.getStringExtra(Keys.JOB_KEY),
+                            pData.getStringExtra(Keys.MAKEUP_ADJUSTMENT_KEY));
+            }
+            else if (pResultCode == RESULT_CANCELED) {
+                handleJobInfoActivityResultCancel();
+            }
+
+        }
+        else if (pRequestCode == Keys.ACTIVITY_RESULT_TABLE_ROW_EDITOR) {
 
             if (pResultCode == RESULT_OK) {
                 handleTableRowEditorActivityResultOk(
@@ -246,19 +233,20 @@ public class JobDisplayActivity extends Activity {
             else if (pResultCode == RESULT_CANCELED) {
                 handleTableRowEditorActivityResultCancel();
             }
-        }
-        else if (pRequestCode == Keys.ACTIVITY_RESULT_JOB_INFO) {
 
-            if (pResultCode == RESULT_OK) {
-                handleJobInfoActivityResultOk(pData.getStringExtra(Keys.JOB_KEY),
-                            pData.getStringExtra(Keys.MAKEUP_ADJUSTMENT_KEY));
-            }
-            else if (pResultCode == RESULT_CANCELED) {
-                handleJobInfoActivityResultCancel();
-            }
         }
         else {
-            super.onActivityResult(pRequestCode, pResultCode, pData);
+
+            // This activity did recognize any of the
+            // activity results, so it sends them to the
+            // tally device service.
+            Message msg = Message.obtain(null, TallyDeviceService.MSG_ACTIVITY_RESULT);
+            if (msg == null) { return; }
+            msg.arg1 = pRequestCode;
+            msg.arg2 = pResultCode;
+            msg.obj = pData;
+            try { service.send(msg); } catch (Exception e) { unbindService(connection); }
+
         }
 
     }//end of JobDisplayActivity::onActivityResult
@@ -278,31 +266,22 @@ public class JobDisplayActivity extends Activity {
         @Override
         public void onServiceConnected(ComponentName pName, IBinder pService) {
 
-            Log.d(TAG, "Service connected to JobDisplayActivity");
-
             service = new Messenger(pService);
 
             try {
 
-                Message msg = Message.obtain(null, BluetoothLeService.MSG_REGISTER_MAIN_ACTIVITY);
-                if (msg != null) {
-                    msg.replyTo = messenger;
-                    service.send(msg);
-                } else {
-                    service = null;
-                }
+                Message msg = Message.obtain(null,
+                                            TallyDeviceService.MSG_REGISTER_JOB_DISPLAY_ACTIVITY);
+                if (msg == null) { return; }
+                msg.replyTo = messenger;
+                service.send(msg);
 
-            } catch (Exception e) {
-                Log.w(TAG, "Error connecting to BleService", e);
-                service = null;
-            }
+            } catch (Exception e) { service = null; }
 
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-
-            Log.d(TAG, "Service disconnected");
 
             service = null;
 
@@ -348,6 +327,23 @@ public class JobDisplayActivity extends Activity {
         }
 
     };//end of JobDisplayActivity::onClickListener
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobDisplayActivity::calculateAndSetAdjustedValueOfRow
+    //
+    // Sets the value of the adjusted column of the passed in row to the adjusted
+    // value calculated by using the passing in total length.
+    //
+
+    private void calculateAndSetAdjustedValueOfRow(TableRow pR, String pTotalLength) {
+
+        float totalLength = Float.parseFloat(pTotalLength);
+        float adjustedValue = totalLength - protectorMakeupValue;
+
+        (getAdjustedColumnOfRow(pR)).setText(Float.toString(adjustedValue));
+
+    }//end of JobDisplayActivity::calculateAndSetAdjustedValueOfRow
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -679,13 +675,13 @@ public class JobDisplayActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobDisplayActivity::handleDeviceConnected
+    // JobDisplayActivity::handleConnectedState
     //
     // Sets the measureConnectButton to its "measuring" look and text and sets
     // the redo button visible.
     //
 
-    public void handleDeviceConnected() {
+    public void handleConnectedState() {
 
         measureConnectButton.setBackground(getResources().getDrawable
                 (R.drawable.blue_styled_button));
@@ -695,17 +691,17 @@ public class JobDisplayActivity extends Activity {
         redoButton.setOnClickListener(onClickListener);
         redoButton.setVisibility(View.VISIBLE);
 
-    }//end of JobDisplayActivity::handleDeviceConnected
+    }//end of JobDisplayActivity::handleConnectedState
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobDisplayActivity::handleDeviceNotConnected
+    // JobDisplayActivity::handleDisconnectedState
     //
     // Sets the measureConnectButton to its "connecting" look and text and sets
     // the redo button invisible.
     //
 
-    public void handleDeviceNotConnected() {
+    public void handleDisconnectedState() {
 
         measureConnectButton = (Button)findViewById(R.id.measureConnectButton);
         measureConnectButton.setBackground(getResources().getDrawable
@@ -716,7 +712,20 @@ public class JobDisplayActivity extends Activity {
         redoButton = (Button)findViewById(R.id.redoButton);
         redoButton.setVisibility(View.INVISIBLE);
 
-    }//end of JobDisplayActivity::handleDeviceNotConnected
+    }//end of JobDisplayActivity::handleDisconnectedState
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobDisplayActivity::handleIdleState
+    //
+    // Currently has no functionality.
+    //
+
+    public void handleIdleState() {
+
+        // Currently has no functionality
+
+    }//end of JobDisplayActivity::handleIdleState
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -730,7 +739,7 @@ public class JobDisplayActivity extends Activity {
 
         setJobTitle(pJob);
         if (pProtectorMakeupValue.equals("")) { return; }
-        setAdjustedColumns(Float.parseFloat(pProtectorMakeupValue));
+        setValuesOfAdjustedColumns(Float.parseFloat(pProtectorMakeupValue));
 
     }//end of JobDisplayActivity::handleJobInfoActivityResultOk
     //-----------------------------------------------------------------------------
@@ -776,84 +785,17 @@ public class JobDisplayActivity extends Activity {
 
         String btnText = measureConnectButton.getText().toString();
 
-        //debug hss//
-        System.out.println("handleMeasureConnectButton was pressed -- text: " + btnText);
-
-        if (btnText.equals(connectButtonText)) {
-            //stuff to do to connect to device
-           startLeScanningProcess();
-        }
-
-        else if (btnText.equals(measureButtonText)) {
-            startMeasuringProcess();
-        }
+        if (btnText.equals(connectButtonText)) { startTallyDeviceScan(); }
+        else if (btnText.equals(measureButtonText)) { sendMeasureCommandToTallyDevice(); }
 
     }//end of JobDisplayActivity::handleMeasureConnectButtonPressed
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobDisplayActivity::handleTableRowEditorActivityResultOk
-    //
-    // Sets the pipe number and total length of the last edited row to the passed
-    // in values.
-    // Also sets the background color of the last edited row back to white.
-    //
-
-    private void handleTableRowEditorActivityResultOk(String pPipeNum, String pTotalLength,
-                                                    boolean pRenumberAll) {
-
-        lastRowEdited.setBackgroundColor(getResources().getColor(R.color.measurementsTableColor));
-        setPipeNumberOfRow(lastRowEdited, pPipeNum);
-        setTotalLengthOfRow(lastRowEdited, pTotalLength);
-
-        if (!pRenumberAll) { return; }
-
-        renumberAllAfterRow(lastRowEdited, Integer.parseInt(pPipeNum)+1);
-
-    }//end of JobDisplayActivity::handleTableRowEditorActivityResultOk
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobDisplayActivity::handleTableRowEditorActivityResultCancel
-    //
-    // Sets the background color of the last edited row back to white.
-    //
-
-    private void handleTableRowEditorActivityResultCancel() {
-
-        lastRowEdited.setBackgroundColor(getResources().getColor(R.color.measurementsTableColor));
-
-    }//end of JobDisplayActivity::handleTableRowEditorActivityResultCancel
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobDisplayActivity::handleTableRowPressed
-    //
-    // Gets the values in the Pipe #, Actual, and Adjusted columns and sends the
-    // values to the EditPipeRowActivity to be displayed to and edited by the user.
-    //
-
-    public void handleTableRowPressed(TableRow pR) {
-
-        Log.d(TAG, "Measurements Table Row pressed");
-        lastRowEdited = pR;
-        pR.setBackgroundColor(getResources().getColor(R.color.selectedTableRowColor));
-        String pipeNum = getPipeNumberColValueOfRow(pR);
-        String totalLength = getTotalLengthColValueOfRow(pR);
-
-        Intent intent = new Intent(this, TableRowEditorActivity.class);
-        intent.putExtra(TableRowEditorActivity.PIPE_NUMBER_KEY, pipeNum);
-        intent.putExtra(TableRowEditorActivity.TOTAL_LENGTH_KEY, totalLength);
-        startActivityForResult(intent, Keys.ACTIVITY_RESULT_TABLE_ROW_EDITOR);
-
-    }//end of JobDisplayActivity::handleTableRowPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
     // JobDisplayActivity::handleMoreButtonPressed
     //
     // Starts an activity for "More".
-    // Should be called from the "More" onClick().
+    // Should be called from the "More" button onClick().
     //
 
     public void handleMoreButtonPressed(View pView) {
@@ -871,15 +813,11 @@ public class JobDisplayActivity extends Activity {
     // using the passed in value.
     //
 
-    public void handleNewDistanceValue(Float pDistance) {
-
-        //Convert the value from meters to inches
-        Double distanceValue = pDistance * BluetoothLeVars.METERS_FEET_CONVERSION_FACTOR;
-        String distanceValueString = tallyFormat.format(distanceValue);
+    public void handleNewDistanceValue(String pDistanceValue) {
 
         String adjustedValueString = "No Value";
         if (protectorMakeupValue != 0) {
-            float adjustedValue = Float.parseFloat(distanceValueString) - protectorMakeupValue;
+            float adjustedValue = Float.parseFloat(pDistanceValue) - protectorMakeupValue;
             adjustedValueString = Float.toString(adjustedValue);
         }
 
@@ -902,8 +840,8 @@ public class JobDisplayActivity extends Activity {
         String pipeNumString = Integer.toString(pipeNumInt);
 
         measurementsTable.addView(createNewRow(pipeNumString,
-                                                distanceValueString,
-                                                adjustedValueString));
+                pDistanceValue,
+                adjustedValueString));
         measurementsTable.addView(createNewRowDivider());
 
         measurementsTableBottomBorderLine.setVisibility(View.VISIBLE);
@@ -926,16 +864,11 @@ public class JobDisplayActivity extends Activity {
 
     private void handleRedoButtonPressed() {
 
-        Log.d(TAG, "Redo button pressed");
-
-        // HashMap is used to store the number of rows and the position each
+        // HashMap is used to store the number of rows and the position of each
         // one is at in the measurementsTable <Integer, Integer> = <RowNumber, RowPosition>
         SparseIntArray rowAndPosition = getRowCountAndPositions();
         int rowCount = rowAndPosition.size();
-        if (rowCount == 0) {
-            Log.d(TAG, "There were no rows in the measurement table -- return;");
-            return;
-        }
+        if (rowCount <= 0) { return; }
         // Get the position of the last row found and remove it from the table
         measurementsTable.removeView(measurementsTable.getChildAt(rowAndPosition.get(rowCount)));
 
@@ -943,10 +876,7 @@ public class JobDisplayActivity extends Activity {
         // one is at in the measurementsTable <Integer, Integer> = <DivNumber, DivPosition>
         SparseIntArray dividerAndPosition = getDividerCountAndPositions();
         int divCount = dividerAndPosition.size();
-        if (divCount == 0) {
-            Log.d(TAG, "There were no row dividers in the measurement table -- return;");
-            return;
-        }
+        if (divCount <= 0) { return; }
         // Get the position of the last row divider found and remove it from the table
         measurementsTable.removeView(measurementsTable.getChildAt(dividerAndPosition.get(divCount)));
 
@@ -954,34 +884,62 @@ public class JobDisplayActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobDisplayActivity::handleStateUnknown
+    // JobDisplayActivity::handleTableRowEditorActivityResultOk
+    //
+    // Sets the pipe number and total length of the last edited row to the passed
+    // in values.
+    // Also sets the background color of the last edited row back to its original
+    // color.
     //
 
-    private void handleStateUnknown() {
+    private void handleTableRowEditorActivityResultOk(String pPipeNum, String pTotalLength,
+                                                    boolean pRenumberAll) {
 
-        handleDeviceNotConnected();
+        lastRowEdited.setBackgroundColor(getResources().getColor(R.color.measurementsTableColor));
+        setPipeNumberOfRow(lastRowEdited, pPipeNum);
+        setTotalLengthOfRow(lastRowEdited, pTotalLength);
+        calculateAndSetAdjustedValueOfRow(lastRowEdited, pTotalLength);
 
-    }//end of JobDisplayActivity::handleStateUnknown
+        if (!pRenumberAll) { return; }
+
+        renumberAllAfterRow(lastRowEdited, Integer.parseInt(pPipeNum)+1);
+
+    }//end of JobDisplayActivity::handleTableRowEditorActivityResultOk
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobDisplayActivity::setMeasureConnectButtonEnabled
+    // JobDisplayActivity::handleTableRowEditorActivityResultCancel
     //
-    // Enables or disables the measure connect button according to the passed in
-    // boolean. The style is also set according to the passed in boolean.
+    // Sets the background color of the last edited row back to its original color.
     //
 
-    private void setMeasureConnectButtonEnabled(boolean pBool) {
+    private void handleTableRowEditorActivityResultCancel() {
 
-        measureConnectButton.setEnabled(pBool);
+        lastRowEdited.setBackgroundColor(getResources().getColor(R.color.measurementsTableColor));
 
-        if (pBool) {
-            measureConnectButton.setTextAppearance(getApplicationContext(), R.style.styledButtonWhiteText);
-        } else {
-            measureConnectButton.setTextAppearance(getApplicationContext(), R.style.disabledStyledButton);
-        }
+    }//end of JobDisplayActivity::handleTableRowEditorActivityResultCancel
+    //-----------------------------------------------------------------------------
 
-    }//end of JobDisplayActivity::disableMeasureConnectButton
+    //-----------------------------------------------------------------------------
+    // JobDisplayActivity::handleTableRowPressed
+    //
+    // Gets the values in the Pipe #, Actual, and Adjusted columns and sends the
+    // values to the EditPipeRowActivity to be displayed to and edited by the user.
+    //
+
+    public void handleTableRowPressed(TableRow pR) {
+
+        lastRowEdited = pR;
+        pR.setBackgroundColor(getResources().getColor(R.color.selectedTableRowColor));
+        String pipeNum = getPipeNumberColValueOfRow(pR);
+        String totalLength = getTotalLengthColValueOfRow(pR);
+
+        Intent intent = new Intent(this, TableRowEditorActivity.class);
+        intent.putExtra(TableRowEditorActivity.PIPE_NUMBER_KEY, pipeNum);
+        intent.putExtra(TableRowEditorActivity.TOTAL_LENGTH_KEY, totalLength);
+        startActivityForResult(intent, Keys.ACTIVITY_RESULT_TABLE_ROW_EDITOR);
+
+    }//end of JobDisplayActivity::handleTableRowPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -1007,34 +965,27 @@ public class JobDisplayActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobDisplayActivity::setAdjustedColumns
+    // JobDisplayActivity::sendMeasureCommandToTallyDevice
     //
-    // If the passed in protector/makeup value is not the same as the old one, the
-    // Adjusted columns are set using the passed in float.
-    //
-    // Each Adjusted column's value is determined by subtracting the passed in
-    // float from the Total Length column in the corresponding row.
+    // Sends a message to the tally device service to send the measuring command
+    // to the connected tally device and disables the measure and redo button.
     //
 
-    private void setAdjustedColumns(float pNewProtectorMakeupValue) {
+    private void sendMeasureCommandToTallyDevice() {
 
-        if (pNewProtectorMakeupValue == protectorMakeupValue) { return; }
+        Message msg = Message.obtain(null,
+                TallyDeviceService.MSG_SEND_MEASURE_COMMAND_TO_TALLY_DEVICE);
+        if (msg == null) { return; }
 
-        protectorMakeupValue = pNewProtectorMakeupValue;
+        try { service.send(msg); } catch (RemoteException e) { unbindService(connection); }
 
-        for (int i=0; i<measurementsTable.getChildCount(); i++) {
+        //disable the measureConnect and redo buttons
+        //so that the user can't use them during the
+        //measuring process
+        setMeasureConnectButtonEnabled(false);
+        setRedoButtonEnabled(false);
 
-            View v = measurementsTable.getChildAt(i);
-
-            if (!(v instanceof TableRow)) { continue; }
-
-            float totalLength = Float.parseFloat(getTotalLengthColValueOfRow((TableRow)v));
-            float adjustedValue = totalLength - protectorMakeupValue;
-            getAdjustedColumnOfRow((TableRow)v).setText(Float.toString(adjustedValue));
-
-        }
-
-    }//end of JobDisplayActivity::setAdjustedColumns
+    }//end of JobDisplayActivity::sendMeasureCommandToTallyDevice
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -1048,8 +999,6 @@ public class JobDisplayActivity extends Activity {
 
         TextView jobTitleTextView = (TextView)findViewById(R.id.jobTitleTextView);
 
-        Log.d(TAG, "pNewJobTitle :: " + pNewJobTitle);
-
         if (pNewJobTitle.equals(jobTitleTextView.getText().toString())) {
             return;
         }
@@ -1057,6 +1006,26 @@ public class JobDisplayActivity extends Activity {
         jobTitleTextView.setText(pNewJobTitle);
 
     }//end of JobDisplayActivity::setJobTitle
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobDisplayActivity::setMeasureConnectButtonEnabled
+    //
+    // Enables or disables the measure connect button according to the passed in
+    // boolean. The style is also set according to the passed in boolean.
+    //
+
+    private void setMeasureConnectButtonEnabled(boolean pBool) {
+
+        measureConnectButton.setEnabled(pBool);
+
+        if (pBool) {
+            measureConnectButton.setTextAppearance(getApplicationContext(), R.style.styledButtonWhiteText);
+        } else {
+            measureConnectButton.setTextAppearance(getApplicationContext(), R.style.disabledStyledButton);
+        }
+
+    }//end of JobDisplayActivity::setMeasureConnectButtonEnabled
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -1129,106 +1098,65 @@ public class JobDisplayActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobDisplayActivity::startLeScanningProcess
+    // JobDisplayActivity::setValuesOfAdjustedColumns
     //
-    // Creates a BluetoothLeClient and initiate it using MODE0.
+    // If the passed in protector/makeup value is not the same as the old one, the
+    // Adjusted columns are set using the passed in float.
     //
-
-    private void startLeScanningProcess() {
-
-        Intent intent = new Intent(this, BluetoothScanActivity.class);
-        startActivity(intent);
-
-    }//end of JobDisplayActivity::startLeScanningProcess
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobDisplayActivity::startMeasuringProcess
-    //
-    // Sends a message to the BluetoothLeService to start the measuring process and
-    // disables the measure and redo button.
+    // Each Adjusted column's value is determined by subtracting the passed in
+    // float from the Total Length column in the corresponding row.
     //
 
-    private void startMeasuringProcess() {
+    private void setValuesOfAdjustedColumns(float pNewProtectorMakeupValue) {
 
-        Message msg = Message.obtain(null, BluetoothLeService.MSG_START_DEVICE_MEASURING_PROCESS);
-        if (msg != null) {
-            try {
-                service.send(msg);
-            } catch (RemoteException e) {
-                Log.w(TAG, "Lost connection to service", e);
-                unbindService(connection);
-            }
+        if (pNewProtectorMakeupValue == protectorMakeupValue) { return; }
+
+        protectorMakeupValue = pNewProtectorMakeupValue;
+
+        for (int i=0; i<measurementsTable.getChildCount(); i++) {
+
+            View v = measurementsTable.getChildAt(i);
+
+            if (!(v instanceof TableRow)) { continue; }
+
+            float totalLength = Float.parseFloat(getTotalLengthColValueOfRow((TableRow)v));
+            float adjustedValue = totalLength - protectorMakeupValue;
+            (getAdjustedColumnOfRow((TableRow)v)).setText(Float.toString(adjustedValue));
+
         }
 
-        //disable the measureConnect and redo buttons
-        //so that the user can't use them during the
-        //measuring process
-        setMeasureConnectButtonEnabled(false);
-        setRedoButtonEnabled(false);
+    }//end of JobDisplayActivity::setValuesOfAdjustedColumns
+    //-----------------------------------------------------------------------------
 
-    }//end of JobDisplayActivity::startMeasuringProcess
+    //-----------------------------------------------------------------------------
+    // JobDisplayActivity::startTallyDeviceScan
+    //
+    // Starts the TallyDeviceScanActivity.
+    //
+
+    private void startTallyDeviceScan() {
+
+        Intent intent = new Intent(this, TallyDeviceScanActivity.class);
+        startActivity(intent);
+
+    }//end of JobDisplayActivity::startTallyDeviceScan
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
     // JobDisplayActivity::stateChanged
     //
-    // Performs different operations depending on the passed in state.
+    // Performs different operations depending on the passed in connection state.
     //
 
-    private void stateChanged(BluetoothLeVars.State pNewState) {
-
-        Log.d(TAG, "state changed");
+    private void stateChanged(TallyDeviceService.State pNewState) {
 
         state = pNewState;
 
-        handleDeviceConnected();
-
-        /*//debug hss//if (state == BluetoothLeVars.State.BLUETOOTH_OFF) {
-            Log.d(TAG, "state bluetooth off");
-            handleBluetoothOffState();
-        }
-        else if (state == BluetoothLeVars.State.CONNECTED) {
-            Log.d(TAG, "state connected");
-            handleDeviceConnected();
-        }
-        else if (state == BluetoothLeVars.State.IDLE) {
-            Log.d(TAG, "state idle");
-            handleIdleState();
-        }
-        else if (state == BluetoothLeVars.State.NOT_CONNECTED) {
-            Log.d(TAG, "state not connected");
-            handleDeviceNotConnected();
-        }
-        else if (state == BluetoothLeVars.State.UNKNOWN) {
-            Log.d(TAG, "state is unknown");
-            handleStateUnknown();
-        }
-        else {
-            Log.d(TAG, "state not listed in switch statement " + state);
-        }*/
+        if (state == TallyDeviceService.State.CONNECTED) { handleConnectedState(); }
+        else if (state == TallyDeviceService.State.DISCONNECTED) { handleDisconnectedState(); }
+        else if (state == TallyDeviceService.State.IDLE) { handleIdleState(); }
 
     }//end of JobDisplayActivity::stateChanged
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobDisplayActivity::handleBluetoothOffState
-    //
-
-    public void handleBluetoothOffState() {
-
-        handleDeviceNotConnected();
-
-    }//end of JobDisplayActivity::handleBluetoothOffState
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobDisplayActivity::handleIdleState
-    //
-
-    public void handleIdleState() {
-
-    }//end of JobDisplayActivity::handleIdleState
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -1270,17 +1198,12 @@ public class JobDisplayActivity extends Activity {
 
                 switch (pMsg.what) {
 
-                    case BluetoothLeService.MSG_DEVICE_CONNECTED:
-                        tempActivity.handleDeviceConnected();
+                    case TallyDeviceService.MSG_CONNECTION_STATE:
+                        tempActivity.stateChanged(TallyDeviceService.State.values()[pMsg.arg1]);
                         break;
 
-                    case BluetoothLeService.MSG_DISTANCE_VALUE:
-                        Log.d(TAG, "Received distance value message");
-                        tempActivity.handleNewDistanceValue((Float)pMsg.obj);
-                        break;
-
-                    case BluetoothLeService.MSG_BT_STATE:
-                        tempActivity.stateChanged(BluetoothLeVars.State.values()[pMsg.arg1]);
+                    case TallyDeviceService.MSG_MEASUREMENT_VALUE:
+                        tempActivity.handleNewDistanceValue((String)pMsg.obj);
                         break;
 
                 }
