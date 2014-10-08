@@ -100,7 +100,8 @@ public class TallyDeviceService extends Service {
     private final Messenger messenger;
     private Messenger messengerClient;
 
-    private State connectionState = State.UNKNOWN;
+    // The device will always be disconnected at first
+    private State connectionState = State.DISCONNECTED;
 
     private String attemptingConnectionToTallyDeviceName = null;
     private String connectedTallyDeviceName = null;
