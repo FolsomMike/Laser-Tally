@@ -94,7 +94,7 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
 
         createUiChangeListener();
 
-        serviceIntent = new Intent(this, BluetoothLeService.class);
+        serviceIntent = new Intent(this, TallyDeviceService.class);
 
     }//end of TallyDeviceConnectionStatusMessageActivity::onCreate
     //-----------------------------------------------------------------------------
@@ -300,7 +300,7 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
 
     private void setGreenCheckMarkVisible(boolean pBool) {
 
-        View tempCheck = findViewById(R.id.bluetoothGreenCheckMark);
+        View tempCheck = findViewById(R.id.tallyDeviceConnectionStatusMessageProgressBar);
 
         if (pBool) {
             tempCheck.setVisibility(View.VISIBLE);
@@ -321,7 +321,7 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
 
     private void setMessageText(String pMessage) {
 
-        TextView tempText = (TextView) findViewById(R.id.bluetoothMessageTextView);
+        TextView tempText = (TextView) findViewById(R.id.tallyDeviceConnectionStatusMessageTextView);
 
         tempText.setText(pMessage);
 
@@ -339,7 +339,7 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
 
     private void setProgressBarVisible(boolean pBool) {
 
-        ProgressBar tempBar = (ProgressBar) findViewById(R.id.bluetoothMessageProgressBar);
+        ProgressBar tempBar = (ProgressBar) findViewById(R.id.tallyDeviceConnectionStatusMessageProgressBar);
 
         if (pBool) { tempBar.setVisibility(View.VISIBLE); }
         else { tempBar.setVisibility(View.GONE); }
