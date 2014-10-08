@@ -100,7 +100,7 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
 
         createUiChangeListener();
 
-        serviceIntent = new Intent(this, BluetoothLeService.class);
+        serviceIntent = new Intent(this, TallyDeviceService.class);
 
         listView = (AbsListView) findViewById(android.R.id.list);
 
@@ -509,7 +509,7 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
     //-----------------------------------------------------------------------------
     // TallyDeviceScanActivity::stateChanged
     //
-    // Performs different operations depending on the passed in state.
+    // Performs different operations depending on the passed in connection state.
     //
 
     private void stateChanged(TallyDeviceService.State pNewState) {
