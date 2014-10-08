@@ -61,7 +61,7 @@ public class TallyDeviceSimulationConnectionHandler extends TallyDeviceConnectio
     public boolean connectToTallyDevice(String pDeviceName) {
 
         connectedTallyDeviceName = pDeviceName;
-        parentService.handleConnectedToTallyDevice();
+        parentService.handleConnectedToTallyDevice(connectedTallyDeviceName);
         return true;
 
     }//end of TallyDeviceSimulationConnectionHandler::connectToTallyDevice
