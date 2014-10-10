@@ -104,9 +104,8 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
     // (constructor)
     //
 
-    public TallyDeviceBluetoothLeConnectionHandler(Context pContext, TallyDeviceService pService) {
+    public TallyDeviceBluetoothLeConnectionHandler(TallyDeviceService pService) {
 
-        context = pContext;
         parentService = pService;
 
     }//end of TallyDeviceBluetoothLeConnectionHandler::TallyDeviceBluetoothLeConnectionHandler
@@ -210,6 +209,25 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
         return sendCommand(TRIGGER_DISTANCE_MEASUREMENT);
 
     }//end of TallyDeviceBluetoothLeConnectionHandler::sendMeasureCommandToTallyDevice
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceBluetoothLeConnectionHandler::setContext
+    //
+    // Sets the context variable to the passed in Context.
+    //
+    // Should be called each time a new activity is launched and registers with
+    // the TallyDeviceService. (The context changes when the activity does.)
+    //
+    // NOTE: The context is not set before this function is called.
+    //
+
+   @Override
+    public void setContext(Context pContext) {
+
+        context = pContext;
+
+    }//end of TallyDeviceBluetoothLeConnectionHandler::setContext
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -496,9 +514,7 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
         if (tempBluetoothGattCharacteristic == null) { success = false; return success; }
 
         byte[] tempBytes = null;
-        try {
-            tempBytes = pCmd.getBytes("UTF-8");
-        } catch(Exception e) {}
+        try { tempBytes = pCmd.getBytes("UTF-8"); } catch(Exception e) {}
 
         if (tempBytes == null) { success = false; return success; }
 
@@ -532,10 +548,7 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
 
     private boolean stopBluetoothLeScan() {
 
-        if (scanning) {
-            scanning = false;
-            bluetoothAdapter.stopLeScan(this);
-        }
+        if (scanning) { scanning = false; bluetoothAdapter.stopLeScan(this); }
         return true;
 
     }//end of TallyDeviceBluetoothLeConnectionHandler::stopBluetoothLeScan

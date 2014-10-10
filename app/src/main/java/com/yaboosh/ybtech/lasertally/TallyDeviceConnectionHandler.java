@@ -28,6 +28,7 @@ package com.yaboosh.ybtech.lasertally;
 // class TallyDeviceConnectionHandler
 //
 
+import android.content.Context;
 import android.content.Intent;
 
 public class TallyDeviceConnectionHandler {
@@ -94,6 +95,17 @@ public class TallyDeviceConnectionHandler {
         return false;
 
     }//end of TallyDeviceConnectionHandler::sendMeasureCommandToTallyDevice
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceConnectionHandler::setContext
+    //
+
+    public void setContext(Context pContext) {
+
+        return;
+
+    }//end of TallyDeviceConnectionHandler::setContext
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

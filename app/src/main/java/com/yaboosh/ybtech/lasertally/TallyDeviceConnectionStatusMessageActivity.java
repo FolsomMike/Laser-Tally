@@ -180,15 +180,7 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
 
             service = new Messenger(pService);
 
-            try {
-
-                Message msg = Message.obtain(null,
-                        TallyDeviceService.MSG_REGISTER_TALLY_DEVICE_SCAN_ACTIVITY);
-                if (msg == null) { return; }
-                msg.replyTo = messenger;
-                service.send(msg);
-
-            } catch (Exception e) { service = null; }
+            registerWithService();
 
         }
 
@@ -287,6 +279,27 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
         setMessageText("Connecting to " + tallyDeviceName);
 
     }//end of TallyDeviceConnectionStatusMessageActivity::handleConnectingState
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceConnectionStatusMessageActivity::registerWithService
+    //
+    // Sends a message to the TallyDeviceService to register.
+    //
+
+    private void registerWithService() {
+
+        try {
+
+            Message msg = Message.obtain(null, TallyDeviceService.MSG_REGISTER_MESSAGE_ACTIVITY);
+            if (msg == null) { return; }
+            msg.obj = this;
+            msg.replyTo = messenger;
+            service.send(msg);
+
+        } catch (Exception e) { service = null; }
+
+    }//end of TallyDeviceConnectionStatusMessageActivity::registerWithService
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

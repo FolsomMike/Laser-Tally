@@ -268,15 +268,7 @@ public class JobDisplayActivity extends Activity {
 
             service = new Messenger(pService);
 
-            try {
-
-                Message msg = Message.obtain(null,
-                                            TallyDeviceService.MSG_REGISTER_JOB_DISPLAY_ACTIVITY);
-                if (msg == null) { return; }
-                msg.replyTo = messenger;
-                service.send(msg);
-
-            } catch (Exception e) { service = null; }
+            registerWithService();
 
         }
 
@@ -943,6 +935,28 @@ public class JobDisplayActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // JobDisplayActivity::registerWithService
+    //
+    // Sends a message to the TallyDeviceService to register.
+    //
+
+    private void registerWithService() {
+
+        try {
+
+            Message msg = Message.obtain(null,
+                    TallyDeviceService.MSG_REGISTER_JOB_DISPLAY_ACTIVITY);
+            if (msg == null) { return; }
+            msg.obj = this;
+            msg.replyTo = messenger;
+            service.send(msg);
+
+        } catch (Exception e) { service = null; }
+
+    }//end of JobDisplayActivity::registerWithService
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // JobDisplayActivity::renumberAllAfterRow
     //
     // Renumbers all of the pipe numbers after the passed in row starting with the
@@ -1151,6 +1165,9 @@ public class JobDisplayActivity extends Activity {
     private void stateChanged(TallyDeviceService.State pNewState) {
 
         state = pNewState;
+
+        //debug hss//
+        Log.d(TAG, "State changed");
 
         if (state == TallyDeviceService.State.CONNECTED) { handleConnectedState(); }
         else if (state == TallyDeviceService.State.DISCONNECTED) { handleDisconnectedState(); }

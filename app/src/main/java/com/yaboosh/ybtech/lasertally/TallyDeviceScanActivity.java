@@ -27,6 +27,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
+import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
@@ -235,15 +236,7 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
 
             service = new Messenger(pService);
 
-            try {
-
-                Message msg = Message.obtain(null,
-                                        TallyDeviceService.MSG_REGISTER_TALLY_DEVICE_SCAN_ACTIVITY);
-                if (msg == null) { return; }
-                msg.replyTo = messenger;
-                service.send(msg);
-
-            } catch (Exception e) { service = null; }
+            registerWithService();
 
             if (service != null) { startScan(); }
 
@@ -421,6 +414,28 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
         setDevices(pContext, deviceNames);
 
     }//end of TallyDeviceScanActivity::addDeviceName
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceScanActivity::registerWithService
+    //
+    // Sends a message to the TallyDeviceService to register.
+    //
+
+    private void registerWithService() {
+
+        try {
+
+            Message msg = Message.obtain(null,
+                                        TallyDeviceService.MSG_REGISTER_TALLY_DEVICE_SCAN_ACTIVITY);
+            if (msg == null) { return; }
+            msg.obj = this;
+            msg.replyTo = messenger;
+            service.send(msg);
+
+        } catch (Exception e) { service = null; }
+
+    }//end of TallyDeviceScanActivity::registerWithService
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
