@@ -36,8 +36,10 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -84,6 +86,7 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
     // Standard activity result: operation succeeded.
     private final int ACTIVITY_RESULT_OK = -1;
 
+    private Handler handler = new Handler();
     private Context context;
     private TallyDeviceService parentService;
     private BluetoothGatt gatt = null;
@@ -151,6 +154,7 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
         // is still no longer connected
         if (!connectedToTallyDevice || gatt == null) { return true; }
 
+        //Disconnect and close the previous gatt connection
         gatt.disconnect();
         gatt.close();
 
@@ -310,6 +314,9 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
     @Override
     public void onLeScan(final BluetoothDevice pDevice, int pRssi, byte[] pScanRecord) {
 
+        //debug hss///
+        Log.d(TAG, "Device found: " + pDevice.getName());
+
         if (pDevice == null || pDevice.getName() == null ||
                 (!pDevice.getName().contains("disto") && !pDevice.getName().contains("DISTO"))) {
             // device was null, device name was null, or the name did not contain disto -- return
@@ -319,6 +326,37 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
         handleTallyDeviceFound(pDevice);
 
     }//end of TallyDeviceBluetoothLeConnectionHandler::onLeScan
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceBluetoothLeConnectionHandler::bondingBroadcastReceiver
+    //
+    // Not a function.
+    //
+    // Creates an object to listen for changes in the bond state on whatever context
+    // it was registered in.
+    //
+
+    private BroadcastReceiver bondingBroadcastReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(final Context context, final Intent intent) {
+
+            final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+            final int bondState = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, -1);
+            final int previousBondState = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, -1);
+
+            Log.d(TAG, "Bond state changed:: " + "new state: " + bondState + " previous: " + previousBondState);
+
+            if (bondState == BluetoothDevice.BOND_BONDED) {
+                //debug hss//
+                Log.d(TAG, "Bonded to device -- sending laser command");
+                sendCommand(TURN_LASER_ON_CMD);
+            }
+
+        }
+
+    };//end of TallyDeviceBluetoothLeConnectionHandler::bondingBroadcastReceiver
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -358,7 +396,10 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
 
     public void handleCharacteristicChanged(BluetoothGattCharacteristic pCharacteristic) {
 
-        if (pCharacteristic.getUuid() == DISTO_CHARACTERISTIC_DISTANCE) {
+        //debug hss/
+        Log.d(TAG, "Characteristic changed");
+
+        /*if (pCharacteristic.getUuid() == DISTO_CHARACTERISTIC_DISTANCE) {
 
             // The characteristic's UUID matched the distance characteristic
 
@@ -371,7 +412,7 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
 
             parentService.handleNewDistanceValue(distanceValueString);
 
-        }
+        }*/
 
     }//end of TallyDeviceBluetoothLeConnectionHandler::handleCharacteristicChanged
     //-----------------------------------------------------------------------------
@@ -403,6 +444,30 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // TallyDeviceBluetoothLeConnectionHandler::handleDescriptorWriteFailure
+    //
+    // Tries again to subscribe to the distance characteristic.
+    //
+
+    public void handleDescriptorWriteFailure() {
+
+        //debug hss//
+        Log.d(TAG, "Descriptor write failure");
+
+        BluetoothGattService tempBluetoothGattService = gatt.getService(DISTO_SERVICE);
+        if (tempBluetoothGattService == null) {
+            //debug hss//
+            Log.d(TAG, "SErvice was null -- return");
+            return;
+        }
+
+        handler.post(new CharacteristicSubscriber(gatt,
+                        tempBluetoothGattService.getCharacteristic(DISTO_CHARACTERISTIC_DISTANCE)));
+
+    }//end of TallyDeviceBluetoothLeConnectionHandler::handleDescriptorWriteFailure
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // TallyDeviceBluetoothLeConnectionHandler::handleDescriptorWriteSuccess
     //
     // If the subscribe stack is empty, call a handling function in the parentService
@@ -413,6 +478,9 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
     //
 
     public void handleDescriptorWriteSuccess() {
+
+        //debug hss//
+        Log.d(TAG, "Descriptor write success");
 
         if (subscribeStack.empty()) {
             parentService.handleConnectedToTallyDevice(connectedTallyDeviceName);
@@ -435,9 +503,11 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
 
         connectedToTallyDevice = false;
 
+        Log.d(TAG, "disconnected from tally device");
+
         // If the disconnect was not initiated by the user,
         // then attempt to reconnect to the device
-        if (!userDisconnectedFromDevice) { connectToTallyDevice(connectedTallyDeviceName); return; }
+        //debug hsss//if (!userDisconnectedFromDevice) { connectToTallyDevice(connectedTallyDeviceName); return; }
 
         connectedTallyDeviceName = null;
         parentService.handleDisconnectedFromTallyDevice();
@@ -466,12 +536,19 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
 
     public void handleDiscoverServicesSuccess() {
 
+        //debug hss//
+        Log.d(TAG, "Services discovered success");
+
         BluetoothGattService tempBluetoothGattService =
                                                     gatt.getService(DISTO_SERVICE);
-        if (tempBluetoothGattService == null) { return; }
+        if (tempBluetoothGattService == null) {
+            //debug hss//
+            Log.d(TAG, "SErvice was null -- return");
+            return;
+        }
 
-        new CharacteristicSubscriber(gatt, tempBluetoothGattService.getCharacteristic
-                                                (DISTO_CHARACTERISTIC_DISTANCE));
+        handler.postDelayed(new CharacteristicSubscriber(gatt, tempBluetoothGattService.getCharacteristic
+                (DISTO_CHARACTERISTIC_DISTANCE)), 950);
 
     }//end of TallyDeviceBluetoothLeConnectionHandler::handleDiscoverServicesSuccess
     //-----------------------------------------------------------------------------
@@ -591,6 +668,8 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
 
         public void run() {
 
+            Log.d(TAG, "run function reached");
+
             boolean bool = false;
 
             do {
@@ -603,6 +682,7 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
 
                 tempDes.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
                 bool = classGatt.writeDescriptor(tempDes);
+                Log.d(TAG, "Writing to descriptor");
             } while (!bool);
 
         }// CharacteristicSubscriber::run
@@ -656,7 +736,7 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
                 parentHandler.handleConnectedToTallyDevice();
             }
             else if (pNewState == BluetoothProfile.STATE_DISCONNECTED) {
-                parentHandler.handleDisconnectedFromTallyDevice();
+                //debug hss//parentHandler.handleDisconnectedFromTallyDevice();
             }
 
         }//end of GattCallback::onConnectionStateChange
@@ -675,6 +755,8 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
         public void onServicesDiscovered(BluetoothGatt pGatt, int pStatus) {
 
             if (pStatus != BluetoothGatt.GATT_SUCCESS) {
+                pGatt.getDevice().createBond();
+                pGatt.getDevice().setPairingConfirmation(true);
                 parentHandler.handleDiscoverServicesFailed();
             }
 
@@ -712,6 +794,8 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
         public void onCharacteristicWrite(BluetoothGatt pGatt,
                                           BluetoothGattCharacteristic pCharacteristic, int pStatus) {
 
+            Log.d(TAG, "Characteristic write: " + pStatus);
+
             if (pStatus == BluetoothGatt.GATT_SUCCESS) {
                 parentHandler.handleCharacteristicWriteSuccess();
             }
@@ -732,9 +816,21 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
                                       BluetoothGattDescriptor pDescriptor,
                                       int pStatus) {
 
-            if (pStatus == BluetoothGatt.GATT_SUCCESS) {
-                parentHandler.handleDescriptorWriteSuccess();
-            }
+        //debug hss//
+        Log.d(TAG, "Descriptor write: " + pStatus);
+        if (pStatus == BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION) {
+
+            //debug hss//
+            Log.d(TAG, "GATT_INSUFFICIENT_AUTHENTICATION descriptor write");
+
+            // register broadcast receiver to listen for bonding changes
+            final IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
+            context.registerReceiver(bondingBroadcastReceiver, filter);
+        }
+        /*if (pStatus != BluetoothGatt.GATT_SUCCESS) {
+            parentHandler.handleDescriptorWriteFailure();
+        }*/
+        //debug hss// parentHandler.handleDescriptorWriteSuccess();
 
         }//end of GattCallback::onDescriptorWrite
         //-----------------------------------------------------------------------------

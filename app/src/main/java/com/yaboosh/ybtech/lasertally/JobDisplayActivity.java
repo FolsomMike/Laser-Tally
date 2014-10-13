@@ -716,12 +716,21 @@ public class JobDisplayActivity extends Activity {
     //-----------------------------------------------------------------------------
     // JobDisplayActivity::handleIdleState
     //
-    // Currently has no functionality.
+    // Sets the measureConnectButton to its "connecting" look and text and sets
+    // the redo button invisible.
     //
 
     public void handleIdleState() {
 
-        // Currently has no functionality
+        measureConnectButton = (Button)findViewById(R.id.measureConnectButton);
+        measureConnectButton.setBackground(getResources().getDrawable
+                (R.drawable.green_styled_button));
+        measureConnectButton.setText(connectButtonText);
+        measureConnectButton.setOnClickListener(onClickListener);
+        measureConnectButton.setVisibility(View.VISIBLE);
+
+        redoButton = (Button)findViewById(R.id.redoButton);
+        redoButton.setVisibility(View.INVISIBLE);
 
     }//end of JobDisplayActivity::handleIdleState
     //-----------------------------------------------------------------------------

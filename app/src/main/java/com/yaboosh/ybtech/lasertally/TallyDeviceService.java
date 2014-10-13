@@ -98,7 +98,8 @@ public class TallyDeviceService extends Service {
     // variable can be initiated using different classes
     // (TallyDeviceBluetoothLeConnectionHandler, TallyDeviceSimulationConnectionHandler, etc.)
     private TallyDeviceConnectionHandler tallyDeviceConnectionHandler = new
-                                                    TallyDeviceSimulationConnectionHandler(this);
+                                                    TallyDeviceBluetoothLeConnectionHandler(this);
+    Runnable stopScanRunnable;
 
     private final Messenger messenger;
     private Messenger messengerClient;
@@ -283,9 +284,7 @@ public class TallyDeviceService extends Service {
 
         tallyDeviceConnectionHandler.startScanForTallyDevices();
 
-        // stop the scan in the time specified
-        // by the SCAN_PERIOD variable
-        timerHandler.postDelayed(new Runnable() {
+        stopScanRunnable = new Runnable() {
 
             @Override
             public void run() {
@@ -298,7 +297,11 @@ public class TallyDeviceService extends Service {
 
             }
 
-        }, SCAN_PERIOD);
+        };
+
+        // stop the scan in the time specified
+        // by the SCAN_PERIOD variable
+        timerHandler.postDelayed(stopScanRunnable, SCAN_PERIOD);
 
     }//end of TallyDeviceService::handleStartScanForTallyDevicesMessage
     //-----------------------------------------------------------------------------
@@ -406,12 +409,6 @@ public class TallyDeviceService extends Service {
         messengerClient = pMsg.replyTo;
         tallyDeviceConnectionHandler.setContext((Context)pMsg.obj);
 
-        // For simulation purposes,
-        // when the activity message
-        // is registered the state is
-        // set to connected
-        setState(State.CONNECTED);
-
     }//end of TallyDeviceService::handleRegisterMessageActivityMessage
     //-----------------------------------------------------------------------------
 
@@ -459,7 +456,10 @@ public class TallyDeviceService extends Service {
     public void handleUnregisterTallyDeviceScanActivityMessage(Message pMsg) {
 
         messengerClient = null;
-        if (tallyDeviceConnectionHandler.stopScanForTallyDevices()) { setState(State.IDLE); }
+        if (tallyDeviceConnectionHandler.stopScanForTallyDevices()) {
+            timerHandler.removeCallbacks(stopScanRunnable);
+            setState(State.IDLE);
+        }
 
     }//end of TallyDeviceService::handleUnregisterTallyDeviceScanActivityMessage
     //-----------------------------------------------------------------------------

@@ -49,18 +49,36 @@
       <file leaf-file-name="TallyDeviceService.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="4811" max-vertical-offset="11339">
-              <caret line="283" column="57" selection-start-line="283" selection-start-column="57" selection-end-line="283" selection-end-column="57" />
-              <folding />
+            <state vertical-scroll-proportion="-8.178572" vertical-offset="3001" max-vertical-offset="10863">
+              <caret line="218" column="16" selection-start-line="218" selection-start-column="16" selection-end-line="218" selection-end-column="16" />
+              <folding>
+                <element signature="e#0#24523#0" expanded="true" />
+                <element signature="e#10493#10816#0" expanded="true" />
+                <element signature="e#10804#10805#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="JobDisplayActivity.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="TallyDeviceBluetoothLeConnectionHandler.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceBluetoothLeConnectionHandler.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.87772924" vertical-offset="4922" max-vertical-offset="13991">
+              <caret line="352" column="69" selection-start-line="352" selection-start-column="69" selection-end-line="352" selection-end-column="69" />
+              <folding>
+                <element signature="e#0#33921#0" expanded="true" />
+                <element signature="e#13460#14240#0" expanded="true" />
+                <element signature="e#14232#14233#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="JobDisplayActivity.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/JobDisplayActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="1.7142857" vertical-offset="11441" max-vertical-offset="21080">
-              <caret line="707" column="57" selection-start-line="707" selection-start-column="57" selection-end-line="707" selection-end-column="57" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="11324" max-vertical-offset="21233">
+              <caret line="718" column="7" selection-start-line="718" selection-start-column="7" selection-end-line="718" selection-end-column="7" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -94,8 +112,8 @@
       <file leaf-file-name="TallyDeviceScanActivity.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceScanActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="9792" max-vertical-offset="10319">
-              <caret line="576" column="30" selection-start-line="576" selection-start-column="30" selection-end-line="576" selection-end-column="30" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="7735" max-vertical-offset="9656">
+              <caret line="508" column="17" selection-start-line="508" selection-start-column="17" selection-end-line="508" selection-end-column="17" />
               <folding />
             </state>
           </provider>
@@ -806,15 +824,15 @@
         <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_tally_device_scan.xml" />
         <option value="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_tally_device_connection_status_message.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceBluetoothLeConnectionHandler.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceConnectionStatusMessageActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_job_info.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/JobInfoActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceScanActivity.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceService.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceSimulationConnectionHandler.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_job_display.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/JobDisplayActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceService.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceBluetoothLeConnectionHandler.java" />
       </list>
     </option>
   </component>
@@ -1205,11 +1223,12 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1616" height="876" extended-state="0" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32974428" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -1218,11 +1237,11 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32969153" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32974428" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32974428" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.8021534" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.66890985" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.8021534" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32969153" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -1231,7 +1250,6 @@
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32974428" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32969153" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32974428" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -1261,7 +1279,11 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="3536" max-vertical-offset="10982">
           <caret line="208" column="0" selection-start-line="208" selection-start-column="0" selection-end-line="208" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="e#0#24523#0" expanded="true" />
+            <element signature="e#10493#10816#0" expanded="true" />
+            <element signature="e#10804#10805#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1280,6 +1302,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="6409" max-vertical-offset="7769">
           <caret line="377" column="47" selection-start-line="377" selection-start-column="47" selection-end-line="377" selection-end-column="47" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1321,7 +1344,11 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="2482" max-vertical-offset="10812">
           <caret line="146" column="0" selection-start-line="146" selection-start-column="0" selection-end-line="146" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="e#0#24523#0" expanded="true" />
+            <element signature="e#10493#10816#0" expanded="true" />
+            <element signature="e#10804#10805#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1329,6 +1356,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="4284" max-vertical-offset="7667">
           <caret line="252" column="0" selection-start-line="252" selection-start-column="0" selection-end-line="252" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1352,6 +1380,11 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1454" max-vertical-offset="12155">
           <caret line="100" column="0" selection-start-line="100" selection-start-column="0" selection-end-line="100" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#33921#0" expanded="true" />
+            <element signature="e#13460#14240#0" expanded="true" />
+            <element signature="e#14232#14233#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1359,7 +1392,11 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="2584" max-vertical-offset="10319">
           <caret line="152" column="0" selection-start-line="152" selection-start-column="0" selection-end-line="152" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="e#0#24523#0" expanded="true" />
+            <element signature="e#10493#10816#0" expanded="true" />
+            <element signature="e#10804#10805#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1392,6 +1429,11 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1454" max-vertical-offset="12155">
           <caret line="100" column="0" selection-start-line="100" selection-start-column="0" selection-end-line="100" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#33921#0" expanded="true" />
+            <element signature="e#13460#14240#0" expanded="true" />
+            <element signature="e#14232#14233#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1399,7 +1441,11 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="2584" max-vertical-offset="10319">
           <caret line="152" column="0" selection-start-line="152" selection-start-column="0" selection-end-line="152" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="e#0#24523#0" expanded="true" />
+            <element signature="e#10493#10816#0" expanded="true" />
+            <element signature="e#10804#10805#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1425,6 +1471,11 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1454" max-vertical-offset="12155">
           <caret line="100" column="0" selection-start-line="100" selection-start-column="0" selection-end-line="100" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#33921#0" expanded="true" />
+            <element signature="e#13460#14240#0" expanded="true" />
+            <element signature="e#14232#14233#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1432,7 +1483,11 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="2584" max-vertical-offset="10319">
           <caret line="152" column="0" selection-start-line="152" selection-start-column="0" selection-end-line="152" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="e#0#24523#0" expanded="true" />
+            <element signature="e#10493#10816#0" expanded="true" />
+            <element signature="e#10804#10805#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1458,6 +1513,11 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="221" max-vertical-offset="3706">
           <caret line="39" column="13" selection-start-line="39" selection-start-column="13" selection-end-line="39" selection-end-column="13" />
+          <folding>
+            <element signature="e#0#33921#0" expanded="true" />
+            <element signature="e#13460#14240#0" expanded="true" />
+            <element signature="e#14232#14233#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1465,13 +1525,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.4993007" vertical-offset="13362" max-vertical-offset="33881">
           <caret line="848" column="30" selection-start-line="848" selection-start-column="30" selection-end-line="848" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$APPLICATION_HOME_DIR$/sdk/sources/android-20/android/bluetooth/BluetoothDevice.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="19702" max-vertical-offset="20417">
-          <caret line="1204" column="45" selection-start-line="1204" selection-start-column="45" selection-end-line="1204" selection-end-column="45" />
         </state>
       </provider>
     </entry>
@@ -1565,13 +1618,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceBluetoothLeConnectionHandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-9.75" vertical-offset="5201" max-vertical-offset="12121">
-          <caret line="363" column="0" selection-start-line="363" selection-start-column="0" selection-end-line="363" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_create_job.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-8.814815" vertical-offset="0" max-vertical-offset="11849">
@@ -1598,6 +1644,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.5314685" vertical-offset="3972" max-vertical-offset="7072">
           <caret line="295" column="40" selection-start-line="295" selection-start-column="40" selection-end-line="295" selection-end-column="40" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1631,33 +1678,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceScanActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="4871" max-vertical-offset="9656">
-          <caret line="576" column="30" selection-start-line="576" selection-start-column="30" selection-end-line="576" selection-end-column="30" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceConnectionHandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.35804197" vertical-offset="1342" max-vertical-offset="2057">
-          <caret line="114" column="16" selection-start-line="114" selection-start-column="16" selection-end-line="114" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceSimulationConnectionHandler.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="2584" max-vertical-offset="3757">
           <caret line="152" column="0" selection-start-line="152" selection-start-column="0" selection-end-line="152" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="4811" max-vertical-offset="11339">
-          <caret line="283" column="57" selection-start-line="283" selection-start-column="57" selection-end-line="283" selection-end-column="57" />
           <folding />
         </state>
       </provider>
@@ -1675,10 +1699,58 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/JobDisplayActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.7142857" vertical-offset="11441" max-vertical-offset="21080">
-          <caret line="707" column="57" selection-start-line="707" selection-start-column="57" selection-end-line="707" selection-end-column="57" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="11324" max-vertical-offset="21233">
+          <caret line="718" column="7" selection-start-line="718" selection-start-column="7" selection-end-line="718" selection-end-column="7" />
           <folding>
             <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceScanActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="7735" max-vertical-offset="9656">
+          <caret line="508" column="17" selection-start-line="508" selection-start-column="17" selection-end-line="508" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceConnectionHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.35804197" vertical-offset="1342" max-vertical-offset="2057">
+          <caret line="114" column="16" selection-start-line="114" selection-start-column="16" selection-end-line="114" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/sdk/sources/android-20/android/bluetooth/BluetoothDevice.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33333334" vertical-offset="11569" max-vertical-offset="20417">
+          <caret line="731" column="29" selection-start-line="731" selection-start-column="19" selection-end-line="731" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-8.178572" vertical-offset="3001" max-vertical-offset="10863">
+          <caret line="218" column="16" selection-start-line="218" selection-start-column="16" selection-end-line="218" selection-end-column="16" />
+          <folding>
+            <element signature="e#0#24523#0" expanded="true" />
+            <element signature="e#10493#10816#0" expanded="true" />
+            <element signature="e#10804#10805#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceBluetoothLeConnectionHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.87772924" vertical-offset="4922" max-vertical-offset="13991">
+          <caret line="352" column="69" selection-start-line="352" selection-start-column="69" selection-end-line="352" selection-end-column="69" />
+          <folding>
+            <element signature="e#0#33921#0" expanded="true" />
+            <element signature="e#13460#14240#0" expanded="true" />
+            <element signature="e#14232#14233#0" expanded="true" />
           </folding>
         </state>
       </provider>
