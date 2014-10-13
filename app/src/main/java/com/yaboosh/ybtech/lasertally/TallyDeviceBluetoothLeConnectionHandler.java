@@ -310,7 +310,8 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
     @Override
     public void onLeScan(final BluetoothDevice pDevice, int pRssi, byte[] pScanRecord) {
 
-        if (pDevice == null || pDevice.getName() == null || !pDevice.getName().contains("disto")) {
+        if (pDevice == null || pDevice.getName() == null ||
+                (!pDevice.getName().contains("disto") && !pDevice.getName().contains("DISTO"))) {
             // device was null, device name was null, or the name did not contain disto -- return
             return;
         }
@@ -328,9 +329,7 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
 
     private void handleBluetoothTurnedOn() {
 
-        if (startBluetoothLeScan()) {
-            parentService.handleStartScanForTallyDevicesSuccess();
-        }
+        if (startBluetoothLeScan()) { parentService.handleStartScanForTallyDevicesSuccess(); }
 
     }//end of TallyDeviceBluetoothLeConnectionHandler::handleBluetoothTurnedOn
     //-----------------------------------------------------------------------------

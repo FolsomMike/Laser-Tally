@@ -51,6 +51,7 @@ import android.util.Log;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -71,13 +72,13 @@ public class TallyDeviceService extends Service {
     static final int MSG_DISCONNECT_FROM_TALLY_DEVICE = 8;
     static final int MSG_START_SCAN_FOR_TALLY_DEVICES = 11;
     static final int MSG_SEND_MEASURE_COMMAND_TO_TALLY_DEVICE = 12;
-    static final int MSG_MEASUREMENT_VALUE = 14;
     static final int MSG_CONNECTION_STATE = 15;
     static final int MSG_START_ACTIVITY_FOR_RESULT = 18;
     static final int MSG_ACTIVITY_RESULT = 19;
     static final int MSG_TALLY_DEVICE_NAME = 20;
     static final int MSG_NEW_DISTANCE_VALUE = 21;
     static final int MSG_START_SCAN_FOR_TALLY_DEVICES_FAILED = 22;
+    static final int MSG_FINISH_SCAN_ACTIVITY_AND_START_MESSAGE_ACTIVITY = 23;
 
     private static final long SCAN_PERIOD = 10000;
 
@@ -93,8 +94,11 @@ public class TallyDeviceService extends Service {
 
     Handler timerHandler = new Handler();
 
+    // Depending on the connection type (BLE, simulation, etc.), the
+    // variable can be initiated using different classes
+    // (TallyDeviceBluetoothLeConnectionHandler, TallyDeviceSimulationConnectionHandler, etc.)
     private TallyDeviceConnectionHandler tallyDeviceConnectionHandler = new
-                                            TallyDeviceBluetoothLeConnectionHandler(this);
+                                                    TallyDeviceSimulationConnectionHandler(this);
 
     private final Messenger messenger;
     private Messenger messengerClient;
@@ -104,6 +108,8 @@ public class TallyDeviceService extends Service {
 
     private String attemptingConnectionToTallyDeviceName = null;
     private String connectedTallyDeviceName = null;
+
+    private ArrayList<String> deviceNames = new ArrayList<String>();
 
     //-----------------------------------------------------------------------------
     // TallyDeviceService::TallyDeviceService (constructor)
@@ -164,6 +170,9 @@ public class TallyDeviceService extends Service {
 
     public void handleConnectedToTallyDevice(String pDeviceName) {
 
+        //debug hss//
+        Log.d(TAG, "Handle connectd to tally device");
+
         connectedTallyDeviceName = pDeviceName;
         setState(State.CONNECTED);
 
@@ -191,6 +200,9 @@ public class TallyDeviceService extends Service {
     //
 
     public void handleConnectToTallyDeviceMessage(Message pMsg) {
+
+        //debug hss//
+        Log.d(TAG, "connect to device message received");
 
         connectToDeviceByName((String)pMsg.obj);
 
@@ -267,6 +279,8 @@ public class TallyDeviceService extends Service {
 
     public void handleStartScanForTallyDevicesMessage(Message pMsg) {
 
+        deviceNames.clear();
+
         tallyDeviceConnectionHandler.startScanForTallyDevices();
 
         // stop the scan in the time specified
@@ -277,7 +291,9 @@ public class TallyDeviceService extends Service {
             public void run() {
 
                 if (connectionState == State.SCANNING) {
-                    tallyDeviceConnectionHandler.stopScanForTallyDevices();
+                    if (tallyDeviceConnectionHandler.stopScanForTallyDevices()) {
+                        setState(State.IDLE);
+                    }
                 }
 
             }
@@ -314,6 +330,7 @@ public class TallyDeviceService extends Service {
 
     public void handleSendMeasureCommandToTallyDeviceMessage(Message pMsg) {
 
+        Log.d(TAG, "measure command received");
         tallyDeviceConnectionHandler.sendMeasureCommandToTallyDevice();
 
     }//end of TallyDeviceService::handleSendMeasureCommandToTallyDeviceMessage
@@ -327,9 +344,10 @@ public class TallyDeviceService extends Service {
 
     public void handleTallyDeviceFound(String pDeviceName) {
 
+        deviceNames.add(pDeviceName);
         Message msg = Message.obtain(null, MSG_TALLY_DEVICE_NAME);
         if (msg == null) { return; }
-        msg.obj = pDeviceName;
+        msg.obj = deviceNames;
         sendMessageToMessengerClient(msg);
 
     }//end of TallyDeviceService::handleTallyDeviceFound
@@ -343,6 +361,9 @@ public class TallyDeviceService extends Service {
     //
 
     public void handleRegisterJobDisplayActivityMessage(Message pMsg) {
+
+        //debug hss//
+        Log.d(TAG, "zzz register job display activity");
 
         messengerClient = pMsg.replyTo;
         tallyDeviceConnectionHandler.setContext((Context)pMsg.obj);
@@ -362,6 +383,9 @@ public class TallyDeviceService extends Service {
 
     public void handleUnregisterJobDisplayActivityMessage(Message pMsg) {
 
+        //debug hss//
+        Log.d(TAG, "handle unregister job display activity message");
+
         messengerClient = null;
 
     }//end of TallyDeviceService::handleUnregisterJobDisplayActivityMessage
@@ -376,13 +400,17 @@ public class TallyDeviceService extends Service {
 
     public void handleRegisterMessageActivityMessage(Message pMsg) {
 
+        //debug hss//
+        Log.d(TAG, "Register message activity message received");
+
         messengerClient = pMsg.replyTo;
         tallyDeviceConnectionHandler.setContext((Context)pMsg.obj);
 
-        Message msg = getStateMessage();
-        if (msg != null) { sendMessageToMessengerClient(msg); }
-
-        sendMessageToMessengerClient(msg);
+        // For simulation purposes,
+        // when the activity message
+        // is registered the state is
+        // set to connected
+        setState(State.CONNECTED);
 
     }//end of TallyDeviceService::handleRegisterMessageActivityMessage
     //-----------------------------------------------------------------------------
@@ -409,6 +437,9 @@ public class TallyDeviceService extends Service {
 
     public void handleRegisterTallyDeviceScanActivityMessage(Message pMsg) {
 
+        //debug hss//
+        Log.d(TAG, "Register scan activity message received");
+
         messengerClient = pMsg.replyTo;
         tallyDeviceConnectionHandler.setContext((Context)pMsg.obj);
 
@@ -428,7 +459,7 @@ public class TallyDeviceService extends Service {
     public void handleUnregisterTallyDeviceScanActivityMessage(Message pMsg) {
 
         messengerClient = null;
-        tallyDeviceConnectionHandler.stopScanForTallyDevices();
+        if (tallyDeviceConnectionHandler.stopScanForTallyDevices()) { setState(State.IDLE); }
 
     }//end of TallyDeviceService::handleUnregisterTallyDeviceScanActivityMessage
     //-----------------------------------------------------------------------------
@@ -508,6 +539,11 @@ public class TallyDeviceService extends Service {
     private boolean sendMessageToMessengerClient(Message pMsg) {
 
         boolean success = true;
+        if (messengerClient == null) {
+            //debug hss//
+            Log.d(TAG, "messengerClient was null -- return");
+            success = false; return success;
+        }
         try { messengerClient.send(pMsg); } catch (Exception e) {
 
             //debug hss//
@@ -558,6 +594,9 @@ public class TallyDeviceService extends Service {
             TallyDeviceService tempService = service.get();
             if (tempService != null) {
 
+                //debug hss//
+                Log.d(TAG, "message received: " + pMsg.what);
+
                 switch (pMsg.what) {
 
                     case MSG_ACTIVITY_RESULT:
@@ -578,6 +617,7 @@ public class TallyDeviceService extends Service {
 
                     case MSG_SEND_MEASURE_COMMAND_TO_TALLY_DEVICE:
                         tempService.handleSendMeasureCommandToTallyDeviceMessage(pMsg);
+                        break;
 
                     case MSG_REGISTER_JOB_DISPLAY_ACTIVITY:
                         tempService.handleRegisterJobDisplayActivityMessage(pMsg);

@@ -40,6 +40,7 @@ import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -55,6 +56,8 @@ public class JobInfoActivity extends Activity {
 
     private View decorView;
     private int uiOptions;
+
+    private DecimalFormat tallyFormat = new DecimalFormat("#.##");
 
     ArrayList<String> fileLines = new ArrayList<String>();
 
@@ -183,9 +186,9 @@ public class JobInfoActivity extends Activity {
     @Override
     protected void onPause() {
 
-        super.onPause();
-
         Log.d(TAG, "Inside of JobInfoActivity onPause");
+
+        super.onPause();
 
     }//end of JobInfoActivity::onPause
     //-----------------------------------------------------------------------------
@@ -313,8 +316,12 @@ public class JobInfoActivity extends Activity {
         facility = ((EditText) findViewById(R.id.editTextFacility)).getText().toString();
         grade = ((EditText) findViewById(R.id.editTextGrade)).getText().toString();
         job = ((EditText) findViewById(R.id.editTextJob)).getText().toString();
-        makeupAdjustment = ((EditText)
-                        findViewById(R.id.editTextProtectorMakeupAdjustment)).getText().toString();
+        makeupAdjustment = ((EditText)findViewById(R.id.editTextProtectorMakeupAdjustment)).getText().toString();
+        if (makeupAdjustment.equals("")) {
+            Float tempAdjFloat = Float.parseFloat(((EditText) findViewById
+                                    (R.id.editTextProtectorMakeupAdjustment)).getText().toString());
+            makeupAdjustment = tallyFormat.format(tempAdjFloat);
+        }
         rack = ((EditText) findViewById(R.id.editTextRack)).getText().toString();
         range = ((EditText) findViewById(R.id.editTextRange)).getText().toString();
         rig = ((EditText) findViewById(R.id.editTextRig)).getText().toString();

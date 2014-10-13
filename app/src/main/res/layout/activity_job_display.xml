@@ -104,7 +104,8 @@
                 android:text="@string/redoButtonText"
                 android:textSize="50sp"
                 style="@style/redStyledButton"
-                android:background="@drawable/red_styled_button" />
+                android:background="@drawable/red_styled_button"
+                android:visibility="invisible" />
 
             <!-- vertical spacer -->
             <View
@@ -117,6 +118,7 @@
                 android:layout_width="225dp"
                 android:layout_height="200dp"
                 android:textSize="50sp"
+                android:visibility="invisible"
                 style="@style/styledButtonWhiteText" />
 
         </LinearLayout>

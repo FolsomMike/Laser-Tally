@@ -285,6 +285,7 @@
                 <EditText
                     android:id="@id/editTextProtectorMakeupAdjustment"
                     android:inputType="number"
+                    android:digits="0123456789,."
                     android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

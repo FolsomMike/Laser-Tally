@@ -28,6 +28,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -244,11 +245,14 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
 
     public void handleConnectedState() {
 
+        ///debug hss//
+        Log.d(TAG, "Handle connected state");
+
         setProgressBarVisible(false);
         setGreenCheckMarkVisible(true);
         setMessageText("Connected to " + tallyDeviceName);
 
-        // Waits for five seconds so that the user
+        // Waits for 2 seconds so that the user
         // can see the message and then exits the
         // activity
         timerHandler.postDelayed(new Runnable() {
@@ -260,7 +264,7 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
 
             }
 
-        }, 5000);
+        }, 2000);
 
     }//end of TallyDeviceConnectionStatusMessageActivity::handleConnectedState
     //-----------------------------------------------------------------------------
@@ -274,6 +278,8 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
 
     public void handleConnectingState() {
 
+        //debug hss//
+        Log.d(TAG, "Handle connecting state");
         setProgressBarVisible(true);
         setGreenCheckMarkVisible(false);
         setMessageText("Connecting to " + tallyDeviceName);
@@ -313,7 +319,7 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
 
     private void setGreenCheckMarkVisible(boolean pBool) {
 
-        View tempCheck = findViewById(R.id.tallyDeviceConnectionStatusMessageProgressBar);
+        View tempCheck = findViewById(R.id.tallyDeviceConnectionStatusMessageGreenCheckMark);
 
         if (pBool) {
             tempCheck.setVisibility(View.VISIBLE);
@@ -344,15 +350,13 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
     //-----------------------------------------------------------------------------
     // TallyDeviceConnectionStatusMessageActivity::setProgressBarVisible
     //
-    // Gets the progress bar.
-    //
-    // The progress bar is set to VISIBLE or INVISIBLE depending on the passed in
+    // Sets the progress bar is set to VISIBLE or GONE depending on the passed in
     // boolean.
     //
 
     private void setProgressBarVisible(boolean pBool) {
 
-        ProgressBar tempBar = (ProgressBar) findViewById(R.id.tallyDeviceConnectionStatusMessageProgressBar);
+        ProgressBar tempBar = (ProgressBar)findViewById(R.id.tallyDeviceConnectionStatusMessageProgressBar);
 
         if (pBool) { tempBar.setVisibility(View.VISIBLE); }
         else { tempBar.setVisibility(View.GONE); }
@@ -367,6 +371,9 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
     //
 
     private void stateChanged(TallyDeviceService.State pNewState, Message pMsg) {
+
+        //debug hss//
+        Log.d(TAG, "connection state changed: " + pNewState);
 
         state = pNewState;
 

@@ -64,6 +64,7 @@ public class JobDisplayActivity extends Activity {
     final String connectButtonText = "connect";
     final String measureButtonText = "measure";
 
+    private DecimalFormat tallyFormat = new DecimalFormat("#.##");
     private float protectorMakeupValue = 0;
 
     private TableRow lastRowEdited;
@@ -109,6 +110,9 @@ public class JobDisplayActivity extends Activity {
         measurementsTable = (TableLayout)findViewById(R.id.measurementsTable);
         measureConnectButton = (Button)findViewById(R.id.measureConnectButton);
         redoButton = (Button)findViewById(R.id.redoButton);
+
+        //debug hss//
+        Log.d(TAG, "inside of JobDisplay onCreate");
 
         Bundle bundle = getIntent().getExtras();
         if (bundle.getBoolean(Keys.JOB_INFO_INCLUDED_KEY, false)) {
@@ -181,6 +185,8 @@ public class JobDisplayActivity extends Activity {
     @Override
     protected void onPause() {
 
+        super.onPause();
+
         try { unbindService(connection); } catch (Exception e) {}
 
         if (service == null) { return; }
@@ -194,8 +200,6 @@ public class JobDisplayActivity extends Activity {
             service.send(msg);
 
         } catch (Exception e) { service = null; }
-
-        super.onPause();
 
     }//end of JobDisplayActivity::onPause
     //-----------------------------------------------------------------------------
@@ -333,7 +337,7 @@ public class JobDisplayActivity extends Activity {
         float totalLength = Float.parseFloat(pTotalLength);
         float adjustedValue = totalLength - protectorMakeupValue;
 
-        (getAdjustedColumnOfRow(pR)).setText(Float.toString(adjustedValue));
+        (getAdjustedColumnOfRow(pR)).setText(tallyFormat.format(adjustedValue));
 
     }//end of JobDisplayActivity::calculateAndSetAdjustedValueOfRow
     //-----------------------------------------------------------------------------
@@ -679,6 +683,7 @@ public class JobDisplayActivity extends Activity {
                 (R.drawable.blue_styled_button));
         measureConnectButton.setText(measureButtonText);
         measureConnectButton.setOnClickListener(onClickListener);
+        measureConnectButton.setVisibility(View.VISIBLE);
 
         redoButton.setOnClickListener(onClickListener);
         redoButton.setVisibility(View.VISIBLE);
@@ -700,6 +705,7 @@ public class JobDisplayActivity extends Activity {
                                                                 (R.drawable.green_styled_button));
         measureConnectButton.setText(connectButtonText);
         measureConnectButton.setOnClickListener(onClickListener);
+        measureConnectButton.setVisibility(View.VISIBLE);
 
         redoButton = (Button)findViewById(R.id.redoButton);
         redoButton.setVisibility(View.INVISIBLE);
@@ -792,7 +798,7 @@ public class JobDisplayActivity extends Activity {
 
     public void handleMoreButtonPressed(View pView) {
 
-        Intent intent = new Intent(this, ItemListActivity.class);
+        Intent intent = new Intent(this, TallyDeviceConnectionStatusMessageActivity.class);
         startActivity(intent);
 
     }//end of JobDisplayActivity::handleMoreButtonPressed
@@ -807,10 +813,13 @@ public class JobDisplayActivity extends Activity {
 
     public void handleNewDistanceValue(String pDistanceValue) {
 
+        //debug hss//
+        Log.d(TAG, "handleNewDistanceValue");
+
         String adjustedValueString = "No Value";
         if (protectorMakeupValue != 0) {
             float adjustedValue = Float.parseFloat(pDistanceValue) - protectorMakeupValue;
-            adjustedValueString = Float.toString(adjustedValue);
+            adjustedValueString = tallyFormat.format(adjustedValue);
         }
 
         View measurementsTableBottomBorderLine = findViewById(R.id.measurementsTableBottomBorderLine);
@@ -942,10 +951,12 @@ public class JobDisplayActivity extends Activity {
 
     private void registerWithService() {
 
+        //debug hss//
+        Log.d(TAG, "register with service");
+
         try {
 
-            Message msg = Message.obtain(null,
-                    TallyDeviceService.MSG_REGISTER_JOB_DISPLAY_ACTIVITY);
+            Message msg = Message.obtain(null, TallyDeviceService.MSG_REGISTER_JOB_DISPLAY_ACTIVITY);
             if (msg == null) { return; }
             msg.obj = this;
             msg.replyTo = messenger;
@@ -991,7 +1002,9 @@ public class JobDisplayActivity extends Activity {
                 TallyDeviceService.MSG_SEND_MEASURE_COMMAND_TO_TALLY_DEVICE);
         if (msg == null) { return; }
 
-        try { service.send(msg); } catch (RemoteException e) { unbindService(connection); }
+        try { service.send(msg); } catch (RemoteException e) {
+
+            Log.d(TAG, "send measure command to tally device failed"); unbindService(connection); }
 
         //disable the measureConnect and redo buttons
         //so that the user can't use them during the
@@ -1135,7 +1148,7 @@ public class JobDisplayActivity extends Activity {
 
             float totalLength = Float.parseFloat(getTotalLengthColValueOfRow((TableRow)v));
             float adjustedValue = totalLength - protectorMakeupValue;
-            (getAdjustedColumnOfRow((TableRow)v)).setText(Float.toString(adjustedValue));
+            (getAdjustedColumnOfRow((TableRow)v)).setText(tallyFormat.format(adjustedValue));
 
         }
 
@@ -1167,7 +1180,7 @@ public class JobDisplayActivity extends Activity {
         state = pNewState;
 
         //debug hss//
-        Log.d(TAG, "State changed");
+        Log.d(TAG, "State changed: " + state);
 
         if (state == TallyDeviceService.State.CONNECTED) { handleConnectedState(); }
         else if (state == TallyDeviceService.State.DISCONNECTED) { handleDisconnectedState(); }
@@ -1213,13 +1226,15 @@ public class JobDisplayActivity extends Activity {
             JobDisplayActivity tempActivity = activity.get();
             if (tempActivity != null) {
 
+                Log.d(TAG, "message received: " + pMsg.what);
+
                 switch (pMsg.what) {
 
                     case TallyDeviceService.MSG_CONNECTION_STATE:
                         tempActivity.stateChanged(TallyDeviceService.State.values()[pMsg.arg1]);
                         break;
 
-                    case TallyDeviceService.MSG_MEASUREMENT_VALUE:
+                    case TallyDeviceService.MSG_NEW_DISTANCE_VALUE:
                         tempActivity.handleNewDistanceValue((String)pMsg.obj);
                         break;
 

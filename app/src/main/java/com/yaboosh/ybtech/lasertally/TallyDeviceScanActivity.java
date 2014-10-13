@@ -37,6 +37,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 
 //-----------------------------------------------------------------------------
@@ -59,7 +60,7 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
     private AbsListView listView;
     private TextView emptyView;
 
-    private List<String> deviceNames = null;
+    ArrayList<String> deviceNames = new ArrayList<String>();
 
     //-----------------------------------------------------------------------------
     // TallyDeviceScanActivity::TallyDeviceScanActivity (constructor)
@@ -106,6 +107,7 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
         listView = (AbsListView) findViewById(android.R.id.list);
 
         emptyView = (TextView) findViewById(android.R.id.empty);
+
         listView.setEmptyView(emptyView);
 
         // Set OnItemClickListener so we can be notified on item clicks
@@ -296,7 +298,7 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
     //-----------------------------------------------------------------------------
     // TallyDeviceScanActivity::finishActivityAndStartMessageActivity
     //
-    // Closes this activity and starts the MessageActivity.
+    // Stops the scan, closes this activity and starts the message activity.
     //
 
     private void finishActivityAndStartMessageActivity() {
@@ -332,13 +334,26 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
 
         Message msg = Message.obtain(null, TallyDeviceService.MSG_CONNECT_TO_TALLY_DEVICE);
         if (msg == null) { return; }
-
         msg.obj = pName;
         try { service.send(msg); } catch (Exception e) { unbindService(connection); }
 
         finishActivityAndStartMessageActivity();
 
     }//end of TallyDeviceScanActivity::handleDeviceClick
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceScanActivity::handleFinishScanActivityAndStartMessageActivityMessage
+    //
+
+    public void handleFinishScanActivityAndStartMessageActivityMessage(Message pMsg) {
+
+        //debug hss//
+        Log.d(TAG, "finish and start message received");
+
+        finishActivityAndStartMessageActivity();
+
+    }//end of TallyDeviceScanActivity::handleFinishScanActivityAndStartMessageActivityMessage
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -393,27 +408,9 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
 
     private void handleTallyDeviceNameMessage(Message pMsg) {
 
-        addDeviceName(this, (String)pMsg.obj);
+        setDevices(this, (ArrayList<String>)pMsg.obj);
 
     }//end of TallyDeviceScanActivity::handleTallyDeviceNameMessage
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // TallyDeviceScanActivity::addDeviceName
-    //
-    // Adds the passed in device to the device names list and then sets the devices
-    // displayed in the ListView to the list.
-    //
-
-    private void addDeviceName(Context pContext, String pName) {
-
-        if (pName == null) { return; }
-
-        deviceNames.add(pName);
-
-        setDevices(pContext, deviceNames);
-
-    }//end of TallyDeviceScanActivity::addDeviceName
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -444,7 +441,7 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
     // Sets the list view to the passed in list.
     //
 
-    private void setDevices(Context pContext, List<String> pNamesList) {
+    private void setDevices(Context pContext, ArrayList<String> pNamesList) {
 
         deviceNames = pNamesList;
 
@@ -476,8 +473,8 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
     //-----------------------------------------------------------------------------
     // TallyDeviceScanActivity::setScanning
     //
-    // Sets the scanning state of deviceList to true and sets the progress bar's
-    // visible state to false.
+    // Sets the scanning state of deviceList and sets the progress bar's visible
+    // state depending on the passed in boolean.
     //
 
     public void setScanning(boolean pScanning) {
