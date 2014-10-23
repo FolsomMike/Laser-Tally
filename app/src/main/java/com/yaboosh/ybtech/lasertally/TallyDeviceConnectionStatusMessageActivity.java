@@ -380,10 +380,12 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
         if (state == TallyDeviceService.State.CONNECTED) {
             tallyDeviceName = (String)pMsg.obj;
             handleConnectedState();
-        }
-        else if (state == TallyDeviceService.State.CONNECTING) {
+        } else if (state == TallyDeviceService.State.CONNECTING) {
             tallyDeviceName = (String)pMsg.obj;
             handleConnectingState();
+        } else if (state == TallyDeviceService.State.DISCONNECTED) {
+            //debug hss//
+            exitActivity();
         }
 
     }//end of TallyDeviceConnectionStatusMessageActivity::stateChanged
