@@ -132,15 +132,17 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
         attemptReconnectToDevice = true;
 
         RemoteLeDevice tempDevice = tallyDevices.get(pDeviceName);
-        if (tempDevice == null) { return false; }
+        if (tempDevice == null) {
+            //debug hss//
+            Log.d(TAG, "device was null -- returning");
+            return false;
+        }
 
         if (scanning) { stopBluetoothLeScan(); }
 
         GattCallback gattCallback = new GattCallback(this);
         gatt = tempDevice.getDevice().connectGatt(context, false, gattCallback);
         connectedTallyDeviceName = pDeviceName;
-        //debug hss//
-        Log.d(TAG, "connectToTallyDevice() connectedTallyDeviceName = " + connectedTallyDeviceName);
 
         return true;
 
@@ -255,8 +257,6 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
 
     @Override
     public void startScanForTallyDevices() {
-
-        tallyDevices.clear();
 
         if (bluetoothAdapter == null) {
 
@@ -630,11 +630,41 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
 
     private boolean reconnectToTallyDevice(String pDeviceName) {
 
-        if (bluetoothAdapter.isEnabled()) { bluetoothAdapter.disable(); }
+        final String deviceName = pDeviceName;
 
-        if (!bluetoothAdapter.isEnabled()) { bluetoothAdapter.enable(); }
+        if (bluetoothAdapter.isEnabled()) {
+            //debug hss//
+            Log.d(TAG, "bluetooth was enabled -- disabling");
+            bluetoothAdapter.disable();
+        }
 
-        startBluetoothLeScan(pDeviceName);
+        handler.postDelayed((new Runnable() {
+            @Override
+            public void run() {
+                if(!bluetoothAdapter.isEnabled()) {
+                    //debug hss//
+                    Log.d(TAG, "bluetooth was disabled -- enabling");
+                    bluetoothAdapter.enable();
+                }
+
+                handler.postDelayed((new Runnable() {
+                    @Override
+                    public void run() {
+                        startBluetoothLeScan(deviceName);
+                    }
+                }), 1000);
+
+                //Stop the Bluetooth Le Scan in 10 seconds
+                /*//debug hss//handler.postDelayed((new Runnable() {
+                    @Override
+                    public void run() {
+                        stopBluetoothLeScan();
+                    }
+                }), 10000);*/
+            }
+        }), 1000);
+
+        /*startBluetoothLeScan(pDeviceName);
 
         //Stop the Bluetooth Le Scan in 10 seconds
         handler.postDelayed((new Runnable() {
@@ -642,7 +672,7 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
             public void run() {
                 stopBluetoothLeScan();
             }
-        }), 10000);
+        }), 10000);*/
 
         return true;
 
@@ -692,7 +722,11 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
 
         nameOfDeviceToSearchFor = pNameOfDeviceToSearchFor;
 
+        tallyDevices.clear();
+
         scanning = bluetoothAdapter.startLeScan(this);
+        //debug hss//
+        Log.d(TAG, "startLeScan :: " + scanning);
         return scanning;
 
     }//end of TallyDeviceBluetoothLeConnectionHandler::startBluetoothLeScan
