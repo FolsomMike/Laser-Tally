@@ -485,15 +485,12 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
 
     public void handleDescriptorWriteSuccess() {
 
-        //debug hss//
-        Log.d(TAG, "Descriptor write success");
-
         if (subscribeStack.empty()) {
             parentService.handleConnectedToTallyDevice(connectedTallyDeviceName);
             return;
         }
 
-        handler.post(new CharacteristicSubscriber(gatt, subscribeStack.pop()));
+        subscribeToCharacteristic(subscribeStack.pop(), gatt);
 
     }//end of TallyDeviceBluetoothLeConnectionHandler::handleDescriptorWriteSuccess
     //-----------------------------------------------------------------------------
@@ -553,16 +550,10 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
 
         BluetoothGattService tempBluetoothGattService =
                                                     gatt.getService(DISTO_SERVICE);
-        if (tempBluetoothGattService == null) { return; }
-
 
         BluetoothGattCharacteristic distanceChar = tempBluetoothGattService.getCharacteristic
                                                                     (DISTO_CHARACTERISTIC_DISTANCE);
-        gatt.setCharacteristicNotification(distanceChar, true);
-        BluetoothGattDescriptor des = distanceChar.getDescriptor(DISTO_DESCRIPTOR);
-
-        des.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
-        Boolean bool = gatt.writeDescriptor(des);
+        subscribeToCharacteristic(distanceChar, gatt);
 
     }//end of TallyDeviceBluetoothLeConnectionHandler::handleDiscoverServicesSuccess
     //-----------------------------------------------------------------------------
@@ -723,67 +714,22 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    //-----------------------------------------------------------------------------
-    // class TallyDeviceBluetoothLeConnectionHandler::CharacteristicSubscriber
+    // TallyDeviceBluetoothLeConnectionHandler::subscribeToCharacteristic
     //
-    // Purpose:
+    // Attempts to enable the notification status/subscribe to the passed in
+    // characteristic, using the passed in gatt.
     //
-    // This class uses a thread separate from the UI thread to enable the
-    // notification status/subscribe to the passed in characteristic found on the
-    // passed in gatt.
-    //
-    // Continues attempting to retrieve the DISTO_DESCRIPTOR until it does not
-    // return null; Continues writing until success.
-    //
+    // Returns true upon success; Returns false upon failure.
     //
 
-    class CharacteristicSubscriber implements Runnable {
+    private boolean subscribeToCharacteristic(BluetoothGattCharacteristic pChar, BluetoothGatt pGatt) {
 
-        final BluetoothGattCharacteristic classChar;
-        final BluetoothGatt classGatt;
+        BluetoothGattDescriptor tempDes = pChar.getDescriptor(DISTO_DESCRIPTOR);
+        tempDes.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+        pGatt.setCharacteristicNotification(pChar, true);
+        return pGatt.writeDescriptor(tempDes);
 
-        //-----------------------------------------------------------------------------
-        // CharacteristicSubscriber::CharacteristicSubscriber (constructor)
-        //
-
-        CharacteristicSubscriber(BluetoothGatt pGatt, BluetoothGattCharacteristic pChar) {
-
-            classGatt= pGatt;
-            classChar = pChar;
-
-        }// CharacteristicSubscriber::CharacteristicSubscriber (constructor)
-        //-----------------------------------------------------------------------------
-
-        //-----------------------------------------------------------------------------
-        // CharacteristicSubscriber::run
-        //
-
-        public void run() {
-
-            Log.d(TAG, "run function reached");
-
-            boolean bool = false;
-
-            if (!connectedToTallyDevice) { Log.d(TAG, "not connected to devices -- return"); return; }
-
-            do {
-                BluetoothGattDescriptor tempDes;
-
-                do {
-                    classGatt.setCharacteristicNotification(classChar, true);
-                    tempDes = classChar.getDescriptor(DISTO_DESCRIPTOR);
-                } while (tempDes == null);
-
-                tempDes.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
-                bool = classGatt.writeDescriptor(tempDes);
-                Log.d(TAG, "Writing to descriptor result: " + bool);
-            } while (!bool);
-
-        }// CharacteristicSubscriber::run
-        //-----------------------------------------------------------------------------
-
-    }//end of class TallyDeviceBluetoothLeConnectionHandler::CharacteristicSubscriber
-    //-----------------------------------------------------------------------------
+    }//end of TallyDeviceBluetoothLeConnectionHandler::subscribeToCharacteristic
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
