@@ -103,6 +103,7 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
     private boolean attemptReconnectToDevice = true;
     private String connectedTallyDeviceName = null;
     private String previouslyConnectedTallyDeviceName = null;
+    private boolean bleScanTurnedOffForNullDevice = false;
 
     //-----------------------------------------------------------------------------
     // TallyDeviceBluetoothLeConnectionHandler::TallyDeviceBluetoothLeConnectionHandler
@@ -235,7 +236,8 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
    @Override
     public void setContext(Context pContext) {
 
-        context = pContext;
+       context = pContext;
+       handler = new Handler(context.getMainLooper());
 
     }//end of TallyDeviceBluetoothLeConnectionHandler::setContext
     //-----------------------------------------------------------------------------
@@ -316,9 +318,9 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
         //debug hss///
         Log.d(TAG, "Device found: " + pDevice.getName());
 
-        if (pDevice == null || pDevice.getName() == null ||
-                (!pDevice.getName().contains("disto") && !pDevice.getName().contains("DISTO"))) {
-            // device was null, device name was null, or the name did not contain disto -- return
+        if (pDevice == null || pDevice.getName() == null) { handleNullTallyDeviceFound(); return; }
+        if (!pDevice.getName().contains("disto") && !pDevice.getName().contains("DISTO")) {
+            //the name did not contain disto -- return
             return;
         }
 
@@ -518,7 +520,6 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
             return;
         }
 
-        if (bluetoothAdapter.isEnabled()) { bluetoothAdapter.disable(); }
         parentService.handleDisconnectedFromTallyDevice();
 
     }//end of TallyDeviceBluetoothLeConnectionHandler::handleDisconnectedFromTallyDevice
@@ -556,6 +557,38 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
         subscribeToCharacteristic(distanceChar, gatt);
 
     }//end of TallyDeviceBluetoothLeConnectionHandler::handleDiscoverServicesSuccess
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceBluetoothLeConnectionHandler::handleNullTallyDeviceFound
+    //
+    // Restarts the Bluetooth Low Energy scan, if one is in progress.
+    //
+
+    private void handleNullTallyDeviceFound() {
+
+        //debug hss//
+        Log.d(TAG, "handleNullTallyDeviceFound() function reached");
+
+        bleScanTurnedOffForNullDevice = true;
+
+        // Stop the bluetooth le scan if one
+        // is in progress. Return if one isn't.
+        if (scanning) { stopBluetoothLeScan(); }
+        else {
+            Log.d(TAG, "handleNullTallyDeviceFound() :: scanning was false -- return");
+            return;
+        }
+
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run () {
+                if (!bleScanTurnedOffForNullDevice) { return; }
+                startBluetoothLeScan(nameOfDeviceToSearchFor);
+            }
+        }, 1000);
+
+    }//end of TallyDeviceBluetoothLeConnectionHandler::handleNullTallyDeviceFound
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -629,12 +662,15 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
                         handler.postDelayed((new Runnable() {
                             @Override
                             public void run() {
-                                stopBluetoothLeScan();
+                                //debug hss//
+                                Log.d(TAG, "reconnectToTallyDevice :: stop BLE scan reached");
+                                bleScanTurnedOffForNullDevice = false;
+                                if (scanning) { stopBluetoothLeScan(); }
                                 if (!connectedToTallyDevice) {
                                     parentService.handleConnectToTallyDeviceFailed();
                                 }
                             }
-                        }), 10000);
+                        }), 30000);
                     }
 
                 }), 1000);
