@@ -45,12 +45,15 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 import java.util.UUID;
 
@@ -265,25 +268,39 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
 
         if (!bluetoothAdapter.isEnabled()) { bluetoothAdapter.enable(); }
 
-        if (bluetoothAdapter.isEnabled()) {
+        // Continue on with all the Bluetooth commands
+        // after a 1 second delay.
+        // The delay is to ensure that the Bluetooth
+        // has time to be turned on.
+        handler.postDelayed(new Runnable () {
 
-            // bluetooth was enabled -- start scan
+            @Override
+            public void run() {
 
-            if (startBluetoothLeScan(null)) {
+                Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
 
-                // bluetooth scan was started successfully
-                // -- call function in parentService
-                parentService.handleStartScanForTallyDevicesSuccess();
+                for (BluetoothDevice bt : pairedDevices) {
+                    if (bt.getName().contains("DISTO") || bt.getName().contains("disto")) {
+                        unpairDevice(bt);
+                    }
+                }
 
-            } else {
+                if (startBluetoothLeScan(null)) {
 
-                // bluetooth scan was not started successfully
-                // -- call function in parentService
-                parentService.handleStartScanForTallyDevicesFailure();
+                    // bluetooth scan was started successfully
+                    // -- call function in parentService
+                    parentService.handleStartScanForTallyDevicesSuccess();
 
+                } else {
+
+                    // bluetooth scan was not started successfully
+                    // -- call function in parentService
+                    parentService.handleStartScanForTallyDevicesFailure();
+
+                }
             }
 
-        }
+        }, 1000);
 
     }//end of TallyDeviceBluetoothLeConnectionHandler::startScanForTallyDevices
     //-----------------------------------------------------------------------------
@@ -520,6 +537,8 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
             return;
         }
 
+        //debug hss//
+        Log.d(TAG, "handleDisconnectedFromTallyDevice() :: made it past return");
         parentService.handleDisconnectedFromTallyDevice();
 
     }//end of TallyDeviceBluetoothLeConnectionHandler::handleDisconnectedFromTallyDevice
@@ -766,6 +785,22 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
         return pGatt.writeDescriptor(tempDes);
 
     }//end of TallyDeviceBluetoothLeConnectionHandler::subscribeToCharacteristic
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceBluetoothLeConnectionHandler::unpairDevice
+    //
+    // Unpairs from the passed in BluetoothDevice.
+    //
+
+    private void unpairDevice(BluetoothDevice pDevice) {
+
+        try {
+            Method m = pDevice.getClass().getMethod("removeBond", (Class[]) null);
+            m.invoke(pDevice, (Object[]) null);
+        } catch (Exception e) { Log.e(TAG, e.getMessage()); }
+
+    }//end of TallyDeviceBluetoothLeConnectionHandler::unpairDevice
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
