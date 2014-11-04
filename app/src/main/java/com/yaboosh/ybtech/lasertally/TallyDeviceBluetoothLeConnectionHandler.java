@@ -530,15 +530,7 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
         //Close the gatt connection
         gatt.close();
 
-        // If the disconnect was not initiated on purpose,
-        // then attempt to reconnect to the device
-        if (attemptReconnectToDevice) {
-            reconnectToTallyDevice(previouslyConnectedTallyDeviceName);
-            return;
-        }
-
-        //debug hss//
-        Log.d(TAG, "handleDisconnectedFromTallyDevice() :: made it past return");
+        //Call a handling function in parentService
         parentService.handleDisconnectedFromTallyDevice();
 
     }//end of TallyDeviceBluetoothLeConnectionHandler::handleDisconnectedFromTallyDevice
@@ -627,80 +619,6 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
         parentService.handleTallyDeviceFound(pDevice.getName());
 
     }//end of TallyDeviceBluetoothLeConnectionHandler::handleTallyDeviceFound
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // TallyDeviceBluetoothLeConnectionHandler::reconnectToTallyDevice
-    //
-    // Reconnects to the tally device with the passed in name, following a series
-    // of steps that ensure that the GATT_INSUFFICIENT_ENCRYPTION descriptor write
-    // error does not arise.
-    //
-    // Step 1:
-    //      Turn off the Bluetooth
-    // Step 2:
-    //      After 1 second, turn on the bluetooth
-    // Step 3:
-    //      Start a BLE scan, searching specifically
-    //      for the device with the name passed in to
-    //      startBluetoothLeScan().
-    // Step 4:
-    //      Start a timer that calls a function to
-    //      stop the BLE scan in 10 seconds. If the
-    //      tally device is not connected when the
-    //      scan is stopped, a handling function in
-    //      the parent service is called, indicating
-    //      that the tally device is disconnected.
-    //
-
-    private boolean reconnectToTallyDevice(String pDeviceName) {
-
-        final String deviceName = pDeviceName;
-
-        //Step 1 -- disable Bluetooth
-        if (bluetoothAdapter.isEnabled()) { bluetoothAdapter.disable(); }
-
-        //Step 2 -- enable Bluetooth after 1 sec
-        handler.postDelayed((new Runnable() {
-
-            @Override
-            public void run() {
-
-                //Step 2 -- enable Bluetooth after 1 sec
-                if(!bluetoothAdapter.isEnabled()) { bluetoothAdapter.enable(); }
-
-                //Step 3 -- Start BLE scan after 1 sec
-                handler.postDelayed((new Runnable() {
-                    @Override
-                    public void run() {
-
-                        //Step 3 -- Start BLE scan after 1 sec
-                        startBluetoothLeScan(deviceName);
-
-                        //Step 4 -- Stop BLE scan after 10 sec
-                        handler.postDelayed((new Runnable() {
-                            @Override
-                            public void run() {
-                                //debug hss//
-                                Log.d(TAG, "reconnectToTallyDevice :: stop BLE scan reached");
-                                bleScanTurnedOffForNullDevice = false;
-                                if (scanning) { stopBluetoothLeScan(); }
-                                if (!connectedToTallyDevice) {
-                                    parentService.handleConnectToTallyDeviceFailed();
-                                }
-                            }
-                        }), 30000);
-                    }
-
-                }), 1000);
-
-            }
-
-        }), 1000);
-
-        return true;
-
-    }//end of TallyDeviceBluetoothLeConnectionHandler::reconnectToTallyDevice
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -943,7 +861,6 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
 
             //debug hss//
             Log.d(TAG, "GATT_INSUFFICIENT_ENCRYPTION descriptor write");
-            //debug hss//parentHandler.handleDescriptorWriteInsufficientEncryption();
 
         } else if (pStatus == BluetoothGatt.GATT_SUCCESS) {
 
