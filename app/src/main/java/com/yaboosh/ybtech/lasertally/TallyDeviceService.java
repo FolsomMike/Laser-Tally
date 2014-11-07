@@ -171,9 +171,6 @@ public class TallyDeviceService extends Service {
 
     public void handleConnectedToTallyDevice(String pDeviceName) {
 
-        //debug hss//
-        Log.d(TAG, "Handle connectd to tally device");
-
         connectedTallyDeviceName = pDeviceName;
         setState(State.CONNECTED);
 

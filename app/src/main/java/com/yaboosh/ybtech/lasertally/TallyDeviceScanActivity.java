@@ -304,9 +304,9 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
     private void finishActivityAndStartMessageActivity() {
 
         Intent intent = new Intent(this, TallyDeviceConnectionStatusMessageActivity.class);
-        startActivity(intent);
+        //debug hss//startActivity(intent);
 
-        exitActivity();
+        //debug hss//exitActivity();
 
     }//end of TallyDeviceScanActivity::finishActivityAndStart\MessageActivity
     //-----------------------------------------------------------------------------

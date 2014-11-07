@@ -49,18 +49,8 @@
       <file leaf-file-name="TallyDeviceService.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="3706" max-vertical-offset="11339">
-              <caret line="218" column="16" selection-start-line="218" selection-start-column="16" selection-end-line="218" selection-end-column="16" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="JobInfoActivity.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/JobInfoActivity.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="3196" max-vertical-offset="9299">
-              <caret line="188" column="56" selection-start-line="188" selection-start-column="56" selection-end-line="188" selection-end-column="56" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="663" max-vertical-offset="11288">
+              <caret line="39" column="24" selection-start-line="39" selection-start-column="23" selection-end-line="39" selection-end-column="24" />
               <folding />
             </state>
           </provider>
@@ -69,22 +59,75 @@
       <file leaf-file-name="TallyDeviceConnectionStatusMessageActivity.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceConnectionStatusMessageActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="6545" max-vertical-offset="7735">
-              <caret line="385" column="68" selection-start-line="385" selection-start-column="68" selection-end-line="385" selection-end-column="68" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="7344" max-vertical-offset="7735">
+              <caret line="432" column="25" selection-start-line="432" selection-start-column="24" selection-end-line="432" selection-end-column="25" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TallyDeviceBluetoothLeConnectionHandler.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="TallyDeviceBluetoothLeConnectionHandler.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceBluetoothLeConnectionHandler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-6.239161" vertical-offset="11754" max-vertical-offset="14093">
-              <caret line="485" column="0" selection-start-line="485" selection-start-column="0" selection-end-line="485" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="6367" max-vertical-offset="16099">
+              <caret line="402" column="51" selection-start-line="402" selection-start-column="51" selection-end-line="402" selection-end-column="51" />
               <folding>
+                <element signature="e#0#38474#0" expanded="true" />
+                <element signature="imports" expanded="true" />
                 <element signature="e#4430#4459#0" expanded="true" />
                 <element signature="e#4598#4622#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="JobDisplayActivity.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/JobDisplayActivity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="11475" max-vertical-offset="20893">
+              <caret line="718" column="7" selection-start-line="718" selection-start-column="7" selection-end-line="718" selection-end-column="7" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="activity_job_display.xml" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_job_display.xml">
+          <provider editor-type-id="android-designer">
+            <state />
+          </provider>
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="3.3289473" vertical-offset="2790" max-vertical-offset="4114">
+              <caret line="179" column="40" selection-start-line="179" selection-start-column="40" selection-end-line="179" selection-end-column="40" />
+              <folding>
+                <element signature="e#1156#1169#0" expanded="true" />
+                <element signature="e#1595#1622#0" expanded="true" />
+                <element signature="e#2114#2138#0" expanded="true" />
+                <element signature="e#3526#3550#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="activity_create_job.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_create_job.xml">
+          <provider editor-type-id="android-designer">
+            <state />
+          </provider>
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="405.14816" vertical-offset="11177" max-vertical-offset="11849">
+              <caret line="14" column="17" selection-start-line="14" selection-start-column="17" selection-end-line="14" selection-end-column="17" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TallyDeviceScanActivity.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceScanActivity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="5236" max-vertical-offset="10319">
+              <caret line="308" column="21" selection-start-line="308" selection-start-column="21" selection-end-line="308" selection-end-column="21" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -786,15 +829,15 @@
         <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_tally_device_connection_status_message.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_job_info.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/JobInfoActivity.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceScanActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceSimulationConnectionHandler.java" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_job_display.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/JobDisplayActivity.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceService.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/values-sw600dp/refs.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/values-large/refs.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceConnectionStatusMessageActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceService.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceScanActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceBluetoothLeConnectionHandler.java" />
+        <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_job_display.xml" />
       </list>
     </option>
   </component>
@@ -802,10 +845,8 @@
     <treeState />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
-    <option name="width" value="1616" />
-    <option name="height" value="876" />
+    <option name="width" value="1600" />
+    <option name="height" value="860" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -887,6 +928,62 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="LaserTally" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="LaserTally" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="res" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="LaserTally" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="LaserTally" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="res" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="layout" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -1143,7 +1240,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1616" height="876" extended-state="0" />
+    <frame x="0" y="0" width="1600" height="860" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -1156,13 +1253,14 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32969153" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32974428" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32922077" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3287483" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.66890985" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.8021534" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Android" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.8198074" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25194806" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Memory Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32969153" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -1173,7 +1271,6 @@
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32969153" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32974428" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -1201,7 +1298,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="3196" max-vertical-offset="9299">
           <caret line="188" column="56" selection-start-line="188" selection-start-column="56" selection-end-line="188" selection-end-column="56" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1224,6 +1320,8 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="8781" max-vertical-offset="14977">
           <caret line="576" column="42" selection-start-line="576" selection-start-column="42" selection-end-line="576" selection-end-column="42" />
           <folding>
+            <element signature="e#0#38474#0" expanded="true" />
+            <element signature="imports" expanded="true" />
             <element signature="e#4430#4459#0" expanded="true" />
             <element signature="e#4598#4622#0" expanded="true" />
           </folding>
@@ -1300,6 +1398,8 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="1454" max-vertical-offset="12155">
           <caret line="100" column="0" selection-start-line="100" selection-start-column="0" selection-end-line="100" selection-end-column="0" />
           <folding>
+            <element signature="e#0#38474#0" expanded="true" />
+            <element signature="imports" expanded="true" />
             <element signature="e#4430#4459#0" expanded="true" />
             <element signature="e#4598#4622#0" expanded="true" />
           </folding>
@@ -1340,6 +1440,8 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="1454" max-vertical-offset="12155">
           <caret line="100" column="0" selection-start-line="100" selection-start-column="0" selection-end-line="100" selection-end-column="0" />
           <folding>
+            <element signature="e#0#38474#0" expanded="true" />
+            <element signature="imports" expanded="true" />
             <element signature="e#4430#4459#0" expanded="true" />
             <element signature="e#4598#4622#0" expanded="true" />
           </folding>
@@ -1373,6 +1475,8 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="1454" max-vertical-offset="12155">
           <caret line="100" column="0" selection-start-line="100" selection-start-column="0" selection-end-line="100" selection-end-column="0" />
           <folding>
+            <element signature="e#0#38474#0" expanded="true" />
+            <element signature="imports" expanded="true" />
             <element signature="e#4430#4459#0" expanded="true" />
             <element signature="e#4598#4622#0" expanded="true" />
           </folding>
@@ -1406,6 +1510,8 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="221" max-vertical-offset="3706">
           <caret line="39" column="13" selection-start-line="39" selection-start-column="13" selection-end-line="39" selection-end-column="13" />
           <folding>
+            <element signature="e#0#38474#0" expanded="true" />
+            <element signature="imports" expanded="true" />
             <element signature="e#4430#4459#0" expanded="true" />
             <element signature="e#4598#4622#0" expanded="true" />
           </folding>
@@ -1472,16 +1578,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_create_job.xml">
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-8.814815" vertical-offset="0" max-vertical-offset="11849">
-          <caret line="14" column="17" selection-start-line="14" selection-start-column="17" selection-end-line="14" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_tally_device_connection_status_message.xml">
       <provider editor-type-id="android-designer">
         <state />
@@ -1509,23 +1605,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-8.909091" vertical-offset="11376" max-vertical-offset="12036">
           <caret line="698" column="32" selection-start-line="698" selection-start-column="32" selection-end-line="698" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_job_display.xml">
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1555" max-vertical-offset="3553">
-          <caret line="114" column="0" selection-start-line="114" selection-start-column="0" selection-end-line="114" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/JobDisplayActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="11324" max-vertical-offset="21233">
-          <caret line="718" column="7" selection-start-line="718" selection-start-column="7" selection-end-line="718" selection-end-column="7" />
         </state>
       </provider>
     </entry>
@@ -1565,44 +1644,81 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceScanActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="6814" max-vertical-offset="9656">
-          <caret line="452" column="37" selection-start-line="452" selection-start-column="37" selection-end-line="452" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/JobInfoActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="2386" max-vertical-offset="8551">
           <caret line="188" column="56" selection-start-line="188" selection-start-column="56" selection-end-line="188" selection-end-column="56" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceConnectionStatusMessageActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="5348" max-vertical-offset="7072">
-          <caret line="385" column="68" selection-start-line="385" selection-start-column="68" selection-end-line="385" selection-end-column="68" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="7344" max-vertical-offset="7735">
+          <caret line="432" column="25" selection-start-line="432" selection-start-column="24" selection-end-line="432" selection-end-column="25" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="3706" max-vertical-offset="11339">
-          <caret line="218" column="16" selection-start-line="218" selection-start-column="16" selection-end-line="218" selection-end-column="16" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="663" max-vertical-offset="11288">
+          <caret line="39" column="24" selection-start-line="39" selection-start-column="23" selection-end-line="39" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceScanActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="5236" max-vertical-offset="10319">
+          <caret line="308" column="21" selection-start-line="308" selection-start-column="21" selection-end-line="308" selection-end-column="21" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceBluetoothLeConnectionHandler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-6.239161" vertical-offset="11754" max-vertical-offset="14093">
-          <caret line="485" column="0" selection-start-line="485" selection-start-column="0" selection-end-line="485" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="6367" max-vertical-offset="16099">
+          <caret line="402" column="51" selection-start-line="402" selection-start-column="51" selection-end-line="402" selection-end-column="51" />
           <folding>
+            <element signature="e#0#38474#0" expanded="true" />
+            <element signature="imports" expanded="true" />
             <element signature="e#4430#4459#0" expanded="true" />
             <element signature="e#4598#4622#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/JobDisplayActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="11475" max-vertical-offset="20893">
+          <caret line="718" column="7" selection-start-line="718" selection-start-column="7" selection-end-line="718" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_create_job.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="405.14816" vertical-offset="11177" max-vertical-offset="11849">
+          <caret line="14" column="17" selection-start-line="14" selection-start-column="17" selection-end-line="14" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_job_display.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="3.3289473" vertical-offset="2790" max-vertical-offset="4114">
+          <caret line="179" column="40" selection-start-line="179" selection-start-column="40" selection-end-line="179" selection-end-column="40" />
+          <folding>
+            <element signature="e#1156#1169#0" expanded="true" />
+            <element signature="e#1595#1622#0" expanded="true" />
+            <element signature="e#2114#2138#0" expanded="true" />
+            <element signature="e#3526#3550#0" expanded="true" />
           </folding>
         </state>
       </provider>
