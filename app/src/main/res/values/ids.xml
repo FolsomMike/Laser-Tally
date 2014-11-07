@@ -25,6 +25,8 @@
     <item type="id" name="checkBoxRenumberAllBelow" />
     <item type="id" name="tallyDeviceScanDeviceNamesListView" />
     <item type="id" name="tallyDeviceScanNoDevicesFoundTextView" />
+    <item type="id" name="editJobInfoActivityTitleTextView" />
+    <item type="id" name="editJobInfoMenuButton" />
     <item type="id" name="editTextCompanyName" />
     <item type="id" name="editTextDiameter" />
     <item type="id" name="editTextFacility" />
@@ -35,9 +37,9 @@
     <item type="id" name="editTextRack" />
     <item type="id" name="editTextRange" />
     <item type="id" name="editTextRig" />
+    <item type="id" name="editTextTallyGoal" />
     <item type="id" name="editTextTotalLength" />
     <item type="id" name="editTextWall" />
-    <item type="id" name="jobInfoActivityTitleTextView" />
     <item type="id" name="jobInfoCancelButton" />
     <item type="id" name="jobNameAlreadyExistsTextView" />
     <item type="id" name="jobNamesListView" />

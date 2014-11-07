@@ -24,7 +24,6 @@
         android:paddingTop="0dp" >
 
         <TextView
-            android:id="@id/jobInfoActivityTitleTextView"
             android:gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"

@@ -773,9 +773,11 @@ public class JobDisplayActivity extends Activity {
 
     public void handleJobInfoButtonPressed(View pView) {
 
-        Intent intent = new Intent(this, JobInfoActivity.class);
+        Intent intent = new Intent(this, EditJobInfoActivity.class);
         intent.putExtra(Keys.JOB_KEY,
                             ((TextView)findViewById(R.id.jobTitleTextView)).getText().toString());
+        intent.putExtra(Keys.EDIT_JOB_INFO_ACTIVITY_MODE_KEY,
+                                        EditJobInfoActivity.EditJobInfoActivityMode.EDIT_JOB_INFO);
         startActivityForResult(intent, Keys.ACTIVITY_RESULT_JOB_INFO);
 
     }//end of JobDisplayActivity::handleJobInfoButtonPressed

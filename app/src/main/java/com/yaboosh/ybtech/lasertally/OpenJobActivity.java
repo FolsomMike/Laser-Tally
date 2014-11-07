@@ -257,11 +257,7 @@ public class OpenJobActivity extends Activity {
             File jobsDir = getDir("jobsDir", Context.MODE_PRIVATE);
 
             File[] files = jobsDir.listFiles();
-            for (File f : files) {
-                if (f.isDirectory()) {
-                    storeJob(f.getName());
-                }
-            }
+            for (File f : files) { if (f.isDirectory()) { storeJob(f.getName()); } }
 
         } catch (Exception e) {}
 

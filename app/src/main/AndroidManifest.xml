@@ -21,20 +21,13 @@
         android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
 
         <activity
-            android:name=".CreateJobActivity"
-            android:screenOrientation="landscape"
-            android:label="@string/title_activity_create_job"
-            android:theme="@style/activityDialog" >
-        </activity>
-
-        <activity
             android:name=".JobDisplayActivity"
             android:screenOrientation="landscape"
             android:label="@string/title_activity_job_info" >
         </activity>
 
         <activity
-            android:name=".JobInfoActivity"
+            android:name=".EditJobInfoActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_job_info"
             android:theme="@style/activityDialog" >
