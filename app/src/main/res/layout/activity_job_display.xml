@@ -175,27 +175,62 @@
                 </TableRow>
             </TableLayout>
 
-            <ScrollView
+            <RelativeLayout
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:scrollbars="vertical"
-                android:fadeScrollbars="false" >
+                android:layout_height="fill_parent">
 
                 <TableLayout
-                    android:id = "@+id/measurementsTable"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/measurementsTableColor"
-                    android:padding="0dp" >
+                    android:layout_alignParentBottom="true"
+                    android:padding="0dp"
+                    android:background="#000000">
+                    <TableRow>
 
-                    <View
-                        android:id="@id/measurementsTableBottomBorderLine"
-                        android:visibility="gone"
-                        style="@style/measurementsTableBottomBorderLine" />
+                        <View style="@style/tableSideBorderLine" />
 
+                        <TextView
+                            android:text="Total"
+                            style="@style/headerTableColumn"
+                            />
+
+                        <View style="@style/headerTableColumnDivider" />
+
+                        <TextView style="@style/headerTableColumn" />
+
+                        <View style="@style/headerTableColumnDivider" />
+
+                        <TextView style="@style/headerTableColumn" />
+
+                        <View style="@style/tableSideBorderLine" />
+
+                    </TableRow>
                 </TableLayout>
 
-            </ScrollView>
+                <ScrollView
+                    android:layout_width="fill_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight=".85"
+                    android:scrollbars="vertical"
+                    android:fadeScrollbars="false" >
+
+                    <TableLayout
+                        android:id = "@+id/measurementsTable"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/measurementsTableColor"
+                        android:padding="0dp" >
+
+                        <View
+                            android:id="@id/measurementsTableBottomBorderLine"
+                            android:visibility="gone"
+                            style="@style/measurementsTableBottomBorderLine" />
+
+                    </TableLayout>
+
+                </ScrollView>
+
+            </RelativeLayout>
 
         </LinearLayout>
 
