@@ -32,12 +32,14 @@ import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -51,6 +53,8 @@ public class JobDisplayActivity extends Activity {
     private View decorView;
     private int uiOptions;
 
+    private Handler handler = new Handler();
+
     Button measureConnectButton;
     Button redoButton;
 
@@ -63,9 +67,14 @@ public class JobDisplayActivity extends Activity {
 
     final String connectButtonText = "connect";
     final String measureButtonText = "measure";
+    final String noValueString = "No Value";
 
     private DecimalFormat tallyFormat = new DecimalFormat("#.##");
-    private float protectorMakeupValue = 0;
+    private float adjustmentValue = 0;
+    private float tallyGoal;
+
+    private ArrayList<String> adjustedValues = new ArrayList<String>();
+    private ArrayList<String> totalLengthValues = new ArrayList<String>();
 
     private TableRow lastRowEdited;
 
@@ -118,15 +127,8 @@ public class JobDisplayActivity extends Activity {
         if (bundle.getBoolean(Keys.JOB_INFO_INCLUDED_KEY, false)) {
 
             setJobTitle(bundle.getString(Keys.JOB_KEY));
-            String newMakeupAdjustmentValue = bundle.getString(Keys.MAKEUP_ADJUSTMENT_KEY);
-
-            // Checks to see if the new value is not
-            // empty; prevents parseFloat from
-            // giving an error if there is no
-            // float in the string.
-            if (!newMakeupAdjustmentValue.equals("")) {
-                protectorMakeupValue = Float.parseFloat(newMakeupAdjustmentValue);
-            }
+            setAdjustmentValue(bundle.getString(Keys.ADJUSTMENT_KEY));
+            setTallyGoal(bundle.getString(Keys.TALLY_GOAL_KEY));
 
         }
 
@@ -170,6 +172,9 @@ public class JobDisplayActivity extends Activity {
         decorView.setSystemUiVisibility(uiOptions);
 
         bindService(serviceIntent, connection, BIND_AUTO_CREATE);
+
+        //hss wip// -- should load values from file
+        setAndCheckTotalColumnsOfTotalLengthAndAdjustedColumns();
 
     }//end of JobDisplayActivity::onResume
     //-----------------------------------------------------------------------------
@@ -219,7 +224,8 @@ public class JobDisplayActivity extends Activity {
 
             if (pResultCode == RESULT_OK) {
                 handleJobInfoActivityResultOk(pData.getStringExtra(Keys.JOB_KEY),
-                            pData.getStringExtra(Keys.MAKEUP_ADJUSTMENT_KEY));
+                                                    pData.getStringExtra(Keys.ADJUSTMENT_KEY),
+                                                    pData.getStringExtra(Keys.TALLY_GOAL_KEY));
             }
             else if (pResultCode == RESULT_CANCELED) {
                 handleJobInfoActivityResultCancel();
@@ -335,11 +341,42 @@ public class JobDisplayActivity extends Activity {
     private void calculateAndSetAdjustedValueOfRow(TableRow pR, String pTotalLength) {
 
         float totalLength = Float.parseFloat(pTotalLength);
-        float adjustedValue = totalLength - protectorMakeupValue;
+        float adjustedValue = totalLength - adjustmentValue;
 
         (getAdjustedColumnOfRow(pR)).setText(tallyFormat.format(adjustedValue));
 
     }//end of JobDisplayActivity::calculateAndSetAdjustedValueOfRow
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobDisplayActivity::checkTotal
+    //
+    // Check to see if the total of the adjusted values is equal to or greater
+    // than the tally goal.
+    //
+    // If the total is equal or greater, set the background color of the totals
+    // table to green.
+    // If the total is below, set the background color of the totals table back
+    // its original color.
+    //
+
+    private void checkTallyGoal() {
+
+        Float totalOfAdjustedValues = Float.parseFloat(getTotalOfAdjustedValues());
+        TableLayout totalsTable = (TableLayout) findViewById(R.id.totalsTable);
+
+        //hss wip//
+
+        if (totalOfAdjustedValues < tallyGoal) {
+            Log.d(TAG, "Total of Adjusted Values is less than tally goal");
+            totalsTable.setBackgroundColor(Color.parseColor("#000000"));
+        }
+        else if (totalOfAdjustedValues >= tallyGoal) {
+            Log.d(TAG, "Total of Adjusted Values is greater than or equal to tally goal");
+            totalsTable.setBackgroundColor(Color.parseColor("#33CC33"));
+        }
+
+    }//end of JobDisplayActivity::checkTotal
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -539,30 +576,6 @@ public class JobDisplayActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobDisplayActivity::getPositionOfRow
-    //
-    // Returns the position of the passed in row in the measurementsTable.
-    //
-
-    private int getPositionOfRow(TableRow pR) {
-
-        // For each child in the row, get a pointer
-        // to the row and compare it to the passed
-        // in row.
-        for (int i=0; i<measurementsTable.getChildCount(); i++) {
-
-            if (measurementsTable.getChildAt(i) == pR) {
-                return i;
-            }
-
-        }
-
-        return 0;
-
-    }//end of JobDisplayActivity::getChildPositionOfRow
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
     // JobDisplayActivity::getDividerCountAndPositions
     //
     // Gets the number of dividers and each of their positions in the measurements
@@ -591,6 +604,33 @@ public class JobDisplayActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // JobDisplayActivity::getNextPipeNumber
+    //
+    // Determines what the pipe number of the next row will be and returns that
+    // value as a string
+    //
+
+    private String getNextPipeNumber() {
+
+        // Get the row count and each of their positions
+        SparseIntArray rowAndPos = getRowCountAndPositions();
+
+        // Check to see if the row count is greater than 1
+        // If it is greater than 1, then pipeNumInt is set
+        // to the pipe number found in the last row. If
+        // not, then the pipeNumInt remains equal to 1.
+        int pipeNumInt = rowAndPos.size() + 1;
+        if (pipeNumInt > 1) {
+            TableRow tR = (TableRow) measurementsTable.getChildAt(rowAndPos.get(rowAndPos.size()));
+            pipeNumInt = Integer.parseInt(getPipeNumberColValueOfRow(tR)) + 1;
+        }
+
+        return Integer.toString(pipeNumInt);
+
+    }//end of JobDisplayActivity::getNextPipeNumber
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // JobDisplayActivity::getPipeNumberColValueOfRow
     //
     // Returns the value under the Pipe # column in the passed in row.
@@ -614,6 +654,30 @@ public class JobDisplayActivity extends Activity {
         return pipeNum;
 
     }//end of JobDisplayActivity::getPipeNumberColValueOfRow
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobDisplayActivity::getPositionOfRow
+    //
+    // Returns the position of the passed in row in the measurementsTable.
+    //
+
+    private int getPositionOfRow(TableRow pR) {
+
+        // For each child in the row, get a pointer
+        // to the row and compare it to the passed
+        // in row.
+        for (int i=0; i<measurementsTable.getChildCount(); i++) {
+
+            if (measurementsTable.getChildAt(i) == pR) {
+                return i;
+            }
+
+        }
+
+        return 0;
+
+    }//end of JobDisplayActivity::getPositionOfRow
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -668,6 +732,43 @@ public class JobDisplayActivity extends Activity {
         return actual;
 
     }//end of JobDisplayActivity::getTotalLengthColValueOfRow
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobDisplayActivity::getTotalOfAdjustedValues
+    //
+    // Calculates and returns the total of the Adjusted values in the form of a
+    // string.
+    //
+
+    private String getTotalOfAdjustedValues() {
+
+        float totalOfAdjustedValues = 0;
+        for (String val : adjustedValues) {
+            if (val.equals(noValueString)) { continue; }
+            totalOfAdjustedValues = totalOfAdjustedValues + Float.parseFloat(val);
+        }
+        return tallyFormat.format(totalOfAdjustedValues);
+
+    }//end of JobDisplayActivity::getTotalOfAdjustedValues
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobDisplayActivity::getTotalOfTotalLengthValues
+    //
+    // Calculates and returns the total of the Total Length values in the form of a
+    // string.
+    //
+
+    private String getTotalOfTotalLengthValues() {
+
+        float totalOfTotalLengthValues = 0;
+        for (String val : totalLengthValues) {
+            totalOfTotalLengthValues = totalOfTotalLengthValues + Float.parseFloat(val);
+        }
+        return tallyFormat.format(totalOfTotalLengthValues);
+
+    }//end of JobDisplayActivity::getTotalOfTotalLengthValues
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -742,11 +843,13 @@ public class JobDisplayActivity extends Activity {
     // using the passed in protector/makeup adjustment value.
     //
 
-    private void handleJobInfoActivityResultOk(String pJob, String pProtectorMakeupValue) {
+    private void handleJobInfoActivityResultOk(String pJob, String pAdjustmentValue,
+                                                                                String pTallyGoal) {
 
         setJobTitle(pJob);
-        if (pProtectorMakeupValue.equals("")) { return; }
-        setValuesOfAdjustedColumns(Float.parseFloat(pProtectorMakeupValue));
+        setAdjustmentValue(pAdjustmentValue);
+        setTallyGoal(pTallyGoal);
+        setAndCheckTotalColumnsOfTotalLengthAndAdjustedColumns();
 
     }//end of JobDisplayActivity::handleJobInfoActivityResultOk
     //-----------------------------------------------------------------------------
@@ -773,9 +876,11 @@ public class JobDisplayActivity extends Activity {
 
     public void handleJobInfoButtonPressed(View pView) {
 
-        Intent intent = new Intent(this, JobInfoActivity.class);
+        Intent intent = new Intent(this, EditJobInfoActivity.class);
         intent.putExtra(Keys.JOB_KEY,
                             ((TextView)findViewById(R.id.jobTitleTextView)).getText().toString());
+        intent.putExtra(Keys.EDIT_JOB_INFO_ACTIVITY_MODE_KEY,
+                                        EditJobInfoActivity.EditJobInfoActivityMode.EDIT_JOB_INFO);
         startActivityForResult(intent, Keys.ACTIVITY_RESULT_JOB_INFO);
 
     }//end of JobDisplayActivity::handleJobInfoButtonPressed
@@ -825,37 +930,30 @@ public class JobDisplayActivity extends Activity {
         //debug hss//
         Log.d(TAG, "handleNewDistanceValue");
 
-        String adjustedValueString = "No Value";
-        if (protectorMakeupValue != 0) {
-            float adjustedValue = Float.parseFloat(pDistanceValue) - protectorMakeupValue;
-            adjustedValueString = tallyFormat.format(adjustedValue);
-        }
+        // Calculate the adjusted value
+        float adjustedValue = Float.parseFloat(pDistanceValue) - adjustmentValue;
+        String adjustedValueString = tallyFormat.format(adjustedValue);
 
         View measurementsTableBottomBorderLine = findViewById(R.id.measurementsTableBottomBorderLine);
 
+        // Remove the bottom border line of the table
+        // It should be put back after the next row has
+        // has been added.
         measurementsTable.removeView(measurementsTableBottomBorderLine);
 
-        // Get the row count and each of their positions
-        SparseIntArray rowAndPos = getRowCountAndPositions();
-        // Check to see if the row count is greater than 1
-        // If it is greater than 1, then pipeNumInt is set
-        //  to the pipe number found in the last row. If
-        // not, then the pipeNumInt remains equal to 1.
-        int pipeNumInt = rowAndPos.size() + 1;
-        if (pipeNumInt > 1) {
-            TableRow tR = (TableRow) measurementsTable.getChildAt(rowAndPos.get(rowAndPos.size()));
-            pipeNumInt = Integer.parseInt(getPipeNumberColValueOfRow(tR)) + 1;
-        }
-
-        String pipeNumString = Integer.toString(pipeNumInt);
-
-        measurementsTable.addView(createNewRow(pipeNumString,
-                pDistanceValue,
-                adjustedValueString));
+        measurementsTable.addView(createNewRow(getNextPipeNumber(), pDistanceValue, adjustedValueString));
         measurementsTable.addView(createNewRowDivider());
 
         measurementsTableBottomBorderLine.setVisibility(View.VISIBLE);
         measurementsTable.addView(measurementsTableBottomBorderLine);
+
+        scrollToBottomOfMeasurementsTable();
+
+        //Add the total length and adjusted values to their appropriate lists and
+        //set the totals columns
+        totalLengthValues.add(pDistanceValue);
+        adjustedValues.add(adjustedValueString);
+        setAndCheckTotalColumnsOfTotalLengthAndAdjustedColumns();
 
         //enable the measureConnect and redo buttons
         //so that the user can use them now that the
@@ -889,6 +987,17 @@ public class JobDisplayActivity extends Activity {
         if (divCount <= 0) { return; }
         // Get the position of the last row divider found and remove it from the table
         measurementsTable.removeView(measurementsTable.getChildAt(dividerAndPosition.get(divCount)));
+
+        //Remove the last added Total Length and Adjusted values
+        //from their lists and set the total columns
+        adjustedValues.remove(adjustedValues.size() - 1);
+        totalLengthValues.remove(totalLengthValues.size() - 1);
+        setAndCheckTotalColumnsOfTotalLengthAndAdjustedColumns();
+
+        //Check to see if the adjusted values total matches the tally goal
+        checkTallyGoal();
+
+        scrollToBottomOfMeasurementsTable();
 
     }//end of JobDisplayActivity::handleRedoButtonPressed
     //-----------------------------------------------------------------------------
@@ -999,6 +1108,27 @@ public class JobDisplayActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // JobDisplayActivity::scrollToBottomOfMeasurementsTable
+    //
+    // Scrolls the ScrollView containing the measurements table all the way to the
+    // bottom.
+    //
+
+    private void scrollToBottomOfMeasurementsTable() {
+
+        final ScrollView sv = (ScrollView)findViewById(R.id.measurementsTableScrollView);
+
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                sv.fullScroll(View.FOCUS_DOWN);
+            }
+        });
+
+    }//end of JobDisplayActivity::scrollToBottomOfMeasurementsTable
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // JobDisplayActivity::sendMeasureCommandToTallyDevice
     //
     // Sends a message to the tally device service to send the measuring command
@@ -1022,6 +1152,51 @@ public class JobDisplayActivity extends Activity {
         setRedoButtonEnabled(false);
 
     }//end of JobDisplayActivity::sendMeasureCommandToTallyDevice
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobDisplayActivity::setAdjustmentValue
+    //
+    // Sets the adjustment value to the passed in variable and sets the values of
+    // the adjusted columns
+    //
+    // The adjustment value is set to 0 if the string is empty.
+    //
+
+    private void setAdjustmentValue(String pNewAdjustmentValue) {
+
+        if (pNewAdjustmentValue.equals("")) { adjustmentValue = 0; }
+        else {
+            adjustmentValue = Float.parseFloat(pNewAdjustmentValue);
+        }
+
+        setValuesOfAdjustedColumns();
+
+    }//end of JobDisplayActivity::setAdjustmentValue
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobDisplayActivity::setAndCheckTotalColumnsOfTotalLengthAndAdjustedColumns
+    //
+    // Sets the total columns to the totals of the Adjusted and Total Length columns
+    // and checks to see if the tally goal is connected.
+    //
+
+    private void setAndCheckTotalColumnsOfTotalLengthAndAdjustedColumns() {
+
+        // Set the total of the Adjusted column
+        String totalOfAdjustedValuesStrings = getTotalOfAdjustedValues();
+        TextView adjustedTotalTextView = (TextView)findViewById(R.id.totalOfAdjustedColumnTextView);
+        adjustedTotalTextView.setText(totalOfAdjustedValuesStrings);
+
+        // Set the total of the Total Length column
+        String totalOfTotalLengthsString = getTotalOfTotalLengthValues();
+        TextView totalLengthTotalTextView = (TextView)findViewById(R.id.totalOfTotalLengthColumnTextView);
+        totalLengthTotalTextView.setText(totalOfTotalLengthsString);
+
+        checkTallyGoal();
+
+    }//end of JobDisplayActivity::setAndCheckTotalColumnsOfTotalLengthAndAdjustedColumns
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -1109,6 +1284,28 @@ public class JobDisplayActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // JobDisplayActivity::setTallyGoal
+    //
+    // Sets the tally goal to the passed in variable.
+    //
+    // The tally goal is set to Float.MAX_VALUE if the string is empty.
+    //
+
+    private void setTallyGoal(String pNewTallyGoal) {
+
+        if (pNewTallyGoal.equals("") || Float.parseFloat(pNewTallyGoal) == 0) {
+            tallyGoal = Float.MAX_VALUE;
+            return;
+        }
+        tallyGoal = Float.parseFloat(tallyFormat.format(Float.parseFloat(pNewTallyGoal)));
+
+        //debug hss//
+        Log.d(TAG, "tallyGoal float value: " + tallyGoal);
+
+    }//end of JobDisplayActivity::setTallyGoal
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // JobDisplayActivity::setTotalLengthOfRow
     //
     // Sets the value under the Total Length column in the passed in row to the
@@ -1136,18 +1333,16 @@ public class JobDisplayActivity extends Activity {
     //-----------------------------------------------------------------------------
     // JobDisplayActivity::setValuesOfAdjustedColumns
     //
-    // If the passed in protector/makeup value is not the same as the old one, the
-    // Adjusted columns are set using the passed in float.
+    // Calculates and sets the values of all the rows in the Adjusted column.
     //
     // Each Adjusted column's value is determined by subtracting the passed in
     // float from the Total Length column in the corresponding row.
     //
 
-    private void setValuesOfAdjustedColumns(float pNewProtectorMakeupValue) {
+    private void setValuesOfAdjustedColumns() {
 
-        if (pNewProtectorMakeupValue == protectorMakeupValue) { return; }
-
-        protectorMakeupValue = pNewProtectorMakeupValue;
+        //Clear the old adjusted values
+        adjustedValues.clear();
 
         for (int i=0; i<measurementsTable.getChildCount(); i++) {
 
@@ -1156,8 +1351,11 @@ public class JobDisplayActivity extends Activity {
             if (!(v instanceof TableRow)) { continue; }
 
             float totalLength = Float.parseFloat(getTotalLengthColValueOfRow((TableRow)v));
-            float adjustedValue = totalLength - protectorMakeupValue;
-            (getAdjustedColumnOfRow((TableRow)v)).setText(tallyFormat.format(adjustedValue));
+            float adjustedValue = totalLength - adjustmentValue;
+
+            String adjustedValueString = tallyFormat.format(adjustedValue);
+            adjustedValues.add(adjustedValueString);
+            (getAdjustedColumnOfRow((TableRow)v)).setText(adjustedValueString);
 
         }
 

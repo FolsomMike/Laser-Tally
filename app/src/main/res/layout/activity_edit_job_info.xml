@@ -1,3 +1,5 @@
+<!-- This activity can be used for both creating a job and editing the job info -->
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_content"
@@ -9,56 +11,67 @@
     android:paddingLeft="0dp"
     android:paddingRight="0dp"
     android:paddingTop="0dp"
-    tools:context="com.yaboosh.ybtech.lasertally.CreateJobActivity"
+    tools:context="com.yaboosh.ybtech.lasertally.EditJobInfoActivity"
     android:gravity="center" >
 
     <LinearLayout
-        android:orientation="horizontal"
+        android:background="#1A1A1A"
+        android:gravity="center"
         android:layout_width="fill_parent"
         android:layout_height="70dp"
+        android:orientation="horizontal"
         android:paddingBottom="0dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:paddingTop="0dp"
-        android:background="#1A1A1A" >
+        android:paddingTop="5dp" >
 
-        <LinearLayout
-            android:background="#1A1A1A"
+        <TextView
+            android:id="@id/editJobInfoActivityTitleTextView"
             android:gravity="center"
-            android:layout_width="fill_parent"
-            android:layout_height="70dp"
-            android:orientation="horizontal"
-            android:paddingBottom="0dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:paddingTop="0dp" >
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:padding="0dp"
+            android:textColor="#B2B2B2"
+            android:textSize="40sp" />
 
-            <TextView
-                android:id="@id/jobInfoActivityTitleTextView"
-                android:gravity="center"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:padding="0dp"
-                android:textColor="#B2B2B2"
-                android:text="Create Job"
-                android:textSize="40sp" />
+        <!-- horizontal spacer -->
+        <View
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="1dp" >
+        </View>
 
-            <!-- horizontal spacer -->
-            <View
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="1dp" >
-            </View>
+        <Button
+            android:id="@id/editJobInfoMenuButton"
+            android:background="@drawable/white_styled_button"
+            android:gravity="center"
+            android:layout_width="125dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="0dp"
+            android:paddingBottom="5dp"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:paddingTop="0dp"
+            android:text="menu"
+            android:textSize="30sp"
+            android:visibility="invisible"
+            style="@style/whiteStyledButton"
+            android:onClick="handleMenuButtonPressed" />
 
-            <Button
-                android:id="@id/tableRowEditorRedXButton"
-                android:background="@drawable/close_x_button"
-                android:gravity="center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="handleRedXButtonPressed"/>
+        <!-- horizontal spacer -->
+        <View
+            android:layout_width="30dp"
+            android:layout_height="1dp" >
+        </View>
 
-        </LinearLayout>
+        <Button
+            android:id="@id/tableRowEditorRedXButton"
+            android:background="@drawable/close_x_button"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="handleRedXButtonPressed"/>
+
     </LinearLayout>
 
     <ScrollView
@@ -92,15 +105,15 @@
                 android:padding="0dp" >
             </View>
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="0dp"
-            android:paddingLeft="0dp"
-            android:paddingRight="0dp"
-            android:paddingTop="0dp"
-            android:gravity="center" >
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="0dp"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                android:paddingTop="0dp"
+                android:gravity="center" >
 
                 <TextView
                     android:id="@id/jobNameAlreadyExistsTextView"
@@ -175,6 +188,58 @@
                     </EditText>
 
                 </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- vertical spacer -->
+            <View
+                android:layout_width="1dp"
+                android:layout_height="20dp"
+                android:padding="0dp" >
+            </View>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="0dp"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                android:paddingTop="0dp"
+                android:gravity="center" >
+
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Tally Goal:"
+                    android:textColor="#000000"
+                    android:textSize="40sp"
+                    android:gravity="end" />
+
+                <!-- horizontal spacer -->
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="1dp" >
+                </View>
+
+                <EditText
+                    android:id="@id/editTextTallyGoal"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/black_border"
+                    android:digits="0123456789,."
+                    android:inputType="number"
+                    android:maxLength="30"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="10dp"
+                    android:selectAllOnFocus="true"
+                    android:textColor="#000000"
+                    android:textSize="35sp" >
+                </EditText>
 
             </LinearLayout>
 
@@ -274,14 +339,14 @@
 
                 <EditText
                     android:id="@id/editTextProtectorMakeupAdjustment"
+                    android:inputType="number"
+                    android:digits="0123456789,."
                     android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:digits="0123456789.,"
-                    android:maxLength="4"
                     android:textColor="#000000"
                     android:textSize="35sp"
+                    android:maxLength="5"
                     android:paddingBottom="10dp"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
@@ -658,6 +723,7 @@
         android:background="#1A1A1A" >
 
         <Button
+            android:id="@id/jobInfoCancelButton"
             android:background="@drawable/white_styled_button"
             android:layout_width="125dp"
             android:layout_height="wrap_content"
@@ -669,6 +735,7 @@
             android:onClick="handleCancelButtonPressed" />
 
         <!-- horizontal spacer -->
+
         <View
             android:layout_width="60dp"
             android:layout_height="1dp" >
@@ -676,16 +743,16 @@
 
         <Button
             android:id="@id/okButton"
-            android:background="@drawable/white_styled_button"
             android:layout_width="125dp"
             android:layout_height="wrap_content"
+            android:background="@drawable/white_styled_button"
+            android:enabled="false"
+            android:onClick="handleOkButtonPressed"
             android:paddingBottom="5dp"
             android:paddingTop="5dp"
             android:text="ok"
             android:textSize="30sp"
-            android:enabled="false"
-            style="@style/disabledStyledButton"
-            android:onClick="handleOkButtonPressed" />
+            style="@style/disabledStyledButton" />
 
     </LinearLayout>
 

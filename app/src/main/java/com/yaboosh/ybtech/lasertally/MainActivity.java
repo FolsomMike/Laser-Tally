@@ -186,18 +186,20 @@ public class MainActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MainActivity::handleCreateANewJobButtonPressed
+    // MainActivity::handleCreateNewJobButtonPressed
     //
     // Starts an activity for Job Info.
     // Should be called from the "Create new job." button onClick().
     //
 
-    public void handleCreateANewJobButtonPressed(View pView) {
+    public void handleCreateNewJobButtonPressed(View pView) {
 
-        Intent intent = new Intent(this, CreateJobActivity.class);
+        Intent intent = new Intent(this, EditJobInfoActivity.class);
+        intent.putExtra(Keys.EDIT_JOB_INFO_ACTIVITY_MODE_KEY,
+                                            EditJobInfoActivity.EditJobInfoActivityMode.CREATE_JOB);
         startActivity(intent);
 
-    }//end of MainActivity::handleCreateANewJobButtonPressed
+    }//end of MainActivity::handleCreateNewJobButtonPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

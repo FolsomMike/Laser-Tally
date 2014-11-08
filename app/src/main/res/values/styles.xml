@@ -98,9 +98,30 @@
     </style>
 
     <!-- Table Bottom Border Line - simple line used as a bottom border -->
-    <style name="measurementsTableBottomBorderLine">
+    <style name="tableBottomBorderLine">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1.5dp</item>
+        <item name="android:background">@color/tableBottomBorderLineColor</item>
+    </style>
+
+    <!-- Table Top Border Line - simple line used as a top border -->
+    <style name="tableTopBorderLine">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1.5dp</item>
+        <item name="android:background">@color/tableBottomBorderLineColor</item>
+    </style>
+
+    <!-- Table Bottom Border Line Thick - simple thick line used as a bottom border -->
+    <style name="tableBottomBorderLineThick">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">3.0dp</item>
+        <item name="android:background">@color/tableBottomBorderLineColor</item>
+    </style>
+
+    <!-- Table Top Border Line Thick - simple thick line used as a top border -->
+    <style name="tableTopBorderLineThick">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">3.0dp</item>
         <item name="android:background">@color/tableBottomBorderLineColor</item>
     </style>
 

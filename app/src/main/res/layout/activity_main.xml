@@ -15,7 +15,7 @@
             android:text="create new job"
             android:textSize="30sp"
             style="@style/whiteStyledButton"
-            android:onClick="handleCreateANewJobButtonPressed" />
+            android:onClick="handleCreateNewJobButtonPressed" />
 
         <!-- vertical spacer -->
         <View
