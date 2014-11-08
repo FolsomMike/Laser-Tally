@@ -61,7 +61,6 @@ public class EditJobInfoActivity extends Activity {
 
     private String activityMode;
     private Intent intent;
-    private boolean startActivityUsingIntent;
 
     private String activityPurposeCreateJobTitle = "Create Job";
     private String activityPurposeEditJobInfoTitle = "Edit Job";
@@ -218,14 +217,12 @@ public class EditJobInfoActivity extends Activity {
             menuButton.setVisibility(View.INVISIBLE);
             enableOkButton(false);
             intent = new Intent(this, JobDisplayActivity.class);
-            startActivityUsingIntent = true;
         }
         else if (activityMode.equals(EditJobInfoActivityMode.EDIT_JOB_INFO)) {
             titleTextView.setText(activityPurposeEditJobInfoTitle);
             menuButton.setVisibility(View.VISIBLE);
             enableOkButton(true);
             intent = new Intent();
-            startActivityUsingIntent = false;
             getJobInfoFromFile();
         }
 
@@ -350,7 +347,7 @@ public class EditJobInfoActivity extends Activity {
         intent.putExtra(Keys.FACILITY_KEY, facility);
         intent.putExtra(Keys.GRADE_KEY,  grade);
         intent.putExtra(Keys.JOB_KEY, job);
-        intent.putExtra(Keys.MAKEUP_ADJUSTMENT_KEY, makeupAdjustment);
+        intent.putExtra(Keys.ADJUSTMENT_KEY, makeupAdjustment);
         intent.putExtra(Keys.RACK_KEY, rack);
         intent.putExtra(Keys.RANGE_KEY, range);
         intent.putExtra(Keys.RIG_KEY, rig);
@@ -359,7 +356,7 @@ public class EditJobInfoActivity extends Activity {
 
         setResult(Activity.RESULT_OK, intent);
 
-        if (startActivityUsingIntent) {
+        if (activityMode.equals(EditJobInfoActivityMode.CREATE_JOB)) {
             intent.putExtra(Keys.JOB_INFO_INCLUDED_KEY, true);
             startActivity(intent);
         }
@@ -384,7 +381,8 @@ public class EditJobInfoActivity extends Activity {
         job = ((EditText) findViewById(R.id.editTextJob)).getText().toString();
 
         makeupAdjustment = ((EditText)findViewById(R.id.editTextProtectorMakeupAdjustment)).getText().toString();
-        if (!(makeupAdjustment.equals(""))) {
+        if ((makeupAdjustment.equals(""))) { makeupAdjustment = tallyFormat.format(0); }
+        else {
             Float tempAdjFloat = Float.parseFloat(((EditText) findViewById
                                     (R.id.editTextProtectorMakeupAdjustment)).getText().toString());
             makeupAdjustment = tallyFormat.format(tempAdjFloat);

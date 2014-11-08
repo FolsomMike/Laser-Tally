@@ -67,6 +67,7 @@ public class OpenJobActivity extends Activity {
     private String rack;
     private String range;
     private String rig;
+    private String tallyGoal;
     private String wall;
 
     //-----------------------------------------------------------------------------
@@ -312,6 +313,7 @@ public class OpenJobActivity extends Activity {
         rack = Tools.getValueFromList("Rack", fileLines);
         range = Tools.getValueFromList("Range", fileLines);
         rig = Tools.getValueFromList("Rig", fileLines);
+        tallyGoal = Tools.getValueFromList("Tally Goal", fileLines);
         wall = Tools.getValueFromList("Wall", fileLines);
 
     }//end of OpenJobActivity::getJobInfoFromFile
@@ -338,10 +340,11 @@ public class OpenJobActivity extends Activity {
         intent.putExtra(Keys.FACILITY_KEY, facility);
         intent.putExtra(Keys.GRADE_KEY,  grade);
         intent.putExtra(Keys.JOB_KEY, job);
-        intent.putExtra(Keys.MAKEUP_ADJUSTMENT_KEY, makeupAdjustment);
+        intent.putExtra(Keys.ADJUSTMENT_KEY, makeupAdjustment);
         intent.putExtra(Keys.RACK_KEY, rack);
         intent.putExtra(Keys.RANGE_KEY, range);
         intent.putExtra(Keys.RIG_KEY, rig);
+        intent.putExtra(Keys.TALLY_GOAL_KEY, tallyGoal);
         intent.putExtra(Keys.WALL_KEY, wall);
 
         startActivity(intent);

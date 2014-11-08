@@ -15,6 +15,8 @@
     <item type="id" name="measureConnectButton" />
     <item type="id" name="redoButton" />
     <item type="id" name="deviceList" />
+    <item type="id" name="tableBottomBorderLine" />
+    <item type="id" name="tableTopBorderLine" />
     <item type="id" name="measurementsTableBottomBorderLine" />
     <item type="id" name="measurementsTableColumnPipeNum" />
     <item type="id" name="measurementsTableColumnActual" />
@@ -52,6 +54,7 @@
     <item type="id" name="tallyDeviceScanNoDevicesFoundTextView" />
     <item type="id" name="totalOfAdjustedColumnTextView" />
     <item type="id" name="totalOfTotalLengthColumnTextView" />
+    <item type="id" name="totalsTable" />
     <item type="id" name="verifyActionTextView" />
 
 </resources>
