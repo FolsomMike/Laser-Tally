@@ -52,7 +52,7 @@
             <state />
           </provider>
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-7.981818" vertical-offset="12277" max-vertical-offset="12988">
+            <state vertical-scroll-proportion="0.0" vertical-offset="12277" max-vertical-offset="12988">
               <caret line="748" column="35" selection-start-line="748" selection-start-column="35" selection-end-line="748" selection-end-column="35" />
               <folding />
             </state>
@@ -62,18 +62,8 @@
       <file leaf-file-name="EditJobInfoActivity.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/EditJobInfoActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-13.035714" vertical-offset="2763" max-vertical-offset="10183">
+            <state vertical-scroll-proportion="0.0" vertical-offset="3128" max-vertical-offset="10183">
               <caret line="216" column="16" selection-start-line="216" selection-start-column="16" selection-end-line="216" selection-end-column="16" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="AndroidManifest.xml" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/app/src/main/AndroidManifest.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.07132867" vertical-offset="306" max-vertical-offset="1751">
-              <caret line="21" column="0" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -82,7 +72,7 @@
       <file leaf-file-name="OpenJobActivity.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/OpenJobActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="3136" max-vertical-offset="5882">
+            <state vertical-scroll-proportion="0.0" vertical-offset="4403" max-vertical-offset="6647">
               <caret line="259" column="83" selection-start-line="259" selection-start-column="83" selection-end-line="259" selection-end-column="83" />
               <folding />
             </state>
@@ -92,8 +82,8 @@
       <file leaf-file-name="MainActivity.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="2185" max-vertical-offset="3111">
-              <caret line="198" column="44" selection-start-line="198" selection-start-column="44" selection-end-line="198" selection-end-column="44" />
+            <state vertical-scroll-proportion="-5.25" vertical-offset="2420" max-vertical-offset="3111">
+              <caret line="196" column="8" selection-start-line="196" selection-start-column="8" selection-end-line="199" selection-end-column="30" />
               <folding />
             </state>
           </provider>
@@ -102,8 +92,18 @@
       <file leaf-file-name="JobDisplayActivity.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/JobDisplayActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-5.142857" vertical-offset="12079" max-vertical-offset="20927">
+            <state vertical-scroll-proportion="0.0" vertical-offset="1187" max-vertical-offset="20927">
               <caret line="761" column="32" selection-start-line="761" selection-start-column="32" selection-end-line="761" selection-end-column="32" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="JobInfoMenuActivity.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/JobInfoMenuActivity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.26573426" vertical-offset="3618" max-vertical-offset="5287">
+              <caret line="255" column="44" selection-start-line="255" selection-start-column="44" selection-end-line="255" selection-end-column="44" />
               <folding />
             </state>
           </provider>
@@ -823,6 +823,7 @@
         <option value="$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/OpenJobActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/EditJobInfoActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/JobInfoMenuActivity.java" />
       </list>
     </option>
   </component>
@@ -861,6 +862,9 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scope" />
+      <pane id="AndroidView" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -991,9 +995,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
-      <pane id="AndroidView" />
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -1204,7 +1205,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1616" height="876" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -1216,14 +1217,13 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32969153" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32969153" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32839838" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.66890985" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.80080754" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24742931" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24742931" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Memory Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32969153" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -1234,6 +1234,7 @@
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32969153" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32974428" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -1257,6 +1258,14 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/JobDisplayActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1187" max-vertical-offset="20927">
+          <caret line="761" column="32" selection-start-line="761" selection-start-column="32" selection-end-line="761" selection-end-column="32" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/TallyDeviceSimulationConnectionHandler.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1156" max-vertical-offset="3672">
@@ -1304,10 +1313,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1454" max-vertical-offset="12155">
           <caret line="100" column="0" selection-start-line="100" selection-start-column="0" selection-end-line="100" selection-end-column="0" />
-          <folding>
-            <element signature="e#4430#4459#0" expanded="true" />
-            <element signature="e#4598#4622#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1344,10 +1349,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1454" max-vertical-offset="12155">
           <caret line="100" column="0" selection-start-line="100" selection-start-column="0" selection-end-line="100" selection-end-column="0" />
-          <folding>
-            <element signature="e#4430#4459#0" expanded="true" />
-            <element signature="e#4598#4622#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1377,10 +1378,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1454" max-vertical-offset="12155">
           <caret line="100" column="0" selection-start-line="100" selection-start-column="0" selection-end-line="100" selection-end-column="0" />
-          <folding>
-            <element signature="e#4430#4459#0" expanded="true" />
-            <element signature="e#4598#4622#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1410,10 +1407,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="221" max-vertical-offset="3706">
           <caret line="39" column="13" selection-start-line="39" selection-start-column="13" selection-end-line="39" selection-end-column="13" />
-          <folding>
-            <element signature="e#4430#4459#0" expanded="true" />
-            <element signature="e#4598#4622#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1498,7 +1491,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.24606581" vertical-offset="5710" max-vertical-offset="7072">
           <caret line="385" column="68" selection-start-line="385" selection-start-column="68" selection-end-line="385" selection-end-column="68" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1522,10 +1514,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="14093">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#4430#4459#0" expanded="true" />
-            <element signature="e#4598#4622#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1545,10 +1533,10 @@
         <state vertical-scroll-proportion="-16.074074" vertical-offset="2881" max-vertical-offset="4148">
           <caret line="195" column="0" selection-start-line="195" selection-start-column="0" selection-end-line="195" selection-end-column="0" />
           <folding>
-            <element signature="e#1156#1169#0" expanded="true" />
-            <element signature="e#1595#1622#0" expanded="true" />
-            <element signature="e#2114#2138#0" expanded="true" />
-            <element signature="e#3526#3550#0" expanded="true" />
+            <element signature="e#1156#1169#0" expanded="false" />
+            <element signature="e#1595#1622#0" expanded="false" />
+            <element signature="e#2114#2138#0" expanded="false" />
+            <element signature="e#3526#3550#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1583,27 +1571,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/MainActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2185" max-vertical-offset="3111">
-          <caret line="198" column="44" selection-start-line="198" selection-start-column="44" selection-end-line="198" selection-end-column="44" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/JobDisplayActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-5.142857" vertical-offset="12079" max-vertical-offset="20927">
-          <caret line="761" column="32" selection-start-line="761" selection-start-column="32" selection-end-line="761" selection-end-column="32" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/sources/android-20/java/io/File.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.33286715" vertical-offset="16082" max-vertical-offset="18870">
           <caret line="1033" column="19" selection-start-line="1033" selection-start-column="19" selection-end-line="1033" selection-end-column="19" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1634,7 +1605,7 @@
         <state />
       </provider>
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.981818" vertical-offset="12277" max-vertical-offset="12988">
+        <state vertical-scroll-proportion="0.0" vertical-offset="12277" max-vertical-offset="12988">
           <caret line="748" column="35" selection-start-line="748" selection-start-column="35" selection-end-line="748" selection-end-column="35" />
           <folding />
         </state>
@@ -1644,7 +1615,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.33286715" vertical-offset="0" max-vertical-offset="1462">
           <caret line="31" column="13" selection-start-line="31" selection-start-column="13" selection-end-line="31" selection-end-column="13" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1656,18 +1626,42 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/AndroidManifest.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.07132867" vertical-offset="306" max-vertical-offset="1751">
+          <caret line="21" column="0" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/JobDisplayActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1187" max-vertical-offset="20927">
+          <caret line="761" column="32" selection-start-line="761" selection-start-column="32" selection-end-line="761" selection-end-column="32" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/EditJobInfoActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-13.035714" vertical-offset="2763" max-vertical-offset="10183">
+        <state vertical-scroll-proportion="0.0" vertical-offset="3672" max-vertical-offset="10812">
           <caret line="216" column="16" selection-start-line="216" selection-start-column="16" selection-end-line="216" selection-end-column="16" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/AndroidManifest.xml">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.07132867" vertical-offset="306" max-vertical-offset="1751">
-          <caret line="21" column="0" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
+        <state vertical-scroll-proportion="-5.25" vertical-offset="2420" max-vertical-offset="3111">
+          <caret line="196" column="8" selection-start-line="196" selection-start-column="8" selection-end-line="199" selection-end-column="30" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yaboosh/ybtech/lasertally/JobInfoMenuActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.26573426" vertical-offset="3618" max-vertical-offset="5287">
+          <caret line="255" column="44" selection-start-line="255" selection-start-column="44" selection-end-line="255" selection-end-column="44" />
           <folding />
         </state>
       </provider>

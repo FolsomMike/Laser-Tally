@@ -245,13 +245,15 @@ public class JobInfoMenuActivity extends Activity {
     //-----------------------------------------------------------------------------
     // JobInfoMenuActivity::handleCreateANewJobButtonPressed
     //
-    // Starts an activity for Job Info.
+    // Starts the editJobInfoActivity in the CREATE_JOB mode.
     // Should be called from the "Create a new job." button onClick().
     //
 
     public void handleCreateANewJobButtonPressed(View pView) {
 
-        Intent intent = new Intent(this, CreateJobActivity.class);
+        Intent intent = new Intent(this, EditJobInfoActivity.class);
+        intent.putExtra(Keys.EDIT_JOB_INFO_ACTIVITY_MODE_KEY,
+                                            EditJobInfoActivity.EditJobInfoActivityMode.CREATE_JOB);
         startActivity(intent);
 
     }//end of JobInfoMenuActivity::handleCreateANewJobButtonPressed
