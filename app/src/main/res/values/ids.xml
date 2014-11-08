@@ -21,10 +21,9 @@
     <item type="id" name="measurementsTableColumnAdjusted" />
     <item type="id" name="measurementsTableRow" />
     <item type="id" name="measurementsTableRowDivider" />
+    <item type="id" name="measurementsTableScrollView" />
 
     <item type="id" name="checkBoxRenumberAllBelow" />
-    <item type="id" name="tallyDeviceScanDeviceNamesListView" />
-    <item type="id" name="tallyDeviceScanNoDevicesFoundTextView" />
     <item type="id" name="editJobInfoActivityTitleTextView" />
     <item type="id" name="editJobInfoMenuButton" />
     <item type="id" name="editTextCompanyName" />
@@ -49,6 +48,10 @@
     <item type="id" name="renumberAllBelowCheckbox" />
     <item type="id" name="tableRowEditorRedXButton" />
     <item type="id" name="tableRowEditorCancelButton" />
+    <item type="id" name="tallyDeviceScanDeviceNamesListView" />
+    <item type="id" name="tallyDeviceScanNoDevicesFoundTextView" />
+    <item type="id" name="totalOfAdjustedColumnTextView" />
+    <item type="id" name="totalOfTotalLengthColumnTextView" />
     <item type="id" name="verifyActionTextView" />
 
 </resources>

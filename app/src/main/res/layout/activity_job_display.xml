@@ -177,7 +177,37 @@
 
             <RelativeLayout
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
+                android:layout_height="fill_parent" >
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:paddingBottom="50dp" >
+
+                    <ScrollView
+                        android:id="@id/measurementsTableScrollView"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:fadeScrollbars="false"
+                        android:scrollbars="vertical" >
+
+                        <TableLayout
+                            android:id = "@+id/measurementsTable"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/measurementsTableColor"
+                            android:padding="0dp" >
+
+                            <View
+                                android:id="@id/measurementsTableBottomBorderLine"
+                                android:visibility="gone"
+                                style="@style/measurementsTableBottomBorderLine" />
+
+                        </TableLayout>
+
+                    </ScrollView>
+
+                </LinearLayout>
 
                 <TableLayout
                     android:layout_width="fill_parent"
@@ -196,39 +226,20 @@
 
                         <View style="@style/headerTableColumnDivider" />
 
-                        <TextView style="@style/headerTableColumn" />
+                        <TextView
+                            android:id="@id/totalOfTotalLengthColumnTextView"
+                            style="@style/headerTableColumn" />
 
                         <View style="@style/headerTableColumnDivider" />
 
-                        <TextView style="@style/headerTableColumn" />
+                        <TextView
+                            android:id="@id/totalOfAdjustedColumnTextView"
+                            style="@style/headerTableColumn" />
 
                         <View style="@style/tableSideBorderLine" />
 
                     </TableRow>
                 </TableLayout>
-
-                <ScrollView
-                    android:layout_width="fill_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight=".85"
-                    android:scrollbars="vertical"
-                    android:fadeScrollbars="false" >
-
-                    <TableLayout
-                        android:id = "@+id/measurementsTable"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@color/measurementsTableColor"
-                        android:padding="0dp" >
-
-                        <View
-                            android:id="@id/measurementsTableBottomBorderLine"
-                            android:visibility="gone"
-                            style="@style/measurementsTableBottomBorderLine" />
-
-                    </TableLayout>
-
-                </ScrollView>
 
             </RelativeLayout>
 
