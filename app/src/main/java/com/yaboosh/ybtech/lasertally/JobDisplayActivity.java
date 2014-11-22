@@ -965,6 +965,25 @@ public class JobDisplayActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // JobDisplayActivity::handleNoNewDistanceValueReceived
+    //
+    // Enables the Measure and Redo buttons.
+    //
+    // This function handles when a distance value is not received back from the
+    // tally device after the measure command was sent to it. This is to
+    // ensure that if a distance value was not received, the Measure and Redo buttons
+    // are not permanently disabled.
+    //
+
+    private void handleNoNewDistanceValueReceived () {
+
+        setMeasureConnectButtonEnabled(true);
+        setRedoButtonEnabled(true);
+
+    }//end of JobDisplayActivity::handleNoNewDistanceValueReceived
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // JobDisplayActivity::handleRedoButtonPressed
     //
     // Retrieves and removes the final row added to the measurementsTable.
@@ -1443,6 +1462,10 @@ public class JobDisplayActivity extends Activity {
 
                     case TallyDeviceService.MSG_NEW_DISTANCE_VALUE:
                         tempActivity.handleNewDistanceValue((String)pMsg.obj);
+                        break;
+
+                    case TallyDeviceService.MSG_N0_NEW_DISTANCE_VALUE_RECEIVED:
+                        tempActivity.handleNoNewDistanceValueReceived();
                         break;
 
                 }
