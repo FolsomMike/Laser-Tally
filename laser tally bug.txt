@@ -15,3 +15,5 @@ Problems/Bugs/Things to Do with the Disto Laser Tally Program (numerical order i
 
 
 6. onDescriptorWRite sometimes returns with INSUFFICIENT_AUTHENTICATION even when the device is bonded -------------- solution::unpair and recall the initiatebondingfunction
+
+!!NOTE: This is somewhat outdated.
