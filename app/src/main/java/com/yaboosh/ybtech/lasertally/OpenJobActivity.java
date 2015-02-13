@@ -339,7 +339,7 @@ public class OpenJobActivity extends Activity {
         intent.putExtra(Keys.DIAMETER_KEY, diameter);
         intent.putExtra(Keys.FACILITY_KEY, facility);
         intent.putExtra(Keys.GRADE_KEY,  grade);
-        intent.putExtra(Keys.JOB_KEY, job);
+        intent.putExtra(Keys.JOB_NAME_KEY, job);
         intent.putExtra(Keys.ADJUSTMENT_KEY, makeupAdjustment);
         intent.putExtra(Keys.RACK_KEY, rack);
         intent.putExtra(Keys.RANGE_KEY, range);

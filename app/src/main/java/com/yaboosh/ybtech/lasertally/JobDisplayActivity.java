@@ -77,8 +77,13 @@ public class JobDisplayActivity extends Activity {
     final String noValueString = "No Value";
 
     private DecimalFormat tallyFormat = new DecimalFormat("#.##");
+
+    // Job Info Variables
     private float adjustmentValue = 0;
+    private String companyName = "";
+    private String jobName = "";
     private float tallyGoal;
+    // End of Job Info Variables
 
     private ArrayList<String> adjustedValues = new ArrayList<String>();
     private ArrayList<String> totalLengthValues = new ArrayList<String>();
@@ -133,7 +138,8 @@ public class JobDisplayActivity extends Activity {
         Bundle bundle = getIntent().getExtras();
         if (bundle.getBoolean(Keys.JOB_INFO_INCLUDED_KEY, false)) {
 
-            setJobTitle(bundle.getString(Keys.JOB_KEY));
+            setJobName(bundle.getString(Keys.JOB_NAME_KEY));
+            companyName = bundle.getString(Keys.COMPANY_NAME_KEY);
             setAdjustmentValue(bundle.getString(Keys.ADJUSTMENT_KEY));
             setTallyGoal(bundle.getString(Keys.TALLY_GOAL_KEY));
 
@@ -230,7 +236,7 @@ public class JobDisplayActivity extends Activity {
         if (pRequestCode == Keys.ACTIVITY_RESULT_JOB_INFO) {
 
             if (pResultCode == RESULT_OK) {
-                handleJobInfoActivityResultOk(pData.getStringExtra(Keys.JOB_KEY),
+                handleJobInfoActivityResultOk(pData.getStringExtra(Keys.JOB_NAME_KEY),
                                                     pData.getStringExtra(Keys.ADJUSTMENT_KEY),
                                                     pData.getStringExtra(Keys.TALLY_GOAL_KEY));
             }
@@ -853,7 +859,7 @@ public class JobDisplayActivity extends Activity {
     private void handleJobInfoActivityResultOk(String pJob, String pAdjustmentValue,
                                                                                 String pTallyGoal) {
 
-        setJobTitle(pJob);
+        setJobName(pJob);
         setAdjustmentValue(pAdjustmentValue);
         setTallyGoal(pTallyGoal);
         setAndCheckTotalColumnsOfTotalLengthAndAdjustedColumns();
@@ -884,8 +890,7 @@ public class JobDisplayActivity extends Activity {
     public void handleJobInfoButtonPressed(View pView) {
 
         Intent intent = new Intent(this, EditJobInfoActivity.class);
-        intent.putExtra(Keys.JOB_KEY,
-                            ((TextView)findViewById(R.id.jobTitleTextView)).getText().toString());
+        intent.putExtra(Keys.JOB_NAME_KEY, jobName);
         intent.putExtra(Keys.EDIT_JOB_INFO_ACTIVITY_MODE_KEY,
                                         EditJobInfoActivity.EditJobInfoActivityMode.EDIT_JOB_INFO);
         startActivityForResult(intent, Keys.ACTIVITY_RESULT_JOB_INFO);
@@ -921,6 +926,8 @@ public class JobDisplayActivity extends Activity {
 
     public void handleMoreButtonPressed(View pView) {
 
+        /* //debug hss//
+
         // Create a WebView object specifically for printing
         WebView webView = new WebView(this);
         webView.setWebViewClient(new WebViewClient() {
@@ -939,7 +946,15 @@ public class JobDisplayActivity extends Activity {
         // Generate an HTML document on the fly:
         String htmlDocument = "<html><body><h1>Test Content</h1><p>Testing, " +
                 "testing, testing...</p></body></html>";
-        webView.loadDataWithBaseURL(null, htmlDocument, "text/HTML", "UTF-8", null);
+        webView.loadDataWithBaseURL(null, htmlDocument, "text/HTML", "UTF-8", null);*/
+
+        TallyReportMaker tallyReportMaker = new TallyReportMaker(measurementsTable, companyName,
+                                                                    jobName, "",  adjustmentValue,
+                                                                    tallyGoal);
+
+        tallyReportMaker.init();
+
+        tallyReportMaker.printTallyReport();
 
 
     }//end of JobDisplayActivity::handleMoreButtonPressed
@@ -1260,23 +1275,23 @@ public class JobDisplayActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobDisplayActivity::setJobTitle
+    // JobDisplayActivity::setJobName
     //
-    // If the passed in job title is not the same as the old one, the job title
+    // If the passed in job name is not the same as the old one, the job name
     // is changed to the passed in string.
     //
 
-    private void setJobTitle(String pNewJobTitle) {
+    private void setJobName(String pNewJobName) {
 
-        TextView jobTitleTextView = (TextView)findViewById(R.id.jobTitleTextView);
+        TextView jobTitleTextView = (TextView)findViewById(R.id.jobNameTextView);
 
-        if (pNewJobTitle.equals(jobTitleTextView.getText().toString())) {
-            return;
-        }
+        if (pNewJobName.equals(jobTitleTextView.getText().toString())) { return; }
 
-        jobTitleTextView.setText(pNewJobTitle);
+        jobName = pNewJobName;
 
-    }//end of JobDisplayActivity::setJobTitle
+        jobTitleTextView.setText(jobName);
+
+    }//end of JobDisplayActivity::setJobName
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

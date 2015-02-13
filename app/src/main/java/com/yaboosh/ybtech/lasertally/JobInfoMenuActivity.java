@@ -89,7 +89,7 @@ public class JobInfoMenuActivity extends Activity {
         createUiChangeListener();
 
         Bundle bundle = getIntent().getExtras();
-        job = bundle.getString(Keys.JOB_KEY);
+        job = bundle.getString(Keys.JOB_NAME_KEY);
 
     }//end of JobInfoMenuActivity::onCreate
     //-----------------------------------------------------------------------------
