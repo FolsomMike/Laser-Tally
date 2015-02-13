@@ -87,11 +87,11 @@ public class TallyReportMaker {
         tallyTarget = pTallyTarget;
 
 //debug mks -- remove this
-        String companyName = "XYZ Pipe Co";
+        /*String companyName = "XYZ Pipe Co";
         String jobName = "x234554";
         String jobDate =  "01/12/15";
         double tallyAdj = -2.3;
-        double tallyTarget = 1995.0;
+        double tallyTarget = 1995.0;*/
 //debug mks -- remove this end
 
     }// end of TallyReportMaker::TallyReportMaker (constructor)
@@ -167,8 +167,7 @@ public class TallyReportMaker {
         try{
 
             fileOutputStream = new FileOutputStream("Page " + pPageNum + ".html");
-            outputStreamWriter =
-                    new OutputStreamWriter(fileOutputStream, "UTF-8");
+            outputStreamWriter = new OutputStreamWriter(fileOutputStream, "UTF-8");
             out = new BufferedWriter(outputStreamWriter);
 
             printPageText(out, pIndex, pPageNum, pNumPages);
