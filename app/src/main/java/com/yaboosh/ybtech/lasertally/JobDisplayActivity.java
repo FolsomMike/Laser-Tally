@@ -19,6 +19,7 @@ package com.yaboosh.ybtech.lasertally;
 
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
@@ -28,9 +29,15 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.print.PrintAttributes;
+import android.print.PrintDocumentAdapter;
+import android.print.PrintJob;
+import android.print.PrintManager;
 import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.View;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
@@ -909,14 +916,48 @@ public class JobDisplayActivity extends Activity {
     // Starts an activity for "More".
     // Should be called from the "More" button onClick().
     //
+    // Currently prints. //hss wip//
+    //
 
     public void handleMoreButtonPressed(View pView) {
 
-        Intent intent = new Intent(this, TallyDeviceConnectionStatusMessageActivity.class);
-        startActivity(intent);
+        // Create a WebView object specifically for printing
+        WebView webView = new WebView(this);
+        webView.setWebViewClient(new WebViewClient() {
+
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                return false;
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                Log.i(TAG, "page finished loading " + url);
+                createWebPrintJob(view);
+            }
+        });
+
+        // Generate an HTML document on the fly:
+        String htmlDocument = "<html><body><h1>Test Content</h1><p>Testing, " +
+                "testing, testing...</p></body></html>";
+        webView.loadDataWithBaseURL(null, htmlDocument, "text/HTML", "UTF-8", null);
+
 
     }//end of JobDisplayActivity::handleMoreButtonPressed
     //-----------------------------------------------------------------------------
+
+    private void createWebPrintJob(WebView webView) {
+
+        // Get a PrintManager instance
+        PrintManager printManager = (PrintManager) getSystemService(Context.PRINT_SERVICE);
+
+        // Get a print adapter instance
+        PrintDocumentAdapter printAdapter = webView.createPrintDocumentAdapter();
+
+        // Create a print job with name and adapter instance
+        String jobName = getString(R.string.app_name) + " Document";
+        PrintJob printJob = printManager.print(jobName, printAdapter,
+                new PrintAttributes.Builder().build());
+    }
 
     //-----------------------------------------------------------------------------
     // JobDisplayActivity::handleNewDistanceValue
@@ -962,6 +1003,25 @@ public class JobDisplayActivity extends Activity {
         setRedoButtonEnabled(true);
 
     }//end of JobDisplayActivity::handleNewDistanceValue
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobDisplayActivity::handleNoNewDistanceValueReceived
+    //
+    // Enables the Measure and Redo buttons.
+    //
+    // This function handles when a distance value is not received back from the
+    // tally device after the measure command was sent to it. This is to
+    // ensure that if a distance value was not received, the Measure and Redo buttons
+    // are not permanently disabled.
+    //
+
+    private void handleNoNewDistanceValueReceived () {
+
+        setMeasureConnectButtonEnabled(true);
+        setRedoButtonEnabled(true);
+
+    }//end of JobDisplayActivity::handleNoNewDistanceValueReceived
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -1443,6 +1503,10 @@ public class JobDisplayActivity extends Activity {
 
                     case TallyDeviceService.MSG_NEW_DISTANCE_VALUE:
                         tempActivity.handleNewDistanceValue((String)pMsg.obj);
+                        break;
+
+                    case TallyDeviceService.MSG_N0_NEW_DISTANCE_VALUE_RECEIVED:
+                        tempActivity.handleNoNewDistanceValueReceived();
                         break;
 
                 }
