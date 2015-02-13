@@ -44,7 +44,7 @@
     <item type="id" name="jobInfoCancelButton" />
     <item type="id" name="jobNameAlreadyExistsTextView" />
     <item type="id" name="jobNamesListView" />
-    <item type="id" name="jobTitleTextView" />
+    <item type="id" name="jobNameTextView" />
     <item type="id" name="noJobsTextView" />
     <item type="id" name="okButton" />
     <item type="id" name="renumberAllBelowCheckbox" />
