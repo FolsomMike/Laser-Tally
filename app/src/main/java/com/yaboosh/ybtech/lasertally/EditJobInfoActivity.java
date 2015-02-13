@@ -1,12 +1,12 @@
 /******************************************************************************
- * Title: JobInfoActivity.java
+ * Title: EditJobInfoActivity.java
  * Author: Hunter Schoonover
  * Date: 09/15/14
  *
  * Purpose:
  *
  * This class is used as an activity to display a user interface that allows
- * users to edit job info.
+ * users to create a job and edit job info, depending on the mode.
  *
  */
 
@@ -40,7 +40,7 @@ import java.util.Scanner;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-// class JobInfoActivity
+// class EditJobInfoActivity
 //
 
 public class EditJobInfoActivity extends Activity {
@@ -121,7 +121,7 @@ public class EditJobInfoActivity extends Activity {
         createUiChangeListener();
 
         Bundle bundle = getIntent().getExtras();
-        passedInJobName = bundle.getString(Keys.JOB_KEY);
+        passedInJobName = bundle.getString(Keys.JOB_NAME_KEY);
         setActivityMode(bundle.getString(Keys.EDIT_JOB_INFO_ACTIVITY_MODE_KEY));
 
         ((TextView)findViewById(R.id.editTextJob)).addTextChangedListener(new TextWatcher() {
@@ -346,7 +346,7 @@ public class EditJobInfoActivity extends Activity {
         intent.putExtra(Keys.DIAMETER_KEY, diameter);
         intent.putExtra(Keys.FACILITY_KEY, facility);
         intent.putExtra(Keys.GRADE_KEY,  grade);
-        intent.putExtra(Keys.JOB_KEY, job);
+        intent.putExtra(Keys.JOB_NAME_KEY, job);
         intent.putExtra(Keys.ADJUSTMENT_KEY, makeupAdjustment);
         intent.putExtra(Keys.RACK_KEY, rack);
         intent.putExtra(Keys.RANGE_KEY, range);
@@ -536,7 +536,7 @@ public class EditJobInfoActivity extends Activity {
     public void handleMenuButtonPressed(View pView) {
 
         Intent intent = new Intent(this, JobInfoMenuActivity.class);
-        intent.putExtra(Keys.JOB_KEY, passedInJobName);
+        intent.putExtra(Keys.JOB_NAME_KEY, passedInJobName);
         startActivity(intent);
 
     }//end of JobInfoActivity::handleMenuButtonPressed
@@ -575,6 +575,8 @@ public class EditJobInfoActivity extends Activity {
     //
 
     private void saveInformationToFile() {
+
+        Log.d(TAG, getFilesDir().toString());
 
         // Retrieve/Create directory into internal memory;
         File jobsDir = getDir("jobsDir", Context.MODE_PRIVATE);
