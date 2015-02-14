@@ -92,7 +92,7 @@ public class TallyReportMaker {
         tallyTarget = pTallyTarget;
         context = pContext;
 
-        //if user left entry blank, print 0 for target
+        //if user left entry blank or entered very large value, print 0 for target
         if (tallyTarget > 999999) { tallyTarget = 0; }
 
     }// end of TallyReportMaker::TallyReportMaker (constructor)
