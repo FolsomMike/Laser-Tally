@@ -13,7 +13,15 @@
 
 package com.yaboosh.ybtech.lasertally;
 
+import android.content.Context;
+import android.print.PrintAttributes;
+import android.print.PrintDocumentAdapter;
+import android.print.PrintJob;
+import android.print.PrintManager;
+import android.util.Log;
 import android.util.SparseIntArray;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -41,41 +49,38 @@ public class TallyReportMaker {
     String jobDate =  "01/12/15";
     double tallyAdj = -2.3;
     double tallyTarget = 1995.0;
+    Context context;
 
     double tallyTotal = 0;
     double adjTallyTotal = 0;
 
     DecimalFormat decFormat = new  DecimalFormat("#.00");
 
-    static final int NUM_TALLY_ROWS = 40;
+    static final int NUM_TALLY_ROWS = 45;
 
     static final String sp = "&nbsp;";
     static final String space3 = "&nbsp;&nbsp;&nbsp;";
     //not used yet -- static final String space4 = "&nbsp;&nbsp;&nbsp;&nbsp;";
     static final String space5 = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
     static final String space6 = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-    static final String space10 =
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+    static final String space10 = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
-    static final String htmlHeader =
-            "<!DOCTYPE html>\n<html>\n\n<head>\n" +
-                    "<meta content=\"en-us\" http-equiv=\"Content-Language\">\n" +
-                    "<meta content=\"text/html; charset=utf-8\" http-equiv=\"Content-Type\">\n" +
-                    "<title>Tally Report</title>\n" +
-                    "<style type=\"text/css\">\n.auto-style1 {" +
-                    "font-family: \"Courier New\", Courier, monospace;}" +
-                    "</style>\n" +
-                    "</head>\n\n<body>\n" +
-                    "<p class=\"auto-style1\">\n";
+    static final String htmlHeader = "<!DOCTYPE html>"
+                                + "<html style=\"font-family: 'Courier New', Courier, monospace\">"
+                                + "<head>"
+                                + "<title>Tally Zap</title>"
+                                + "<meta content='text/html; charset=utf-8' http-equiv='Content-Type'>"
+                                + "</head>"
+                                + "<body>";
 
-    static final String htmlFooter = "<p>\n</body>\n\n</html>\n";
+    static final String htmlFooter = "</body></html>";
 
     //-----------------------------------------------------------------------------
     // TallyReportMaker::TallyReportMaker (constructor)
     //
 
     public TallyReportMaker(TableLayout pMeasurementsTable, String pCompanyName, String pJobName,
-                            String pJobDate, double pTallyAdj, double pTallyTarget)
+                            String pJobDate, double pTallyAdj, double pTallyTarget, Context pContext)
     {
 
         measurementsTable = pMeasurementsTable;
@@ -85,14 +90,10 @@ public class TallyReportMaker {
         jobDate = pJobDate;
         tallyAdj = pTallyAdj;
         tallyTarget = pTallyTarget;
+        context = pContext;
 
-//debug mks -- remove this
-        /*String companyName = "XYZ Pipe Co";
-        String jobName = "x234554";
-        String jobDate =  "01/12/15";
-        double tallyAdj = -2.3;
-        double tallyTarget = 1995.0;*/
-//debug mks -- remove this end
+        //if user left entry blank, print 0 for target
+        if (tallyTarget > 999999) { tallyTarget = 0; }
 
     }// end of TallyReportMaker::TallyReportMaker (constructor)
     //-----------------------------------------------------------------------------
@@ -121,93 +122,104 @@ public class TallyReportMaker {
     public void printTallyReport()
     {
 
+        // Create a WebView object specifically for printing
+        WebView webView = new WebView(context);
+        webView.setWebViewClient(new WebViewClient() {
+
+            public boolean shouldOverrideUrlLoading(WebView pView, String pUrl) {
+                return false;
+            }
+
+            @Override
+            public void onPageFinished(WebView pView, String pUrl) {
+                createWebPrintJob(pView);
+            }
+
+        });
+
+        // Generate HTML code on the fly and load it into webView:
+        webView.loadDataWithBaseURL(null, generateHTMLCode(), "text/HTML", "UTF-8", null);
+
+    }// end of TallyReportMaker::printTallyReport
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyReportMaker::createWebPrintJob
+    //
+    // Creates a print job for the passed in WebView.
+    //
+
+    private void createWebPrintJob(WebView pWebView)
+    {
+
+        // Get a PrintManager instance
+        PrintManager printManager = (PrintManager) context.getSystemService(Context.PRINT_SERVICE);
+
+        // Get a print adapter instance
+        PrintDocumentAdapter printAdapter = pWebView.createPrintDocumentAdapter();
+
+        // Create a print job with name and adapter instance
+        String jobName = context.getString(R.string.app_name) + " Document";
+        // Send the print job to the printManager
+        printManager.print(jobName, printAdapter, new PrintAttributes.Builder().build());
+
+    }// end of TallyReportMaker::createWebPrintJob
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyReportMaker::generateHTMlCode
+    //
+    // Generates and returns the HTML code for printing.
+    //
+
+    private String generateHTMLCode()
+    {
+
+        String htmlCode = htmlHeader;
         int printIndex = 0;
         int pageNum = 1;
 
-        int numPages =
-                (int) Math.ceil((double)numTubes / (double)(NUM_TALLY_ROWS * 2));
-
-        // calculate the tally totals before starting to print
+        int numPages = (int) Math.ceil((double)numTubes / (double)(NUM_TALLY_ROWS * 2));
 
         tallyTotal = 0;
         adjTallyTotal = 0;
 
         //calculate the total tally and total adjusted tally
-
         for (int i=0; i<numTubes; i++) {
             double tally = getTally(i);
             tallyTotal += tally;
             adjTallyTotal += tally + tallyAdj;
         }
 
-        while(printIndex < numTubes){
-
-            printPage(printIndex, pageNum, numPages);
-
+        //create page code until there are no more tallies
+        while(printIndex < numTubes) {
+            htmlCode += createPageCode(printIndex, pageNum, numPages);
             pageNum++;
-
             printIndex += NUM_TALLY_ROWS * 2;
-
         }
 
-    }// end of TallyReportMaker::printTallyReport
+        htmlCode += htmlFooter;
+
+        return htmlCode;
+
+    }// end of TallyReportMaker::generateHTMLCode
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyReportMaker::printPage
+    // TallyReportMaker::createPageCode
+    //
+    // Creates and returns the HTML code for one page.
     //
 
-    public void printPage(int pIndex, int pPageNum, int pNumPages)
+    private String createPageCode (int pIndex, int pPageNum, int pNumPages)
     {
 
-        FileOutputStream fileOutputStream = null;
-        OutputStreamWriter outputStreamWriter = null;
-        BufferedWriter out = null;
-
-        try{
-
-            fileOutputStream = new FileOutputStream("Page " + pPageNum + ".html");
-            outputStreamWriter = new OutputStreamWriter(fileOutputStream, "UTF-8");
-            out = new BufferedWriter(outputStreamWriter);
-
-            printPageText(out, pIndex, pPageNum, pNumPages);
-
-            out.flush();
-
-            //wip hss -- this is where you send the page to the printer
-
-        }
-        catch(IOException e){
-
-        }
-        finally{
-            try{if (out != null) {out.close();}}
-            catch(IOException e){}
-            try{if (outputStreamWriter != null) {outputStreamWriter.close();}}
-            catch(IOException e){}
-            try{if (fileOutputStream != null) {fileOutputStream.close();}}
-            catch(IOException e){}
-        }
-
-    }// end of TallyReportMaker::printPage
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // TallyReportMaker::printPageText
-    //
-
-    public void printPageText(BufferedWriter pOut, int pIndex, int pPageNum, int pNumPages)
-            throws IOException
-    {
+        String htmlCode = createPageHeaderCode(numTubes, pPageNum, pNumPages);
 
         double pageTallyTotal = 0;
         double pageAdjTallyTotal = 0;
 
-        pOut.write(htmlHeader);
-
-        printPageHeader(pOut, numTubes);
-
-        for(int i=0; i<NUM_TALLY_ROWS; i++){
+        for (int i=0; i<NUM_TALLY_ROWS; i++) {
 
             int j = pIndex + i;
 
@@ -218,11 +230,9 @@ public class TallyReportMaker {
             double tally = getTally(j);
             double adjTally = tally + tallyAdj;
 
-            pOut.write("" +
-                    prePadString("" + getTubeNum(j), 4) + space5
-                    + prePadString(decFormat.format(tally),6) + space5
-                    + prePadString(
-                    decFormat.format(adjTally),6));
+            htmlCode += prePadString("" + getTubeNum(j), 4) + space5
+                        + prePadString(decFormat.format(tally),6) + space5
+                        + prePadString(decFormat.format(adjTally),6);
 
             pageTallyTotal += tally;
             pageAdjTallyTotal += adjTally;
@@ -236,86 +246,83 @@ public class TallyReportMaker {
                 tally = getTally(k);
                 adjTally = tally + tallyAdj;
 
-                pOut.write(space6 + space6);
-                pOut.write("" +
-                        prePadString("" + getTubeNum(k), 4) + space5
-                        + prePadString(decFormat.format(tally),6) + space5
-                        + prePadString(
-                        decFormat.format(adjTally),6));
+                htmlCode += space6 + space6;
+                htmlCode += prePadString("" + getTubeNum(k), 4) + space5
+                            + prePadString(decFormat.format(tally),6) + space5
+                            + prePadString(decFormat.format(adjTally),6);
 
             }
 
             //html new line command so browser goes to next line
-            pOut.write("<br>");
-
-            //new line to make the file human readable instead of
-            //everything on one line
-            pOut.write(System.lineSeparator());
+            htmlCode += "<br>";
 
         }
 
-        printPageFooter(pOut, pPageNum, pNumPages, pageTallyTotal,
-                pageAdjTallyTotal);
+        htmlCode += createPageFooterCode(pPageNum, pNumPages, pageTallyTotal, pageAdjTallyTotal);
 
-        pOut.write(htmlFooter);
+        return htmlCode;
 
-    }// end of TallyReportMaker::printPageText
+    }// end of TallyReportMaker::createPageCode
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyReportMaker::printPageHeader
+    // TallyReportMaker::createPageHeaderCode
+    //
+    // Creates and returns the HTML code for a page header.
     //
 
-    public void printPageHeader(BufferedWriter pOut, int pNumTubes)
-            throws IOException
+    public String createPageHeaderCode(int pNumTubes, int pPageNum, int pNumPages)
     {
 
-        pOut.write("Company Name: " + companyName + sp + sp + sp + sp);
-        pOut.write("Job Name: " + jobName + sp + sp + sp + sp);
-        pOut.write("Date: " + jobDate + "<br>");
-        pOut.write(System.lineSeparator());
+        String htmlCode = "<div";
 
-        pOut.write("Adjustment: " +  decFormat.format(tallyAdj));
-        pOut.write(" Tally Target: " + decFormat.format(tallyTarget));
-        pOut.write(" Total Tally: " + decFormat.format(tallyTotal) +
-                " / " + decFormat.format(adjTallyTotal));
-        pOut.write(" Tube Count: " + pNumTubes);
-        pOut.write("<br><br>");
-        pOut.write(System.lineSeparator());
+        //if this is not the last page, add a page break
+        if (pPageNum != pNumPages) { htmlCode += " style='page-break-after: always;'"; }
 
-        pOut.write("Number" + space3 + "Length" + space3 + "Adjusted" + space6 + space6
-                + "Number" + space3 + "Length" + space3 + "Adjusted");
-        pOut.write("<br>\n");
-        pOut.write("-------------------------------------------------------------"
-                + "-------------------------------------------");
-        pOut.write("<br>\n");
+        htmlCode += ">"
+                    + "Company Name: " + companyName + sp + sp + sp + sp
+                    + "Job Name: " + jobName + sp + sp + sp + sp
+                    + "Date: " + jobDate
+                    + "<br>"
+                    + "Adjustment: " +  decFormat.format(tallyAdj)
+                    + " Tally Target: " + decFormat.format(tallyTarget)
+                    + " Total Tally: " + decFormat.format(tallyTotal) + " / "
+                                                        + decFormat.format(adjTallyTotal)
+                    + " Tube Count: " + pNumTubes
+                    + "<br><br>"
+                    + "Number" + space3 + "Length" + space3 + "Adjusted"
+                    + space6 + space6 + "Number" + space3 + "Length" + space3 + "Adjusted"
+                    + "<br>"
+                    + "---------------------------------------------------------------------"
+                    + "<br>";
 
-    }// end of TallyReportMaker::printPageHeader
+        return htmlCode;
+
+    }// end of TallyReportMaker::createPageHeaderCode
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyReportMaker::printPageFooter
+    // TallyReportMaker::createPageFooterCode
+    //
+    // Creates and returns the HTML code for a page footer.
     //
 
-    public void printPageFooter(BufferedWriter pOut, int pPageNum, int pNumPages,
-                                double pPageTallyTotal, double pPageAdjTallyTotal) throws IOException
+    public String createPageFooterCode(int pPageNum, int pNumPages, double pPageTallyTotal,
+                                                                        double pPageAdjTallyTotal)
     {
 
+        String htmlCode = "<br>"
+                            + "Page" + prePadString("" + pPageNum, 4)
+                            + " of " + prePadString("" + pNumPages, 4)
+                            + space10 + space5 + sp
+                            + "Page Total: " + prePadString(decFormat.format(pPageTallyTotal),9)
+                            + sp + sp
+                            + prePadString(decFormat.format(pPageAdjTallyTotal),9)
+                            + "</div>";
 
-        pOut.write("<br>" + System.lineSeparator());
+        return htmlCode;
 
-        pOut.write("Page"
-                + prePadString("" + pPageNum, 4) + " of "
-                + prePadString("" + pNumPages, 4));
-
-        pOut.write(space10 + space5 + sp);
-        pOut.write("Page Total: ");
-        pOut.write(prePadString(decFormat.format(pPageTallyTotal),9));
-        pOut.write(sp + sp);
-        pOut.write(prePadString(decFormat.format(pPageAdjTallyTotal),9));
-        pOut.write(System.lineSeparator());
-
-    }// end of TallyReportMaker::printPageFooter
+    }// end of TallyReportMaker::createPageFooterCode
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -345,10 +352,8 @@ public class TallyReportMaker {
             case 5: padding = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"; break;
             case 6: padding = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"; break;
             case 7: padding = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"; break;
-            case 8: padding =
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"; break;
-            case 9: padding =
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"; break;
+            case 8: padding ="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"; break;
+            case 9: padding ="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"; break;
             default: padding = "";
         }
 
@@ -411,7 +416,9 @@ public class TallyReportMaker {
             if (row.getChildAt(i).getId() == R.id.measurementsTableColumnPipeNum) {
                 TextView tV = (TextView)row.getChildAt(i);
                 pipeNum = tV.getText().toString();
+                break;
             }
+
 
         }
 
@@ -441,6 +448,7 @@ public class TallyReportMaker {
             if (row.getChildAt(i).getId() == R.id.measurementsTableColumnActual) {
                 TextView tV = (TextView)row.getChildAt(i);
                 actual = tV.getText().toString();
+                break;
             }
 
         }
