@@ -1,5 +1,5 @@
 /******************************************************************************
- * Title: TallyReportMaker.java
+ * Title: TallyReportHTMLFileMaker.java
  * Author: Mike Schoonover
  * Date: 2/12/15
  *
@@ -13,12 +13,15 @@
 
 package com.yaboosh.ybtech.lasertally;
 
+import android.os.Environment;
+import android.util.Log;
 import android.util.SparseIntArray;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -26,12 +29,14 @@ import java.text.DecimalFormat;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-// class TallyReportMaker
+// class TallyReportHTMLFileMaker
 //
 
-public class TallyReportMaker {
+public class TallyReportHTMLFileMaker {
 
     TableLayout measurementsTable;
+
+    String dataPath;
 
     int numTubes;
     SparseIntArray rowAndPos;
@@ -68,14 +73,16 @@ public class TallyReportMaker {
                     "</head>\n\n<body>\n" +
                     "<p class=\"auto-style1\">\n";
 
-    static final String htmlFooter = "<p>\n</body>\n\n</html>\n";
+    static final String htmlFooter = "</p>\n</body>\n\n</html>\n";
+
+    private static final String LOG_TAG = "TallyReportHTMLFileMaker";
 
     //-----------------------------------------------------------------------------
-    // TallyReportMaker::TallyReportMaker (constructor)
+    // TallyReportHTMLFileMaker::TallyReportHTMLFileMaker (constructor)
     //
 
-    public TallyReportMaker(TableLayout pMeasurementsTable, String pCompanyName, String pJobName,
-                            String pJobDate, double pTallyAdj, double pTallyTarget)
+    public TallyReportHTMLFileMaker(TableLayout pMeasurementsTable, String pCompanyName,
+                           String pJobName, String pJobDate, double pTallyAdj, double pTallyTarget)
     {
 
         measurementsTable = pMeasurementsTable;
@@ -86,19 +93,14 @@ public class TallyReportMaker {
         tallyAdj = pTallyAdj;
         tallyTarget = pTallyTarget;
 
-//debug mks -- remove this
-        /*String companyName = "XYZ Pipe Co";
-        String jobName = "x234554";
-        String jobDate =  "01/12/15";
-        double tallyAdj = -2.3;
-        double tallyTarget = 1995.0;*/
-//debug mks -- remove this end
+        //if user left entry blank, print 0 for target
+        if (tallyTarget > 999999){ tallyTarget = 0; }
 
-    }// end of TallyReportMaker::TallyReportMaker (constructor)
+    }// end of TallyReportHTMLFileMaker::TallyReportHTMLFileMaker (constructor)
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyReportMaker::init
+    // TallyReportHTMLFileMaker::init
     //
     // Initializes the object.  Must be called immediately after instantiation.
     //
@@ -111,11 +113,33 @@ public class TallyReportMaker {
 
         numTubes = rowAndPos.size();
 
-    }// end of TallyReportMaker::init
+        dataPath = getDataStoragePath("Tally Zap").toString() + File.separator;
+
+    }// end of TallyReportHTMLFileMaker::init
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyReportMaker::printTallyReport
+    // TallyReportHTMLFileMaker::getDataStoragePath
+    //
+    // Gets the path to folder pFolderName in external storage in Android folder
+    // DIRECTORY_DOCUMENTS, creating the folder if it does not exist.
+    //
+
+    public File getDataStoragePath(String pFolderName) {
+
+        // Get the directory for the user's public pictures directory.
+        File file = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOCUMENTS), pFolderName);
+        if (!file.mkdirs()) {
+            Log.e(LOG_TAG, "Data Directory not created in Documents folder.");
+        }
+        return file;
+
+    }// end of TallyReportHTMLFileMaker::Path
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyReportHTMLFileMaker::printTallyReport
     //
 
     public void printTallyReport()
@@ -150,11 +174,11 @@ public class TallyReportMaker {
 
         }
 
-    }// end of TallyReportMaker::printTallyReport
+    }// end of TallyReportHTMLFileMaker::printTallyReport
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyReportMaker::printPage
+    // TallyReportHTMLFileMaker::printPage
     //
 
     public void printPage(int pIndex, int pPageNum, int pNumPages)
@@ -166,7 +190,8 @@ public class TallyReportMaker {
 
         try{
 
-            fileOutputStream = new FileOutputStream("Page " + pPageNum + ".html");
+            fileOutputStream = new FileOutputStream(
+                                                        dataPath + "Page " + pPageNum + ".html");
             outputStreamWriter = new OutputStreamWriter(fileOutputStream, "UTF-8");
             out = new BufferedWriter(outputStreamWriter);
 
@@ -189,11 +214,11 @@ public class TallyReportMaker {
             catch(IOException e){}
         }
 
-    }// end of TallyReportMaker::printPage
+    }// end of TallyReportHTMLFileMaker::printPage
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyReportMaker::printPageText
+    // TallyReportHTMLFileMaker::printPageText
     //
 
     public void printPageText(BufferedWriter pOut, int pIndex, int pPageNum, int pNumPages)
@@ -254,16 +279,15 @@ public class TallyReportMaker {
 
         }
 
-        printPageFooter(pOut, pPageNum, pNumPages, pageTallyTotal,
-                pageAdjTallyTotal);
+        printPageFooter(pOut, pPageNum, pNumPages, pageTallyTotal, pageAdjTallyTotal);
 
         pOut.write(htmlFooter);
 
-    }// end of TallyReportMaker::printPageText
+    }// end of TallyReportHTMLFileMaker::printPageText
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyReportMaker::printPageHeader
+    // TallyReportHTMLFileMaker::printPageHeader
     //
 
     public void printPageHeader(BufferedWriter pOut, int pNumTubes)
@@ -290,15 +314,15 @@ public class TallyReportMaker {
                 + "-------------------------------------------");
         pOut.write("<br>\n");
 
-    }// end of TallyReportMaker::printPageHeader
+    }// end of TallyReportHTMLFileMaker::printPageHeader
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyReportMaker::printPageFooter
+    // TallyReportHTMLFileMaker::printPageFooter
     //
 
     public void printPageFooter(BufferedWriter pOut, int pPageNum, int pNumPages,
-                                double pPageTallyTotal, double pPageAdjTallyTotal) throws IOException
+                              double pPageTallyTotal, double pPageAdjTallyTotal) throws IOException
     {
 
 
@@ -315,11 +339,11 @@ public class TallyReportMaker {
         pOut.write(prePadString(decFormat.format(pPageAdjTallyTotal),9));
         pOut.write(System.lineSeparator());
 
-    }// end of TallyReportMaker::printPageFooter
+    }// end of TallyReportHTMLFileMaker::printPageFooter
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyReportMaker::prePadString
+    // TallyReportHTMLFileMaker::prePadString
     //
     // Adds spaces to pInput until it is length pToLength.
     //
@@ -354,11 +378,11 @@ public class TallyReportMaker {
 
         return(padding + pInput);
 
-    }// end of TallyReportMaker::prePadString
+    }// end of TallyReportHTMLFileMaker::prePadString
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyReportMaker::getRowCountAndPositions
+    // TallyReportHTMLFileMaker::getRowCountAndPositions
     //
     // Gets the number of rows and each of their positions in the measurements table
     // and returns them in a SparseIntArray.
@@ -387,11 +411,11 @@ public class TallyReportMaker {
 
         return rowAndPos;
 
-    }//end of TallyReportMaker::getRowCountAndPositions
+    }//end of TallyReportHTMLFileMaker::getRowCountAndPositions
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyReportMaker::getTubeNum
+    // TallyReportHTMLFileMaker::getTubeNum
     //
     // Returns the value under the Pipe # column for row number pRow.
     //
@@ -411,17 +435,18 @@ public class TallyReportMaker {
             if (row.getChildAt(i).getId() == R.id.measurementsTableColumnPipeNum) {
                 TextView tV = (TextView)row.getChildAt(i);
                 pipeNum = tV.getText().toString();
+                break;
             }
 
         }
 
         return Integer.parseInt(pipeNum);
 
-    }//end of TallyReportMaker::getTubeNum
+    }//end of TallyReportHTMLFileMaker::getTubeNum
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyReportMaker::getTally
+    // TallyReportHTMLFileMaker::getTally
     //
     // Returns the value under the Total Length column for row number pRow.
     //
@@ -441,15 +466,16 @@ public class TallyReportMaker {
             if (row.getChildAt(i).getId() == R.id.measurementsTableColumnActual) {
                 TextView tV = (TextView)row.getChildAt(i);
                 actual = tV.getText().toString();
+                break;
             }
 
         }
 
         return Double.parseDouble(actual);
 
-    }//end of TallyReportMaker::getTally
+    }//end of TallyReportHTMLFileMaker::getTally
     //-----------------------------------------------------------------------------
 
-}//end of class TallyReportMaker
+}//end of class TallyReportHTMLFileMaker
 //---------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------
