@@ -552,7 +552,7 @@ public class JobDisplayActivity extends Activity {
 
             if (pR.getChildAt(i).getId() == R.id.measurementsTableColumnAdjusted) {
                 adjustedColumn = (TextView)pR.getChildAt(i);
-                return adjustedColumn;
+                break;
             }
 
         }
@@ -579,6 +579,7 @@ public class JobDisplayActivity extends Activity {
             if (pR.getChildAt(i).getId() == R.id.measurementsTableColumnAdjusted) {
                 TextView tV = (TextView)pR.getChildAt(i);
                 adjusted = tV.getText().toString();
+                break;
             }
 
         }
@@ -660,6 +661,7 @@ public class JobDisplayActivity extends Activity {
             if (pR.getChildAt(i).getId() == R.id.measurementsTableColumnPipeNum) {
                 TextView tV = (TextView)pR.getChildAt(i);
                 pipeNum = tV.getText().toString();
+                break;
             }
 
         }
@@ -738,6 +740,7 @@ public class JobDisplayActivity extends Activity {
             if (pR.getChildAt(i).getId() == R.id.measurementsTableColumnActual) {
                 TextView tV = (TextView)pR.getChildAt(i);
                 actual = tV.getText().toString();
+                break;
             }
 
         }
@@ -926,53 +929,16 @@ public class JobDisplayActivity extends Activity {
 
     public void handleMoreButtonPressed(View pView) {
 
-        /* //debug hss//
-
-        // Create a WebView object specifically for printing
-        WebView webView = new WebView(this);
-        webView.setWebViewClient(new WebViewClient() {
-
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                return false;
-            }
-
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                Log.i(TAG, "page finished loading " + url);
-                createWebPrintJob(view);
-            }
-        });
-
-        // Generate an HTML document on the fly:
-        String htmlDocument = "<html><body><h1>Test Content</h1><p>Testing, " +
-                "testing, testing...</p></body></html>";
-        webView.loadDataWithBaseURL(null, htmlDocument, "text/HTML", "UTF-8", null);*/
-
         TallyReportMaker tallyReportMaker = new TallyReportMaker(measurementsTable, companyName,
                                                                     jobName, "",  adjustmentValue,
-                                                                    tallyGoal);
+                                                                    tallyGoal, this);
 
         tallyReportMaker.init();
 
         tallyReportMaker.printTallyReport();
 
-
     }//end of JobDisplayActivity::handleMoreButtonPressed
     //-----------------------------------------------------------------------------
-
-    private void createWebPrintJob(WebView webView) {
-
-        // Get a PrintManager instance
-        PrintManager printManager = (PrintManager) getSystemService(Context.PRINT_SERVICE);
-
-        // Get a print adapter instance
-        PrintDocumentAdapter printAdapter = webView.createPrintDocumentAdapter();
-
-        // Create a print job with name and adapter instance
-        String jobName = getString(R.string.app_name) + " Document";
-        PrintJob printJob = printManager.print(jobName, printAdapter,
-                new PrintAttributes.Builder().build());
-    }
 
     //-----------------------------------------------------------------------------
     // JobDisplayActivity::handleNewDistanceValue
@@ -1332,6 +1298,7 @@ public class JobDisplayActivity extends Activity {
             if (pR.getChildAt(i).getId() == R.id.measurementsTableColumnPipeNum) {
                 TextView tV = (TextView)pR.getChildAt(i);
                 tV.setText(pPipeNum);
+                break;
             }
 
         }
@@ -1398,6 +1365,7 @@ public class JobDisplayActivity extends Activity {
             if (pR.getChildAt(i).getId() == R.id.measurementsTableColumnActual) {
                 TextView tV = (TextView)pR.getChildAt(i);
                 tV.setText(pTotalLength);
+                break;
             }
 
         }
