@@ -19,6 +19,7 @@ package com.yaboosh.ybtech.lasertally;
 
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
@@ -28,9 +29,15 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.print.PrintAttributes;
+import android.print.PrintDocumentAdapter;
+import android.print.PrintJob;
+import android.print.PrintManager;
 import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.View;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
@@ -70,8 +77,13 @@ public class JobDisplayActivity extends Activity {
     final String noValueString = "No Value";
 
     private DecimalFormat tallyFormat = new DecimalFormat("#.##");
+
+    // Job Info Variables
     private float adjustmentValue = 0;
+    private String companyName = "";
+    private String jobName = "";
     private float tallyGoal;
+    // End of Job Info Variables
 
     private ArrayList<String> adjustedValues = new ArrayList<String>();
     private ArrayList<String> totalLengthValues = new ArrayList<String>();
@@ -126,7 +138,8 @@ public class JobDisplayActivity extends Activity {
         Bundle bundle = getIntent().getExtras();
         if (bundle.getBoolean(Keys.JOB_INFO_INCLUDED_KEY, false)) {
 
-            setJobTitle(bundle.getString(Keys.JOB_KEY));
+            setJobName(bundle.getString(Keys.JOB_NAME_KEY));
+            companyName = bundle.getString(Keys.COMPANY_NAME_KEY);
             setAdjustmentValue(bundle.getString(Keys.ADJUSTMENT_KEY));
             setTallyGoal(bundle.getString(Keys.TALLY_GOAL_KEY));
 
@@ -223,7 +236,7 @@ public class JobDisplayActivity extends Activity {
         if (pRequestCode == Keys.ACTIVITY_RESULT_JOB_INFO) {
 
             if (pResultCode == RESULT_OK) {
-                handleJobInfoActivityResultOk(pData.getStringExtra(Keys.JOB_KEY),
+                handleJobInfoActivityResultOk(pData.getStringExtra(Keys.JOB_NAME_KEY),
                                                     pData.getStringExtra(Keys.ADJUSTMENT_KEY),
                                                     pData.getStringExtra(Keys.TALLY_GOAL_KEY));
             }
@@ -539,7 +552,7 @@ public class JobDisplayActivity extends Activity {
 
             if (pR.getChildAt(i).getId() == R.id.measurementsTableColumnAdjusted) {
                 adjustedColumn = (TextView)pR.getChildAt(i);
-                return adjustedColumn;
+                break;
             }
 
         }
@@ -566,6 +579,7 @@ public class JobDisplayActivity extends Activity {
             if (pR.getChildAt(i).getId() == R.id.measurementsTableColumnAdjusted) {
                 TextView tV = (TextView)pR.getChildAt(i);
                 adjusted = tV.getText().toString();
+                break;
             }
 
         }
@@ -647,6 +661,7 @@ public class JobDisplayActivity extends Activity {
             if (pR.getChildAt(i).getId() == R.id.measurementsTableColumnPipeNum) {
                 TextView tV = (TextView)pR.getChildAt(i);
                 pipeNum = tV.getText().toString();
+                break;
             }
 
         }
@@ -725,6 +740,7 @@ public class JobDisplayActivity extends Activity {
             if (pR.getChildAt(i).getId() == R.id.measurementsTableColumnActual) {
                 TextView tV = (TextView)pR.getChildAt(i);
                 actual = tV.getText().toString();
+                break;
             }
 
         }
@@ -846,7 +862,7 @@ public class JobDisplayActivity extends Activity {
     private void handleJobInfoActivityResultOk(String pJob, String pAdjustmentValue,
                                                                                 String pTallyGoal) {
 
-        setJobTitle(pJob);
+        setJobName(pJob);
         setAdjustmentValue(pAdjustmentValue);
         setTallyGoal(pTallyGoal);
         setAndCheckTotalColumnsOfTotalLengthAndAdjustedColumns();
@@ -877,8 +893,7 @@ public class JobDisplayActivity extends Activity {
     public void handleJobInfoButtonPressed(View pView) {
 
         Intent intent = new Intent(this, EditJobInfoActivity.class);
-        intent.putExtra(Keys.JOB_KEY,
-                            ((TextView)findViewById(R.id.jobTitleTextView)).getText().toString());
+        intent.putExtra(Keys.JOB_NAME_KEY, jobName);
         intent.putExtra(Keys.EDIT_JOB_INFO_ACTIVITY_MODE_KEY,
                                         EditJobInfoActivity.EditJobInfoActivityMode.EDIT_JOB_INFO);
         startActivityForResult(intent, Keys.ACTIVITY_RESULT_JOB_INFO);
@@ -909,11 +924,18 @@ public class JobDisplayActivity extends Activity {
     // Starts an activity for "More".
     // Should be called from the "More" button onClick().
     //
+    // Currently prints. //hss wip//
+    //
 
     public void handleMoreButtonPressed(View pView) {
 
-        Intent intent = new Intent(this, TallyDeviceConnectionStatusMessageActivity.class);
-        startActivity(intent);
+        TallyReportMaker tallyReportMaker = new TallyReportMaker(measurementsTable, companyName,
+                                                                    jobName, "",  adjustmentValue,
+                                                                    tallyGoal, this);
+
+        tallyReportMaker.init();
+
+        tallyReportMaker.printTallyReport();
 
     }//end of JobDisplayActivity::handleMoreButtonPressed
     //-----------------------------------------------------------------------------
@@ -962,6 +984,25 @@ public class JobDisplayActivity extends Activity {
         setRedoButtonEnabled(true);
 
     }//end of JobDisplayActivity::handleNewDistanceValue
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobDisplayActivity::handleNoNewDistanceValueReceived
+    //
+    // Enables the Measure and Redo buttons.
+    //
+    // This function handles when a distance value is not received back from the
+    // tally device after the measure command was sent to it. This is to
+    // ensure that if a distance value was not received, the Measure and Redo buttons
+    // are not permanently disabled.
+    //
+
+    private void handleNoNewDistanceValueReceived () {
+
+        setMeasureConnectButtonEnabled(true);
+        setRedoButtonEnabled(true);
+
+    }//end of JobDisplayActivity::handleNoNewDistanceValueReceived
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -1200,23 +1241,23 @@ public class JobDisplayActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobDisplayActivity::setJobTitle
+    // JobDisplayActivity::setJobName
     //
-    // If the passed in job title is not the same as the old one, the job title
+    // If the passed in job name is not the same as the old one, the job name
     // is changed to the passed in string.
     //
 
-    private void setJobTitle(String pNewJobTitle) {
+    private void setJobName(String pNewJobName) {
 
-        TextView jobTitleTextView = (TextView)findViewById(R.id.jobTitleTextView);
+        TextView jobTitleTextView = (TextView)findViewById(R.id.jobNameTextView);
 
-        if (pNewJobTitle.equals(jobTitleTextView.getText().toString())) {
-            return;
-        }
+        if (pNewJobName.equals(jobTitleTextView.getText().toString())) { return; }
 
-        jobTitleTextView.setText(pNewJobTitle);
+        jobName = pNewJobName;
 
-    }//end of JobDisplayActivity::setJobTitle
+        jobTitleTextView.setText(jobName);
+
+    }//end of JobDisplayActivity::setJobName
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -1257,6 +1298,7 @@ public class JobDisplayActivity extends Activity {
             if (pR.getChildAt(i).getId() == R.id.measurementsTableColumnPipeNum) {
                 TextView tV = (TextView)pR.getChildAt(i);
                 tV.setText(pPipeNum);
+                break;
             }
 
         }
@@ -1323,6 +1365,7 @@ public class JobDisplayActivity extends Activity {
             if (pR.getChildAt(i).getId() == R.id.measurementsTableColumnActual) {
                 TextView tV = (TextView)pR.getChildAt(i);
                 tV.setText(pTotalLength);
+                break;
             }
 
         }
@@ -1443,6 +1486,10 @@ public class JobDisplayActivity extends Activity {
 
                     case TallyDeviceService.MSG_NEW_DISTANCE_VALUE:
                         tempActivity.handleNewDistanceValue((String)pMsg.obj);
+                        break;
+
+                    case TallyDeviceService.MSG_N0_NEW_DISTANCE_VALUE_RECEIVED:
+                        tempActivity.handleNoNewDistanceValueReceived();
                         break;
 
                 }

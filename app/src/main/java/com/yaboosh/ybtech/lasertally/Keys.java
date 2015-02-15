@@ -37,7 +37,7 @@ public class Keys {
     public static final String FACILITY_KEY = "FACILITY_KEY";
     public static final String GRADE_KEY = "GRADE_KEY";
     public static final String JOB_INFO_INCLUDED_KEY =  "JOB_INFO_INCLUDED_KEY";
-    public static final String JOB_KEY =  "JOB_KEY";
+    public static final String JOB_NAME_KEY =  "JOB_NAME_KEY";
     public static final String RACK_KEY = "RACK_KEY";
     public static final String RANGE_KEY = "RANGE_KEY";
     public static final String RIG_KEY = "RIG_KEY";

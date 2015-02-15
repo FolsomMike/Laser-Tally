@@ -7,6 +7,8 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="#CFCFCF"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     android:paddingBottom="0dp"
     android:paddingLeft="0dp"
     android:paddingRight="0dp"
@@ -183,7 +185,6 @@
                         android:paddingLeft="10dp"
                         android:paddingRight="10dp"
                         android:paddingTop="10dp"
-                        android:selectAllOnFocus="true"
                         android:background="@drawable/black_border" >
                     </EditText>
 
@@ -236,7 +237,6 @@
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
                     android:paddingTop="10dp"
-                    android:selectAllOnFocus="true"
                     android:textColor="#000000"
                     android:textSize="35sp" >
                 </EditText>
@@ -287,7 +287,6 @@
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
                     android:paddingTop="10dp"
-                    android:selectAllOnFocus="true"
                     android:background="@drawable/black_border" >
                 </EditText>
 
@@ -351,7 +350,6 @@
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
                     android:paddingTop="10dp"
-                    android:selectAllOnFocus="true"
                     android:background="@drawable/black_border" >
                 </EditText>
 
@@ -401,7 +399,6 @@
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
                     android:paddingTop="10dp"
-                    android:selectAllOnFocus="true"
                     android:background="@drawable/black_border" >
                 </EditText>
 
@@ -451,7 +448,6 @@
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
                     android:paddingTop="10dp"
-                    android:selectAllOnFocus="true"
                     android:background="@drawable/black_border" >
                 </EditText>
 
@@ -501,7 +497,6 @@
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
                     android:paddingTop="10dp"
-                    android:selectAllOnFocus="true"
                     android:background="@drawable/black_border" >
                 </EditText>
 
@@ -551,7 +546,6 @@
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
                     android:paddingTop="10dp"
-                    android:selectAllOnFocus="true"
                     android:background="@drawable/black_border" >
                 </EditText>
 
@@ -601,7 +595,6 @@
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
                     android:paddingTop="10dp"
-                    android:selectAllOnFocus="true"
                     android:background="@drawable/black_border" >
                 </EditText>
 
@@ -651,7 +644,6 @@
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
                     android:paddingTop="10dp"
-                    android:selectAllOnFocus="true"
                     android:background="@drawable/black_border" >
                 </EditText>
 
@@ -701,7 +693,6 @@
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
                     android:paddingTop="10dp"
-                    android:selectAllOnFocus="true"
                     android:background="@drawable/black_border" >
                 </EditText>
 

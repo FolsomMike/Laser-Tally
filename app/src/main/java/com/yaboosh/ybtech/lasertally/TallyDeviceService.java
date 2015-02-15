@@ -78,7 +78,7 @@ public class TallyDeviceService extends Service {
     static final int MSG_TALLY_DEVICE_NAME = 20;
     static final int MSG_NEW_DISTANCE_VALUE = 21;
     static final int MSG_START_SCAN_FOR_TALLY_DEVICES_FAILED = 22;
-    static final int MSG_FINISH_SCAN_ACTIVITY_AND_START_MESSAGE_ACTIVITY = 23;
+    static final int MSG_N0_NEW_DISTANCE_VALUE_RECEIVED = 23;
 
     private static final long SCAN_PERIOD = 10000;
 
@@ -98,7 +98,7 @@ public class TallyDeviceService extends Service {
     // variable can be initiated using different classes
     // (TallyDeviceBluetoothLeConnectionHandler, TallyDeviceSimulationConnectionHandler, etc.)
     private TallyDeviceConnectionHandler tallyDeviceConnectionHandler = new
-                                                    TallyDeviceSimulationConnectionHandler(this);
+                                                    TallyDeviceBluetoothLeConnectionHandler(this);
     Runnable stopScanRunnable;
 
     private final Messenger messenger;
@@ -170,9 +170,6 @@ public class TallyDeviceService extends Service {
     //
 
     public void handleConnectedToTallyDevice(String pDeviceName) {
-
-        //debug hss//
-        Log.d(TAG, "Handle connectd to tally device");
 
         connectedTallyDeviceName = pDeviceName;
         setState(State.CONNECTED);
@@ -257,6 +254,23 @@ public class TallyDeviceService extends Service {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // TallyDeviceService::handleNoDistanceValueReceived
+    //
+    // Enables the Measure and Redo buttons.
+    //
+    // //hss wip// should send message to user saying taking a measurement failed
+    //
+
+    public void handleNoDistanceValueReceived() {
+
+        Message msg = Message.obtain(null, MSG_N0_NEW_DISTANCE_VALUE_RECEIVED);
+        if (msg == null) { return; }
+        sendMessageToMessengerClient(msg);
+
+    }//end of TallyDeviceService::handleNoDistanceValueReceived
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // TallyDeviceService::handleStartScanForTallyDevicesFailure
     //
     // Sends a message to the messenger client indicating that starting the scan
@@ -292,7 +306,7 @@ public class TallyDeviceService extends Service {
 
                 if (connectionState == State.SCANNING) {
                     if (tallyDeviceConnectionHandler.stopScanForTallyDevices()) {
-                        setState(State.IDLE);
+                        setState(State.DISCONNECTED);
                     }
                 }
 
@@ -314,6 +328,9 @@ public class TallyDeviceService extends Service {
     //
 
     public void handleStartScanForTallyDevicesSuccess() {
+
+        //debug hss//
+        Log.d(TAG, "Start scan for tally devices success");
 
         // The sending of the message
         // may fail because there might
@@ -444,10 +461,6 @@ public class TallyDeviceService extends Service {
 
         messengerClient = pMsg.replyTo;
         tallyDeviceConnectionHandler.setContext((Context)pMsg.obj);
-
-        Message msg = getStateMessage();
-        if (msg == null) { return; }
-        sendMessageToMessengerClient(msg);
 
     }//end of TallyDeviceService::handleRegisterTallyDeviceScanActivityMessage
     //-----------------------------------------------------------------------------

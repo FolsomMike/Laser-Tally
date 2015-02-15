@@ -288,6 +288,21 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // TallyDeviceConnectionStatusMessageActivity::handleDisconnectedState
+    //
+    // Displays a message to the user saying that connecting failed.
+    //
+
+    public void handleDisconnectedState() {
+
+        setProgressBarVisible(false);
+        setGreenCheckMarkVisible(false);
+        setMessageText("Failed to connect to " + tallyDeviceName);
+
+    }//end of TallyDeviceConnectionStatusMessageActivity::handleDisconnectedState
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // TallyDeviceConnectionStatusMessageActivity::registerWithService
     //
     // Sends a message to the TallyDeviceService to register.
@@ -384,6 +399,7 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
             tallyDeviceName = (String)pMsg.obj;
             handleConnectingState();
         } else if (state == TallyDeviceService.State.DISCONNECTED) {
+            handleDisconnectedState();
         }
 
     }//end of TallyDeviceConnectionStatusMessageActivity::stateChanged

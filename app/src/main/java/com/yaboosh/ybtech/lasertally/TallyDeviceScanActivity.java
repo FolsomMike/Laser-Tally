@@ -357,17 +357,17 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyDeviceScanActivity::handleIdleState
+    // TallyDeviceScanActivity::handleDisconnectedState
     //
     // Sets the scanning state of deviceList to false and sets the progress bar's
     // visible state to false.
     //
 
-    public void handleIdleState() {
+    public void handleDisconnectedState() {
 
         setScanning(false);
 
-    }//end of TallyDeviceScanActivity::handleIdleState
+    }//end of TallyDeviceScanActivity::handleDisconnectedState
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -528,7 +528,7 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
 
         state = pNewState;
         if (state == TallyDeviceService.State.SCANNING) { handleScanningState(); }
-        else if (state == TallyDeviceService.State.IDLE) { handleIdleState(); }
+        else if (state == TallyDeviceService.State.DISCONNECTED) { handleDisconnectedState(); }
 
     }//end of TallyDeviceScanActivity::stateChanged
     //-----------------------------------------------------------------------------
