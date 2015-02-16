@@ -2,10 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.yaboosh.ybtech.lasertally" >
 
-    <uses-sdk
-        android:minSdkVersion="20"
-        android:targetSdkVersion="20" />
-
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE" />
