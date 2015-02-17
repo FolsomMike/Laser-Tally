@@ -47,6 +47,8 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
     private View decorView;
     private int uiOptions;
 
+    private SharedSettings sharedSettings;
+
     private TallyDeviceService.State state = TallyDeviceService.State.UNKNOWN;
     private final Messenger messenger;
     private Intent serviceIntent;
@@ -95,6 +97,9 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
 
         createUiChangeListener();
 
+        Bundle bundle = getIntent().getExtras();
+        sharedSettings = bundle.getParcelable(Keys.SHARED_SETTINGS_KEY);
+
         serviceIntent = new Intent(this, TallyDeviceService.class);
 
     }//end of TallyDeviceConnectionStatusMessageActivity::onCreate
@@ -130,6 +135,8 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
         super.onResume();
 
         decorView.setSystemUiVisibility(uiOptions);
+
+        sharedSettings.setContext(this);
 
         bindService(serviceIntent, connection, BIND_AUTO_CREATE);
 

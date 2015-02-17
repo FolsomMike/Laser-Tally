@@ -43,8 +43,11 @@ import java.lang.ref.WeakReference;
 public class TableRowEditorActivity extends Activity {
 
     public static final String TAG = "TableRowEditorActivity";
+
     private View decorView;
     private int uiOptions;
+
+    private SharedSettings sharedSettings;
 
     public static final String PIPE_NUMBER_KEY =  "PIPE_NUMBER_KEY";
     public static final String RENUMBER_ALL_CHECKBOX_KEY = "RENUMBER_ALL_CHECKBOX_KEY";
@@ -98,6 +101,7 @@ public class TableRowEditorActivity extends Activity {
         //Get the pipe number and total length
         //sent to this activity from its parent
         Bundle bundle = getIntent().getExtras();
+        sharedSettings = bundle.getParcelable(Keys.SHARED_SETTINGS_KEY);
         pipeNumber = bundle.getString(PIPE_NUMBER_KEY);
         totalLength = bundle.getString(TOTAL_LENGTH_KEY);
 
@@ -140,6 +144,8 @@ public class TableRowEditorActivity extends Activity {
         Log.d(TAG, "Inside of TableRowEditorActivity onResume");
 
         decorView.setSystemUiVisibility(uiOptions);
+
+        sharedSettings.setContext(this);
 
     }//end of TableRowEditorActivity::onResume
     //-----------------------------------------------------------------------------
