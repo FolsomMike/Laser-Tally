@@ -26,13 +26,25 @@ import java.io.File;
 
 public class SharedSettings {
 
-    public Context context;
+    private Context context;
+    // Getter and setter functions
+    public Context getContext() { return context; }
+    public void setContext(Context pNewContext) { context = pNewContext; }
 
-    public String dataFolderPath;
+    private String dataFolderPath;
+    // Getter and setter functions
+    public String getDataFolderPath() { return dataFolderPath; }
+    public void setDataFolderPath(String pNewPath) { dataFolderPath = pNewPath; }
 
-    public String reportsFolderPath = "";
+    private String reportsFolderPath = "";
+    // Getter and setter functions
+    public String getReportsFolderPath() { return reportsFolderPath; }
+    public void setReportsFolderPath(String pNewPath) { reportsFolderPath = pNewPath; }
 
-    public String jobsFolderPath = "";
+    private String jobsFolderPath = "";
+    // Getter and setter functions
+    public String getJobsFolderPath() { return jobsFolderPath; }
+    public void setJobsFolderPath(String pNewPath) { jobsFolderPath = pNewPath; }
 
     private static final String LOG_TAG = "SharedSettings";
 
@@ -42,50 +54,47 @@ public class SharedSettings {
     // Initializes the object.  Must be called immediately after instantiation.
     //
 
-    public void init()
-    {
+    public void init() {
 
-        setDataStoragePath("Tally Zap");
+        preparesDataStoragePath("Tally Zap");
 
-        setJobsFolderPath();
+        prepareJobsFolderPath();
 
-        setReportsFolderPath();
+        prepareReportsFolderPath();
 
     }// end of SharedSettings::init
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // SharedSettings::setDataStoragePath
+    // SharedSettings::preparesDataStoragePath
     //
-    // Sets the path to folder pFolderName in external storage in Android folder
+    // Prepares the path to folder pFolderName in external storage in Android folder
     // DIRECTORY_DOCUMENTS, creating the folder if it does not exist.
     //
 
-    public void setDataStoragePath(String pFolderName) {
+    private void preparesDataStoragePath(String pFolderName) {
 
         // Get the directory for the user's public pictures directory.
         File file = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOCUMENTS), pFolderName);
+                                                    Environment.DIRECTORY_DOCUMENTS), pFolderName);
 
         if (!file.exists()) {
-            if (!file.mkdirs()) {
-                Log.e(LOG_TAG, "Data folder not created in Documents folder.");
-            }
+            if (!file.mkdirs()) { Log.e(LOG_TAG, "Data folder not created in Documents folder."); }
         }
 
         dataFolderPath = file.toString() + File.separator;
 
-    }// end of SharedSettings::setDataStoragePath
+    }// end of SharedSettings::preparesDataStoragePath
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // SharedSettings::setJobsFolderPath
+    // SharedSettings::prepareJobsFolderPath
     //
-    // Sets the path to jobs folder in the dataPath, creating the folder if it
-    // does not exist.
+    // Prepares the path to the jobs folder in the dataPath, creating the folder
+    // if it does not exist.
     //
 
-    public void setJobsFolderPath() {
+    private void prepareJobsFolderPath() {
 
         File file = new File(dataFolderPath, "Tally Jobs");
 
@@ -97,17 +106,17 @@ public class SharedSettings {
 
         jobsFolderPath = file.toString() + File.separator;
 
-    }// end of SharedSettings::setJobsFolderPath
+    }// end of SharedSettings::prepareJobsFolderPath
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // SharedSettings::setReportsFolderPath
+    // SharedSettings::prepareReportsFolderPath
     //
-    // Sets the path to reports folder in the dataPath, creating the folder if it
-    // does not exist.
+    // Prepares the path to the reports folder in the dataFolderPath, creating the
+    // folder if it does not exist.
     //
 
-    public void setReportsFolderPath() {
+    private void prepareReportsFolderPath() {
 
         File file = new File(dataFolderPath, "Tally Reports");
 
@@ -119,7 +128,7 @@ public class SharedSettings {
 
         reportsFolderPath = file.toString() + File.separator;
 
-    }// end of SharedSettings::setReportsFolderPath
+    }// end of SharedSettings::prepareReportsFolderPath
     //-----------------------------------------------------------------------------
 
 }//end of class SharedSettings

@@ -79,7 +79,7 @@ public class TallyReportHTMLFileMaker extends TallyReportHTMLMaker {
         try{
 
             fileOutputStream = new FileOutputStream(
-                       sharedSettings.reportsFolderPath + jobName + " ~ Tally Report.html");
+                       sharedSettings.getReportsFolderPath() + jobName + " ~ Tally Report.html");
             outputStreamWriter = new OutputStreamWriter(fileOutputStream, "UTF-8");
             out = new BufferedWriter(outputStreamWriter);
 

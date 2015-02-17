@@ -27,6 +27,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
+import android.os.Parcelable;
 import android.os.RemoteException;
 import android.util.Log;
 import android.util.SparseIntArray;
@@ -112,7 +113,6 @@ public class JobDisplayActivity extends Activity {
 
         sharedSettings = new SharedSettings();
         sharedSettings.init();
-        sharedSettings.context = this;
 
         setContentView(R.layout.activity_job_display);
 
@@ -184,6 +184,8 @@ public class JobDisplayActivity extends Activity {
         decorView.setSystemUiVisibility(uiOptions);
 
         bindService(serviceIntent, connection, BIND_AUTO_CREATE);
+
+        sharedSettings.setContext(this);
 
         //hss wip// -- should load values from file
         setAndCheckTotalColumnsOfTotalLengthAndAdjustedColumns();
