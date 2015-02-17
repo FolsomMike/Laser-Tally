@@ -19,7 +19,6 @@ package com.yaboosh.ybtech.lasertally;
 
 import android.app.Activity;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
@@ -29,15 +28,9 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.print.PrintAttributes;
-import android.print.PrintDocumentAdapter;
-import android.print.PrintJob;
-import android.print.PrintManager;
 import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.View;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
@@ -71,6 +64,8 @@ public class JobDisplayActivity extends Activity {
     private TallyDeviceService.State state = TallyDeviceService.State.UNKNOWN;
 
     TableLayout measurementsTable;
+
+    SharedSettings sharedSettings;
 
     final String connectButtonText = "connect";
     final String measureButtonText = "measure";
@@ -114,6 +109,10 @@ public class JobDisplayActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+
+        sharedSettings = new SharedSettings();
+        sharedSettings.init();
+        sharedSettings.context = this;
 
         setContentView(R.layout.activity_job_display);
 
@@ -929,13 +928,17 @@ public class JobDisplayActivity extends Activity {
 
     public void handleMoreButtonPressed(View pView) {
 
-        TallyReportMaker tallyReportMaker = new TallyReportMaker(measurementsTable, companyName,
-                                                                    jobName, "",  adjustmentValue,
-                                                                    tallyGoal, this);
-
+        TallyReportHTMLPrintoutMaker tallyReportMaker = new TallyReportHTMLPrintoutMaker(
+         sharedSettings, measurementsTable, companyName, jobName, "",  adjustmentValue, tallyGoal);
         tallyReportMaker.init();
-
         tallyReportMaker.printTallyReport();
+
+        //use this code block to save a tally report to an HTML file -- mainly used for debugging
+        TallyReportHTMLFileMaker tallyReportFileMaker = new TallyReportHTMLFileMaker(
+         sharedSettings, measurementsTable, companyName, jobName, "",  adjustmentValue, tallyGoal);
+        tallyReportFileMaker.init();
+        tallyReportFileMaker.printTallyReport();
+
 
     }//end of JobDisplayActivity::handleMoreButtonPressed
     //-----------------------------------------------------------------------------
