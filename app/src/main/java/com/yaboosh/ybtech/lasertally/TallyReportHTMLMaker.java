@@ -323,7 +323,7 @@ public class TallyReportHTMLMaker {
             double tally = getTally(j);
             double adjTally = tally + tallyAdj;
 
-            htmlCode += prePadString("" + getTubeNum(j), 4) + space5
+            htmlCode += prePadString("" + getTubeNum(j), 6) + space3
                     + prePadString(decFormat.format(tally),6) + space5
                     + prePadString(decFormat.format(adjTally),6);
 
@@ -340,7 +340,7 @@ public class TallyReportHTMLMaker {
                 adjTally = tally + tallyAdj;
 
                 htmlCode += space6 + space6;
-                htmlCode += prePadString("" + getTubeNum(k), 4) + space5
+                htmlCode += prePadString("" + getTubeNum(k), 6) + space3
                         + prePadString(decFormat.format(tally),6) + space5
                         + prePadString(decFormat.format(adjTally),6);
 
@@ -373,18 +373,19 @@ public class TallyReportHTMLMaker {
         if (pPageNum != pNumPages) { htmlCode += pageBreakHTMLCode; }
 
         htmlCode += ">"
-                + "Company Name: " + companyName + sp + sp + sp + sp
-                + "Job Name: " + jobName + sp + sp + sp + sp
-                + "Date: " + jobDate
+                + "<b>Company Name: </b>" + companyName + sp + sp + sp + sp
+                + "<b>Job Name: </b>" + jobName + sp + sp + sp + sp
+                + "<b>Date: </b>" + jobDate + sp
                 + "<br>"
-                + "Adjustment: " +  decFormat.format(tallyAdj)
-                + " Tally Target: " + decFormat.format(tallyTarget)
-                + " Total Tally: " + decFormat.format(tallyTotal) + " / "
-                + decFormat.format(adjTallyTotal)
-                + " Tube Count: " + pNumTubes
+                + "<b>Adjustment: </b>" +  decFormat.format(tallyAdj) + sp
+                + "<b>Tally Target: </b>" + decFormat.format(tallyTarget) + sp + "<br>"
+                + "<b>Tube Count: </b>" + pNumTubes + sp
+                + "<b>Total Tally: </b>" + decFormat.format(tallyTotal) + " / "
+                + decFormat.format(adjTallyTotal) + sp
                 + "<br><br>"
-                + "Number" + space3 + "Length" + space3 + "Adjusted"
-                + space6 + space6 + "Number" + space3 + "Length" + space3 + "Adjusted"
+                + "<b>Number</b>" + space3 + "<b>Length</b>" + space3 + "<b>Adjusted</b>"
+                + space6 + space6
+                + "<b>Number</b>" + space3 + "<b>Length</b>" + space3 + "<b>Adjusted</b>"
                 + "<br>"
                 + "---------------------------------------------------------------------"
                 + "<br>";
@@ -405,13 +406,14 @@ public class TallyReportHTMLMaker {
     {
 
         return  (
-                "<br>"
-                        + "Page" + prePadString("" + pPageNum, 4)
-                        + " of " + prePadString("" + pNumPages, 4)
+                        "<br>"
+                        + "<b>Page</b>" + prePadString("" + pPageNum, 4)
+                        + " <b>of</b> " + prePadString("" + pNumPages, 4)
                         + space10 + space5 + sp
-                        + "Page Total: " + prePadString(decFormat.format(pPageTallyTotal),9)
+                        + "<b>Page Total: </b>" + prePadString(decFormat.format(pPageTallyTotal),9)
                         + sp + sp
                         + prePadString(decFormat.format(pPageAdjTallyTotal),9)
+                        + "<br>" + sp
                         + "</div>"
         );
 
