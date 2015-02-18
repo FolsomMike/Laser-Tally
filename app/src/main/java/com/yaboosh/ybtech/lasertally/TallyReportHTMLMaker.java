@@ -46,7 +46,7 @@ public class TallyReportHTMLMaker {
 
     DecimalFormat decFormat = new  DecimalFormat("#.00");
 
-    static final int NUM_TALLY_ROWS = 45;
+    static final int NUM_TALLY_ROWS = 42;
 
     static final String sp = "&nbsp;";
     static final String space3 = "&nbsp;&nbsp;&nbsp;";
@@ -92,18 +92,6 @@ public class TallyReportHTMLMaker {
 
         //if user left entry blank or entered very large value, print 0 for target
         if (tallyTarget > 999999){ tallyTarget = 0; }
-
-    }// end of TallyReportHTMLMaker::TallyReportHTMLMaker (constructor)
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // TallyReportHTMLMaker::TallyReportHTMLMaker (constructor)
-    //
-    // NOT USED -- PLACEHOLDER ONLY
-    //
-
-    public TallyReportHTMLMaker()
-    {
 
     }// end of TallyReportHTMLMaker::TallyReportHTMLMaker (constructor)
     //-----------------------------------------------------------------------------
