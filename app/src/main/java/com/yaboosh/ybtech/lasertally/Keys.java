@@ -30,6 +30,9 @@ public class Keys {
     public static final int ACTIVITY_RESULT_VERIFY_ACTION = 1233;
     public static final int ACTIVITY_RESULT_ENABLE_BT = 1234;
 
+    public static final String SHARED_SETTINGS_KEY = "SHARED_SETTINGS_KEY";
+
+    // Job Info Keys
     public static final String ADJUSTMENT_KEY = "ADJUSTMENT_KEY";
     public static final String COMPANY_NAME_KEY = "COMPANY_NAME_KEY";
     public static final String DIAMETER_KEY = "DIAMETER_KEY";

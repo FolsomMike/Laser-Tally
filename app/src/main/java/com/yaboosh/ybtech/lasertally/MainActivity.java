@@ -58,6 +58,8 @@ public class MainActivity extends Activity {
     private View decorView;
     private int uiOptions;
 
+    private SharedSettings sharedSettings;
+
     private ArrayList<String> jobNames = new ArrayList<String>();
 
     //-----------------------------------------------------------------------------
@@ -98,6 +100,19 @@ public class MainActivity extends Activity {
 
         createUiChangeListener();
 
+        //If the sharedSettings object is included
+        //in the bundle, set the sharedSettings
+        //object to the one in the bundle
+        //If it's not, initialize the sharedSettings
+        //object
+        if (getIntent().hasExtra(Keys.SHARED_SETTINGS_KEY)) {
+            sharedSettings = getIntent().getExtras().getParcelable(Keys.SHARED_SETTINGS_KEY);
+        }
+        else {
+            sharedSettings = new SharedSettings();
+            sharedSettings.init();
+        }
+
     }//end of MainActivity::onCreate
     //-----------------------------------------------------------------------------
 
@@ -135,6 +150,8 @@ public class MainActivity extends Activity {
         Log.d(TAG, "Inside of MainActivity onResume");
 
         decorView.setSystemUiVisibility(uiOptions);
+
+        sharedSettings.setContext(this);
 
     }//end of MainActivity::onResume
     //-----------------------------------------------------------------------------
@@ -195,6 +212,7 @@ public class MainActivity extends Activity {
     public void handleCreateNewJobButtonPressed(View pView) {
 
         Intent intent = new Intent(this, EditJobInfoActivity.class);
+        intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
         intent.putExtra(Keys.EDIT_JOB_INFO_ACTIVITY_MODE_KEY,
                                             EditJobInfoActivity.EditJobInfoActivityMode.CREATE_JOB);
         startActivity(intent);
@@ -212,6 +230,7 @@ public class MainActivity extends Activity {
     public void handleOpenAnExistingJobButtonPressed(View pView) {
 
         Intent intent = new Intent(this, OpenJobActivity.class);
+        intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
         startActivity(intent);
 
     }//end of MainActivity::handleOpenAnExistingJobButtonPressed

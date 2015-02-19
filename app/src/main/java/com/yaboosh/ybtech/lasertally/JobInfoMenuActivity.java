@@ -44,6 +44,8 @@ public class JobInfoMenuActivity extends Activity {
     private View decorView;
     private int uiOptions;
 
+    private SharedSettings sharedSettings;
+
     private String job;
 
     //-----------------------------------------------------------------------------
@@ -89,6 +91,7 @@ public class JobInfoMenuActivity extends Activity {
         createUiChangeListener();
 
         Bundle bundle = getIntent().getExtras();
+        sharedSettings = bundle.getParcelable(Keys.SHARED_SETTINGS_KEY);
         job = bundle.getString(Keys.JOB_NAME_KEY);
 
     }//end of JobInfoMenuActivity::onCreate
@@ -128,6 +131,8 @@ public class JobInfoMenuActivity extends Activity {
         Log.d(TAG, "Inside of onResume :: " + TAG);
 
         decorView.setSystemUiVisibility(uiOptions);
+
+        sharedSettings.setContext(this);
 
     }//end of JobInfoMenuActivity::onResume
     //-----------------------------------------------------------------------------
@@ -237,6 +242,7 @@ public class JobInfoMenuActivity extends Activity {
     public void handleCloseThisJobButtonPressed(View pView) {
 
         Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
         startActivity(intent);
 
     }//end of JobInfoMenuActivity::handleCloseThisJobButtonPressed
@@ -252,6 +258,7 @@ public class JobInfoMenuActivity extends Activity {
     public void handleCreateANewJobButtonPressed(View pView) {
 
         Intent intent = new Intent(this, EditJobInfoActivity.class);
+        intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
         intent.putExtra(Keys.EDIT_JOB_INFO_ACTIVITY_MODE_KEY,
                                             EditJobInfoActivity.EditJobInfoActivityMode.CREATE_JOB);
         startActivity(intent);
@@ -287,6 +294,7 @@ public class JobInfoMenuActivity extends Activity {
     public void handleOpenJobButtonPressed(View pView) {
 
         Intent intent = new Intent(this, OpenJobActivity.class);
+        intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
         startActivity(intent);
 
     }//end of JobInfoMenuActivity::handleOpenJobButtonPressed
@@ -327,6 +335,7 @@ public class JobInfoMenuActivity extends Activity {
         deleteJob(job);
 
         Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
         startActivity(intent);
 
     }//end of OpenJobActivity::handleVerifyActionResultOk

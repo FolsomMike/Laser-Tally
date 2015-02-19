@@ -52,6 +52,8 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
     private View decorView;
     private int uiOptions;
 
+    private SharedSettings sharedSettings;
+
     private TallyDeviceService.State state = TallyDeviceService.State.UNKNOWN;
     private final Messenger messenger;
     private Intent serviceIntent;
@@ -102,6 +104,9 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
 
         createUiChangeListener();
 
+        Bundle bundle = getIntent().getExtras();
+        sharedSettings = bundle.getParcelable(Keys.SHARED_SETTINGS_KEY);
+
         serviceIntent = new Intent(this, TallyDeviceService.class);
 
         listView = (AbsListView) findViewById(android.R.id.list);
@@ -146,6 +151,8 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
         super.onResume();
 
         decorView.setSystemUiVisibility(uiOptions);
+
+        sharedSettings.setContext(this);
 
         bindService(serviceIntent, connection, BIND_AUTO_CREATE);
 
@@ -304,6 +311,7 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
     private void finishActivityAndStartMessageActivity() {
 
         Intent intent = new Intent(this, TallyDeviceConnectionStatusMessageActivity.class);
+        intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
         startActivity(intent);
 
         exitActivity();

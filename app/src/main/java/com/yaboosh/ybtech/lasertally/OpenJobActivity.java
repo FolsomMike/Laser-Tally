@@ -53,6 +53,8 @@ public class OpenJobActivity extends Activity {
     private View decorView;
     private int uiOptions;
 
+    private SharedSettings sharedSettings;
+
     ArrayList<String> jobNames = new ArrayList<String>();
 
     ArrayList<String> fileLines = new ArrayList<String>();
@@ -112,6 +114,9 @@ public class OpenJobActivity extends Activity {
 
         createUiChangeListener();
 
+        Bundle bundle = getIntent().getExtras();
+        sharedSettings = bundle.getParcelable(Keys.SHARED_SETTINGS_KEY);
+
     }//end of OpenJobActivity::onCreate
     //-----------------------------------------------------------------------------
 
@@ -149,6 +154,8 @@ public class OpenJobActivity extends Activity {
         Log.d(TAG, "Inside of onResume :: " + TAG);
 
         decorView.setSystemUiVisibility(uiOptions);
+
+        sharedSettings.setContext(this);
 
         getAndStoreJobs();
         addJobsToListView();
@@ -333,6 +340,8 @@ public class OpenJobActivity extends Activity {
         getJobInfoFromFile();
 
         Intent intent = new Intent(this, JobDisplayActivity.class);
+
+        intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
 
         intent.putExtra(Keys.JOB_INFO_INCLUDED_KEY, true);
         intent.putExtra(Keys.COMPANY_NAME_KEY, companyName);

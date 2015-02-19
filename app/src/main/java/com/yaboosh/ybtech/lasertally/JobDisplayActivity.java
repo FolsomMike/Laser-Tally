@@ -27,6 +27,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
+import android.os.Parcelable;
 import android.os.RemoteException;
 import android.util.Log;
 import android.util.SparseIntArray;
@@ -53,6 +54,8 @@ public class JobDisplayActivity extends Activity {
     private View decorView;
     private int uiOptions;
 
+    private SharedSettings sharedSettings;
+
     private Handler handler = new Handler();
 
     Button measureConnectButton;
@@ -64,8 +67,6 @@ public class JobDisplayActivity extends Activity {
     private TallyDeviceService.State state = TallyDeviceService.State.UNKNOWN;
 
     TableLayout measurementsTable;
-
-    SharedSettings sharedSettings;
 
     final String connectButtonText = "connect";
     final String measureButtonText = "measure";
@@ -112,7 +113,6 @@ public class JobDisplayActivity extends Activity {
 
         sharedSettings = new SharedSettings();
         sharedSettings.init();
-        sharedSettings.context = this;
 
         setContentView(R.layout.activity_job_display);
 
@@ -134,7 +134,11 @@ public class JobDisplayActivity extends Activity {
         //debug hss//
         Log.d(TAG, "inside of JobDisplay onCreate");
 
+        //Get the extras from the intent
         Bundle bundle = getIntent().getExtras();
+
+        sharedSettings = bundle.getParcelable(Keys.SHARED_SETTINGS_KEY);
+
         if (bundle.getBoolean(Keys.JOB_INFO_INCLUDED_KEY, false)) {
 
             setJobName(bundle.getString(Keys.JOB_NAME_KEY));
@@ -184,6 +188,8 @@ public class JobDisplayActivity extends Activity {
         decorView.setSystemUiVisibility(uiOptions);
 
         bindService(serviceIntent, connection, BIND_AUTO_CREATE);
+
+        sharedSettings.setContext(this);
 
         //hss wip// -- should load values from file
         setAndCheckTotalColumnsOfTotalLengthAndAdjustedColumns();
@@ -892,6 +898,7 @@ public class JobDisplayActivity extends Activity {
     public void handleJobInfoButtonPressed(View pView) {
 
         Intent intent = new Intent(this, EditJobInfoActivity.class);
+        intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
         intent.putExtra(Keys.JOB_NAME_KEY, jobName);
         intent.putExtra(Keys.EDIT_JOB_INFO_ACTIVITY_MODE_KEY,
                                         EditJobInfoActivity.EditJobInfoActivityMode.EDIT_JOB_INFO);
@@ -1098,6 +1105,7 @@ public class JobDisplayActivity extends Activity {
         String totalLength = getTotalLengthColValueOfRow(pR);
 
         Intent intent = new Intent(this, TableRowEditorActivity.class);
+        intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
         intent.putExtra(TableRowEditorActivity.PIPE_NUMBER_KEY, pipeNum);
         intent.putExtra(TableRowEditorActivity.TOTAL_LENGTH_KEY, totalLength);
         startActivityForResult(intent, Keys.ACTIVITY_RESULT_TABLE_ROW_EDITOR);
@@ -1417,6 +1425,7 @@ public class JobDisplayActivity extends Activity {
     private void startTallyDeviceScan() {
 
         Intent intent = new Intent(this, TallyDeviceScanActivity.class);
+        intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
         startActivity(intent);
 
     }//end of JobDisplayActivity::startTallyDeviceScan

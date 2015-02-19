@@ -47,6 +47,8 @@ public class EditJobInfoActivity extends Activity {
 
     public static final String TAG = "EditJobInfoActivity";
 
+    private SharedSettings sharedSettings;
+
     private View decorView;
     private int uiOptions;
 
@@ -121,6 +123,7 @@ public class EditJobInfoActivity extends Activity {
         createUiChangeListener();
 
         Bundle bundle = getIntent().getExtras();
+        sharedSettings = bundle.getParcelable(Keys.SHARED_SETTINGS_KEY);
         passedInJobName = bundle.getString(Keys.JOB_NAME_KEY);
         setActivityMode(bundle.getString(Keys.EDIT_JOB_INFO_ACTIVITY_MODE_KEY));
 
@@ -176,6 +179,8 @@ public class EditJobInfoActivity extends Activity {
 
         decorView.setSystemUiVisibility(uiOptions);
 
+        sharedSettings.setContext(this);
+
     }//end of JobInfoActivity::onResume
     //-----------------------------------------------------------------------------
 
@@ -222,8 +227,8 @@ public class EditJobInfoActivity extends Activity {
             titleTextView.setText(activityPurposeEditJobInfoTitle);
             menuButton.setVisibility(View.VISIBLE);
             enableOkButton(true);
-            intent = new Intent();
             getJobInfoFromFile();
+            intent = new Intent();
         }
 
     }//end of JobInfoActivity::setActivityMode
@@ -357,6 +362,7 @@ public class EditJobInfoActivity extends Activity {
         setResult(Activity.RESULT_OK, intent);
 
         if (activityMode.equals(EditJobInfoActivityMode.CREATE_JOB)) {
+            intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
             intent.putExtra(Keys.JOB_INFO_INCLUDED_KEY, true);
             startActivity(intent);
         }
@@ -536,6 +542,7 @@ public class EditJobInfoActivity extends Activity {
     public void handleMenuButtonPressed(View pView) {
 
         Intent intent = new Intent(this, JobInfoMenuActivity.class);
+        intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
         intent.putExtra(Keys.JOB_NAME_KEY, passedInJobName);
         startActivity(intent);
 

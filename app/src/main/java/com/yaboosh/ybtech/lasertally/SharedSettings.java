@@ -7,6 +7,19 @@
  *
  * This class contains variables shared among various objects.
  *
+ * Implements Parcelable so that an instance of this class can be passed from
+ * one activity to another using intent extras.
+ *
+ * For each non-static variable that is added to the class:
+ *      search for !!STORE VARIABLES IN PARCEL HERE!! and add the variable
+ *          to the parcel, using the others as examples
+ *
+ *      search for !!GET VARIABLES FROM PARCEL HERE!! and get the variable
+ *          from the parcel, using the others as examples
+ *
+ * IMPORTANT: The orders the variables are stored and retrieved from the
+ *              parcel must match!
+ *
  */
 
 //-----------------------------------------------------------------------------
@@ -20,21 +33,61 @@ package com.yaboosh.ybtech.lasertally;
 
 import android.content.Context;
 import android.os.Environment;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import java.io.File;
 
-public class SharedSettings {
-
-    public Context context;
-
-    public String dataFolderPath;
-
-    public String reportsFolderPath = "";
-
-    public String jobsFolderPath = "";
+public class SharedSettings implements Parcelable {
 
     private static final String LOG_TAG = "SharedSettings";
+
+    public static Parcelable.Creator CREATOR;
+
+    private Context context;
+    // Getter and setter functions
+    public Context getContext() { return context; }
+    public void setContext(Context pNewContext) { context = pNewContext; }
+
+    private String dataFolderPath;
+    // Getter and setter functions
+    public String getDataFolderPath() { return dataFolderPath; }
+    public void setDataFolderPath(String pNewPath) { dataFolderPath = pNewPath; }
+
+    private String reportsFolderPath = "";
+    // Getter and setter functions
+    public String getReportsFolderPath() { return reportsFolderPath; }
+    public void setReportsFolderPath(String pNewPath) { reportsFolderPath = pNewPath; }
+
+    private String jobsFolderPath = "";
+    // Getter and setter functions
+    public String getJobsFolderPath() { return jobsFolderPath; }
+    public void setJobsFolderPath(String pNewPath) { jobsFolderPath = pNewPath; }
+
+    //-----------------------------------------------------------------------------
+    // SharedSettings::SharedSettings (constructor)
+    //
+    // Constructor to be used for initial creation.
+    //
+
+    public SharedSettings() {
+
+    }//end of SharedSettings::SharedSettings (constructor)
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // SharedSettings::SharedSettings (constructor)
+    //
+    // Constructor to be used when creating the object from a parcel.
+    //
+
+    public SharedSettings(Parcel pIn) {
+
+        readFromParcel(pIn);
+
+    }//end of SharedSettings::SharedSettings (constructor)
+    //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
     // SharedSettings::init
@@ -42,50 +95,49 @@ public class SharedSettings {
     // Initializes the object.  Must be called immediately after instantiation.
     //
 
-    public void init()
-    {
+    public void init() {
 
-        setDataStoragePath("Tally Zap");
+        initializeCreatorVariable();
 
-        setJobsFolderPath();
+        preparesDataStoragePath("Tally Zap");
 
-        setReportsFolderPath();
+        prepareJobsFolderPath();
+
+        prepareReportsFolderPath();
 
     }// end of SharedSettings::init
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // SharedSettings::setDataStoragePath
+    // SharedSettings::preparesDataStoragePath
     //
-    // Sets the path to folder pFolderName in external storage in Android folder
+    // Prepares the path to folder pFolderName in external storage in Android folder
     // DIRECTORY_DOCUMENTS, creating the folder if it does not exist.
     //
 
-    public void setDataStoragePath(String pFolderName) {
+    private void preparesDataStoragePath(String pFolderName) {
 
         // Get the directory for the user's public pictures directory.
         File file = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOCUMENTS), pFolderName);
+                                                    Environment.DIRECTORY_DOCUMENTS), pFolderName);
 
         if (!file.exists()) {
-            if (!file.mkdirs()) {
-                Log.e(LOG_TAG, "Data folder not created in Documents folder.");
-            }
+            if (!file.mkdirs()) { Log.e(LOG_TAG, "Data folder not created in Documents folder."); }
         }
 
         dataFolderPath = file.toString() + File.separator;
 
-    }// end of SharedSettings::setDataStoragePath
+    }// end of SharedSettings::preparesDataStoragePath
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // SharedSettings::setJobsFolderPath
+    // SharedSettings::prepareJobsFolderPath
     //
-    // Sets the path to jobs folder in the dataPath, creating the folder if it
-    // does not exist.
+    // Prepares the path to the jobs folder in the dataPath, creating the folder
+    // if it does not exist.
     //
 
-    public void setJobsFolderPath() {
+    private void prepareJobsFolderPath() {
 
         File file = new File(dataFolderPath, "Tally Jobs");
 
@@ -97,17 +149,17 @@ public class SharedSettings {
 
         jobsFolderPath = file.toString() + File.separator;
 
-    }// end of SharedSettings::setJobsFolderPath
+    }// end of SharedSettings::prepareJobsFolderPath
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // SharedSettings::setReportsFolderPath
+    // SharedSettings::prepareReportsFolderPath
     //
-    // Sets the path to reports folder in the dataPath, creating the folder if it
-    // does not exist.
+    // Prepares the path to the reports folder in the dataFolderPath, creating the
+    // folder if it does not exist.
     //
 
-    public void setReportsFolderPath() {
+    private void prepareReportsFolderPath() {
 
         File file = new File(dataFolderPath, "Tally Reports");
 
@@ -119,7 +171,92 @@ public class SharedSettings {
 
         reportsFolderPath = file.toString() + File.separator;
 
-    }// end of SharedSettings::setReportsFolderPath
+    }// end of SharedSettings::prepareReportsFolderPath
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // SharedSettings::readFromParcel
+    //
+    // Reads and stores the variables from the passed in parcel in the same order
+    // that the variables were written to the parcel.
+    //
+    // Called from the constructor to create this object from a parcel.
+    //
+
+    private void readFromParcel(Parcel pParcel) {
+
+        //!!STORE VARIABLES IN PARCEL HERE!!
+        dataFolderPath = pParcel.readString();
+        reportsFolderPath = pParcel.readString();
+        jobsFolderPath = pParcel.readString();
+
+    }// end of SharedSettings::readFromParcel
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // SharedSettings::describeContents
+    //
+    // Required to override because of Parcelable
+    //
+
+    @Override
+    public int describeContents() {
+
+        return 0;
+
+    }// end of SharedSettings::describeContents
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // SharedSettings::writeToParcel
+    //
+    // Writes each variable into the parcel.
+    //
+    // Context is not written to the parcel because its value will be set after
+    // the SharedSettings object is given to another activity, so preserving its
+    // value is not important.
+    //
+
+    @Override
+    public void writeToParcel(Parcel pParcel, int pFlags) {
+
+        //!!GET VARIABLES FROM PARCEL HERE!!
+        pParcel.writeString(dataFolderPath);
+        pParcel.writeString(reportsFolderPath);
+        pParcel.writeString(jobsFolderPath);
+
+    }// end of SharedSettings::writeToParcel
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // SharedSettings::initializeCreatorVariable
+    //
+    // Initializes the CREATOR variable, overriding class functions as necessary.
+    //
+    // "The Parcelable.Creator interface must be implemented and provided as a
+    // public CREATOR field that generates instances of your Parcelable class
+    // from a Parcel." This function does just that.
+    //
+
+    private void initializeCreatorVariable() {
+
+        CREATOR = new Parcelable.Creator() {
+
+            //Create a new instance of the SharedSettings class,
+            //instantiating it from the given Parcel
+            @Override
+            public SharedSettings createFromParcel(Parcel pParcel) {
+                return new SharedSettings(pParcel);
+            }
+
+            //Create a new array of the SharedSettings class
+            @Override
+            public SharedSettings[] newArray(int pSize) {
+                return new SharedSettings[pSize];
+            }
+        };
+
+    }//end of SharedSettings::initializeCreatorVariable
     //-----------------------------------------------------------------------------
 
 }//end of class SharedSettings

@@ -73,7 +73,7 @@ public class TallyReportHTMLPrintoutMaker extends TallyReportHTMLMaker {
     {
 
         // Create a WebView object specifically for printing
-        WebView webView = new WebView(sharedSettings.context);
+        WebView webView = new WebView(sharedSettings.getContext());
 
         webView.setWebViewClient(new WebViewClient() {
 
@@ -105,13 +105,13 @@ public class TallyReportHTMLPrintoutMaker extends TallyReportHTMLMaker {
 
         // Get a PrintManager instance
         PrintManager printManager =
-                (PrintManager) sharedSettings.context.getSystemService(Context.PRINT_SERVICE);
+                (PrintManager) sharedSettings.getContext().getSystemService(Context.PRINT_SERVICE);
 
         // Get a print adapter instance
         PrintDocumentAdapter printAdapter = pWebView.createPrintDocumentAdapter();
 
         // Create a print job with name and adapter instance
-        String jobName = sharedSettings.context.getString(R.string.app_name) + " Document";
+        String jobName = sharedSettings.getContext().getString(R.string.app_name) + " Document";
         // Send the print job to the printManager
         printManager.print(jobName, printAdapter, new PrintAttributes.Builder().build());
 
