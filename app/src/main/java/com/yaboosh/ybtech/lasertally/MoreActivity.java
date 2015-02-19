@@ -32,7 +32,7 @@ import android.view.WindowManager;
 
 public class MoreActivity extends Activity {
 
-    public static final String LOG_TAG = "MenuActivity";
+    public static final String LOG_TAG = "MoreActivity";
 
     private View decorView;
     private int uiOptions;
@@ -170,14 +170,14 @@ public class MoreActivity extends Activity {
     //-----------------------------------------------------------------------------
     // MenuActivity::handleOptionsButtonPressed
     //
-    // Starts the MainActivity.
-    // Should be called from the "Close this job." button onClick().
+    // Starts the MoreOptionsActivity.
     //
 
     public void handleOptionsButtonPressed(View pView) {
 
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, MoreOptionsActivity.class);
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
+        intent.putExtra(Keys.JOB_INFO_KEY, jobInfo);
         startActivity(intent);
 
     }//end of MenuActivity::handleOptionsButtonPressed
