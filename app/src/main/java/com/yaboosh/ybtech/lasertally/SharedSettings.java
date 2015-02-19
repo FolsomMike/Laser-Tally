@@ -185,7 +185,7 @@ public class SharedSettings implements Parcelable {
 
     private void readFromParcel(Parcel pParcel) {
 
-        //!!STORE VARIABLES IN PARCEL HERE!!
+        //!!GET VARIABLES FROM PARCEL HERE!!
         dataFolderPath = pParcel.readString();
         reportsFolderPath = pParcel.readString();
         jobsFolderPath = pParcel.readString();
@@ -220,7 +220,7 @@ public class SharedSettings implements Parcelable {
     @Override
     public void writeToParcel(Parcel pParcel, int pFlags) {
 
-        //!!GET VARIABLES FROM PARCEL HERE!!
+        //!!STORE VARIABLES IN PARCEL HERE!!
         pParcel.writeString(dataFolderPath);
         pParcel.writeString(reportsFolderPath);
         pParcel.writeString(jobsFolderPath);

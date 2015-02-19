@@ -29,7 +29,7 @@
             android:layout_width="400dp"
             android:layout_height="wrap_content"
             android:textColor="#FFFFFF"
-            android:text="@string/job"
+            android:text=""
             android:textSize="50dp"/>
 
         <!-- horizontal spacer -->

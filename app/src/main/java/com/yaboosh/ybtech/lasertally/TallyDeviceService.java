@@ -98,7 +98,7 @@ public class TallyDeviceService extends Service {
     // variable can be initiated using different classes
     // (TallyDeviceBluetoothLeConnectionHandler, TallyDeviceSimulationConnectionHandler, etc.)
     private TallyDeviceConnectionHandler tallyDeviceConnectionHandler = new
-                                                    TallyDeviceBluetoothLeConnectionHandler(this);
+                                                    TallyDeviceSimulationConnectionHandler(this);
     Runnable stopScanRunnable;
 
     private final Messenger messenger;
