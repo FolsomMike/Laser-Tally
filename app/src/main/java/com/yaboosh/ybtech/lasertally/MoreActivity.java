@@ -38,8 +38,7 @@ public class MoreActivity extends Activity {
     private int uiOptions;
 
     private SharedSettings sharedSettings;
-
-    private String job;
+    private JobInfo jobInfo;
 
     //-----------------------------------------------------------------------------
     // MenuActivity::MenuActivity (constructor)
@@ -83,7 +82,7 @@ public class MoreActivity extends Activity {
 
         Bundle bundle = getIntent().getExtras();
         sharedSettings = bundle.getParcelable(Keys.SHARED_SETTINGS_KEY);
-        job = bundle.getString(Keys.JOB_NAME_KEY);
+        jobInfo = bundle.getParcelable(Keys.JOB_INFO_KEY);
 
     }//end of MenuActivity::onCreate
     //-----------------------------------------------------------------------------
@@ -192,17 +191,16 @@ public class MoreActivity extends Activity {
 
     public void handlePrintButtonPressed(View pView) {
 
-        /*TallyReportHTMLPrintoutMaker tallyReportMaker = new TallyReportHTMLPrintoutMaker(
-                sharedSettings, measurementsTable, companyName, jobName, "",  adjustmentValue, tallyGoal);
+        TallyReportHTMLPrintoutMaker tallyReportMaker = new
+                                            TallyReportHTMLPrintoutMaker(sharedSettings, jobInfo);
         tallyReportMaker.init();
         tallyReportMaker.printTallyReport();
 
         //use this code block to save a tally report to an HTML file -- mainly used for debugging
-        TallyReportHTMLFileMaker tallyReportFileMaker = new TallyReportHTMLFileMaker(
+        /*TallyReportHTMLFileMaker tallyReportFileMaker = new TallyReportHTMLFileMaker(
                 sharedSettings, measurementsTable, companyName, jobName, "",  adjustmentValue, tallyGoal);
         tallyReportFileMaker.init();
-        tallyReportFileMaker.printTallyReport();
-        //debug hss//*/
+        tallyReportFileMaker.printTallyReport();*/
 
     }//end of MenuActivity::handlePrintButtonPressed
     //-----------------------------------------------------------------------------

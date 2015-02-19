@@ -35,13 +35,10 @@ public class TallyReportHTMLPrintoutMaker extends TallyReportHTMLMaker {
     // TallyReportHTMLPrintoutMaker::TallyReportHTMLPrintoutMaker (constructor)
     //
 
-    public TallyReportHTMLPrintoutMaker(SharedSettings pSharedSettings,
-                            TableLayout pMeasurementsTable, String pCompanyName,
-                            String pJobName, String pJobDate, double pTallyAdj, double pTallyTarget)
+    public TallyReportHTMLPrintoutMaker(SharedSettings pSharedSettings, JobInfo pJobInfo)
     {
 
-        super(pSharedSettings, pMeasurementsTable, pCompanyName,
-            pJobName, pJobDate, pTallyAdj, pTallyTarget);
+        super(pSharedSettings, pJobInfo);
 
     }// end of TallyReportHTMLPrintoutMaker::TallyReportHTMLPrintoutMaker (constructor)
     //-----------------------------------------------------------------------------

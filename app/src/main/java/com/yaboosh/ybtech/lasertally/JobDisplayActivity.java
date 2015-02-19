@@ -520,6 +520,7 @@ public class JobDisplayActivity extends Activity {
 
         Intent intent = new Intent(this, MoreActivity.class);
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
+        intent.putExtra(Keys.JOB_INFO_KEY, jobInfo);
         startActivity(intent);
 
     }//end of JobDisplayActivity::handleMoreButtonPressed
