@@ -347,25 +347,18 @@ public class EditJobInfoActivity extends Activity {
 
         saveInformationToFile();
 
-        intent.putExtra(Keys.COMPANY_NAME_KEY, companyName);
-        intent.putExtra(Keys.DIAMETER_KEY, diameter);
-        intent.putExtra(Keys.FACILITY_KEY, facility);
-        intent.putExtra(Keys.GRADE_KEY,  grade);
-        intent.putExtra(Keys.JOB_NAME_KEY, job);
-        intent.putExtra(Keys.ADJUSTMENT_KEY, makeupAdjustment);
-        intent.putExtra(Keys.RACK_KEY, rack);
-        intent.putExtra(Keys.RANGE_KEY, range);
-        intent.putExtra(Keys.RIG_KEY, rig);
-        intent.putExtra(Keys.TALLY_GOAL_KEY, tallyGoal);
-        intent.putExtra(Keys.WALL_KEY, wall);
+        JobInfo jobInfo = new JobInfo(companyName, diameter, facility, grade, job, makeupAdjustment,
+                                        rack, range, rig, tallyGoal, wall);
+        jobInfo.init();
 
-        setResult(Activity.RESULT_OK, intent);
+        intent.putExtra(Keys.JOB_INFO_KEY, jobInfo);
+        intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
 
         if (activityMode.equals(EditJobInfoActivityMode.CREATE_JOB)) {
-            intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
-            intent.putExtra(Keys.JOB_INFO_INCLUDED_KEY, true);
             startActivity(intent);
         }
+
+        setResult(Activity.RESULT_OK, intent);
 
         finish();
 

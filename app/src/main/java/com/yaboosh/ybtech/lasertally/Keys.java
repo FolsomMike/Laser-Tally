@@ -33,19 +33,11 @@ public class Keys {
     public static final String SHARED_SETTINGS_KEY = "SHARED_SETTINGS_KEY";
 
     // Job Info Keys
-    public static final String ADJUSTMENT_KEY = "ADJUSTMENT_KEY";
-    public static final String COMPANY_NAME_KEY = "COMPANY_NAME_KEY";
-    public static final String DIAMETER_KEY = "DIAMETER_KEY";
-    public static final String EDIT_JOB_INFO_ACTIVITY_MODE_KEY = "EDIT_JOB_INFO_ACTIVITY_PURPOSE_KEY";
-    public static final String FACILITY_KEY = "FACILITY_KEY";
-    public static final String GRADE_KEY = "GRADE_KEY";
-    public static final String JOB_INFO_INCLUDED_KEY =  "JOB_INFO_INCLUDED_KEY";
-    public static final String JOB_NAME_KEY =  "JOB_NAME_KEY";
-    public static final String RACK_KEY = "RACK_KEY";
-    public static final String RANGE_KEY = "RANGE_KEY";
-    public static final String RIG_KEY = "RIG_KEY";
-    public static final String TALLY_GOAL_KEY = "TALLY_GOAL_KEY";
-    public static final String WALL_KEY = "WALL_KEY";
+    public static final String JOB_INFO_KEY = "JOB_INFO_KEY";
+    public static final String JOB_INFO_INCLUDED_KEY = "JOB_INFO_INCLUDED_KEY";
+    public static final String JOB_NAME_KEY = "JOB_NAME_KEY";
+
+    public static final String EDIT_JOB_INFO_ACTIVITY_MODE_KEY = "EDIT_JOB_INFO_ACTIVITY_MODE_KEY";
 
 }//end of class Keys
 //-----------------------------------------------------------------------------
