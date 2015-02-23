@@ -251,6 +251,16 @@ public class JobDisplayActivity extends Activity {
             }
 
         }
+        else if (pRequestCode == Keys.ACTIVITY_RESULT_MORE) {
+
+            if (pResultCode == RESULT_OK) {
+                handleMoreActivityResultOk((SharedSettings)pData.getParcelableExtra(Keys.SHARED_SETTINGS_KEY));
+            }
+            else if (pResultCode == RESULT_CANCELED) {
+                handleMoreActivityResultCancel();
+            }
+
+        }
         else if (pRequestCode == Keys.ACTIVITY_RESULT_TABLE_ROW_EDITOR) {
 
             if (pResultCode == RESULT_OK) {
@@ -521,9 +531,35 @@ public class JobDisplayActivity extends Activity {
         Intent intent = new Intent(this, MoreActivity.class);
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
         intent.putExtra(Keys.JOB_INFO_KEY, jobInfo);
-        startActivity(intent);
+        startActivityForResult(intent, Keys.ACTIVITY_RESULT_MORE);
 
     }//end of JobDisplayActivity::handleMoreButtonPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobDisplayActivity::handleMoreActivityResultCancel
+    //
+    // Currently does nothing.
+    //
+
+    private void handleMoreActivityResultCancel() {
+
+    }//end of JobDisplayActivity::handleMoreActivityResultCancel
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobDisplayActivity::handleMoreActivityResultOk(
+    //
+    // Stores the new instance of SharedSettings and passes a reference on to
+    // TallyDataHandler
+    //
+
+    private void handleMoreActivityResultOk(SharedSettings pSettings) {
+
+        sharedSettings = pSettings;
+        tallyDataHandler.setSharedSettings(pSettings);
+
+    }//end of JobDisplayActivity::handleMoreActivityResultOk
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
