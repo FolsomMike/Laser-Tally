@@ -573,6 +573,8 @@ public class JobDisplayActivity extends Activity {
 
         tallyDataHandler.handleNewDistanceValue(Double.parseDouble(pDistanceValue));
 
+        scrollToBottomOfMeasurementsTable();
+
         //enable the measureConnect and redo buttons
         //so that the user can use them now that the
         //measuring process has been completed
