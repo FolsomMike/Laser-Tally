@@ -38,6 +38,12 @@ import android.os.Parcelable;
 import android.util.Log;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 public class SharedSettings implements Parcelable {
 
@@ -65,13 +71,35 @@ public class SharedSettings implements Parcelable {
     public String getJobsFolderPath() { return jobsFolderPath; }
     public void setJobsFolderPath(String pNewPath) { jobsFolderPath = pNewPath; }
 
+    //default general settings
+    private String defaultMaximumMeasurementAllowed = "60";
+    private String defaultMinimumMeasurementAllowed = "1";
+    private String defaultUnitSystem = Keys.IMPERIAL_MODE;
+    //end of default general settings
+
+    //general settings for ini file
+    private String maximumMeasurementAllowed;
+    public String getMaximumMeasurementAllowed() { return maximumMeasurementAllowed; }
+    public void setMaximumMeasurementAllowed(String pMax) { maximumMeasurementAllowed = pMax; saveGeneralSettingsToFile(); }
+
+    private String minimumMeasurementAllowed;
+    public String getMinimumMeasurementAllowed() { return minimumMeasurementAllowed; }
+    public void setMinimumMeasurementAllowed(String pMin) { minimumMeasurementAllowed = pMin; saveGeneralSettingsToFile(); }
+
+    private String unitSystem;
+    public String getUnitSystem() { return unitSystem; }
+    public void setUnitSystem(String pSystem) { unitSystem = pSystem; saveGeneralSettingsToFile(); }
+    //end of general settings for ini file
+
     //-----------------------------------------------------------------------------
     // SharedSettings::SharedSettings (constructor)
     //
     // Constructor to be used for initial creation.
     //
 
-    public SharedSettings() {
+    public SharedSettings(Context pContext) {
+
+        context = pContext;
 
     }//end of SharedSettings::SharedSettings (constructor)
     //-----------------------------------------------------------------------------
@@ -105,7 +133,67 @@ public class SharedSettings implements Parcelable {
 
         prepareReportsFolderPath();
 
+        loadAppSettingsFromFile();
+
     }// end of SharedSettings::init
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // SharedSettings::loadAppSettingsFromFile
+    //
+    // Loads the app settings from the ini file if it exists. If it doesn't exist,
+    // default settings are used.
+    //
+
+    private void loadAppSettingsFromFile() {
+
+        ArrayList<String> fileLines = new ArrayList<String>();
+        FileInputStream fStream = null;
+        Scanner br = null;
+
+        try {
+
+            File file = new File(context.getFilesDir(), "general.ini");
+
+            fStream = new FileInputStream(file);
+            br = new Scanner(new InputStreamReader(fStream));
+            while (br.hasNext()) {
+                String strLine = br.nextLine();
+                fileLines.add(strLine);
+            }
+
+        }
+        catch (Exception e) {}
+        finally {
+
+            try {
+                if (br != null) { br.close(); }
+                if (fStream != null) { fStream.close(); }
+            }
+            catch (Exception e) {}
+
+        }
+
+        //if the file failed to load or there were no lines in the
+        //file, use default settings and quit this function
+        if (fileLines.isEmpty()) { useDefaultSettings(); return; }
+
+        maximumMeasurementAllowed = Tools.getValueFromList("Maximum Measurement Allowed", fileLines);
+        minimumMeasurementAllowed = Tools.getValueFromList("Minimum Measurement Allowed", fileLines);
+        unitSystem = Tools.getValueFromList("Unit System", fileLines);
+
+        //if any of the values weren't found in the list set them equal to their defaults
+        if (maximumMeasurementAllowed.equals("")) {
+            setMaximumMeasurementAllowed(defaultMaximumMeasurementAllowed);
+        }
+        if (minimumMeasurementAllowed.equals("")) {
+            setMinimumMeasurementAllowed(defaultMinimumMeasurementAllowed);
+        }
+        if (unitSystem.equals("")) {
+            setUnitSystem(defaultUnitSystem);
+        }
+
+    }// end of SharedSettings::loadAppSettingsFromFile
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -189,8 +277,77 @@ public class SharedSettings implements Parcelable {
         dataFolderPath = pParcel.readString();
         reportsFolderPath = pParcel.readString();
         jobsFolderPath = pParcel.readString();
+        maximumMeasurementAllowed = pParcel.readString();
+        minimumMeasurementAllowed = pParcel.readString();
+        unitSystem = pParcel.readString();
 
     }// end of SharedSettings::readFromParcel
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // SharedSettings::saveGeneralSettingsToFile
+    //
+    // Saves the general settings to file.
+    //
+
+    private void saveGeneralSettingsToFile() {
+
+        PrintWriter writer = null;
+
+        try {
+
+            File file = new File(context.getFilesDir(), "general.ini");
+            if (!file.exists()) { file.createNewFile(); }
+
+            // Use a PrintWriter to write to the file
+            writer = new PrintWriter(file, "UTF-8");
+
+            writer.println("Maximum Measurement Allowed=" + maximumMeasurementAllowed);
+            writer.println("Minimum Measurement Allowed=" + minimumMeasurementAllowed);
+            writer.println("Unit System=" + unitSystem);
+
+        } catch (Exception e) {}
+        finally {
+
+            try { if (writer != null) { writer.close(); } } catch (Exception e) {}
+
+        }
+
+    }// end of SharedSettings::saveGeneralSettingsToFile
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // SharedSettings::setGeneralSettings
+    //
+    // Sets all of the general settings to the passed in values.
+    //
+
+    public void setGeneralSettings(String pSystem, String pMinimum, String pMaximum) {
+
+        unitSystem = pSystem;
+        minimumMeasurementAllowed = pMinimum;
+        maximumMeasurementAllowed = pMaximum;
+
+        saveGeneralSettingsToFile();
+
+    }// end of SharedSettings::setGeneralSettings
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // SharedSettings::useDefaultSettings
+    //
+    // Uses defaults for the general settings and save them to file.
+    //
+
+    private void useDefaultSettings() {
+
+        maximumMeasurementAllowed = defaultMaximumMeasurementAllowed;
+        minimumMeasurementAllowed = defaultMinimumMeasurementAllowed;
+        unitSystem = defaultUnitSystem;
+
+        saveGeneralSettingsToFile();
+
+    }// end of SharedSettings::useDefaultSettings
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -224,6 +381,9 @@ public class SharedSettings implements Parcelable {
         pParcel.writeString(dataFolderPath);
         pParcel.writeString(reportsFolderPath);
         pParcel.writeString(jobsFolderPath);
+        pParcel.writeString(maximumMeasurementAllowed);
+        pParcel.writeString(minimumMeasurementAllowed);
+        pParcel.writeString(unitSystem);
 
     }// end of SharedSettings::writeToParcel
     //-----------------------------------------------------------------------------
