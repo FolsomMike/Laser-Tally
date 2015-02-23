@@ -259,6 +259,8 @@ public class OpenJobActivity extends Activity {
 
     private void getAndStoreJobs() {
 
+        jobNames.clear();
+
         try {
 
             // Retrieve/Create directory into internal memory;
