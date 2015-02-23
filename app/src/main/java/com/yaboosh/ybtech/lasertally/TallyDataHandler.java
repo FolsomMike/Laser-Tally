@@ -39,11 +39,12 @@ public class TallyDataHandler {
 
     public static final String LOG_TAG = "TallyDataHandler";
 
+    private static DecimalFormat imperialTallyFormat = new DecimalFormat("#.##");
+    private static DecimalFormat metricTallyFormat = new DecimalFormat("#.###");
+
     private MeasurementsTableHandler measurementsTableHandler;
 
     private DecimalFormat tallyFormat;
-    private DecimalFormat imperialTallyFormat = new DecimalFormat("#.##");
-    private DecimalFormat metricTallyFormat = new DecimalFormat("#.###");
 
     private SharedSettings sharedSettings;
     public void setSharedSettings(SharedSettings pSet) { sharedSettings = pSet; handleSharedSettingsChanged(); }
@@ -89,6 +90,8 @@ public class TallyDataHandler {
     //End of Metric
 
     double adjustmentValue = 0;
+    double maximumValueAllowed = 0;
+    double minimumValueAllowed = 0;
     String unitSystem = "";
 
     //-----------------------------------------------------------------------------
@@ -115,6 +118,8 @@ public class TallyDataHandler {
     {
 
         setUnitSystem(sharedSettings.getUnitSystem());
+        maximumValueAllowed = Double.parseDouble(sharedSettings.getMaximumMeasurementAllowed());
+        minimumValueAllowed = Double.parseDouble(sharedSettings.getMinimumMeasurementAllowed());
 
         loadDataFromFile();
         readDataFromLists();
@@ -218,34 +223,6 @@ public class TallyDataHandler {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyDataHandler::convertToImperial
-    //
-    // Converts the passed in value from metric to imperial. Returns the result
-    // as a string.
-    //
-
-    private String convertToImperial(Double pValue) {
-
-        return imperialTallyFormat.format(pValue / 0.3048);
-
-    }//end of TallyDataHandler::convertToImperial
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // TallyDataHandler::convertToMetric
-    //
-    // Converts the passed in value from metric to imperial. Returns the result as
-    // as string.
-    //
-
-    private String convertToMetric(Double pValue) {
-
-        return metricTallyFormat.format(pValue * 0.3048);
-
-    }//end of TallyDataHandler::convertToMetric
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
     // TallyDataHandler::changeValuesOfExistingRow
     //
     // Changes the values of the passed in row using the passed in values.
@@ -267,12 +244,12 @@ public class TallyDataHandler {
         if (unitSystem.equals(Keys.IMPERIAL_MODE)) {
             imperialAdjustedValues.put(pRow, newAdjusted);
             imperialTotalLengthValues.put(pRow, pTotalLength);
-            metricAdjustedValues.put(pRow, convertToMetric(Double.parseDouble(newAdjusted)));
-            metricTotalLengthValues.put(pRow, convertToMetric(Double.parseDouble(pTotalLength)));
+            metricAdjustedValues.put(pRow, Tools.convertToMetric(Double.parseDouble(newAdjusted)));
+            metricTotalLengthValues.put(pRow, Tools.convertToMetric(Double.parseDouble(pTotalLength)));
         }
         else if (unitSystem.equals(Keys.METRIC_MODE)) {
-            imperialAdjustedValues.put(pRow, convertToImperial(Double.parseDouble(newAdjusted)));
-            imperialTotalLengthValues.put(pRow, convertToMetric(Double.parseDouble(pTotalLength)));
+            imperialAdjustedValues.put(pRow, Tools.convertToImperial(Double.parseDouble(newAdjusted)));
+            imperialTotalLengthValues.put(pRow, Tools.convertToMetric(Double.parseDouble(pTotalLength)));
             metricAdjustedValues.put(pRow, newAdjusted);
             metricTotalLengthValues.put(pRow, pTotalLength);
         }
@@ -508,9 +485,26 @@ public class TallyDataHandler {
         double adjusted = pValue - adjustmentValue;
         String imperialAdjusted = imperialTallyFormat.format(adjusted);
         String imperialTotalLength = imperialTallyFormat.format(pValue);
-        String metricAdjusted = convertToMetric(adjusted);
-        String metricTotalLength = convertToMetric(pValue);
+        String metricAdjusted = Tools.convertToMetric(adjusted);
+        String metricTotalLength = Tools.convertToMetric(pValue);
 
+        //if the unit system is imperial, check to see if the imperial total length
+        //is less than or greater than the minimum and maximum values
+        double imperialTotalLengthDouble = Double.parseDouble(imperialTotalLength);
+        if ((unitSystem.equals(Keys.IMPERIAL_MODE)) &&
+                ((imperialTotalLengthDouble > maximumValueAllowed)
+                || (imperialTotalLengthDouble < minimumValueAllowed))) {
+            return;
+        }
+
+        //if the unit system is metric, check to see if the metric total length
+        //is less than or greater than the minimum and maximum values
+        double metricTotalLengthDouble = Double.parseDouble(metricTotalLength);
+        if ((unitSystem.equals(Keys.METRIC_MODE)) &&
+                ((metricTotalLengthDouble > maximumValueAllowed)
+                        || (metricTotalLengthDouble < minimumValueAllowed))) {
+            return;
+        }
 
         addDataEntry(pipeNumber, imperialTotalLength, imperialAdjusted,
                         metricTotalLength, metricAdjusted);
@@ -529,6 +523,8 @@ public class TallyDataHandler {
     {
 
         setUnitSystem(sharedSettings.getUnitSystem());
+        maximumValueAllowed = Double.parseDouble(sharedSettings.getMaximumMeasurementAllowed());
+        minimumValueAllowed = Double.parseDouble(sharedSettings.getMinimumMeasurementAllowed());
 
     }//end of TallyDataHandler::handleSharedSettingsChanged
     //-----------------------------------------------------------------------------
