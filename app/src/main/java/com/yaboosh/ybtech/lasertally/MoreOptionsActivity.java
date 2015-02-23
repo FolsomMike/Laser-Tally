@@ -26,6 +26,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -41,6 +43,10 @@ public class MoreOptionsActivity extends Activity {
 
     private SharedSettings sharedSettings;
     private JobInfo jobInfo;
+
+    private String unitSystem;
+    private String switchToImperialButtonText = "Switch to Imperial";
+    private String switchToMetricButtonText = "Switch to Metric";
 
     //-----------------------------------------------------------------------------
     // MenuOptionsActivity::MenuOptionsActivity (constructor)
@@ -86,6 +92,8 @@ public class MoreOptionsActivity extends Activity {
         sharedSettings = bundle.getParcelable(Keys.SHARED_SETTINGS_KEY);
         jobInfo = bundle.getParcelable(Keys.JOB_INFO_KEY);
 
+        unitSystem = sharedSettings.getUnitSystem();
+
     }//end of MenuOptionsActivity::onCreate
     //-----------------------------------------------------------------------------
 
@@ -121,6 +129,9 @@ public class MoreOptionsActivity extends Activity {
         decorView.setSystemUiVisibility(uiOptions);
 
         sharedSettings.setContext(this);
+
+        setSwitchUnitSystemButtonText();
+        setEditTextFields();
 
     }//end of MenuOptionsActivity::onResume
     //-----------------------------------------------------------------------------
@@ -170,6 +181,98 @@ public class MoreOptionsActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // MenuOptionsActivity::exitActivityByCancel
+    //
+    // Used when the user closes the activity using the cancel or red x button.
+    // Sets the result to canceled and finishes the activity.
+    //
+
+    private void exitActivityByCancel() {
+
+        Intent resultIntent = new Intent();
+        setResult(Activity.RESULT_CANCELED, resultIntent);
+        finish();
+
+    }//end of MenuOptionsActivity::exitActivityByCancel
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MenuOptionsActivity::exitActivityByOk
+    //
+    // Used when the user closes the activity using the ok button.
+    //
+    // Sets the necessary data in shared settings and exits the activity.
+    //
+
+    private void exitActivityByOk() {
+
+        sharedSettings.setGeneralSettings(unitSystem, getMinimumAllowed(), getMaximumAllowed());
+
+        Intent intent = new Intent();
+
+        intent.putExtra(Keys.JOB_INFO_KEY, jobInfo);
+        intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
+
+        setResult(Activity.RESULT_OK, intent);
+
+        finish();
+
+    }//end of MenuOptionsActivity::exitActivityByOk
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MenuOptionsActivity::getMaximumAllowed
+    //
+    // Gets and returns the maximum allowed measurement from the edit text field.
+    //
+
+    private String getMaximumAllowed() {
+
+        return ((EditText)findViewById(R.id.editTextMaximumMeasurementAllowed)).getText().toString();
+
+    }//end of MenuOptionsActivity::getMaximumAllowed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MenuOptionsActivity::getMinimumAllowed
+    //
+    // Gets and returns the minimum allowed measurement from the edit text field.
+    //
+
+    private String getMinimumAllowed() {
+
+        return ((EditText)findViewById(R.id.editTextMinimumMeasurementAllowed)).getText().toString();
+
+    }//end of MenuOptionsActivity::getMinimumAllowed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MenuOptionsActivity::handleCancelButtonPressed
+    //
+    // Exits the activity by calling exitActivityByCancel().
+    //
+
+    public void handleCancelButtonPressed(View pView) {
+
+        exitActivityByCancel();
+
+    }//end of MenuOptionsActivity::handleCancelButtonPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MenuOptionsActivity::handleOkButtonPressed
+    //
+    // Exits the activity by calling exitActivityByOk().
+    //
+
+    public void handleOkButtonPressed(View pView) {
+
+        exitActivityByOk();
+
+    }//end of MenuOptionsActivity::handleOkButtonPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // MenuOptionsActivity::handleOptionsButtonPressed
     //
     // Starts the MainActivity.
@@ -186,28 +289,6 @@ public class MoreOptionsActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MenuOptionsActivity::handlePrintButtonPressed
-    //
-    // Prints the tally data saved to file.
-    //
-
-    public void handlePrintButtonPressed(View pView) {
-
-        TallyReportHTMLPrintoutMaker tallyReportMaker = new
-                                            TallyReportHTMLPrintoutMaker(sharedSettings, jobInfo);
-        tallyReportMaker.init();
-        tallyReportMaker.printTallyReport();
-
-        //use this code block to save a tally report to an HTML file -- mainly used for debugging
-        /*TallyReportHTMLFileMaker tallyReportFileMaker = new TallyReportHTMLFileMaker(
-                sharedSettings, measurementsTable, companyName, jobName, "",  adjustmentValue, tallyGoal);
-        tallyReportFileMaker.init();
-        tallyReportFileMaker.printTallyReport();*/
-
-    }//end of MenuOptionsActivity::handlePrintButtonPressed
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
     // MenuOptionsActivity::handleRedXButtonPressed
     //
     // Exits the activity by calling exitActivityByCancel().
@@ -218,6 +299,63 @@ public class MoreOptionsActivity extends Activity {
         finish();
 
     }//end of MenuOptionsActivity::handleRedXButtonPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MenuOptionsActivity::handleSwitchUnitSystemButtonPressed
+    //
+    // The unit system is set to either Imperial mode or Metric mode, depending
+    // on the current mode.
+    //
+
+    public void handleSwitchUnitSystemButtonPressed(View pView) {
+
+        if (unitSystem.equals(Keys.IMPERIAL_MODE)) { unitSystem = Keys.METRIC_MODE; }
+        else if (unitSystem.equals(Keys.METRIC_MODE)) { unitSystem = Keys.IMPERIAL_MODE; }
+
+        setSwitchUnitSystemButtonText();
+
+    }//end of MenuOptionsActivity::handleSwitchUnitSystemButtonPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MenuOptionsActivity::setEditTextFields
+    //
+    // Sets the maximum and minimum measurements allowed edit text fields to the
+    // values stored in SharedSettings.
+    //
+
+    private void setEditTextFields() {
+
+        ((EditText)findViewById(R.id.editTextMaximumMeasurementAllowed))
+                                            .setText(sharedSettings.getMaximumMeasurementAllowed());
+
+        ((EditText)findViewById(R.id.editTextMinimumMeasurementAllowed))
+                                            .setText(sharedSettings.getMinimumMeasurementAllowed());
+
+    }//end of MenuOptionsActivity::setEditTextFields
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MenuOptionsActivity::setSwitchUnitSystemButtonText
+    //
+    // Determines what text the button should be displaying.
+    //
+    // If the app is already in Imperial mode the button text is set to:
+    //      "Switch to Metric"
+    //
+    // If the app is already in Metric mode the button text is set to:
+    //      "Switch to Imperial"
+    //
+
+    private void setSwitchUnitSystemButtonText() {
+
+        Button button = (Button)findViewById(R.id.switchUnitSystemButton);
+
+        if (unitSystem.equals(Keys.IMPERIAL_MODE)) { button.setText(switchToMetricButtonText); }
+        else if (unitSystem.equals(Keys.METRIC_MODE)) { button.setText(switchToImperialButtonText); }
+
+    }//end of MenuOptionsActivity::setSwitchUnitSystemButtonText
     //-----------------------------------------------------------------------------
 
 }//end of class MenuOptionsActivity
