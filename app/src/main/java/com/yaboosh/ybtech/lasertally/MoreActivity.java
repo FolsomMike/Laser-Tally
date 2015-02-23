@@ -22,6 +22,7 @@ package com.yaboosh.ybtech.lasertally;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Message;
 import android.view.View;
 import android.view.WindowManager;
 
@@ -140,6 +141,34 @@ public class MoreActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // JobDisplayActivity::onActivityResult
+    //
+    // Listens for activity results and decides what actions to take depending on
+    // their request codes and requests' result codes.
+    //
+
+    @Override
+    public void onActivityResult(int pRequestCode, int pResultCode, Intent pData)
+    {
+
+        if (pRequestCode == Keys.ACTIVITY_RESULT_MORE_OPTIONS) {
+
+            if (pResultCode == RESULT_OK) {
+                sharedSettings = pData.getParcelableExtra(Keys.SHARED_SETTINGS_KEY);
+            }
+            else if (pResultCode == RESULT_CANCELED) {}
+
+        }
+        else {
+
+            super.onActivityResult(pRequestCode, pResultCode, pData);
+
+        }
+
+    }//end of JobDisplayActivity::onActivityResult
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // MenuActivity::createUiChangeListener
     //
     // Listens for visibility changes in the ui.
@@ -178,7 +207,7 @@ public class MoreActivity extends Activity {
         Intent intent = new Intent(this, MoreOptionsActivity.class);
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
         intent.putExtra(Keys.JOB_INFO_KEY, jobInfo);
-        startActivity(intent);
+        startActivityForResult(intent, Keys.ACTIVITY_RESULT_MORE_OPTIONS);
 
     }//end of MenuActivity::handleOptionsButtonPressed
     //-----------------------------------------------------------------------------
@@ -208,10 +237,16 @@ public class MoreActivity extends Activity {
     //-----------------------------------------------------------------------------
     // MenuActivity::handleRedXButtonPressed
     //
-    // Exits the activity by calling exitActivityByCancel().
+    // Exits the activity with a RESULT_OK.
     //
 
     public void handleRedXButtonPressed(View pView) {
+
+        Intent intent = new Intent();
+
+        intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
+
+        setResult(Activity.RESULT_OK, intent);
 
         finish();
 
