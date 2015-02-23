@@ -349,8 +349,15 @@ public class TallyReportHTMLMaker {
 
         try {
 
-            fileReader = new FileReader(sharedSettings.getJobsFolderPath() + jobInfo.getJobName()
-                                                                            + " ~ TallyData.csv");
+            if (sharedSettings.getUnitSystem().equals(Keys.IMPERIAL_MODE)) {
+                fileReader = new FileReader(sharedSettings.getJobsFolderPath()
+                                        + jobInfo.getJobName() + " ~ Imperial ~ TallyData.csv");
+            }
+            else if (sharedSettings.getUnitSystem().equals(Keys.METRIC_MODE)) {
+                fileReader = new FileReader(sharedSettings.getJobsFolderPath()
+                                        + jobInfo.getJobName() + " ~ Metric ~ TallyData.csv");
+            }
+
             bufferedReader = new BufferedReader(fileReader);
 
             //Read all the lines from the file

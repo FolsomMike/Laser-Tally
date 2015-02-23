@@ -41,9 +41,12 @@ public class TallyDataHandler {
 
     private MeasurementsTableHandler measurementsTableHandler;
 
-    private DecimalFormat tallyFormat = new DecimalFormat("#.##");
+    private DecimalFormat tallyFormat;
+    private DecimalFormat imperialTallyFormat = new DecimalFormat("#.##");
+    private DecimalFormat metricTallyFormat = new DecimalFormat("#.###");
 
     private SharedSettings sharedSettings;
+    public void setSharedSettings(SharedSettings pSet) { sharedSettings = pSet; handleSharedSettingsChanged(); }
 
     private JobInfo jobInfo;
     public void setJobInfo(JobInfo pJobInfo) { jobInfo = pJobInfo; handleJobInfoChanged(); }
@@ -52,30 +55,41 @@ public class TallyDataHandler {
     //They are needed because the other lists need a TableRow to insert
     //data, but the Activity cannot be accessed while the file is being
     //accessed.
-    private ArrayList<String> adjustedValuesFromFile = new ArrayList<String>();
     private ArrayList<String> pipeNumbersFromFile = new ArrayList<String>();
-    private ArrayList<String> totalLengthValuesFromFile = new ArrayList<String>();
+    private ArrayList<String> imperialAdjustedValuesFromFile = new ArrayList<String>();
+    private ArrayList<String> imperialTotalLengthValuesFromFile = new ArrayList<String>();
+    private ArrayList<String> metricAdjustedValuesFromFile = new ArrayList<String>();
+    private ArrayList<String> metricTotalLengthValuesFromFile = new ArrayList<String>();
 
-    //Important data variables
-    private LinkedHashMap<TableRow, String> adjustedValues = new LinkedHashMap<TableRow, String>();
-    public LinkedHashMap getAdjustedValues() { return adjustedValues; }
-
-    private String adjustedValuesTotal;
-    public String getAdjustedValuesTotal() { return adjustedValuesTotal; }
-
-    private LinkedHashMap<TableRow, String> totalLengthValues = new LinkedHashMap<TableRow, String>();
-    public LinkedHashMap getTotalLengthValues() { return totalLengthValues; }
-    public String getTotalLengthValueOfRow (TableRow pRow) { return totalLengthValues.get(pRow);}
-
-    private String totalLengthValuesTotal;
-    public String getTotalLengthValuesTotal() { return totalLengthValuesTotal; }
 
     private LinkedHashMap<TableRow, String> pipeNumbers = new LinkedHashMap<TableRow, String>();
     public LinkedHashMap getPipeNumbers() { return pipeNumbers; }
     public String getPipeNumberOfRow (TableRow pRow) { return pipeNumbers.get(pRow);}
-    //End of Important data variables
+
+    private Map<TableRow, String> adjustedValues;
+    private String adjustedValuesTotal;
+    private Map<TableRow, String> totalLengthValues;
+    public String getTotalLengthValueOfRow (TableRow pRow) { return totalLengthValues.get(pRow);}
+    private String totalLengthValuesTotal;
+
+    //Imperial
+    private LinkedHashMap<TableRow, String> imperialAdjustedValues = new LinkedHashMap<TableRow, String>();
+    public LinkedHashMap getImperialAdjustedValues() { return imperialAdjustedValues; }
+
+    private LinkedHashMap<TableRow, String> imperialTotalLengthValues = new LinkedHashMap<TableRow, String>();
+    public LinkedHashMap getImperialTotalLengthValues() { return imperialTotalLengthValues; }
+    //End of Imperial
+
+    //Metric
+    private LinkedHashMap<TableRow, String> metricAdjustedValues = new LinkedHashMap<TableRow, String>();
+    public LinkedHashMap getMetricAdjustedValues() { return metricAdjustedValues; }
+
+    private LinkedHashMap<TableRow, String> metricTotalLengthValues = new LinkedHashMap<TableRow, String>();
+    public LinkedHashMap getMetricTotalLengthValues() { return metricTotalLengthValues; }
+    //End of Metric
 
     double adjustmentValue = 0;
+    String unitSystem = "";
 
     //-----------------------------------------------------------------------------
     // TallyDataHandler::TallyDataHandler (constructor)
@@ -88,6 +102,8 @@ public class TallyDataHandler {
         jobInfo = pJobInfo;
         measurementsTableHandler = pHandler;
 
+        adjustmentValue = Double.parseDouble(jobInfo.getMakeupAdjustment());
+
     }//end of TallyDataHandler::TallyDataHandler (constructor)
     //-----------------------------------------------------------------------------
 
@@ -97,6 +113,8 @@ public class TallyDataHandler {
 
     public void init()
     {
+
+        setUnitSystem(sharedSettings.getUnitSystem());
 
         loadDataFromFile();
         readDataFromLists();
@@ -110,15 +128,30 @@ public class TallyDataHandler {
     // Adds the passed in data to the appropriate lists and the measurements table.
     //
 
-    private void addDataEntry(String pPipeNumber, String pTotalLength, String pAdjusted)
+    private void addDataEntry(String pPipeNumber, String pImperialTotalLength,
+                                String pImperialAdjusted, String pMetricTotalLength,
+                                String pMetricAdjusted)
     {
 
+        //Determine whether to add the imperial or metric values
+        //to the table
+        String tableAdjusted = "";
+        String tableTotalLength = "";
+        if (unitSystem.equals(Keys.IMPERIAL_MODE)) {
+            tableAdjusted = pImperialAdjusted;
+            tableTotalLength = pImperialTotalLength;
+        }
+        else if (unitSystem.equals(Keys.METRIC_MODE)) {
+            tableAdjusted = pMetricAdjusted;
+            tableTotalLength = pMetricTotalLength;
+        }
+
         //insert the data into the measurements table
-        TableRow tR = measurementsTableHandler.addValuesToTable(pPipeNumber, pTotalLength, pAdjusted);
+        TableRow tR = measurementsTableHandler.addValuesToTable(pPipeNumber, tableTotalLength, tableAdjusted);
 
         //store the data
-        adjustedValues.put(tR, pAdjusted);
-        totalLengthValues.put(tR, pTotalLength);
+        putImperialData(tR, pImperialAdjusted, pImperialTotalLength);
+        putMetricData(tR, pMetricAdjusted, pMetricTotalLength);
         pipeNumbers.put(tR, pPipeNumber);
 
         setAndCheckTotals();
@@ -185,6 +218,34 @@ public class TallyDataHandler {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // TallyDataHandler::convertToImperial
+    //
+    // Converts the passed in value from metric to imperial. Returns the result
+    // as a string.
+    //
+
+    private String convertToImperial(Double pValue) {
+
+        return imperialTallyFormat.format(pValue / 0.3048);
+
+    }//end of TallyDataHandler::convertToImperial
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDataHandler::convertToMetric
+    //
+    // Converts the passed in value from metric to imperial. Returns the result as
+    // as string.
+    //
+
+    private String convertToMetric(Double pValue) {
+
+        return metricTallyFormat.format(pValue * 0.3048);
+
+    }//end of TallyDataHandler::convertToMetric
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // TallyDataHandler::changeValuesOfExistingRow
     //
     // Changes the values of the passed in row using the passed in values.
@@ -197,12 +258,24 @@ public class TallyDataHandler {
                                           boolean pRenumberAllAfterRow)
     {
 
+
         String newAdjusted = tallyFormat.format((Double.parseDouble(pTotalLength) - adjustmentValue));
 
         //Replace existing values in lists
         pipeNumbers.put(pRow, pPipeNum);
-        totalLengthValues.put(pRow, pTotalLength);
-        adjustedValues.put(pRow, newAdjusted);
+
+        if (unitSystem.equals(Keys.IMPERIAL_MODE)) {
+            imperialAdjustedValues.put(pRow, newAdjusted);
+            imperialTotalLengthValues.put(pRow, pTotalLength);
+            metricAdjustedValues.put(pRow, convertToMetric(Double.parseDouble(newAdjusted)));
+            metricTotalLengthValues.put(pRow, convertToMetric(Double.parseDouble(pTotalLength)));
+        }
+        else if (unitSystem.equals(Keys.METRIC_MODE)) {
+            imperialAdjustedValues.put(pRow, convertToImperial(Double.parseDouble(newAdjusted)));
+            imperialTotalLengthValues.put(pRow, convertToMetric(Double.parseDouble(pTotalLength)));
+            metricAdjustedValues.put(pRow, newAdjusted);
+            metricTotalLengthValues.put(pRow, pTotalLength);
+        }
 
         measurementsTableHandler.changeValuesOfExistingRow(pRow, pPipeNum, pTotalLength,
                                                             newAdjusted, pRenumberAllAfterRow);
@@ -284,12 +357,14 @@ public class TallyDataHandler {
     //-----------------------------------------------------------------------------
     // TallyDataHandler::generateFileText
     //
-    // Generates the file text used for saving the tally data.
+    // Generates the file text used for saving the imperial tally data, using the
+    // passed in Maps for the total length and adjusted values.
     //
     // Comment lines are began with "#"
     //
 
-    private String generateFileText()
+    private String generateFileText(Map<TableRow, String> pAdjustedValues,
+                                        Map<TableRow, String> pTotalLengthValues)
     {
 
         String fileText = "# Pipe Number, Total Length, Adjusted";
@@ -297,8 +372,8 @@ public class TallyDataHandler {
         for (Map.Entry<TableRow, String> entry : pipeNumbers.entrySet()) {
 
             String pipeNumber = pipeNumbers.get(entry.getKey());
-            String totalLength = totalLengthValues.get(entry.getKey());
-            String adjusted = adjustedValues.get(entry.getKey());
+            String totalLength = pTotalLengthValues.get(entry.getKey());
+            String adjusted = pAdjustedValues.get(entry.getKey());
 
             String line = "\r\n" + pipeNumber + "," + totalLength + "," + adjusted;
 
@@ -361,23 +436,45 @@ public class TallyDataHandler {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyDataHandler::handleFileLine
+    // TallyDataHandler::handleImperialFileLine
     //
-    // Either stores the data contained in the file line or skips over it if it
-    // is a comment.
+    // Either stores the data contained in the file line to the imperial lists
+    // or skips over it if it is a comment.
     //
 
-    private void handleFileLine(String pLine)
+    private void handleImperialFileLine(String pLine)
     {
 
         //Skip over this file line if it is a comment
         if (pLine.startsWith("#")) { return; }
 
         pipeNumbersFromFile.add(getPipeNumberFromFileLine(pLine));
-        totalLengthValuesFromFile.add(getTotalLengthValueFromFileLine(pLine));
-        adjustedValuesFromFile.add(getAdjustedValueFromFileLine(pLine));
+        imperialTotalLengthValuesFromFile.add(getTotalLengthValueFromFileLine(pLine));
+        imperialAdjustedValuesFromFile.add(getAdjustedValueFromFileLine(pLine));
 
-    }//end of TallyDataHandler::handleFileLine
+    }//end of TallyDataHandler::handleImperialFileLine
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDataHandler::handleMetricFileLine
+    //
+    // Either stores the data contained in the file line to the metric lists
+    // or skips over it if it is a comment.
+    //
+
+    private void handleMetricFileLine(String pLine)
+    {
+
+        //Skip over this file line if it is a comment
+        if (pLine.startsWith("#")) { return; }
+
+        //The pipe numbers are in the file but are not read
+        //because the pipe numbers in the metric file should
+        //match the pipe numbers from the imperial file
+        metricTotalLengthValuesFromFile.add(getTotalLengthValueFromFileLine(pLine));
+        metricAdjustedValuesFromFile.add(getAdjustedValueFromFileLine(pLine));
+
+    }//end of TallyDataHandler::handleImperialFileLine
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -408,21 +505,56 @@ public class TallyDataHandler {
     {
 
         String pipeNumber = determineNextPipeNumber();
-        String totalLength = tallyFormat.format(pValue);
-        String adjusted = tallyFormat.format(pValue - adjustmentValue);
+        double adjusted = pValue - adjustmentValue;
+        String imperialAdjusted = imperialTallyFormat.format(adjusted);
+        String imperialTotalLength = imperialTallyFormat.format(pValue);
+        String metricAdjusted = convertToMetric(adjusted);
+        String metricTotalLength = convertToMetric(pValue);
 
-        addDataEntry(pipeNumber, totalLength, adjusted);
+
+        addDataEntry(pipeNumber, imperialTotalLength, imperialAdjusted,
+                        metricTotalLength, metricAdjusted);
 
     }//end of TallyDataHandler::handleNewDistanceValue
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // TallyDataHandler::handleSharedSettingsChanged
+    //
+    // Sets the unit system variable equal to the unit system contained within
+    // SharedSettings and recalculates the values.
+    //
+
+    private void handleSharedSettingsChanged()
+    {
+
+        setUnitSystem(sharedSettings.getUnitSystem());
+
+    }//end of TallyDataHandler::handleSharedSettingsChanged
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // TallyDataHandler::loadDataFromFile
     //
-    // Load the tally data from file.
+    // Load the tally data from the metric and imperial files.
     //
 
     private void loadDataFromFile()
+    {
+
+        loadImperialDataFromFile();
+        loadMetricDataFromFile();
+
+    }//end of TallyDataHandler::loadDataFromFile
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDataHandler::loadImperialDataFromFile
+    //
+    // Load the imperial tally data from the imperial file.
+    //
+
+    private void loadImperialDataFromFile()
     {
 
         FileReader fileReader = null;
@@ -431,13 +563,13 @@ public class TallyDataHandler {
         try {
 
             fileReader = new FileReader(sharedSettings.getJobsFolderPath() + jobInfo.getJobName()
-                                            + " ~ TallyData.csv");
+                    + " ~ Imperial ~ TallyData.csv");
             bufferedReader = new BufferedReader(fileReader);
 
             //Read all the lines from the file
             String s;
             while ((s = bufferedReader.readLine()) != null) {
-                handleFileLine(s);
+                handleImperialFileLine(s);
             }
 
         }
@@ -446,14 +578,93 @@ public class TallyDataHandler {
             try { if (fileReader != null) { fileReader.close(); } } catch (Exception e) { }
         }
 
-    }//end of TallyDataHandler::loadDataFromFile
+    }//end of TallyDataHandler::loadImperialDataFromFile
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDataHandler::loadMetricDataFromFile
+    //
+    // Load the metric tally data from the metric file.
+    //
+
+    private void loadMetricDataFromFile()
+    {
+
+        FileReader fileReader = null;
+        BufferedReader bufferedReader;
+
+        try {
+
+            fileReader = new FileReader(sharedSettings.getJobsFolderPath() + jobInfo.getJobName()
+                    + " ~ Metric ~ TallyData.csv");
+            bufferedReader = new BufferedReader(fileReader);
+
+            //Read all the lines from the file
+            String s;
+            while ((s = bufferedReader.readLine()) != null) {
+                handleMetricFileLine(s);
+            }
+
+        }
+        catch(Exception e){}
+        finally{
+            try { if (fileReader != null) { fileReader.close(); } } catch (Exception e) { }
+        }
+
+    }//end of TallyDataHandler::loadMetricDataFromFile
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDataHandler::putListsIntoTable
+    //
+    // Put the passed in lists into the measurements table.
+    //
+
+    private void putListsIntoTable(Map<TableRow, String> pAdjustedValues, Map<TableRow,
+                                        String> pTotalLengthValues)
+    {
+
+        measurementsTableHandler.setAdjustedColumns(pAdjustedValues);
+        measurementsTableHandler.setTotalLengthColumns(pTotalLengthValues);
+
+    }//end of TallyDataHandler::putListsIntoTable
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDataHandler::putImperialData
+    //
+    // Puts the passed in the appropriate maps, using the TableRow as the key.
+    //
+
+    private void putImperialData(TableRow pTR, String pAdjusted, String pTotalLength)
+    {
+
+        imperialAdjustedValues.put(pTR, pAdjusted);
+        imperialTotalLengthValues.put(pTR, pTotalLength);
+
+    }//end of TallyDataHandler::putImperialData
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDataHandler::putMetricData
+    //
+    // Puts the passed in the appropriate maps, using the TableRow as the key.
+    //
+
+    private void putMetricData(TableRow pTR, String pAdjusted, String pTotalLength)
+    {
+
+        metricAdjustedValues.put(pTR, pAdjusted);
+        metricTotalLengthValues.put(pTR, pTotalLength);
+
+    }//end of TallyDataHandler::putMetricData
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
     // TallyDataHandler::readDataFromLists
     //
     // Reads the tally data from the lists that were used to store the data read
-    // from file.
+    // from file and put the data into the appropriate Maps.
     //
 
     private void readDataFromLists()
@@ -461,8 +672,11 @@ public class TallyDataHandler {
 
         for (int i=0; i<pipeNumbersFromFile.size(); i++) {
 
-            addDataEntry(pipeNumbersFromFile.get(i), totalLengthValuesFromFile.get(i),
-                                                                    adjustedValuesFromFile.get(i));
+            addDataEntry(pipeNumbersFromFile.get(i),
+                            imperialTotalLengthValuesFromFile.get(i),
+                            imperialAdjustedValuesFromFile.get(i),
+                            metricTotalLengthValuesFromFile.get(i),
+                            metricAdjustedValuesFromFile.get(i));
 
         }
 
@@ -503,19 +717,41 @@ public class TallyDataHandler {
     {
 
 
+        //Save the imperial data
+        saveDataToFile((sharedSettings.getJobsFolderPath() + jobInfo.getJobName()
+                            + " ~ Imperial ~ TallyData.csv"),
+                            imperialAdjustedValues, imperialTotalLengthValues);
+
+        //Save the metric data
+        saveDataToFile((sharedSettings.getJobsFolderPath() + jobInfo.getJobName()
+                            + " ~ Metric ~ TallyData.csv"),
+                            metricAdjustedValues, metricTotalLengthValues);
+
+    }//end of TallyDataHandler::saveTallyDataToFile
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDataHandler::saveDataToFile
+    //
+    // Save the passed in tally data to file located the passed in path.
+    //
+
+    private void saveDataToFile(String pPath, Map<TableRow, String> pAdjustedValues,
+                                            Map<TableRow, String> pTotalLengthValues)
+    {
+
+
         FileOutputStream fileOutputStream = null;
         OutputStreamWriter outputStreamWriter = null;
         BufferedWriter out = null;
 
         try{
 
-            fileOutputStream = new FileOutputStream(sharedSettings.getJobsFolderPath()
-                                                    + jobInfo.getJobName()
-                                                    + " ~ TallyData.csv");
+            fileOutputStream = new FileOutputStream(pPath);
             outputStreamWriter = new OutputStreamWriter(fileOutputStream, "UTF-8");
             out = new BufferedWriter(outputStreamWriter);
 
-            out.write(generateFileText());
+            out.write(generateFileText(pAdjustedValues, pTotalLengthValues));
 
             out.flush();
 
@@ -532,7 +768,7 @@ public class TallyDataHandler {
             catch(IOException e){Log.e(LOG_TAG, "Error closing FileOutputStream.");}
         }
 
-    }//end of TallyDataHandler::saveTallyDataToFile
+    }//end of TallyDataHandler::saveDataToFile
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -581,6 +817,37 @@ public class TallyDataHandler {
 
 
     }//end of TallyDataHandler::setAndCheckTotals
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDataHandler::setUnitSystem
+    //
+    // Sets the unit system to passed in value.
+    //
+
+    private void setUnitSystem(String pSystem)
+    {
+
+        //No need to do anything else if the unit system hasn't changed or was
+        //null
+        if (unitSystem.equals(pSystem)) { return; }
+
+        unitSystem = pSystem;
+
+        if (unitSystem.equals(Keys.IMPERIAL_MODE)) {
+            adjustedValues = imperialAdjustedValues;
+            totalLengthValues = imperialTotalLengthValues;
+            tallyFormat = imperialTallyFormat;
+        }
+        else if (unitSystem.equals(Keys.METRIC_MODE)) {
+            adjustedValues = metricAdjustedValues;
+            totalLengthValues = metricTotalLengthValues;
+            tallyFormat = metricTallyFormat;
+        }
+
+        putListsIntoTable(adjustedValues, totalLengthValues);
+
+    }//end of TallyDataHandler::setUnitSystem
     //-----------------------------------------------------------------------------
 
 }//end of class TallyDataHandler
