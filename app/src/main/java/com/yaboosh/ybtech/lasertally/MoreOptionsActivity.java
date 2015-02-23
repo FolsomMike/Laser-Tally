@@ -44,6 +44,9 @@ public class MoreOptionsActivity extends Activity {
     private SharedSettings sharedSettings;
     private JobInfo jobInfo;
 
+    private EditText maximumMeasurementAllowedEditText;
+    private EditText minimumMeasurementAllowedEditText;
+
     private String unitSystem;
     private String switchToImperialButtonText = "Switch to Imperial";
     private String switchToMetricButtonText = "Switch to Metric";
@@ -88,6 +91,9 @@ public class MoreOptionsActivity extends Activity {
 
         createUiChangeListener();
 
+        maximumMeasurementAllowedEditText = ((EditText)findViewById(R.id.editTextMaximumMeasurementAllowed));
+        minimumMeasurementAllowedEditText = ((EditText)findViewById(R.id.editTextMinimumMeasurementAllowed));
+
         Bundle bundle = getIntent().getExtras();
         sharedSettings = bundle.getParcelable(Keys.SHARED_SETTINGS_KEY);
         jobInfo = bundle.getParcelable(Keys.JOB_INFO_KEY);
@@ -131,7 +137,8 @@ public class MoreOptionsActivity extends Activity {
         sharedSettings.setContext(this);
 
         setSwitchUnitSystemButtonText();
-        setEditTextFields();
+        setEditTextFields(sharedSettings.getMaximumMeasurementAllowed(),
+                                sharedSettings.getMinimumMeasurementAllowed());
 
     }//end of MenuOptionsActivity::onResume
     //-----------------------------------------------------------------------------
@@ -228,7 +235,7 @@ public class MoreOptionsActivity extends Activity {
 
     private String getMaximumAllowed() {
 
-        return ((EditText)findViewById(R.id.editTextMaximumMeasurementAllowed)).getText().toString();
+        return maximumMeasurementAllowedEditText.getText().toString();
 
     }//end of MenuOptionsActivity::getMaximumAllowed
     //-----------------------------------------------------------------------------
@@ -241,7 +248,7 @@ public class MoreOptionsActivity extends Activity {
 
     private String getMinimumAllowed() {
 
-        return ((EditText)findViewById(R.id.editTextMinimumMeasurementAllowed)).getText().toString();
+        return minimumMeasurementAllowedEditText.getText().toString();
 
     }//end of MenuOptionsActivity::getMinimumAllowed
     //-----------------------------------------------------------------------------
@@ -273,22 +280,6 @@ public class MoreOptionsActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MenuOptionsActivity::handleOptionsButtonPressed
-    //
-    // Starts the MainActivity.
-    // Should be called from the "Close this job." button onClick().
-    //
-
-    public void handleOptionsButtonPressed(View pView) {
-
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
-        startActivity(intent);
-
-    }//end of MenuOptionsActivity::handleOptionsButtonPressed
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
     // MenuOptionsActivity::handleRedXButtonPressed
     //
     // Exits the activity by calling exitActivityByCancel().
@@ -313,6 +304,7 @@ public class MoreOptionsActivity extends Activity {
         if (unitSystem.equals(Keys.IMPERIAL_MODE)) { unitSystem = Keys.METRIC_MODE; }
         else if (unitSystem.equals(Keys.METRIC_MODE)) { unitSystem = Keys.IMPERIAL_MODE; }
 
+        setMaximumAndMinimumMeasurementsAllowed();
         setSwitchUnitSystemButtonText();
 
     }//end of MenuOptionsActivity::handleSwitchUnitSystemButtonPressed
@@ -321,19 +313,41 @@ public class MoreOptionsActivity extends Activity {
     //-----------------------------------------------------------------------------
     // MenuOptionsActivity::setEditTextFields
     //
-    // Sets the maximum and minimum measurements allowed edit text fields to the
-    // values stored in SharedSettings.
+    // Sets the maximum and minimum measurements allowed edit text fields passed
+    // in.
     //
 
-    private void setEditTextFields() {
+    private void setEditTextFields(String pMax, String pMin) {
 
-        ((EditText)findViewById(R.id.editTextMaximumMeasurementAllowed))
-                                            .setText(sharedSettings.getMaximumMeasurementAllowed());
+        maximumMeasurementAllowedEditText.setText(pMax);
 
-        ((EditText)findViewById(R.id.editTextMinimumMeasurementAllowed))
-                                            .setText(sharedSettings.getMinimumMeasurementAllowed());
+        minimumMeasurementAllowedEditText.setText(pMin);
 
     }//end of MenuOptionsActivity::setEditTextFields
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MenuOptionsActivity::setMaximumAndMinimumMeasurementsAllowed
+    //
+    // Converts the maximum and minimum measurements allowed to either Imperial
+    // or Metric, depending on the unit system. The new values are sent to the
+    // edit text fields.
+    //
+
+    private void setMaximumAndMinimumMeasurementsAllowed() {
+
+        if (unitSystem.equals(Keys.IMPERIAL_MODE)) {
+            String newMax = Tools.convertToImperial(Double.parseDouble(getMaximumAllowed()));
+            String newMin = Tools.convertToImperial(Double.parseDouble(getMinimumAllowed()));
+            setEditTextFields(newMax, newMin);
+        }
+        else if (unitSystem.equals(Keys.METRIC_MODE)) {
+            String newMax = Tools.convertToMetric(Double.parseDouble(getMaximumAllowed()));
+            String newMin = Tools.convertToMetric(Double.parseDouble(getMinimumAllowed()));
+            setEditTextFields(newMax, newMin);
+        }
+
+    }//end of MenuOptionsActivity::setMaximumAndMinimumMeasurementsAllowed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
