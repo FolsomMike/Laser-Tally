@@ -392,7 +392,7 @@ public class MeasurementsTableHandler {
     // in Map.
     //
 
-    public void setAdjustedColumns(LinkedHashMap<TableRow, String> pAdjustedValues) {
+    public void setAdjustedColumns(Map<TableRow, String> pAdjustedValues) {
 
         // Set the adjusted value of each row to the
         // adjusted value in the LinkedHashMap associated
@@ -460,6 +460,33 @@ public class MeasurementsTableHandler {
         }
 
     }//end of MeasurementsTableHandler::setPipeNumberOfRow
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MeasurementsTableHandler::setTotalLengthColumns
+    //
+    // Sets the values of all the rows in the Total Length column using the passed
+    // in Map.
+    //
+
+    public void setTotalLengthColumns(Map<TableRow, String> pTotalLengthValues) {
+
+        // Set the adjusted value of each row to the
+        // adjusted value in the LinkedHashMap associated
+        // with that row
+        for (int i=0; i<measurementsTable.getChildCount(); i++) {
+
+            View child = measurementsTable.getChildAt(i);
+
+            if (!(child instanceof TableRow)) { continue; }
+
+            TableRow tR = (TableRow) child;
+
+            setTotalLengthOfRow(tR, pTotalLengthValues.get(tR));
+
+        }
+
+    }//end of MeasurementsTableHandler::setTotalLengthColumns
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
