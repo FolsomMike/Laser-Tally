@@ -109,7 +109,7 @@ public class MainActivity extends Activity {
             sharedSettings = getIntent().getExtras().getParcelable(Keys.SHARED_SETTINGS_KEY);
         }
         else {
-            sharedSettings = new SharedSettings();
+            sharedSettings = new SharedSettings(this);
             sharedSettings.init();
         }
 
