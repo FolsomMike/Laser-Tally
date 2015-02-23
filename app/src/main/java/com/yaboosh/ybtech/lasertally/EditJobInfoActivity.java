@@ -351,12 +351,11 @@ public class EditJobInfoActivity extends Activity {
                                         rack, range, rig, tallyGoal, wall);
         jobInfo.init();
 
+        intent.putExtra(Keys.JOB_INFO_INCLUDED_KEY, true);
         intent.putExtra(Keys.JOB_INFO_KEY, jobInfo);
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
 
-        if (activityMode.equals(EditJobInfoActivityMode.CREATE_JOB)) {
-            startActivity(intent);
-        }
+        if (activityMode.equals(EditJobInfoActivityMode.CREATE_JOB)) { startActivity(intent); }
 
         setResult(Activity.RESULT_OK, intent);
 
