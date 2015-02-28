@@ -227,7 +227,7 @@ public class TableRowEditorActivity extends Activity {
         TextView pTL = (TextView)findViewById(R.id.editTextTotalLength);
         totalLength = pTL.getText().toString();
         CheckBox cBRAB = (CheckBox)findViewById(R.id.checkBoxRenumberAllBelow);
-        Boolean renumberAll = cBRAB.isChecked();
+        boolean renumberAll = cBRAB.isChecked();
 
         Intent resultIntent = new Intent();
         resultIntent.putExtra(PIPE_NUMBER_KEY, pipeNumber);

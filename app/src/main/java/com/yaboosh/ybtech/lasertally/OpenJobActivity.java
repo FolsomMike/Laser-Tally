@@ -259,6 +259,8 @@ public class OpenJobActivity extends Activity {
 
     private void getAndStoreJobs() {
 
+        jobNames.clear();
+
         try {
 
             // Retrieve/Create directory into internal memory;
@@ -343,18 +345,11 @@ public class OpenJobActivity extends Activity {
 
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
 
+        JobInfo jobInfo = new JobInfo(companyName, diameter, facility, grade, job, makeupAdjustment,
+                rack, range, rig, tallyGoal, wall);
+        jobInfo.init();
         intent.putExtra(Keys.JOB_INFO_INCLUDED_KEY, true);
-        intent.putExtra(Keys.COMPANY_NAME_KEY, companyName);
-        intent.putExtra(Keys.DIAMETER_KEY, diameter);
-        intent.putExtra(Keys.FACILITY_KEY, facility);
-        intent.putExtra(Keys.GRADE_KEY,  grade);
-        intent.putExtra(Keys.JOB_NAME_KEY, job);
-        intent.putExtra(Keys.ADJUSTMENT_KEY, makeupAdjustment);
-        intent.putExtra(Keys.RACK_KEY, rack);
-        intent.putExtra(Keys.RANGE_KEY, range);
-        intent.putExtra(Keys.RIG_KEY, rig);
-        intent.putExtra(Keys.TALLY_GOAL_KEY, tallyGoal);
-        intent.putExtra(Keys.WALL_KEY, wall);
+        intent.putExtra(Keys.JOB_INFO_KEY, jobInfo);
 
         startActivity(intent);
 

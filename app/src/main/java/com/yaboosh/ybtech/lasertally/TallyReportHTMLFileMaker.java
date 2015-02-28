@@ -35,13 +35,10 @@ public class TallyReportHTMLFileMaker extends TallyReportHTMLMaker {
     // TallyReportHTMLFileMaker::TallyReportHTMLFileMaker (constructor)
     //
 
-    public TallyReportHTMLFileMaker(SharedSettings pSharedSettings,
-                            TableLayout pMeasurementsTable, String pCompanyName,
-                            String pJobName, String pJobDate, double pTallyAdj, double pTallyTarget)
+    public TallyReportHTMLFileMaker(SharedSettings pSharedSettings, JobInfo pJobInfo)
     {
 
-        super(pSharedSettings, pMeasurementsTable, pCompanyName,
-                pJobName, pJobDate, pTallyAdj, pTallyTarget);
+        super(pSharedSettings, pJobInfo);
 
     }// end of TallyReportHTMLFileMaker::TallyReportHTMLFileMaker (constructor)
     //-----------------------------------------------------------------------------
@@ -79,7 +76,7 @@ public class TallyReportHTMLFileMaker extends TallyReportHTMLMaker {
         try{
 
             fileOutputStream = new FileOutputStream(
-                       sharedSettings.getReportsFolderPath() + jobName + " ~ Tally Report.html");
+                       sharedSettings.getReportsFolderPath() + jobInfo.getJobName() + " ~ Tally Report.html");
             outputStreamWriter = new OutputStreamWriter(fileOutputStream, "UTF-8");
             out = new BufferedWriter(outputStreamWriter);
 

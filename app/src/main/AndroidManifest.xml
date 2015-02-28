@@ -51,6 +51,20 @@
         </activity>
 
         <activity
+            android:name=".MoreActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_more"
+            android:theme="@style/activityDialog" >
+        </activity>
+
+        <activity
+            android:name=".MoreOptionsActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_more_options"
+            android:theme="@style/activityDialog" >
+        </activity>
+
+        <activity
             android:name=".OpenJobActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_open_job"

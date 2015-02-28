@@ -26,12 +26,44 @@ import android.content.Context;
 import android.util.Log;
 
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.UUID;
 
 public class Tools {
 
-    public static final String TAG = "Tools";
+    public static final String LOG_TAG = "Tools";
+
+    private static DecimalFormat imperialTallyFormat = new DecimalFormat("#.##");
+    private static DecimalFormat metricTallyFormat = new DecimalFormat("#.###");
+
+    //-----------------------------------------------------------------------------
+    // Tools::convertToImperial
+    //
+    // Converts the passed in value from metric to imperial. Returns the result
+    // as a string.
+    //
+
+    public static String convertToImperial(Double pValue) {
+
+        return imperialTallyFormat.format(pValue / 0.3048);
+
+    }//end of Tools::convertToImperial
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // Tools::convertToMetric
+    //
+    // Converts the passed in value from metric to imperial. Returns the result as
+    // as string.
+    //
+
+    public static String convertToMetric(Double pValue) {
+
+        return metricTallyFormat.format(pValue * 0.3048);
+
+    }//end of Tools::convertToMetric
+    //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
     // Tools::deleteDirectory

@@ -19,7 +19,10 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -29,24 +32,23 @@ import java.text.DecimalFormat;
 public class TallyReportHTMLMaker {
 
     SharedSettings sharedSettings;
+    JobInfo jobInfo;
 
-    TableLayout measurementsTable;
-
-    int numTubes;
-    SparseIntArray rowAndPos;
-
-    String companyName;
-    String jobName;
-    String jobDate;
-    double tallyAdj;
-    double tallyTarget;
+    //debug hss// -- should be added to job info
+    String jobDate = "02/20/15";
 
     double tallyTotal = 0;
     double adjTallyTotal = 0;
+    int numTubes;
+    double tallyTarget;
 
     DecimalFormat decFormat = new  DecimalFormat("#.00");
 
     static final int NUM_TALLY_ROWS = 42;
+
+    private ArrayList<String> adjustedValuesFromFile = new ArrayList<String>();
+    private ArrayList<String> pipeNumbersFromFile = new ArrayList<String>();
+    private ArrayList<String> totalLengthValuesFromFile = new ArrayList<String>();
 
     static final String sp = "&nbsp;";
     static final String space3 = "&nbsp;&nbsp;&nbsp;";
@@ -76,19 +78,12 @@ public class TallyReportHTMLMaker {
     // TallyReportHTMLMaker::TallyReportHTMLMaker (constructor)
     //
 
-    public TallyReportHTMLMaker(SharedSettings pSharedSettings,
-            TableLayout pMeasurementsTable, String pCompanyName,
-                          String pJobName, String pJobDate, double pTallyAdj, double pTallyTarget)
+    public TallyReportHTMLMaker(SharedSettings pSharedSettings, JobInfo pJobInfo)
     {
 
         sharedSettings = pSharedSettings;
-        measurementsTable = pMeasurementsTable;
-
-        companyName = pCompanyName;
-        jobName = pJobName;
-        jobDate = pJobDate;
-        tallyAdj = pTallyAdj;
-        tallyTarget = pTallyTarget;
+        jobInfo = pJobInfo;
+        tallyTarget = Double.parseDouble(jobInfo.getTallyGoal());
 
         //if user left entry blank or entered very large value, print 0 for target
         if (tallyTarget > 999999){ tallyTarget = 0; }
@@ -105,12 +100,279 @@ public class TallyReportHTMLMaker {
     public void init()
     {
 
-        // get the row count and each of their positions
-        rowAndPos = getRowCountAndPositions();
-
-        numTubes = rowAndPos.size();
+        loadTallyDataFromFile();
+        numTubes = pipeNumbersFromFile.size();
 
     }// end of TallyReportHTMLMaker::init
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyReportHTMLMaker::createPageCode
+    //
+    // Creates and returns the HTML code for one page.
+    //
+
+    private String createPageCode (int pIndex, int pPageNum, int pNumPages)
+    {
+
+        String htmlCode = createPageHeaderCode(numTubes, pPageNum, pNumPages);
+
+        double pageTallyTotal = 0;
+        double pageAdjTallyTotal = 0;
+
+        for (int i=0; i<NUM_TALLY_ROWS; i++) {
+
+            int j = pIndex + i;
+
+            if (j >= numTubes) { break; }
+
+            //write the first column
+
+            double tally = Double.parseDouble(totalLengthValuesFromFile.get(j));
+            double adjTally = Double.parseDouble(adjustedValuesFromFile.get(j));
+
+            htmlCode += prePadString("" + pipeNumbersFromFile.get(j), 6) + space3
+                    + prePadString(decFormat.format(tally),6) + space5
+                    + prePadString(decFormat.format(adjTally),6);
+
+            pageTallyTotal += tally;
+            pageAdjTallyTotal += adjTally;
+
+            //write the second column if not already past end of list
+
+            int k = j + NUM_TALLY_ROWS;
+
+            if (k < numTubes){
+
+                tally = Double.parseDouble(totalLengthValuesFromFile.get(k));
+                adjTally = Double.parseDouble(adjustedValuesFromFile.get(k));
+
+                htmlCode += space6 + space6;
+                htmlCode += prePadString("" + pipeNumbersFromFile.get(k), 6) + space3
+                        + prePadString(decFormat.format(tally),6) + space5
+                        + prePadString(decFormat.format(adjTally),6);
+
+            }
+
+            //html new line command so browser goes to next line
+            htmlCode += "<br>";
+
+        }
+
+        htmlCode += createPageFooterCode(pPageNum, pNumPages, pageTallyTotal, pageAdjTallyTotal);
+
+        return htmlCode;
+
+    }// end of TallyReportHTMLMaker::createPageCode
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyReportHTMLMaker::createPageFooterCode
+    //
+    // Creates and returns the HTML code for a page footer.
+    //
+
+    public String createPageFooterCode(int pPageNum, int pNumPages, double pPageTallyTotal,
+                                       double pPageAdjTallyTotal)
+    {
+
+        return  (
+                "<br>"
+                        + "<b>Page</b>" + prePadString("" + pPageNum, 4)
+                        + " <b>of</b> " + prePadString("" + pNumPages, 4)
+                        + space10 + space5 + sp
+                        + "<b>Page Total: </b>" + prePadString(decFormat.format(pPageTallyTotal),9)
+                        + sp + sp
+                        + prePadString(decFormat.format(pPageAdjTallyTotal),9)
+                        + "<br>" + sp
+                        + "</div>"
+        );
+
+    }// end of TallyReportHTMLMaker::createPageFooterCode
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyReportHTMLMaker::createPageHeaderCode
+    //
+    // Creates and returns the HTML code for a page header.
+    //
+
+    public String createPageHeaderCode(int pNumTubes, int pPageNum, int pNumPages)
+    {
+
+        String htmlCode = "<div";
+
+        //if this is not the last page, add a page break
+        if (pPageNum != pNumPages) { htmlCode += pageBreakHTMLCode; }
+
+        htmlCode += ">"
+                + "<b>Company Name: </b>" + jobInfo.getCompanyName() + sp + sp + sp + sp
+                + "<b>Job Name: </b>" + jobInfo.getJobName() + sp + sp + sp + sp
+                + "<b>Date: </b>" + jobDate + sp
+                + "<br>"
+                + "<b>Adjustment: </b>" +  jobInfo.getMakeupAdjustment() + sp
+                + "<b>Tally Target: </b>" + decFormat.format(tallyTarget) + sp + "<br>"
+                + "<b>Tube Count: </b>" + pNumTubes + sp
+                + "<b>Total Tally: </b>" + decFormat.format(tallyTotal) + " / "
+                + decFormat.format(adjTallyTotal) + sp
+                + "<br><br>"
+                + "<b>Number</b>" + space3 + "<b>Length</b>" + space3 + "<b>Adjusted</b>"
+                + space6 + space6
+                + "<b>Number</b>" + space3 + "<b>Length</b>" + space3 + "<b>Adjusted</b>"
+                + "<br>"
+                + "---------------------------------------------------------------------"
+                + "<br>";
+
+        return htmlCode;
+
+    }// end of TallyReportHTMLMaker::createPageHeaderCode
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyReportHTMLMaker::generateHTMlCode
+    //
+    // Generates and returns the HTML code for printing.
+    //
+
+    String generateHTMLCode()
+    {
+
+        String htmlCode = htmlHeader;
+        int printIndex = 0;
+        int pageNum = 1;
+
+        int numPages = (int) Math.ceil((double)numTubes / (double)(NUM_TALLY_ROWS * 2));
+
+        tallyTotal = 0;
+        adjTallyTotal = 0;
+
+        //calculate the total tally and total adjusted tally
+        for (int i=0; i<numTubes; i++) {
+            tallyTotal += Double.parseDouble(totalLengthValuesFromFile.get(i));
+            adjTallyTotal += Double.parseDouble(adjustedValuesFromFile.get(i));
+        }
+
+        //create page code until there are no more tallies
+        while(printIndex < numTubes) {
+            htmlCode += createPageCode(printIndex, pageNum, numPages);
+            pageNum++;
+            printIndex += NUM_TALLY_ROWS * 2;
+        }
+
+        htmlCode += htmlFooter;
+
+        return htmlCode;
+
+    }// end of TallyReportHTMLMaker::generateHTMLCode
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyReportHTMLMaker::getAdjustedValueFromFileLine
+    //
+    // Strips and returns the adjusted value within the passed in file line.
+    //
+
+    private String getAdjustedValueFromFileLine(String pLine)
+    {
+
+        int pSecondComma = pLine.lastIndexOf(",");
+
+        return pLine.substring(pSecondComma+1);
+
+    }//end of TallyReportHTMLMaker::getAdjustedValueFromFileLine
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyReportHTMLMaker::getPipeNumberFromFileLine
+    //
+    // Strips and returns the pipe number within the passed in file line.
+    //
+
+    private String getPipeNumberFromFileLine(String pLine)
+    {
+
+        int pFirstComma = pLine.indexOf(",");
+
+        return pLine.substring(0, pFirstComma);
+
+    }//end of TallyReportHTMLMaker::getPipeNumberFromFileLine
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyReportHTMLMaker::getTotalLengthValueFromFileLine
+    //
+    // Strips and returns the total length value within the passed in file line.
+    //
+
+    private String getTotalLengthValueFromFileLine(String pLine)
+    {
+
+        int pFirstComma = pLine.indexOf(",");
+        int pSecondComma = pLine.lastIndexOf(",");
+
+        return pLine.substring(pFirstComma+1, pSecondComma);
+
+    }//end of TallyReportHTMLMaker::getTotalLengthValueFromFileLine
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyReportHTMLMaker::handleFileLine
+    //
+    // Either stores the data contained in the file line or skips over it if it
+    // is a comment.
+    //
+
+    private void handleFileLine(String pLine)
+    {
+
+        //Skip over this file line if it is a comment
+        if (pLine.startsWith("#")) { return; }
+
+        pipeNumbersFromFile.add(getPipeNumberFromFileLine(pLine));
+        totalLengthValuesFromFile.add(getTotalLengthValueFromFileLine(pLine));
+        adjustedValuesFromFile.add(getAdjustedValueFromFileLine(pLine));
+
+    }//end of TallyReportHTMLMaker::handleFileLine
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyReportHTMLMaker::loadTallyDataFromFile
+    //
+    // Load the tally data from file.
+    //
+
+    private void loadTallyDataFromFile()
+    {
+
+        FileReader fileReader = null;
+        BufferedReader bufferedReader;
+
+        try {
+
+            if (sharedSettings.getUnitSystem().equals(Keys.IMPERIAL_MODE)) {
+                fileReader = new FileReader(sharedSettings.getJobsFolderPath()
+                                        + jobInfo.getJobName() + " ~ Imperial ~ TallyData.csv");
+            }
+            else if (sharedSettings.getUnitSystem().equals(Keys.METRIC_MODE)) {
+                fileReader = new FileReader(sharedSettings.getJobsFolderPath()
+                                        + jobInfo.getJobName() + " ~ Metric ~ TallyData.csv");
+            }
+
+            bufferedReader = new BufferedReader(fileReader);
+
+            //Read all the lines from the file
+            String s;
+            while ((s = bufferedReader.readLine()) != null) {
+                handleFileLine(s);
+            }
+
+        }
+        catch(Exception e){}
+        finally{
+            try { if (fileReader != null) { fileReader.close(); } } catch (Exception e) { }
+        }
+
+    }//end of TallyReportHTMLMaker::loadTallyDataFromFile
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -140,272 +402,14 @@ public class TallyReportHTMLMaker {
             case 5: padding = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"; break;
             case 6: padding = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"; break;
             case 7: padding = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"; break;
-            case 8: padding =
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"; break;
-            case 9: padding =
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"; break;
+            case 8: padding = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"; break;
+            case 9: padding = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"; break;
             default: padding = "";
         }
 
         return(padding + pInput);
 
     }// end of TallyReportHTMLMaker::prePadString
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // TallyReportHTMLMaker::getRowCountAndPositions
-    //
-    // Gets the number of rows and each of their positions in the measurements table
-    // and returns them in a SparseIntArray.
-    //
-    // There will be children in the table which are not rows. This creates an array where each
-    // position in the array holds the table's child index of a valid row which contains tally
-    // information. Thus any row can be retrieved by using the corresponding child index in the
-    // array.
-    //
-
-    private SparseIntArray getRowCountAndPositions() {
-
-        SparseIntArray rowAndPos = new SparseIntArray();
-
-        int rowCount = 0;
-
-        // determine the number of rows and their positions
-        for (int i = 0; i<measurementsTable.getChildCount(); i++) {
-
-            // checks to see if the child at i is a TableRow
-            if (!(measurementsTable.getChildAt(i) instanceof TableRow)) { continue; }
-
-            rowAndPos.put(++rowCount, i);
-
-        }
-
-        return rowAndPos;
-
-    }//end of TallyReportHTMLMaker::getRowCountAndPositions
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // TallyReportHTMLMaker::getTubeNum
-    //
-    // Returns the value under the Pipe # column for row number pRow.
-    //
-    // Value is returned as an integer.
-    //
-
-    int getTubeNum(int pRow) {
-
-        TableRow row = (TableRow) measurementsTable.getChildAt(rowAndPos.get(pRow));
-
-        String pipeNum = "0";
-
-        // For each child in the row, check its id
-        // and see if it is the Pipe # column.
-        for (int i=0; i<row.getChildCount(); i++) {
-
-            if (row.getChildAt(i).getId() == R.id.measurementsTableColumnPipeNum) {
-                TextView tV = (TextView)row.getChildAt(i);
-                pipeNum = tV.getText().toString();
-                break;
-            }
-
-        }
-
-        return Integer.parseInt(pipeNum);
-
-    }//end of TallyReportHTMLMaker::getTubeNum
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // TallyReportHTMLMaker::getTally
-    //
-    // Returns the value under the Total Length column for row number pRow.
-    //
-    // Value is returned as a Double.
-    //
-
-    double getTally(int pRow) {
-
-        TableRow row = (TableRow) measurementsTable.getChildAt(rowAndPos.get(pRow));
-
-        String actual = "0.0";
-
-        // For each child in the row, check its id
-        // and see if it is the Actual column.
-        for (int i=0; i<row.getChildCount(); i++) {
-
-            if (row.getChildAt(i).getId() == R.id.measurementsTableColumnActual) {
-                TextView tV = (TextView)row.getChildAt(i);
-                actual = tV.getText().toString();
-                break;
-            }
-
-        }
-
-        return Double.parseDouble(actual);
-
-    }//end of TallyReportHTMLMaker::getTally
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // TallyReportHTMLMaker::generateHTMlCode
-    //
-    // Generates and returns the HTML code for printing.
-    //
-
-    String generateHTMLCode()
-    {
-
-        String htmlCode = htmlHeader;
-        int printIndex = 0;
-        int pageNum = 1;
-
-        int numPages = (int) Math.ceil((double)numTubes / (double)(NUM_TALLY_ROWS * 2));
-
-        tallyTotal = 0;
-        adjTallyTotal = 0;
-
-        //calculate the total tally and total adjusted tally
-        for (int i=0; i<numTubes; i++) {
-            double tally = getTally(i);
-            tallyTotal += tally;
-            adjTallyTotal += tally + tallyAdj;
-        }
-
-        //create page code until there are no more tallies
-        while(printIndex < numTubes) {
-            htmlCode += createPageCode(printIndex, pageNum, numPages);
-            pageNum++;
-            printIndex += NUM_TALLY_ROWS * 2;
-        }
-
-        htmlCode += htmlFooter;
-
-        return htmlCode;
-
-    }// end of TallyReportHTMLMaker::generateHTMLCode
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // TallyReportHTMLMaker::createPageCode
-    //
-    // Creates and returns the HTML code for one page.
-    //
-
-    private String createPageCode (int pIndex, int pPageNum, int pNumPages)
-    {
-
-        String htmlCode = createPageHeaderCode(numTubes, pPageNum, pNumPages);
-
-        double pageTallyTotal = 0;
-        double pageAdjTallyTotal = 0;
-
-        for (int i=0; i<NUM_TALLY_ROWS; i++) {
-
-            int j = pIndex + i;
-
-            if (j >= numTubes) { break; }
-
-            //write the first column
-
-            double tally = getTally(j);
-            double adjTally = tally + tallyAdj;
-
-            htmlCode += prePadString("" + getTubeNum(j), 6) + space3
-                    + prePadString(decFormat.format(tally),6) + space5
-                    + prePadString(decFormat.format(adjTally),6);
-
-            pageTallyTotal += tally;
-            pageAdjTallyTotal += adjTally;
-
-            //write the second column if not already past end of list
-
-            int k = j + NUM_TALLY_ROWS;
-
-            if (k < numTubes){
-
-                tally = getTally(k);
-                adjTally = tally + tallyAdj;
-
-                htmlCode += space6 + space6;
-                htmlCode += prePadString("" + getTubeNum(k), 6) + space3
-                        + prePadString(decFormat.format(tally),6) + space5
-                        + prePadString(decFormat.format(adjTally),6);
-
-            }
-
-            //html new line command so browser goes to next line
-            htmlCode += "<br>";
-
-        }
-
-        htmlCode += createPageFooterCode(pPageNum, pNumPages, pageTallyTotal, pageAdjTallyTotal);
-
-        return htmlCode;
-
-    }// end of TallyReportHTMLMaker::createPageCode
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // TallyReportHTMLMaker::createPageHeaderCode
-    //
-    // Creates and returns the HTML code for a page header.
-    //
-
-    public String createPageHeaderCode(int pNumTubes, int pPageNum, int pNumPages)
-    {
-
-        String htmlCode = "<div";
-
-        //if this is not the last page, add a page break
-        if (pPageNum != pNumPages) { htmlCode += pageBreakHTMLCode; }
-
-        htmlCode += ">"
-                + "<b>Company Name: </b>" + companyName + sp + sp + sp + sp
-                + "<b>Job Name: </b>" + jobName + sp + sp + sp + sp
-                + "<b>Date: </b>" + jobDate + sp
-                + "<br>"
-                + "<b>Adjustment: </b>" +  decFormat.format(tallyAdj) + sp
-                + "<b>Tally Target: </b>" + decFormat.format(tallyTarget) + sp + "<br>"
-                + "<b>Tube Count: </b>" + pNumTubes + sp
-                + "<b>Total Tally: </b>" + decFormat.format(tallyTotal) + " / "
-                + decFormat.format(adjTallyTotal) + sp
-                + "<br><br>"
-                + "<b>Number</b>" + space3 + "<b>Length</b>" + space3 + "<b>Adjusted</b>"
-                + space6 + space6
-                + "<b>Number</b>" + space3 + "<b>Length</b>" + space3 + "<b>Adjusted</b>"
-                + "<br>"
-                + "---------------------------------------------------------------------"
-                + "<br>";
-
-        return htmlCode;
-
-    }// end of TallyReportHTMLMaker::createPageHeaderCode
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // TallyReportHTMLMaker::createPageFooterCode
-    //
-    // Creates and returns the HTML code for a page footer.
-    //
-
-    public String createPageFooterCode(int pPageNum, int pNumPages, double pPageTallyTotal,
-                                       double pPageAdjTallyTotal)
-    {
-
-        return  (
-                        "<br>"
-                        + "<b>Page</b>" + prePadString("" + pPageNum, 4)
-                        + " <b>of</b> " + prePadString("" + pNumPages, 4)
-                        + space10 + space5 + sp
-                        + "<b>Page Total: </b>" + prePadString(decFormat.format(pPageTallyTotal),9)
-                        + sp + sp
-                        + prePadString(decFormat.format(pPageAdjTallyTotal),9)
-                        + "<br>" + sp
-                        + "</div>"
-        );
-
-    }// end of TallyReportHTMLMaker::createPageFooterCode
     //-----------------------------------------------------------------------------
 
 }//end of class TallyReportHTMLMaker
