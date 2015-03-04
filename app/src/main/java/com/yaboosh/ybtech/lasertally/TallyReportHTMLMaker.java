@@ -83,10 +83,14 @@ public class TallyReportHTMLMaker {
 
         sharedSettings = pSharedSettings;
         jobInfo = pJobInfo;
-        tallyTarget = Double.parseDouble(jobInfo.getTallyGoal());
 
-        //if user left entry blank or entered very large value, print 0 for target
-        if (tallyTarget > 999999){ tallyTarget = 0; }
+        //if user left entry blank or entered very large value, use 0 for target
+        if (jobInfo.getTallyGoal().equals("")
+                || Double.parseDouble(jobInfo.getTallyGoal()) > 999999) {
+            tallyTarget = 0;
+        }
+
+        else { tallyTarget = Double.parseDouble(jobInfo.getTallyGoal()); }
 
     }// end of TallyReportHTMLMaker::TallyReportHTMLMaker (constructor)
     //-----------------------------------------------------------------------------
