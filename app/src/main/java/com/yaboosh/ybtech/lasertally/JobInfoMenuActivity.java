@@ -30,7 +30,6 @@ import android.view.View;
 import android.view.WindowManager;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -45,8 +44,7 @@ public class JobInfoMenuActivity extends Activity {
     private int uiOptions;
 
     private SharedSettings sharedSettings;
-
-    private String job;
+    private String jobName;
 
     //-----------------------------------------------------------------------------
     // JobInfoMenuActivity::JobInfoMenuActivity (constructor)
@@ -92,7 +90,7 @@ public class JobInfoMenuActivity extends Activity {
 
         Bundle bundle = getIntent().getExtras();
         sharedSettings = bundle.getParcelable(Keys.SHARED_SETTINGS_KEY);
-        job = bundle.getString(Keys.JOB_NAME_KEY);
+        jobName = bundle.getString(Keys.JOB_NAME_KEY);
 
     }//end of JobInfoMenuActivity::onCreate
     //-----------------------------------------------------------------------------
@@ -215,17 +213,14 @@ public class JobInfoMenuActivity extends Activity {
     //-----------------------------------------------------------------------------
     // JobInfoMenuActivity::deleteJob
     //
-    // Deletes the job with the passed in name.
+    // Deletes the passed in job by deleting its directory.
     //
 
     private void deleteJob(String pJobName) {
 
         try {
 
-            File jobsDir = getDir("jobsDir", Context.MODE_PRIVATE);
-
-            File jobDir = new File(jobsDir, "job=" + pJobName);
-            Tools.deleteDirectory(jobDir);
+            Tools.deleteDirectory(new File(sharedSettings.getJobsFolderPath() + File.separator + pJobName));
 
         } catch (Exception e) {}
 
@@ -257,10 +252,10 @@ public class JobInfoMenuActivity extends Activity {
 
     public void handleCreateANewJobButtonPressed(View pView) {
 
-        Intent intent = new Intent(this, EditJobInfoActivity.class);
+        Intent intent = new Intent(this, JobInfoActivity.class);
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
         intent.putExtra(Keys.EDIT_JOB_INFO_ACTIVITY_MODE_KEY,
-                                            EditJobInfoActivity.EditJobInfoActivityMode.CREATE_JOB);
+                                            JobInfoActivity.EditJobInfoActivityMode.CREATE_JOB);
         startActivity(intent);
 
     }//end of JobInfoMenuActivity::handleCreateANewJobButtonPressed
@@ -277,8 +272,8 @@ public class JobInfoMenuActivity extends Activity {
 
         Intent intent = new Intent(this, VerifyActionActivity.class);
         intent.putExtra(VerifyActionActivity.TEXT_VIEW_TEXT,
-                            "Are you sure that you want to delete "
-                                            + "the job \"" + job + "\"?  This cannot be undone.");
+                            "Are you sure that you want to delete " + "the job \""
+                                            + jobName + "\"?  This cannot be undone.");
         startActivityForResult(intent, Keys.ACTIVITY_RESULT_VERIFY_ACTION);
 
     }//end of JobInfoMenuActivity::handleDeleteThisJobButtonPressed
@@ -332,7 +327,7 @@ public class JobInfoMenuActivity extends Activity {
 
     public void handleVerifyActionResultOk() {
 
-        deleteJob(job);
+        deleteJob(jobName);
 
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);

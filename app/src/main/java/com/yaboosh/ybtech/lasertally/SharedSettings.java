@@ -157,10 +157,7 @@ public class SharedSettings implements Parcelable {
 
             fStream = new FileInputStream(file);
             br = new Scanner(new InputStreamReader(fStream));
-            while (br.hasNext()) {
-                String strLine = br.nextLine();
-                fileLines.add(strLine);
-            }
+            while (br.hasNext()) { fileLines.add(br.nextLine()); }
 
         }
         catch (Exception e) {}

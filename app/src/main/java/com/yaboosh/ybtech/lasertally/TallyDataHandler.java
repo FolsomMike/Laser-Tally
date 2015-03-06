@@ -52,6 +52,11 @@ public class TallyDataHandler {
     private JobInfo jobInfo;
     public void setJobInfo(JobInfo pJobInfo) { jobInfo = pJobInfo; handleJobInfoChanged(); }
 
+    //File paths
+    private String imperialDataFilePath;
+    private String metricDataFilePath;
+    //end of File paths
+
     //These lists are used to store the data originally read from file.
     //They are needed because the other lists need a TableRow to insert
     //data, but the Activity cannot be accessed while the file is being
@@ -120,6 +125,14 @@ public class TallyDataHandler {
         setUnitSystem(sharedSettings.getUnitSystem());
         maximumValueAllowed = Double.parseDouble(sharedSettings.getMaximumMeasurementAllowed());
         minimumValueAllowed = Double.parseDouble(sharedSettings.getMinimumMeasurementAllowed());
+
+        imperialDataFilePath = jobInfo.getCurrentJobDirectoryPath() + File.separator
+                                                                    + jobInfo.getJobName()
+                                                                    + " ~ TallyData ~ Imperial.csv";
+
+        metricDataFilePath = jobInfo.getCurrentJobDirectoryPath() + File.separator
+                                                                    + jobInfo.getJobName()
+                                                                    + " ~ TallyData ~ Metric.csv";
 
         loadDataFromFile();
         readDataFromLists();
@@ -558,15 +571,12 @@ public class TallyDataHandler {
 
         try {
 
-            fileReader = new FileReader(sharedSettings.getJobsFolderPath() + jobInfo.getJobName()
-                    + " ~ Imperial ~ TallyData.csv");
+            fileReader = new FileReader(imperialDataFilePath);
             bufferedReader = new BufferedReader(fileReader);
 
             //Read all the lines from the file
             String s;
-            while ((s = bufferedReader.readLine()) != null) {
-                handleImperialFileLine(s);
-            }
+            while ((s = bufferedReader.readLine()) != null) { handleImperialFileLine(s); }
 
         }
         catch(Exception e){}
@@ -591,8 +601,7 @@ public class TallyDataHandler {
 
         try {
 
-            fileReader = new FileReader(sharedSettings.getJobsFolderPath() + jobInfo.getJobName()
-                    + " ~ Metric ~ TallyData.csv");
+            fileReader = new FileReader(metricDataFilePath);
             bufferedReader = new BufferedReader(fileReader);
 
             //Read all the lines from the file
@@ -712,16 +721,11 @@ public class TallyDataHandler {
     private void saveTallyDataToFile()
     {
 
-
         //Save the imperial data
-        saveDataToFile((sharedSettings.getJobsFolderPath() + jobInfo.getJobName()
-                            + " ~ Imperial ~ TallyData.csv"),
-                            imperialAdjustedValues, imperialTotalLengthValues);
+        saveDataToFile(imperialDataFilePath, imperialAdjustedValues, imperialTotalLengthValues);
 
         //Save the metric data
-        saveDataToFile((sharedSettings.getJobsFolderPath() + jobInfo.getJobName()
-                            + " ~ Metric ~ TallyData.csv"),
-                            metricAdjustedValues, metricTotalLengthValues);
+        saveDataToFile(metricDataFilePath, metricAdjustedValues, metricTotalLengthValues);
 
     }//end of TallyDataHandler::saveTallyDataToFile
     //-----------------------------------------------------------------------------

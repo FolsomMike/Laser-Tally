@@ -32,6 +32,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.yaboosh.ybtech.lasertally.util.SystemUiHider;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -48,7 +50,7 @@ import java.util.Scanner;
 
 public class OpenJobActivity extends Activity {
 
-    public static final String TAG = "OpenJobActivity";
+    public static final String LOG_TAG = "OpenJobActivity";
 
     private View decorView;
     private int uiOptions;
@@ -57,9 +59,9 @@ public class OpenJobActivity extends Activity {
 
     ArrayList<String> jobNames = new ArrayList<String>();
 
-    ArrayList<String> fileLines = new ArrayList<String>();
+    private String selectedJobDirectoryPath;
+    private String selectedJobInfoFilePath;
 
-    private String selectedJob;
     private String companyName;
     private String diameter;
     private String facility;
@@ -95,7 +97,7 @@ public class OpenJobActivity extends Activity {
 
         super.onCreate(savedInstanceState);
 
-        Log.d(TAG, "Inside of onCreate :: " + TAG);
+        Log.d(LOG_TAG, "Inside of onCreate :: " + LOG_TAG);
 
         setContentView(R.layout.activity_open_job);
 
@@ -131,7 +133,7 @@ public class OpenJobActivity extends Activity {
     protected void onDestroy()
     {
 
-        Log.d(TAG, "Inside of onDestroy :: " + TAG);
+        Log.d(LOG_TAG, "Inside of onDestroy :: " + LOG_TAG);
 
         super.onDestroy();
 
@@ -151,7 +153,7 @@ public class OpenJobActivity extends Activity {
 
         super.onResume();
 
-        Log.d(TAG, "Inside of onResume :: " + TAG);
+        Log.d(LOG_TAG, "Inside of onResume :: " + LOG_TAG);
 
         decorView.setSystemUiVisibility(uiOptions);
 
@@ -176,7 +178,7 @@ public class OpenJobActivity extends Activity {
 
         super.onPause();
 
-        Log.d(TAG, "Inside of onDestroy :: " + TAG);
+        Log.d(LOG_TAG, "Inside of onDestroy :: " + LOG_TAG);
 
     }//end of OpenJobActivity::onPause
     //-----------------------------------------------------------------------------
@@ -213,7 +215,7 @@ public class OpenJobActivity extends Activity {
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 
                 handleJobSelected(((TextView)arg1).getText().toString());
-                Log.d(TAG, "Job Selected: " + ((TextView)arg1).getText().toString());
+                Log.d(LOG_TAG, "Job Selected: " + ((TextView)arg1).getText().toString());
 
             }
 
@@ -263,9 +265,11 @@ public class OpenJobActivity extends Activity {
 
         try {
 
-            // Retrieve/Create directory into internal memory;
-            File jobsDir = getDir("jobsDir", Context.MODE_PRIVATE);
+            // Retrieve the jobs directory
+            File jobsDir = new File (sharedSettings.getJobsFolderPath());
 
+            // All of the directories in the jobs directory
+            // are jobs, so they are stored as such
             File[] files = jobsDir.listFiles();
             for (File f : files) { if (f.isDirectory()) { storeJob(f.getName()); } }
 
@@ -274,7 +278,6 @@ public class OpenJobActivity extends Activity {
 
     }//end of OpenJobActivity::getAndStoreJobs
     //-----------------------------------------------------------------------------
-
 
     //-----------------------------------------------------------------------------
     // OpenJobActivity::getJobInfoFromFile
@@ -285,33 +288,29 @@ public class OpenJobActivity extends Activity {
 
     private void getJobInfoFromFile() {
 
+        ArrayList<String> fileLines = new ArrayList<String>();
+
         try {
-            fileLines.clear();
 
-            // Retrieve/Create directory into internal memory;
-            File jobsDir = getDir("jobsDir", Context.MODE_PRIVATE);
+            //Retrieve the job info file for the selected job
+            File file = new File(selectedJobInfoFilePath);
 
-            // Retrieve/Create sub-directory thisJobDir
-            File thisJobDir = new File(jobsDir, "job=" + selectedJob);
-
-            // Get a file jobInfoTextFile within the dir thisJobDir.
-            File jobInfoTextFile = new File(thisJobDir, "jobInfo.txt");
-
-            FileInputStream fStream = new FileInputStream(jobInfoTextFile);
+            // read the data from the file into an ArrayList
+            FileInputStream fStream = new FileInputStream(file);
             Scanner br = new Scanner(new InputStreamReader(fStream));
             while (br.hasNext()) {
                 String strLine = br.nextLine();
-                Log.d(TAG, "New Line Found " + strLine);
+                Log.d(LOG_TAG, "New Line Found " + strLine); //debug hss//
                 fileLines.add(strLine);
             }
 
         } catch (FileNotFoundException e) {
-            Log.d(TAG, "getJobInfoFromFile() FileNotFoundException " + e.toString());
+            Log.d(LOG_TAG, "getJobInfoFromFile() FileNotFoundException " + e.toString());
         } catch (Exception e) {}
 
         // If there were no lines in the file,
         // this function is exited.
-        if (fileLines.size() == 0) { return; }
+        if (fileLines.isEmpty()) { return; }
 
         companyName = Tools.getValueFromList("Company Name", fileLines);
         diameter = Tools.getValueFromList("Diameter", fileLines);
@@ -337,7 +336,8 @@ public class OpenJobActivity extends Activity {
 
     private void handleJobSelected(String pJobName) {
 
-        selectedJob = pJobName;
+        selectedJobDirectoryPath = sharedSettings.getJobsFolderPath() + File.separator + pJobName;
+        selectedJobInfoFilePath = selectedJobDirectoryPath + File.separator + pJobName + " ~ JobInfo.txt";
 
         getJobInfoFromFile();
 
@@ -345,8 +345,9 @@ public class OpenJobActivity extends Activity {
 
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
 
-        JobInfo jobInfo = new JobInfo(companyName, diameter, facility, grade, job, makeupAdjustment,
-                rack, range, rig, tallyGoal, wall);
+        JobInfo jobInfo = new JobInfo(selectedJobDirectoryPath, companyName, diameter, facility,
+                                        grade, job, makeupAdjustment, rack, range, rig,
+                                        tallyGoal, wall);
         jobInfo.init();
         intent.putExtra(Keys.JOB_INFO_INCLUDED_KEY, true);
         intent.putExtra(Keys.JOB_INFO_KEY, jobInfo);
@@ -372,13 +373,10 @@ public class OpenJobActivity extends Activity {
     //-----------------------------------------------------------------------------
     // OpenJobActivity::storeJob
     //
-    // If the passed in directory name contains a job name, the job name is added
-    // to the job names list.
+    // Store the passed in job name to the list.
     //
 
     private void storeJob(String pName) {
-
-        if (!pName.contains("job=")) { return; }
 
         jobNames.add(Tools.extractValueFromString(pName));
 

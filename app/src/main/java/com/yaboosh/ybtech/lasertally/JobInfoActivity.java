@@ -1,5 +1,5 @@
 /******************************************************************************
- * Title: EditJobInfoActivity.java
+ * Title: JobInfoActivity.java
  * Author: Hunter Schoonover
  * Date: 09/15/14
  *
@@ -29,10 +29,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -40,12 +43,12 @@ import java.util.Scanner;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-// class EditJobInfoActivity
+// class JobInfoActivity
 //
 
-public class EditJobInfoActivity extends Activity {
+public class JobInfoActivity extends Activity {
 
-    public static final String TAG = "EditJobInfoActivity";
+    public static final String LOG_TAG = "JobInfoActivity";
 
     private SharedSettings sharedSettings;
 
@@ -68,6 +71,11 @@ public class EditJobInfoActivity extends Activity {
     private String activityPurposeEditJobInfoTitle = "Edit Job";
     private String passedInJobName;
 
+    private String newJobFolderPath;
+    private String newJobInfoFilePath;
+    private String originalJobFolderPath;
+    private String originalJobInfoFilePath;
+
     private String companyName;
     private String diameter;
     private String facility;
@@ -84,7 +92,7 @@ public class EditJobInfoActivity extends Activity {
     // JobInfoActivity::JobInfoActivity (constructor)
     //
 
-    public EditJobInfoActivity() {
+    public JobInfoActivity() {
 
         super();
 
@@ -103,9 +111,9 @@ public class EditJobInfoActivity extends Activity {
 
         super.onCreate(savedInstanceState);
 
-        Log.d(TAG, "Inside of JobInfoActivity onCreate");
+        Log.d(LOG_TAG, "Inside of JobInfoActivity onCreate");
 
-        setContentView(R.layout.activity_edit_job_info);
+        setContentView(R.layout.activity_job_info);
 
         this.setFinishOnTouchOutside(false);
 
@@ -122,11 +130,19 @@ public class EditJobInfoActivity extends Activity {
 
         createUiChangeListener();
 
+        //Pull data out of intent extras
         Bundle bundle = getIntent().getExtras();
         sharedSettings = bundle.getParcelable(Keys.SHARED_SETTINGS_KEY);
+        //although the passed in job name may be null if the activity
+        //mode is CREATE, we can still attempt to pull it out at this
+        //point, so long as we do not attempt to use it unless the
+        //mode is EDIT
         passedInJobName = bundle.getString(Keys.JOB_NAME_KEY);
+
+        //Set the activity mode
         setActivityMode(bundle.getString(Keys.EDIT_JOB_INFO_ACTIVITY_MODE_KEY));
 
+        //Add a listener to the job name edit text field to listen for changes
         ((TextView)findViewById(R.id.editTextJob)).addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable pE) {
 
@@ -134,11 +150,9 @@ public class EditJobInfoActivity extends Activity {
 
             }
 
-            public void beforeTextChanged(CharSequence pS, int pStart, int pCount, int pAfter) {
-            }
+            public void beforeTextChanged(CharSequence pS, int pStart, int pCount, int pAfter) {}
 
-            public void onTextChanged(CharSequence pS, int pStart, int pBefore, int pCount) {
-            }
+            public void onTextChanged(CharSequence pS, int pStart, int pBefore, int pCount) {}
         });
 
     }//end of JobInfoActivity::onCreate
@@ -155,7 +169,7 @@ public class EditJobInfoActivity extends Activity {
     protected void onDestroy()
     {
 
-        Log.d(TAG, "Inside of JobInfoActivity onDestroy");
+        Log.d(LOG_TAG, "Inside of JobInfoActivity onDestroy");
 
         super.onDestroy();
 
@@ -175,7 +189,7 @@ public class EditJobInfoActivity extends Activity {
 
         super.onResume();
 
-        Log.d(TAG, "Inside of JobInfoActivity onResume");
+        Log.d(LOG_TAG, "Inside of JobInfoActivity onResume");
 
         decorView.setSystemUiVisibility(uiOptions);
 
@@ -195,7 +209,7 @@ public class EditJobInfoActivity extends Activity {
     @Override
     protected void onPause() {
 
-        Log.d(TAG, "Inside of JobInfoActivity onPause");
+        Log.d(LOG_TAG, "Inside of JobInfoActivity onPause");
 
         super.onPause();
 
@@ -217,18 +231,30 @@ public class EditJobInfoActivity extends Activity {
         View menuButton = findViewById(R.id.editJobInfoMenuButton);
         TextView titleTextView = (TextView)findViewById(R.id.editJobInfoActivityTitleTextView);
 
+        // activity is in CREATE mode
+
         if (activityMode.equals(EditJobInfoActivityMode.CREATE_JOB)) {
+
             titleTextView.setText(activityPurposeCreateJobTitle);
             menuButton.setVisibility(View.INVISIBLE);
             enableOkButton(false);
+
             intent = new Intent(this, JobDisplayActivity.class);
+
         }
+        // activity is in EDIT mode
         else if (activityMode.equals(EditJobInfoActivityMode.EDIT_JOB_INFO)) {
+
             titleTextView.setText(activityPurposeEditJobInfoTitle);
             menuButton.setVisibility(View.VISIBLE);
             enableOkButton(true);
+
+            setOriginalFilePaths(passedInJobName);
+
             getJobInfoFromFile();
+
             intent = new Intent();
+
         }
 
     }//end of JobInfoActivity::setActivityMode
@@ -237,7 +263,7 @@ public class EditJobInfoActivity extends Activity {
     //-----------------------------------------------------------------------------
     // JobInfoActivity::checkIfJobNameAlreadyExists
     //
-    // Searches through the jobs in the jobsDir directory to see if a job already
+    // Searches through the jobs in the jobs directory to see if a job already
     // has the passed in name.
     //
     // Returns true if name already exists. False if it doesn't.
@@ -250,13 +276,16 @@ public class EditJobInfoActivity extends Activity {
 
         try {
 
-            File jobsDir = getDir("jobsDir", Context.MODE_PRIVATE);
-            File[] dirs = jobsDir.listFiles();
+            // Retrieve the jobs directory
+            File jobsDir = new File (sharedSettings.getJobsFolderPath());
 
+            // All of the names of the directories in the
+            // jobs directory are job names. If one of the
+            // directory names is equal to the passed
+            // in job, then the job already exists
+            File[] dirs = jobsDir.listFiles();
             for (File f : dirs) {
-                if (f.isDirectory() && pJobName.equals(Tools.extractValueFromString(f.getName()))) {
-                    exists = true;
-                }
+                if (f.isDirectory() && pJobName.equals(f.getName())) { exists = true; }
             }
 
         } catch (Exception e) {}
@@ -345,10 +374,13 @@ public class EditJobInfoActivity extends Activity {
 
         getAndStoreJobInfoFromUserInput();
 
+        setNewFilePaths(job);
+
         saveInformationToFile();
 
-        JobInfo jobInfo = new JobInfo(companyName, diameter, facility, grade, job, makeupAdjustment,
-                                        rack, range, rig, tallyGoal, wall);
+        JobInfo jobInfo = new JobInfo(newJobFolderPath, companyName, diameter, facility, grade, job,
+                                        makeupAdjustment,
+rack, range, rig, tallyGoal, wall);
         jobInfo.init();
 
         intent.putExtra(Keys.JOB_INFO_INCLUDED_KEY, true);
@@ -411,33 +443,38 @@ public class EditJobInfoActivity extends Activity {
 
     private void getJobInfoFromFile() {
 
+        ArrayList<String> fileLines = new ArrayList<String>();
+        FileInputStream fStream = null;
+        Scanner br = null;
+
         try {
-            fileLines.clear();
 
-            // Retrieve/Create directory into internal memory;
-            File jobsDir = getDir("jobsDir", Context.MODE_PRIVATE);
+            //Retrieve the job info file for the current job
+            File file = new File(originalJobInfoFilePath);
 
-            // Retrieve/Create sub-directory thisJobDir
-            File thisJobDir = new File(jobsDir, "job=" + passedInJobName);
-
-            // Get a file jobInfoTextFile within the dir thisJobDir.
-            File jobInfoTextFile = new File(thisJobDir, "jobInfo.txt");
-
-            FileInputStream fStream = new FileInputStream(jobInfoTextFile);
-            Scanner br = new Scanner(new InputStreamReader(fStream));
+            //read the file into an array list
+            fStream = new FileInputStream(file);
+            br = new Scanner(new InputStreamReader(fStream));
             while (br.hasNext()) {
                 String strLine = br.nextLine();
-                Log.d(TAG, "New Line Found " + strLine);
                 fileLines.add(strLine);
             }
 
-        } catch (FileNotFoundException e) {
-            Log.d(TAG, "getJobInfoFromFile() FileNotFoundException " + e.toString());
-        } catch (Exception e) {}
+        }
+        catch (Exception e) {}
+        finally {
+
+            try {
+                if (br != null) { br.close(); }
+                if (fStream != null) { fStream.close(); }
+            }
+            catch (Exception e) {}
+
+        }
 
         // If there were no lines in the file,
         // this function is exited.
-        if (fileLines.size() == 0) { return; }
+        if (fileLines.isEmpty()) { return; }
 
         ((EditText) findViewById(R.id.editTextCompanyName)).setText
                 (Tools.getValueFromList("Company Name", fileLines));
@@ -504,7 +541,7 @@ public class EditJobInfoActivity extends Activity {
 
         // Check to see if the job name already exists and to see if the
         // user did not just retype the original name of the job.
-        if (checkIfJobNameAlreadyExists(pJobName) && !pJobName.equals(passedInJobName)) {
+        if (!pJobName.equals(passedInJobName) && checkIfJobNameAlreadyExists(pJobName)) {
             jobExistsBool = true;
         }
 
@@ -568,6 +605,40 @@ public class EditJobInfoActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // JobInfoActivity::setNewFilePaths
+    //
+    // Sets important file paths involving the location of the job files using
+    // the passed in job name.
+    //
+
+    private void setNewFilePaths(String pJobName) {
+
+        newJobFolderPath = sharedSettings.getJobsFolderPath() + File.separator + pJobName;
+        newJobInfoFilePath = newJobFolderPath + File.separator + pJobName + " ~ JobInfo.txt";
+
+    }//end of JobInfoActivity::setNewFilePaths
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobInfoActivity::setOriginalFilePaths
+    //
+    // Sets the originals file paths for important files involving the location of
+    // the job files using the passed in job name.
+    //
+    // The originals are stored so that they can be used later to copy the job
+    // from the old location to a new location; you need to use the original file
+    // paths to copy the job from the original location.
+    //
+
+    private void setOriginalFilePaths(String pJobName) {
+
+        originalJobFolderPath = sharedSettings.getJobsFolderPath() + File.separator + pJobName;
+        originalJobInfoFilePath = originalJobFolderPath + File.separator + pJobName + " ~ JobInfo.txt";
+
+    }//end of JobInfoActivity::setOriginalFilePaths
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // JobInfoActivity::saveInformationToFile
     //
     // Stores the job info in a file.
@@ -575,35 +646,47 @@ public class EditJobInfoActivity extends Activity {
 
     private void saveInformationToFile() {
 
-        Log.d(TAG, getFilesDir().toString());
+        PrintWriter writer = null;
 
-        // Retrieve/Create directory into internal memory;
-        File jobsDir = getDir("jobsDir", Context.MODE_PRIVATE);
-
-        File thisJobDir = null;
-
-        if (activityMode.equals(EditJobInfoActivityMode.CREATE_JOB)) {
-            thisJobDir = new File(jobsDir, "job=" + job);
-            if (!thisJobDir.exists()) { thisJobDir.mkdir(); }
-        }
-        else if (activityMode.equals(EditJobInfoActivityMode.EDIT_JOB_INFO)) {
-            thisJobDir = new File(jobsDir, "job=" + passedInJobName);
-            if (!job.equals(passedInJobName)) {
-                thisJobDir.renameTo(new File(jobsDir, "job=" + job));
-                thisJobDir = new File(jobsDir, "job=" + job);
-            }
-        }
-
-        if (thisJobDir == null) { return; }
-
-        // Get a file jobInfoTextFile within the dir thisJobDir.
-        File jobInfoTextFile = new File(thisJobDir, "jobInfo.txt");
-        try { if (!jobInfoTextFile.exists()) { jobInfoTextFile.createNewFile(); } }
-        catch (Exception e) {}
-
-        // Use a PrintWriter to write to the file
         try {
-            PrintWriter writer = new PrintWriter(jobInfoTextFile, "UTF-8");
+
+            // Create the directory for this job
+            // or rename the old directory for the
+            // new job name
+
+            File thisJobDir;
+
+            // Activity is in CREATE mode
+            if (activityMode.equals(EditJobInfoActivityMode.CREATE_JOB)) {
+
+                thisJobDir = new File(newJobFolderPath);
+
+                if (!thisJobDir.exists()) { thisJobDir.mkdir(); }
+
+            }
+            // Activity is in EDIT mode
+            else if (activityMode.equals(EditJobInfoActivityMode.EDIT_JOB_INFO)) {
+
+                thisJobDir = new File(originalJobFolderPath);
+
+                // if the job name has changed, the directory
+                // needs to be renamed
+                if (!job.equals(passedInJobName)) {
+                    thisJobDir.renameTo(new File(newJobFolderPath));
+                }
+
+            }
+
+            // end of Create the directory for this job
+            // or rename the old directory for the
+            // new job name
+
+            //Get the job info file. Create it if it does not exist
+            File jobInfoFile = new File (newJobInfoFilePath);
+            if (!jobInfoFile.exists()) { jobInfoFile.createNewFile(); }
+
+            // Use a PrintWriter to write to the file
+            writer = new PrintWriter(jobInfoFile, "UTF-8");
 
             writer.println("Company Name=" + companyName);
             writer.println("Diameter=" + diameter);
@@ -617,10 +700,9 @@ public class EditJobInfoActivity extends Activity {
             writer.println("Tally Goal=" + tallyGoal);
             writer.println("Wall=" + wall);
 
-            writer.close();
-        } catch (Exception e) {
-            Log.d(TAG, "Writing failed");
         }
+        catch (Exception e) {}
+        finally { try { if (writer != null) { writer.close(); } } catch (Exception e) {} }
 
     }//end of JobInfoActivity::saveInformationToFile
     //-----------------------------------------------------------------------------
