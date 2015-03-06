@@ -40,6 +40,10 @@ public class JobInfo implements Parcelable {
 
     public static Parcelable.Creator CREATOR;
 
+    String currentJobDirectoryPath;
+    public String getCurrentJobDirectoryPath() { return currentJobDirectoryPath; }
+    public void setCurrentJobDirectoryPath(String pPath) { currentJobDirectoryPath = pPath; }
+
     String companyName;
     public String getCompanyName() { return companyName; }
     public void setCompanyName(String pCompanyName) { companyName = pCompanyName; }
@@ -90,11 +94,12 @@ public class JobInfo implements Parcelable {
     // Constructor to be used for initial creation.
     //
 
-    public JobInfo(String pCompanyName, String pDiameter, String pFacility, String pGrade,
-                    String pJobName, String pMakeupAdjustment, String pRack, String pRange,
-                    String pRig, String pTallyGoal, String pWall)
+    public JobInfo(String pPath, String pCompanyName, String pDiameter, String pFacility,
+                       String pGrade, String pJobName, String pMakeupAdjustment, String pRack,
+                       String pRange, String pRig, String pTallyGoal, String pWall)
     {
 
+        currentJobDirectoryPath = pPath;
         companyName = pCompanyName;
         diameter = pDiameter;
         facility = pFacility;
@@ -177,6 +182,7 @@ public class JobInfo implements Parcelable {
     private void readFromParcel(Parcel pParcel) {
 
         //!!STORE VARIABLES IN PARCEL HERE!!
+        currentJobDirectoryPath = pParcel.readString();
         companyName = pParcel.readString();
         diameter = pParcel.readString();
         facility = pParcel.readString();
@@ -220,6 +226,7 @@ public class JobInfo implements Parcelable {
     public void writeToParcel(Parcel pParcel, int pFlags) {
 
         //!!STORE VARIABLES IN PARCEL HERE!!
+        pParcel.writeString(currentJobDirectoryPath);
         pParcel.writeString(companyName);
         pParcel.writeString(diameter);
         pParcel.writeString(facility);
