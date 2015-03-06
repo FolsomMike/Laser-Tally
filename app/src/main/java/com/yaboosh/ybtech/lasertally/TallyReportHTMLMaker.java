@@ -37,6 +37,7 @@ public class TallyReportHTMLMaker {
     //debug hss// -- should be added to job info
     String jobDate = "02/20/15";
 
+    String adjustmentValue;
     double tallyTotal = 0;
     double adjTallyTotal = 0;
     int numTubes;
@@ -106,6 +107,15 @@ public class TallyReportHTMLMaker {
 
         loadTallyDataFromFile();
         numTubes = pipeNumbersFromFile.size();
+
+        //set the adjustment value to the adjustment
+        //value used (imperial or metric)
+        if (sharedSettings.getUnitSystem().equals(Keys.IMPERIAL_MODE)) {
+            adjustmentValue = jobInfo.getImperialAdjustment();
+        }
+        else if (sharedSettings.getUnitSystem().equals(Keys.METRIC_MODE)) {
+            adjustmentValue = jobInfo.getMetricAdjustment();
+        }
 
     }// end of TallyReportHTMLMaker::init
     //-----------------------------------------------------------------------------
@@ -214,7 +224,7 @@ public class TallyReportHTMLMaker {
                 + "<b>Job Name: </b>" + jobInfo.getJobName() + sp + sp + sp + sp
                 + "<b>Date: </b>" + jobDate + sp
                 + "<br>"
-                + "<b>Adjustment: </b>" +  jobInfo.getMakeupAdjustment() + sp
+                + "<b>Adjustment: </b>" +  adjustmentValue + sp
                 + "<b>Tally Target: </b>" + decFormat.format(tallyTarget) + sp + "<br>"
                 + "<b>Tube Count: </b>" + pNumTubes + sp
                 + "<b>Total Tally: </b>" + decFormat.format(tallyTotal) + " / "

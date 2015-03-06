@@ -66,8 +66,9 @@ public class OpenJobActivity extends Activity {
     private String diameter;
     private String facility;
     private String grade;
+    private String imperialAdjustment;
     private String job;
-    private String makeupAdjustment;
+    private String metricAdjustment;
     private String rack;
     private String range;
     private String rig;
@@ -316,8 +317,9 @@ public class OpenJobActivity extends Activity {
         diameter = Tools.getValueFromList("Diameter", fileLines);
         facility = Tools.getValueFromList("Facility", fileLines);
         grade = Tools.getValueFromList("Grade", fileLines);
+        imperialAdjustment = Tools.getValueFromList("Imperial Adjustment", fileLines);
         job = Tools.getValueFromList("Job", fileLines);
-        makeupAdjustment = Tools.getValueFromList("Makeup Adjustment", fileLines);
+        metricAdjustment = Tools.getValueFromList("Metric Adjustment", fileLines);
         rack = Tools.getValueFromList("Rack", fileLines);
         range = Tools.getValueFromList("Range", fileLines);
         rig = Tools.getValueFromList("Rig", fileLines);
@@ -346,8 +348,8 @@ public class OpenJobActivity extends Activity {
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
 
         JobInfo jobInfo = new JobInfo(selectedJobDirectoryPath, companyName, diameter, facility,
-                                        grade, job, makeupAdjustment, rack, range, rig,
-                                        tallyGoal, wall);
+                                        grade, imperialAdjustment, job, metricAdjustment, rack,
+                                        range, rig, tallyGoal, wall);
         jobInfo.init();
         intent.putExtra(Keys.JOB_INFO_INCLUDED_KEY, true);
         intent.putExtra(Keys.JOB_INFO_KEY, jobInfo);

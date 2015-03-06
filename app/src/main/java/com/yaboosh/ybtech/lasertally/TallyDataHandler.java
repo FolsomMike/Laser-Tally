@@ -94,7 +94,9 @@ public class TallyDataHandler {
     public LinkedHashMap getMetricTotalLengthValues() { return metricTotalLengthValues; }
     //End of Metric
 
-    double adjustmentValue = 0;
+    MutableDouble adjustmentValue = new MutableDouble(0);
+    MutableDouble imperialAdjustmentValue = new MutableDouble(0);
+    MutableDouble metricAdjustmentValue = new MutableDouble(0);
     double maximumValueAllowed = 0;
     double minimumValueAllowed = 0;
     String unitSystem = "";
@@ -110,7 +112,8 @@ public class TallyDataHandler {
         jobInfo = pJobInfo;
         measurementsTableHandler = pHandler;
 
-        adjustmentValue = Double.parseDouble(jobInfo.getMakeupAdjustment());
+        imperialAdjustmentValue.setValue(Double.parseDouble(jobInfo.getImperialAdjustment()));
+        metricAdjustmentValue.setValue(Double.parseDouble(jobInfo.getMetricAdjustment()));
 
     }//end of TallyDataHandler::TallyDataHandler (constructor)
     //-----------------------------------------------------------------------------
@@ -189,16 +192,22 @@ public class TallyDataHandler {
     private void calculateAdjustmentValues() {
 
         //Clear the adjustment values
-        adjustedValues.clear();
+        imperialAdjustedValues.clear();
+        metricAdjustedValues.clear();
 
-        //For each of the total length values, subtract the
-        //adjustmentValue and store the result in adjustedValues
-        //along with the proper TableRow
+        //For each of the metric and imperial total length values,
+        //subtract the proper adjustment values and store the results
 
-        for (Map.Entry<TableRow, String> entry : totalLengthValues.entrySet()) {
+        for (Map.Entry<TableRow, String> entry : pipeNumbers.entrySet()) {
 
-            String value = tallyFormat.format((Double.parseDouble(entry.getValue()) - adjustmentValue));
-            adjustedValues.put(entry.getKey(), value);
+            double imperialTotal = Double.parseDouble(imperialTotalLengthValues.get(entry.getKey()));
+            double metricTotal = Double.parseDouble(metricTotalLengthValues.get(entry.getKey()));
+
+            imperialAdjustedValues.put(entry.getKey(),
+                    imperialTallyFormat.format(imperialTotal - imperialAdjustmentValue.getValue()));
+
+            metricAdjustedValues.put(entry.getKey(),
+                    metricTallyFormat.format(metricTotal - metricAdjustmentValue.getValue()));
 
         }
 
@@ -243,32 +252,57 @@ public class TallyDataHandler {
     // If the passed in boolean is true, then all pipe numbers of the rows after
     // the passed in row should be renumbered.
     //
+    // NOTE:    If the unit system is set to Imperial, then the passed in
+    //              value is assumed to be in Imperial format.
+    //          If the unit system is set to Metric, then the passed in
+    //              value is assumed to be in Metric format.
+    //
 
     public void changeValuesOfExistingRow(TableRow pRow, String pPipeNum, String pTotalLength,
                                           boolean pRenumberAllAfterRow)
     {
 
-
-        String newAdjusted = tallyFormat.format((Double.parseDouble(pTotalLength) - adjustmentValue));
+        double newTotal = Double.parseDouble(pTotalLength);
+        double newAdjusted = newTotal - adjustmentValue.getValue();
 
         //Replace existing values in lists
         pipeNumbers.put(pRow, pPipeNum);
 
         if (unitSystem.equals(Keys.IMPERIAL_MODE)) {
-            imperialAdjustedValues.put(pRow, newAdjusted);
-            imperialTotalLengthValues.put(pRow, pTotalLength);
-            metricAdjustedValues.put(pRow, Tools.convertToMetric(Double.parseDouble(newAdjusted)));
-            metricTotalLengthValues.put(pRow, Tools.convertToMetric(Double.parseDouble(pTotalLength)));
+
+            imperialAdjustedValues.put(pRow, imperialTallyFormat.format(newAdjusted));
+            imperialTotalLengthValues.put(pRow, imperialTallyFormat.format(newTotal));
+
+            //The metric adjusted value is calculated by first converting
+            //the imperial total length to metric and then subtracting
+            //the metric adjustment value
+            //This is done in attempt to achieve the highest accuracy
+            //possible
+            double metricTotal = Double.parseDouble(Tools.convertToMetric(newTotal));
+            metricAdjustedValues.put(pRow, metricTallyFormat.format(
+                                                metricTotal - metricAdjustmentValue.getValue()));
+            metricTotalLengthValues.put(pRow, metricTallyFormat.format(metricTotal));
+
         }
         else if (unitSystem.equals(Keys.METRIC_MODE)) {
-            imperialAdjustedValues.put(pRow, Tools.convertToImperial(Double.parseDouble(newAdjusted)));
-            imperialTotalLengthValues.put(pRow, Tools.convertToMetric(Double.parseDouble(pTotalLength)));
-            metricAdjustedValues.put(pRow, newAdjusted);
-            metricTotalLengthValues.put(pRow, pTotalLength);
+
+            metricAdjustedValues.put(pRow, metricTallyFormat.format(newAdjusted));
+            metricTotalLengthValues.put(pRow, metricTallyFormat.format(newTotal));
+
+            //The imperial adjusted value is calculated by first converting
+            //the metric total length to imperial and then subtracting
+            //the imperial adjustment value
+            //This is done in to achieve the highest accuracy possible
+            double imperialTotal = Double.parseDouble(Tools.convertToImperial(newTotal));
+            imperialAdjustedValues.put(pRow, imperialTallyFormat.format(
+                                            imperialTotal - imperialAdjustmentValue.getValue()));
+            imperialTotalLengthValues.put(pRow, imperialTallyFormat.format(imperialTotal));
+
         }
 
         measurementsTableHandler.changeValuesOfExistingRow(pRow, pPipeNum, pTotalLength,
-                                                            newAdjusted, pRenumberAllAfterRow);
+                                                            tallyFormat.format(newAdjusted),
+                                                            pRenumberAllAfterRow);
 
         setAndCheckTotals();
 
@@ -477,7 +511,7 @@ public class TallyDataHandler {
     private void handleJobInfoChanged()
     {
 
-        setAdjustmentValue(jobInfo.getMakeupAdjustment());
+        setAdjustmentValues(jobInfo.getImperialAdjustment(), jobInfo.getMetricAdjustment());
         setAndCheckTotals();
         saveTallyDataToFile();
 
@@ -490,16 +524,20 @@ public class TallyDataHandler {
     // Uses the passed in distance value to calculate the values needed to add a
     // new row to the measurements table.
     //
+    // All new distances received from the tally device are Imperial.
+    //
 
     public void handleNewDistanceValue(Double pValue)
     {
 
         String pipeNumber = determineNextPipeNumber();
-        double adjusted = pValue - adjustmentValue;
-        String imperialAdjusted = imperialTallyFormat.format(adjusted);
+
         String imperialTotalLength = imperialTallyFormat.format(pValue);
-        String metricAdjusted = Tools.convertToMetric(adjusted);
+        String imperialAdjusted = imperialTallyFormat.format(pValue - imperialAdjustmentValue.getValue());
+
         String metricTotalLength = Tools.convertToMetric(pValue);
+        String metricAdjusted = metricTallyFormat.format(Double.parseDouble(metricTotalLength)
+                                                                - metricAdjustmentValue.getValue());
 
         //if the unit system is imperial, check to see if the imperial total length
         //is less than or greater than the minimum and maximum values
@@ -774,24 +812,35 @@ public class TallyDataHandler {
     //-----------------------------------------------------------------------------
     // TallyDataHandler::setAdjustmentValue
     //
-    // Sets the adjustment value to the passed in value and recalculates the values
+    // Sets the adjustment values to the passed in value and recalculates the values
     // of the adjustment columns, if necessary
     //
     // The adjustment value is set to 0 if the string is empty.
     //
 
-    private void setAdjustmentValue(String pNewAdjustmentValue) {
+    private void setAdjustmentValues(String pNewImperialAdjustmentValue,
+                                        String pNewMetricAdjustmentValue)
+    {
 
-        double newValue = 0;
+        double newImperialValue = 0;
+        double newMetricValue = 0;
 
-        //Check to make sure that the passed in string is not empty, to prevent
-        //an error when trying to parse
-        if (!pNewAdjustmentValue.equals("")) { newValue = Double.parseDouble(pNewAdjustmentValue); }
+        //Check to make sure that the passed in strings are not empty
+        //to prevent errors when trying to parse
+        if (!pNewImperialAdjustmentValue.equals("")) {
+            newImperialValue = Double.parseDouble(pNewImperialAdjustmentValue);
+        }
+        if (!pNewMetricAdjustmentValue.equals("")) {
+            newMetricValue = Double.parseDouble(pNewMetricAdjustmentValue);
+        }
 
-        //Quit the function if the new value is equal to the old one
-        if (newValue == adjustmentValue) { return; }
+        //Quit the function if the new values are equal to the old ones
+        if (imperialAdjustmentValue.isEqualTo(newImperialValue)
+                && metricAdjustmentValue.isEqualTo(newMetricValue)) { return; }
 
-        adjustmentValue = newValue;
+        imperialAdjustmentValue.setValue(newImperialValue);
+        metricAdjustmentValue.setValue(newMetricValue);
+
         calculateAdjustmentValues();
 
         setAndCheckTotals();
@@ -828,18 +877,20 @@ public class TallyDataHandler {
     private void setUnitSystem(String pSystem)
     {
 
-        //No need to do anything else if the unit system hasn't changed or was
-        //null
+        //No need to do anything else if the unit system
+        //hasn't changed
         if (unitSystem.equals(pSystem)) { return; }
 
         unitSystem = pSystem;
 
         if (unitSystem.equals(Keys.IMPERIAL_MODE)) {
+            adjustmentValue = imperialAdjustmentValue;
             adjustedValues = imperialAdjustedValues;
             totalLengthValues = imperialTotalLengthValues;
             tallyFormat = imperialTallyFormat;
         }
         else if (unitSystem.equals(Keys.METRIC_MODE)) {
+            adjustmentValue = metricAdjustmentValue;
             adjustedValues = metricAdjustedValues;
             totalLengthValues = metricTotalLengthValues;
             tallyFormat = metricTallyFormat;

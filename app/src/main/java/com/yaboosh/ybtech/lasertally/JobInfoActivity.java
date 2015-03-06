@@ -80,8 +80,9 @@ public class JobInfoActivity extends Activity {
     private String diameter;
     private String facility;
     private String grade;
+    private String imperialAdjustment;
     private String job;
-    private String makeupAdjustment;
+    private String metricAdjustment;
     private String rack;
     private String range;
     private String rig;
@@ -378,9 +379,9 @@ public class JobInfoActivity extends Activity {
 
         saveInformationToFile();
 
-        JobInfo jobInfo = new JobInfo(newJobFolderPath, companyName, diameter, facility, grade, job,
-                                        makeupAdjustment,
-rack, range, rig, tallyGoal, wall);
+        JobInfo jobInfo = new JobInfo(newJobFolderPath, companyName, diameter, facility, grade,
+                                        imperialAdjustment, job, metricAdjustment, rack, range,
+                                        rig, tallyGoal, wall);
         jobInfo.init();
 
         intent.putExtra(Keys.JOB_INFO_INCLUDED_KEY, true);
@@ -405,21 +406,22 @@ rack, range, rig, tallyGoal, wall);
     private void getAndStoreJobInfoFromUserInput() {
 
         companyName = ((EditText) findViewById(R.id.editTextCompanyName)).getText().toString();
+
         diameter = ((EditText) findViewById(R.id.editTextDiameter)).getText().toString();
+
         facility = ((EditText) findViewById(R.id.editTextFacility)).getText().toString();
+
         grade = ((EditText) findViewById(R.id.editTextGrade)).getText().toString();
+
         job = ((EditText) findViewById(R.id.editTextJob)).getText().toString();
 
-        makeupAdjustment = ((EditText)findViewById(R.id.editTextProtectorMakeupAdjustment)).getText().toString();
-        if ((makeupAdjustment.equals(""))) { makeupAdjustment = tallyFormat.format(0); }
-        else {
-            Float tempAdjFloat = Float.parseFloat(((EditText) findViewById
-                                    (R.id.editTextProtectorMakeupAdjustment)).getText().toString());
-            makeupAdjustment = tallyFormat.format(tempAdjFloat);
-        }
+        setAdjustmentValues(((EditText)findViewById(R.id.editTextProtectorMakeupAdjustment)).
+                                                                            getText().toString());
 
         rack = ((EditText) findViewById(R.id.editTextRack)).getText().toString();
+
         range = ((EditText) findViewById(R.id.editTextRange)).getText().toString();
+
         rig = ((EditText) findViewById(R.id.editTextRig)).getText().toString();
 
         tallyGoal = ((EditText)findViewById(R.id.editTextTallyGoal)).getText().toString();
@@ -477,37 +479,47 @@ rack, range, rig, tallyGoal, wall);
         if (fileLines.isEmpty()) { return; }
 
         ((EditText) findViewById(R.id.editTextCompanyName)).setText
-                (Tools.getValueFromList("Company Name", fileLines));
+                                            (Tools.getValueFromList("Company Name", fileLines));
 
         ((EditText) findViewById(R.id.editTextDiameter)).setText
-                                                    (Tools.getValueFromList("Diameter", fileLines));
+                                            (Tools.getValueFromList("Diameter", fileLines));
 
         ((EditText) findViewById(R.id.editTextFacility)).setText
-                                                    (Tools.getValueFromList("Facility", fileLines));
+                                            (Tools.getValueFromList("Facility", fileLines));
 
         ((EditText) findViewById(R.id.editTextGrade)).setText
-                                                    (Tools.getValueFromList("Grade", fileLines));
+                                            (Tools.getValueFromList("Grade", fileLines));
 
         ((EditText) findViewById(R.id.editTextJob)).setText
-                (Tools.getValueFromList("Job", fileLines));
-
-        ((EditText) findViewById(R.id.editTextProtectorMakeupAdjustment)).setText
-                (Tools.getValueFromList("Makeup Adjustment", fileLines));
+                                            (Tools.getValueFromList("Job", fileLines));
 
         ((EditText) findViewById(R.id.editTextRack)).setText
-                (Tools.getValueFromList("Rack", fileLines));
+                                            (Tools.getValueFromList("Rack", fileLines));
 
         ((EditText) findViewById(R.id.editTextRange)).setText
-                (Tools.getValueFromList("Range", fileLines));
+                                            (Tools.getValueFromList("Range", fileLines));
 
         ((EditText) findViewById(R.id.editTextRig)).setText
-                (Tools.getValueFromList("Rig", fileLines));
+                                            (Tools.getValueFromList("Rig", fileLines));
 
         ((EditText) findViewById(R.id.editTextTallyGoal)).setText
-                (Tools.getValueFromList("Tally Goal", fileLines));
+                                            (Tools.getValueFromList("Tally Goal", fileLines));
 
         ((EditText) findViewById(R.id.editTextWall)).setText
-                (Tools.getValueFromList("Wall", fileLines));
+                                            (Tools.getValueFromList("Wall", fileLines));
+
+        imperialAdjustment = Tools.getValueFromList("Imperial Adjustment", fileLines);
+        metricAdjustment = Tools.getValueFromList("Metric Adjustment", fileLines);
+        // use either the metric or the imperial adjustment
+        // value depending on the unit system
+        String adjustmentValue = "0";
+        if (sharedSettings.getUnitSystem().equals(Keys.IMPERIAL_MODE)) {
+            adjustmentValue = imperialAdjustment;
+        }
+        else if (sharedSettings.getUnitSystem().equals(Keys.METRIC_MODE)) {
+            adjustmentValue = metricAdjustment;
+        }
+        ((EditText) findViewById(R.id.editTextProtectorMakeupAdjustment)).setText(adjustmentValue);
 
     }//end of JobInfoActivity::getJobInfoFromFile
     //-----------------------------------------------------------------------------
@@ -605,6 +617,60 @@ rack, range, rig, tallyGoal, wall);
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // JobInfoActivity::setAdjustmentValues
+    //
+    // Sets the imperial and metric adjustment values using the passed in value.
+    //
+    // If the unit system is set to Imperial, then the passed in value is assumed
+    // to be Imperial and is converted to Metric for the metric ajustment value.
+    //
+    // If the unit system is set to Metric, then the passed in value is assumed
+    // to be Metric and is converted to Imperial for the imperial adjustment value.
+    //
+
+    private void setAdjustmentValues(String pValue) {
+
+        //if the adjustment value hasn't changed,
+        //then no action needs to be taken
+        if ((sharedSettings.getUnitSystem().equals(Keys.IMPERIAL_MODE)
+                && pValue.equals(imperialAdjustment))
+            || (sharedSettings.getUnitSystem().equals(Keys.METRIC_MODE)
+                && pValue.equals(metricAdjustment)))
+        {
+            return;
+        }
+
+        //if the adjustment value edit text
+        //field was left blank by the user,
+        //then both adjustment values are
+        //set to 0
+        if ((pValue.equals(""))) {
+            imperialAdjustment = "0";
+            metricAdjustment = "0";
+        }
+        else {
+
+            Double adjDouble = Double.parseDouble(((EditText) findViewById
+                                    (R.id.editTextProtectorMakeupAdjustment)).getText().toString());
+
+            //Take different actions depending on the unit system
+            if (sharedSettings.getUnitSystem().equals(Keys.IMPERIAL_MODE)) {
+                //passed in value is assumed to be Imperial
+                imperialAdjustment = Tools.IMPERIAL_TALLY_FORMAT.format(adjDouble);
+                metricAdjustment = Tools.convertToMetric(adjDouble);
+            }
+            else if (sharedSettings.getUnitSystem().equals(Keys.METRIC_MODE)) {
+                //passed in value is assumed to be Metric
+                metricAdjustment = Tools.METRIC_TALLY_FORMAT.format(adjDouble);
+                imperialAdjustment = Tools.convertToImperial(adjDouble);
+            }
+
+        }
+
+    }//end of JobInfoActivity::setAdjustmentValues
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // JobInfoActivity::setNewFilePaths
     //
     // Sets important file paths involving the location of the job files using
@@ -692,8 +758,9 @@ rack, range, rig, tallyGoal, wall);
             writer.println("Diameter=" + diameter);
             writer.println("Facility=" + facility);
             writer.println("Grade=" + grade);
+            writer.println("Imperial Adjustment=" + imperialAdjustment);
             writer.println("Job=" + job);
-            writer.println("Makeup Adjustment=" + makeupAdjustment);
+            writer.println("Metric Adjustment=" + metricAdjustment);
             writer.println("Rack=" + rack);
             writer.println("Range=" + range);
             writer.println("Rig=" + rig);

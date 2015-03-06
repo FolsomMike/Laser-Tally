@@ -60,13 +60,17 @@ public class JobInfo implements Parcelable {
     public String getGrade() { return grade; }
     public void setGrade(String pGrade) { grade = pGrade; }
 
+    String imperialAdjustment;
+    public String getImperialAdjustment() { return imperialAdjustment; }
+    public void setImperialAdjustment(String pAdjustment) { imperialAdjustment = pAdjustment; }
+
     String jobName;
     public String getJobName() { return jobName; }
     public void setJobName(String pName) { jobName = pName; }
 
-    String makeupAdjustment;
-    public String getMakeupAdjustment() { return makeupAdjustment; }
-    public void setMakeupAdjustment(String pAdjustment) { makeupAdjustment = pAdjustment; }
+    String metricAdjustment;
+    public String getMetricAdjustment() { return metricAdjustment; }
+    public void setMetricAdjustment(String pAdjustment) { metricAdjustment = pAdjustment; }
 
     String rack;
     public String getRack() { return rack; }
@@ -95,8 +99,9 @@ public class JobInfo implements Parcelable {
     //
 
     public JobInfo(String pPath, String pCompanyName, String pDiameter, String pFacility,
-                       String pGrade, String pJobName, String pMakeupAdjustment, String pRack,
-                       String pRange, String pRig, String pTallyGoal, String pWall)
+                       String pGrade, String pImperialAdjustment, String pJobName,
+                       String pMetricAdjustment, String pRack, String pRange, String pRig,
+                       String pTallyGoal, String pWall)
     {
 
         currentJobDirectoryPath = pPath;
@@ -104,8 +109,9 @@ public class JobInfo implements Parcelable {
         diameter = pDiameter;
         facility = pFacility;
         grade = pGrade;
+        imperialAdjustment = pImperialAdjustment;
         jobName = pJobName;
-        makeupAdjustment = pMakeupAdjustment;
+        metricAdjustment = pMetricAdjustment;
         rack = pRack;
         range = pRange;
         rig = pRig;
@@ -182,13 +188,14 @@ public class JobInfo implements Parcelable {
     private void readFromParcel(Parcel pParcel) {
 
         //!!STORE VARIABLES IN PARCEL HERE!!
-        currentJobDirectoryPath = pParcel.readString();
         companyName = pParcel.readString();
+        currentJobDirectoryPath = pParcel.readString();
         diameter = pParcel.readString();
         facility = pParcel.readString();
         grade = pParcel.readString();
+        imperialAdjustment = pParcel.readString();
         jobName = pParcel.readString();
-        makeupAdjustment = pParcel.readString();
+        metricAdjustment = pParcel.readString();
         rack = pParcel.readString();
         range = pParcel.readString();
         rig = pParcel.readString();
@@ -226,13 +233,14 @@ public class JobInfo implements Parcelable {
     public void writeToParcel(Parcel pParcel, int pFlags) {
 
         //!!STORE VARIABLES IN PARCEL HERE!!
-        pParcel.writeString(currentJobDirectoryPath);
         pParcel.writeString(companyName);
+        pParcel.writeString(currentJobDirectoryPath);
         pParcel.writeString(diameter);
         pParcel.writeString(facility);
         pParcel.writeString(grade);
+        pParcel.writeString(imperialAdjustment);
         pParcel.writeString(jobName);
-        pParcel.writeString(makeupAdjustment);
+        pParcel.writeString(metricAdjustment);
         pParcel.writeString(rack);
         pParcel.writeString(range);
         pParcel.writeString(rig);
