@@ -34,8 +34,8 @@ public class Tools {
 
     public static final String LOG_TAG = "Tools";
 
-    private static DecimalFormat imperialTallyFormat = new DecimalFormat("#.##");
-    private static DecimalFormat metricTallyFormat = new DecimalFormat("#.###");
+    public static final DecimalFormat IMPERIAL_TALLY_FORMAT = new DecimalFormat("#.##");
+    public static final DecimalFormat METRIC_TALLY_FORMAT = new DecimalFormat("#.###");
 
     //-----------------------------------------------------------------------------
     // Tools::convertToImperial
@@ -46,7 +46,7 @@ public class Tools {
 
     public static String convertToImperial(Double pValue) {
 
-        return imperialTallyFormat.format(pValue / 0.3048);
+        return IMPERIAL_TALLY_FORMAT.format(pValue / 0.3048);
 
     }//end of Tools::convertToImperial
     //-----------------------------------------------------------------------------
@@ -60,7 +60,7 @@ public class Tools {
 
     public static String convertToMetric(Double pValue) {
 
-        return metricTallyFormat.format(pValue * 0.3048);
+        return METRIC_TALLY_FORMAT.format(pValue * 0.3048);
 
     }//end of Tools::convertToMetric
     //-----------------------------------------------------------------------------
