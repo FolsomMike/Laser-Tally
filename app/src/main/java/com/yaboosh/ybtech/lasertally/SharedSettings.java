@@ -52,26 +52,23 @@ public class SharedSettings implements Parcelable {
     public static Parcelable.Creator CREATOR;
 
     private Context context;
-    // Getter and setter functions
     public Context getContext() { return context; }
     public void setContext(Context pNewContext) { context = pNewContext; }
 
     private String dataFolderPath;
-    // Getter and setter functions
     public String getDataFolderPath() { return dataFolderPath; }
     public void setDataFolderPath(String pNewPath) { dataFolderPath = pNewPath; }
 
     private String reportsFolderPath = "";
-    // Getter and setter functions
     public String getReportsFolderPath() { return reportsFolderPath; }
     public void setReportsFolderPath(String pNewPath) { reportsFolderPath = pNewPath; }
 
     private String jobsFolderPath = "";
-    // Getter and setter functions
     public String getJobsFolderPath() { return jobsFolderPath; }
     public void setJobsFolderPath(String pNewPath) { jobsFolderPath = pNewPath; }
 
     //default general settings
+    private String defaultCalibrationValue = "0"; //hss wip// -- should be changed
     private String defaultMaximumMeasurementAllowed = "60";
     private String defaultMinimumMeasurementAllowed = "1";
     private String defaultUnitSystem = Keys.IMPERIAL_MODE;
@@ -85,6 +82,10 @@ public class SharedSettings implements Parcelable {
     private String minimumMeasurementAllowed;
     public String getMinimumMeasurementAllowed() { return minimumMeasurementAllowed; }
     public void setMinimumMeasurementAllowed(String pMin) { minimumMeasurementAllowed = pMin; saveGeneralSettingsToFile(); }
+
+    private String calibrationValue;
+    public String getCalibrationValue() { return calibrationValue; }
+    public void setCalibrationValue(String pValue) { calibrationValue = pValue; saveGeneralSettingsToFile(); }
 
     private String unitSystem;
     public String getUnitSystem() { return unitSystem; }
@@ -175,11 +176,15 @@ public class SharedSettings implements Parcelable {
         //file, use default settings and quit this function
         if (fileLines.isEmpty()) { useDefaultSettings(); return; }
 
+        calibrationValue = Tools.getValueFromList("Calibration Value", fileLines);
         maximumMeasurementAllowed = Tools.getValueFromList("Maximum Measurement Allowed", fileLines);
         minimumMeasurementAllowed = Tools.getValueFromList("Minimum Measurement Allowed", fileLines);
         unitSystem = Tools.getValueFromList("Unit System", fileLines);
 
         //if any of the values weren't found in the list set them equal to their defaults
+        if (calibrationValue.equals("")) {
+            setCalibrationValue(defaultCalibrationValue);
+        }
         if (maximumMeasurementAllowed.equals("")) {
             setMaximumMeasurementAllowed(defaultMaximumMeasurementAllowed);
         }
@@ -271,6 +276,7 @@ public class SharedSettings implements Parcelable {
     private void readFromParcel(Parcel pParcel) {
 
         //!!GET VARIABLES FROM PARCEL HERE!!
+        calibrationValue = pParcel.readString();
         dataFolderPath = pParcel.readString();
         reportsFolderPath = pParcel.readString();
         jobsFolderPath = pParcel.readString();
@@ -299,6 +305,7 @@ public class SharedSettings implements Parcelable {
             // Use a PrintWriter to write to the file
             writer = new PrintWriter(file, "UTF-8");
 
+            writer.println("Calibration Value=" + calibrationValue);
             writer.println("Maximum Measurement Allowed=" + maximumMeasurementAllowed);
             writer.println("Minimum Measurement Allowed=" + minimumMeasurementAllowed);
             writer.println("Unit System=" + unitSystem);
@@ -319,11 +326,22 @@ public class SharedSettings implements Parcelable {
     // Sets all of the general settings to the passed in values.
     //
 
-    public void setGeneralSettings(String pSystem, String pMinimum, String pMaximum) {
+    public void setGeneralSettings(String pSystem, String pMinimum, String pMaximum, String pCal) {
 
         unitSystem = pSystem;
         minimumMeasurementAllowed = pMinimum;
         maximumMeasurementAllowed = pMaximum;
+        calibrationValue = pCal;
+
+        //if the calibration value is not set,
+        //set it to its default
+        if (calibrationValue.equals("")) { setCalibrationValue(defaultCalibrationValue); }
+
+        //if the maximum and minimum values were not set
+        //set them to "-1" which means that they or not
+        //to be used
+        if (maximumMeasurementAllowed.equals("")) { setMaximumMeasurementAllowed("-1"); }
+        if (minimumMeasurementAllowed.equals("")) { setMinimumMeasurementAllowed("-1"); }
 
         saveGeneralSettingsToFile();
 
@@ -338,6 +356,7 @@ public class SharedSettings implements Parcelable {
 
     private void useDefaultSettings() {
 
+        calibrationValue = defaultCalibrationValue;
         maximumMeasurementAllowed = defaultMaximumMeasurementAllowed;
         minimumMeasurementAllowed = defaultMinimumMeasurementAllowed;
         unitSystem = defaultUnitSystem;
@@ -375,6 +394,7 @@ public class SharedSettings implements Parcelable {
     public void writeToParcel(Parcel pParcel, int pFlags) {
 
         //!!STORE VARIABLES IN PARCEL HERE!!
+        pParcel.writeString(calibrationValue);
         pParcel.writeString(dataFolderPath);
         pParcel.writeString(reportsFolderPath);
         pParcel.writeString(jobsFolderPath);
