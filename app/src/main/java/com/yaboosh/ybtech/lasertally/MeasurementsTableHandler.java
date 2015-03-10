@@ -88,14 +88,12 @@ public class MeasurementsTableHandler {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MeasurementsTableHandler::addValuesToTable
+    // MeasurementsTableHandler::addNewRowToTable
     //
-    // Adds the passed in values to the end of the measurements table and returns
-    // the last added row so that the row can be used to identify the data in a
-    // LinkedHashMap.
+    // Creates and adds a new row to the measurementsTable. The new row is returned.
     //
 
-    public TableRow addValuesToTable(String pPipeNum, String pTotalLength, String pAdjustedValue)
+    public TableRow addNewRowToTable()
     {
 
         // Remove the bottom border line of the table
@@ -103,7 +101,7 @@ public class MeasurementsTableHandler {
         // has been added.
         measurementsTable.removeView(measurementsTableBottomBorderLine);
 
-        lastAddedRow = createNewRow(pPipeNum, pTotalLength, pAdjustedValue);
+        lastAddedRow = createNewRow();
         measurementsTable.addView(lastAddedRow);
         measurementsTable.addView(createNewRowDivider());
 
@@ -113,19 +111,19 @@ public class MeasurementsTableHandler {
 
         return lastAddedRow;
 
-    }//end of MeasurementsTableHandler::addValuesToTable
+    }//end of MeasurementsTableHandler::addNewRowToTable
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MeasurementsTableHandler::changeValuesOfExistingRow
+    // MeasurementsTableHandler::setValuesOfExistingRow
     //
-    // Changes the values of the passed in row to the passed in values.
+    // Sets the values of the passed in row to the passed in values.
     //
     // If the passed in boolean is true, then all pipe numbers of the rows after
     // the passed in row should be renumbered.
     //
 
-    public void changeValuesOfExistingRow(TableRow pRow, String pPipeNum, String pTotalLength,
+    public void setValuesOfExistingRow(TableRow pRow, String pPipeNum, String pTotalLength,
                                           String pAdjusted, boolean pRenumberAllAfterRow)
     {
 
@@ -135,21 +133,20 @@ public class MeasurementsTableHandler {
 
         if (pRenumberAllAfterRow) { renumberAllAfterRow(pRow, (Integer.parseInt(pPipeNum)+1)); }
 
-    }//end of MeasurementsTableHandler::changeValuesOfExistingRow
+    }//end of MeasurementsTableHandler::setValuesOfExistingRow
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
     // MeasurementsTableHandler::createNewColumn
     //
     // Creates and returns a TextView object with the properties of a column used
-    // with the measurement table. The column's text is set to the passed in string.
+    // with the measurement table.
     //
 
-    private TextView createNewColumn(String pColumnText) {
+    private TextView createNewColumn() {
 
         TextView col = new TextView(sharedSettings.getContext());
         col.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1));
-        col.setText(pColumnText);
         col.setTextColor(Color.BLACK);
         col.setTextSize(30);
         col.setPadding(15, 25, 15, 25);
@@ -180,11 +177,10 @@ public class MeasurementsTableHandler {
     //-----------------------------------------------------------------------------
     // MeasurementsTableHandler::createNewRow
     //
-    // Creates and returns a new table row with three columns. The passed in
-    // strings are put in the columns.
+    // Creates and returns a new table row with three columns.
     //
 
-    private TableRow createNewRow(String pCol1Text, String pCol2Text, String pCol3Text) {
+    private TableRow createNewRow() {
 
         TableRow newRow = new TableRow(sharedSettings.getContext().getApplicationContext());
         newRow.setId(R.id.measurementsTableRow);
@@ -193,19 +189,19 @@ public class MeasurementsTableHandler {
 
         newRow.addView(createNewSideBorder());
 
-        View pipeNumCol = createNewColumn(pCol1Text);
+        View pipeNumCol = createNewColumn();
         pipeNumCol.setId(R.id.measurementsTableColumnPipeNum);
         newRow.addView(pipeNumCol);
 
         newRow.addView(createNewColumnDivider());
 
-        View actualCol = createNewColumn(pCol2Text);
+        View actualCol = createNewColumn();
         actualCol.setId(R.id.measurementsTableColumnActual);
         newRow.addView(actualCol);
 
         newRow.addView(createNewColumnDivider());
 
-        View adjustedCol = createNewColumn(pCol3Text);
+        View adjustedCol = createNewColumn();
         adjustedCol.setId(R.id.measurementsTableColumnAdjusted);
         newRow.addView(adjustedCol);
 
@@ -386,30 +382,22 @@ public class MeasurementsTableHandler {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MeasurementsTableHandler::setAdjustedColumns
+    // MeasurementsTableHandler::setValues
     //
-    // Sets the values of all the rows in the Adjusted column using the passed
-    // in Map.
+    // Sets the values of the Adjusted, Pipe Number, and Total Length columns using
+    // the passed in Maps.
     //
 
-    public void setAdjustedColumns(Map<TableRow, String> pAdjustedValues) {
+    public void setValues(Map<TableRow, String> pAdjustedValues,
+                            Map<TableRow, String> pPipeNumbers,
+                            Map<TableRow, String> pTotalLengthValues)
+    {
 
-        // Set the adjusted value of each row to the
-        // adjusted value in the LinkedHashMap associated
-        // with that row
-        for (int i=0; i<measurementsTable.getChildCount(); i++) {
+        setAdjustedValues(pAdjustedValues);
+        setPipeNumbers(pPipeNumbers);
+        setTotalLengthValues(pTotalLengthValues);
 
-            View child = measurementsTable.getChildAt(i);
-
-            if (!(child instanceof TableRow)) { continue; }
-
-            TableRow tR = (TableRow) child;
-
-            setAdjustedOfRow(tR, pAdjustedValues.get(tR));
-
-        }
-
-    }//end of MeasurementsTableHandler::setAdjustedColumns
+    }//end of MeasurementsTableHandler::setValues
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -438,6 +426,33 @@ public class MeasurementsTableHandler {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // MeasurementsTableHandler::setAdjustedValues
+    //
+    // Sets the values of all the rows in the Adjusted column using the passed
+    // in Map.
+    //
+
+    private void setAdjustedValues(Map<TableRow, String> pAdjustedValues) {
+
+        // Set the adjusted value of each row to the
+        // adjusted value in the LinkedHashMap associated
+        // with that row
+        for (int i=0; i<measurementsTable.getChildCount(); i++) {
+
+            View child = measurementsTable.getChildAt(i);
+
+            if (!(child instanceof TableRow)) { continue; }
+
+            TableRow tR = (TableRow) child;
+
+            setAdjustedOfRow(tR, pAdjustedValues.get(tR));
+
+        }
+
+    }//end of MeasurementsTableHandler::setAdjustedValues
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // MeasurementsTableHandler::setPipeNumberOfRow
     //
     // Sets the pipe number of the passed in row to the passed in string.
@@ -463,13 +478,40 @@ public class MeasurementsTableHandler {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MeasurementsTableHandler::setTotalLengthColumns
+    // MeasurementsTableHandler::setPipeNumbers
+    //
+    // Sets the values of all the rows in the Pipe Numbers column using the passed
+    // in Map.
+    //
+
+    private void setPipeNumbers(Map<TableRow, String> pPipeNumbers) {
+
+        // Set the adjusted value of each row to the
+        // adjusted value in the LinkedHashMap associated
+        // with that row
+        for (int i=0; i<measurementsTable.getChildCount(); i++) {
+
+            View child = measurementsTable.getChildAt(i);
+
+            if (!(child instanceof TableRow)) { continue; }
+
+            TableRow tR = (TableRow) child;
+
+            setPipeNumberOfRow(tR, pPipeNumbers.get(tR));
+
+        }
+
+    }//end of MeasurementsTableHandler::setPipeNumbers
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MeasurementsTableHandler::setTotalLengthValues
     //
     // Sets the values of all the rows in the Total Length column using the passed
     // in Map.
     //
 
-    public void setTotalLengthColumns(Map<TableRow, String> pTotalLengthValues) {
+    private void setTotalLengthValues(Map<TableRow, String> pTotalLengthValues) {
 
         // Set the adjusted value of each row to the
         // adjusted value in the LinkedHashMap associated
@@ -486,7 +528,7 @@ public class MeasurementsTableHandler {
 
         }
 
-    }//end of MeasurementsTableHandler::setTotalLengthColumns
+    }//end of MeasurementsTableHandler::setTotalLengthValues
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -513,6 +555,8 @@ public class MeasurementsTableHandler {
 
     }//end of MeasurementsTableHandler::setTotalLengthOfRow
     //-----------------------------------------------------------------------------
+
+
 
     //-----------------------------------------------------------------------------
     // MeasurementsTableHandler::setTotals
