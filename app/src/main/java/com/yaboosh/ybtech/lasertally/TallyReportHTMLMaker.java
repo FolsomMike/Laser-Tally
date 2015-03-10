@@ -20,6 +20,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -34,18 +35,18 @@ public class TallyReportHTMLMaker {
     SharedSettings sharedSettings;
     JobInfo jobInfo;
 
+
+    DecimalFormat decFormat;
+    String filePath;
+    static final int NUM_TALLY_ROWS = 42;
+
     //debug hss// -- should be added to job info
     String jobDate = "02/20/15";
-
     String adjustmentValue;
     double tallyTotal = 0;
     double adjTallyTotal = 0;
     int numTubes;
     double tallyTarget;
-
-    DecimalFormat decFormat = new  DecimalFormat("#.00");
-
-    static final int NUM_TALLY_ROWS = 42;
 
     private ArrayList<String> adjustedValuesFromFile = new ArrayList<String>();
     private ArrayList<String> pipeNumbersFromFile = new ArrayList<String>();
@@ -111,9 +112,21 @@ public class TallyReportHTMLMaker {
         //set the adjustment value to the adjustment
         //value used (imperial or metric)
         if (sharedSettings.getUnitSystem().equals(Keys.IMPERIAL_MODE)) {
+            filePath = jobInfo.getCurrentJobDirectoryPath() + File.separator
+                                                            + jobInfo.getJobName()
+                                                            + " ~ TallyData ~ Imperial.csv";
+
+            decFormat = new DecimalFormat("#.00");
+
             adjustmentValue = jobInfo.getImperialAdjustment();
         }
         else if (sharedSettings.getUnitSystem().equals(Keys.METRIC_MODE)) {
+            filePath = jobInfo.getCurrentJobDirectoryPath() + File.separator
+                                                            + jobInfo.getJobName()
+                                                            + " ~ TallyData ~ Metric.csv";
+
+            decFormat = new DecimalFormat("#.000");
+
             adjustmentValue = jobInfo.getMetricAdjustment();
         }
 
@@ -363,14 +376,7 @@ public class TallyReportHTMLMaker {
 
         try {
 
-            if (sharedSettings.getUnitSystem().equals(Keys.IMPERIAL_MODE)) {
-                fileReader = new FileReader(sharedSettings.getJobsFolderPath()
-                                        + jobInfo.getJobName() + " ~ Imperial ~ TallyData.csv");
-            }
-            else if (sharedSettings.getUnitSystem().equals(Keys.METRIC_MODE)) {
-                fileReader = new FileReader(sharedSettings.getJobsFolderPath()
-                                        + jobInfo.getJobName() + " ~ Metric ~ TallyData.csv");
-            }
+            fileReader = new FileReader(filePath);
 
             bufferedReader = new BufferedReader(fileReader);
 
