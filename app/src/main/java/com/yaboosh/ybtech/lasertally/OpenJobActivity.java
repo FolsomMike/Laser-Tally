@@ -67,12 +67,13 @@ public class OpenJobActivity extends Activity {
     private String facility;
     private String grade;
     private String imperialAdjustment;
+    private String imperialTallyGoal;
     private String job;
     private String metricAdjustment;
+    private String metricTallyGoal;
     private String rack;
     private String range;
     private String rig;
-    private String tallyGoal;
     private String wall;
 
     //-----------------------------------------------------------------------------
@@ -318,12 +319,13 @@ public class OpenJobActivity extends Activity {
         facility = Tools.getValueFromList("Facility", fileLines);
         grade = Tools.getValueFromList("Grade", fileLines);
         imperialAdjustment = Tools.getValueFromList("Imperial Adjustment", fileLines);
+        imperialTallyGoal = Tools.getValueFromList("Imperial Tally Goal", fileLines);
         job = Tools.getValueFromList("Job", fileLines);
         metricAdjustment = Tools.getValueFromList("Metric Adjustment", fileLines);
+        metricTallyGoal = Tools.getValueFromList("Metric Tally Goal", fileLines);
         rack = Tools.getValueFromList("Rack", fileLines);
         range = Tools.getValueFromList("Range", fileLines);
         rig = Tools.getValueFromList("Rig", fileLines);
-        tallyGoal = Tools.getValueFromList("Tally Goal", fileLines);
         wall = Tools.getValueFromList("Wall", fileLines);
 
     }//end of OpenJobActivity::getJobInfoFromFile
@@ -348,8 +350,8 @@ public class OpenJobActivity extends Activity {
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
 
         JobInfo jobInfo = new JobInfo(selectedJobDirectoryPath, companyName, diameter, facility,
-                                        grade, imperialAdjustment, job, metricAdjustment, rack,
-                                        range, rig, tallyGoal, wall);
+                                        grade, imperialAdjustment, imperialTallyGoal, job,
+                                        metricAdjustment, metricTallyGoal, rack, range, rig, wall);
         jobInfo.init();
         intent.putExtra(Keys.JOB_INFO_INCLUDED_KEY, true);
         intent.putExtra(Keys.JOB_INFO_KEY, jobInfo);

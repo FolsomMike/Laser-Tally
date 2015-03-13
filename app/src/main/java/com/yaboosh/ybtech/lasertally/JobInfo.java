@@ -64,6 +64,10 @@ public class JobInfo implements Parcelable {
     public String getImperialAdjustment() { return imperialAdjustment; }
     public void setImperialAdjustment(String pAdjustment) { imperialAdjustment = pAdjustment; }
 
+    String imperialTallyGoal;
+    public String getImperialTallyGoal() { return imperialTallyGoal; }
+    public void setImperialTallyGoal(String pTallyGoal) { imperialTallyGoal = pTallyGoal; }
+
     String jobName;
     public String getJobName() { return jobName; }
     public void setJobName(String pName) { jobName = pName; }
@@ -71,6 +75,10 @@ public class JobInfo implements Parcelable {
     String metricAdjustment;
     public String getMetricAdjustment() { return metricAdjustment; }
     public void setMetricAdjustment(String pAdjustment) { metricAdjustment = pAdjustment; }
+
+    String metricTallyGoal;
+    public String getMetricTallyGoal() { return metricTallyGoal; }
+    public void setMetricTallyGoal(String pTallyGoal) { metricTallyGoal = pTallyGoal; }
 
     String rack;
     public String getRack() { return rack; }
@@ -84,10 +92,6 @@ public class JobInfo implements Parcelable {
     public String getRig() { return rig; }
     public void setRig(String pRig) { rig = pRig; }
 
-    String tallyGoal;
-    public String getTallyGoal() { return tallyGoal; }
-    public void setTallyGoal(String pTallyGoal) { tallyGoal = pTallyGoal; }
-
     String wall;
     public String getWall() { return wall; }
     public void setWall(String pWall) { wall = pWall; }
@@ -99,9 +103,9 @@ public class JobInfo implements Parcelable {
     //
 
     public JobInfo(String pPath, String pCompanyName, String pDiameter, String pFacility,
-                       String pGrade, String pImperialAdjustment, String pJobName,
-                       String pMetricAdjustment, String pRack, String pRange, String pRig,
-                       String pTallyGoal, String pWall)
+                       String pGrade, String pImperialAdjustment, String pImperialTallyGoal,
+                       String pJobName, String pMetricAdjustment, String pMetricTallyGoal,
+                       String pRack, String pRange, String pRig, String pWall)
     {
 
         currentJobDirectoryPath = pPath;
@@ -110,12 +114,13 @@ public class JobInfo implements Parcelable {
         facility = pFacility;
         grade = pGrade;
         imperialAdjustment = pImperialAdjustment;
+        imperialTallyGoal = pImperialTallyGoal;
         jobName = pJobName;
         metricAdjustment = pMetricAdjustment;
+        metricTallyGoal = pMetricTallyGoal;
         rack = pRack;
         range = pRange;
         rig = pRig;
-        tallyGoal = pTallyGoal;
         wall = pWall;
 
     }//end of JobInfo::JobInfo (constructor)
@@ -194,12 +199,13 @@ public class JobInfo implements Parcelable {
         facility = pParcel.readString();
         grade = pParcel.readString();
         imperialAdjustment = pParcel.readString();
+        imperialTallyGoal = pParcel.readString();
         jobName = pParcel.readString();
         metricAdjustment = pParcel.readString();
+        metricTallyGoal = pParcel.readString();
         rack = pParcel.readString();
         range = pParcel.readString();
         rig = pParcel.readString();
-        tallyGoal = pParcel.readString();
         wall = pParcel.readString();
 
     }// end of JobInfo::readFromParcel
@@ -239,12 +245,13 @@ public class JobInfo implements Parcelable {
         pParcel.writeString(facility);
         pParcel.writeString(grade);
         pParcel.writeString(imperialAdjustment);
+        pParcel.writeString(imperialTallyGoal);
         pParcel.writeString(jobName);
         pParcel.writeString(metricAdjustment);
+        pParcel.writeString(metricTallyGoal);
         pParcel.writeString(rack);
         pParcel.writeString(range);
         pParcel.writeString(rig);
-        pParcel.writeString(tallyGoal);
         pParcel.writeString(wall);
 
     }// end of JobInfo::writeToParcel

@@ -226,7 +226,9 @@ public class TallyDataHandler {
     public void handleNewDistanceValue(Double pValue)
     {
 
-        if (tallyData.isValidLength(pValue)) { return; }
+        double temp = pValue + imperialTallyData.getCalibrationValue();
+        //return if the value is not within range
+        if (!imperialTallyData.isValidLength(temp)) { return; }
 
         addDataEntry(pValue);
 

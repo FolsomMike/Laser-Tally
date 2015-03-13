@@ -43,10 +43,10 @@ public class TallyReportHTMLMaker {
     //debug hss// -- should be added to job info
     String jobDate = "02/20/15";
     String adjustmentValue;
+    String tallyTarget;
     double tallyTotal = 0;
     double adjTallyTotal = 0;
     int numTubes;
-    double tallyTarget;
 
     private ArrayList<String> adjustedValuesFromFile = new ArrayList<String>();
     private ArrayList<String> pipeNumbersFromFile = new ArrayList<String>();
@@ -86,14 +86,6 @@ public class TallyReportHTMLMaker {
         sharedSettings = pSharedSettings;
         jobInfo = pJobInfo;
 
-        //if user left entry blank or entered very large value, use 0 for target
-        if (jobInfo.getTallyGoal().equals("")
-                || Double.parseDouble(jobInfo.getTallyGoal()) > 999999) {
-            tallyTarget = 0;
-        }
-
-        else { tallyTarget = Double.parseDouble(jobInfo.getTallyGoal()); }
-
     }// end of TallyReportHTMLMaker::TallyReportHTMLMaker (constructor)
     //-----------------------------------------------------------------------------
 
@@ -109,8 +101,7 @@ public class TallyReportHTMLMaker {
         loadTallyDataFromFile();
         numTubes = pipeNumbersFromFile.size();
 
-        //set the adjustment value to the adjustment
-        //value used (imperial or metric)
+        //set values to imperial or metric
         if (sharedSettings.getUnitSystem().equals(Keys.IMPERIAL_MODE)) {
             filePath = jobInfo.getCurrentJobDirectoryPath() + File.separator
                                                             + jobInfo.getJobName()
@@ -119,6 +110,8 @@ public class TallyReportHTMLMaker {
             decFormat = new DecimalFormat("#.00");
 
             adjustmentValue = jobInfo.getImperialAdjustment();
+
+            tallyTarget = jobInfo.getImperialTallyGoal();
         }
         else if (sharedSettings.getUnitSystem().equals(Keys.METRIC_MODE)) {
             filePath = jobInfo.getCurrentJobDirectoryPath() + File.separator
@@ -128,6 +121,8 @@ public class TallyReportHTMLMaker {
             decFormat = new DecimalFormat("#.000");
 
             adjustmentValue = jobInfo.getMetricAdjustment();
+
+            tallyTarget = jobInfo.getMetricTallyGoal();
         }
 
     }// end of TallyReportHTMLMaker::init
@@ -238,7 +233,7 @@ public class TallyReportHTMLMaker {
                 + "<b>Date: </b>" + jobDate + sp
                 + "<br>"
                 + "<b>Adjustment: </b>" +  adjustmentValue + sp
-                + "<b>Tally Target: </b>" + decFormat.format(tallyTarget) + sp + "<br>"
+                + "<b>Tally Target: </b>" + tallyTarget + sp + "<br>"
                 + "<b>Tube Count: </b>" + pNumTubes + sp
                 + "<b>Total Tally: </b>" + decFormat.format(tallyTotal) + " / "
                 + decFormat.format(adjTallyTotal) + sp

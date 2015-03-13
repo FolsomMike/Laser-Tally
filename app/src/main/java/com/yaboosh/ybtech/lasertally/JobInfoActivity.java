@@ -81,12 +81,13 @@ public class JobInfoActivity extends Activity {
     private String facility;
     private String grade;
     private String imperialAdjustment;
+    private String imperialTallyGoal;
     private String job;
     private String metricAdjustment;
+    private String metricTallyGoal;
     private String rack;
     private String range;
     private String rig;
-    private String tallyGoal;
     private String wall;
 
     //-----------------------------------------------------------------------------
@@ -380,8 +381,8 @@ public class JobInfoActivity extends Activity {
         saveInformationToFile();
 
         JobInfo jobInfo = new JobInfo(newJobFolderPath, companyName, diameter, facility, grade,
-                                        imperialAdjustment, job, metricAdjustment, rack, range,
-                                        rig, tallyGoal, wall);
+                                        imperialAdjustment, imperialTallyGoal, job,
+                                        metricAdjustment, metricTallyGoal, rack, range, rig, wall);
         jobInfo.init();
 
         intent.putExtra(Keys.JOB_INFO_INCLUDED_KEY, true);
@@ -424,12 +425,7 @@ public class JobInfoActivity extends Activity {
 
         rig = ((EditText) findViewById(R.id.editTextRig)).getText().toString();
 
-        tallyGoal = ((EditText)findViewById(R.id.editTextTallyGoal)).getText().toString();
-        if (!(tallyGoal.equals(""))) {
-            Float tempAdjFloat = Float.parseFloat(((EditText) findViewById(R.id.editTextTallyGoal))
-                                                                            .getText().toString());
-            tallyGoal = tallyFormat.format(tempAdjFloat);
-        }
+        setTallyGoals(((EditText)findViewById(R.id.editTextTallyGoal)).getText().toString());
 
         wall = ((EditText) findViewById(R.id.editTextWall)).getText().toString();
 
@@ -502,24 +498,28 @@ public class JobInfoActivity extends Activity {
         ((EditText) findViewById(R.id.editTextRig)).setText
                                             (Tools.getValueFromList("Rig", fileLines));
 
-        ((EditText) findViewById(R.id.editTextTallyGoal)).setText
-                                            (Tools.getValueFromList("Tally Goal", fileLines));
-
         ((EditText) findViewById(R.id.editTextWall)).setText
                                             (Tools.getValueFromList("Wall", fileLines));
 
+
         imperialAdjustment = Tools.getValueFromList("Imperial Adjustment", fileLines);
         metricAdjustment = Tools.getValueFromList("Metric Adjustment", fileLines);
-        // use either the metric or the imperial adjustment
-        // value depending on the unit system
-        String adjustmentValue = "0";
+        imperialTallyGoal = Tools.getValueFromList("Imperial Tally Goal", fileLines);
+        metricTallyGoal = Tools.getValueFromList("Metric Tally Goal", fileLines);
+        // use the metric or the imperial values
+        // depending on the unit system
+        String adjustment = "";
+        String goal = "";
         if (sharedSettings.getUnitSystem().equals(Keys.IMPERIAL_MODE)) {
-            adjustmentValue = imperialAdjustment;
+            adjustment = imperialAdjustment;
+            goal = imperialTallyGoal;
         }
         else if (sharedSettings.getUnitSystem().equals(Keys.METRIC_MODE)) {
-            adjustmentValue = metricAdjustment;
+            adjustment = metricAdjustment;
+            goal = metricTallyGoal;
         }
-        ((EditText) findViewById(R.id.editTextProtectorMakeupAdjustment)).setText(adjustmentValue);
+        ((EditText) findViewById(R.id.editTextProtectorMakeupAdjustment)).setText(adjustment);
+        ((EditText) findViewById(R.id.editTextTallyGoal)).setText(goal);
 
     }//end of JobInfoActivity::getJobInfoFromFile
     //-----------------------------------------------------------------------------
@@ -640,15 +640,7 @@ public class JobInfoActivity extends Activity {
             return;
         }
 
-        //if the adjustment value edit text
-        //field was left blank by the user,
-        //then both adjustment values are
-        //set to 0
-        if ((pValue.equals(""))) {
-            imperialAdjustment = "0";
-            metricAdjustment = "0";
-        }
-        else {
+        if (!(pValue.equals(""))) {
 
             Double adjDouble = Double.parseDouble(((EditText) findViewById
                                     (R.id.editTextProtectorMakeupAdjustment)).getText().toString());
@@ -657,14 +649,18 @@ public class JobInfoActivity extends Activity {
             if (sharedSettings.getUnitSystem().equals(Keys.IMPERIAL_MODE)) {
                 //passed in value is assumed to be Imperial
                 imperialAdjustment = Tools.IMPERIAL_TALLY_FORMAT.format(adjDouble);
-                metricAdjustment = Tools.convertToMetric(adjDouble);
+                metricAdjustment = Tools.convertToMetricAndFormat(adjDouble);
             }
             else if (sharedSettings.getUnitSystem().equals(Keys.METRIC_MODE)) {
                 //passed in value is assumed to be Metric
                 metricAdjustment = Tools.METRIC_TALLY_FORMAT.format(adjDouble);
-                imperialAdjustment = Tools.convertToImperial(adjDouble);
+                imperialAdjustment = Tools.convertToImperialAndFormat(adjDouble);
             }
 
+        }
+        else {
+            imperialAdjustment = "";
+            metricAdjustment = "";
         }
 
     }//end of JobInfoActivity::setAdjustmentValues
@@ -702,6 +698,57 @@ public class JobInfoActivity extends Activity {
         originalJobInfoFilePath = originalJobFolderPath + File.separator + pJobName + " ~ JobInfo.txt";
 
     }//end of JobInfoActivity::setOriginalFilePaths
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobInfoActivity::setTallyGoals
+    //
+    // Sets the imperial and metric tally goals using the passed in value.
+    //
+    // If the unit system is set to Imperial, then the passed in value is assumed
+    // to be Imperial and is converted to Metric for the metric adjustment value.
+    //
+    // If the unit system is set to Metric, then the passed in value is assumed
+    // to be Metric and is converted to Imperial for the imperial adjustment value.
+    //
+
+    private void setTallyGoals(String pValue) {
+
+        //if the adjustment value hasn't changed,
+        //then no action needs to be taken
+        if ((sharedSettings.getUnitSystem().equals(Keys.IMPERIAL_MODE)
+                && pValue.equals(imperialTallyGoal))
+                || (sharedSettings.getUnitSystem().equals(Keys.METRIC_MODE)
+                && pValue.equals(metricTallyGoal)))
+        {
+            return;
+        }
+
+        if (!(pValue.equals(""))) {
+
+            Double goalDouble = Double.parseDouble(
+                            ((EditText) findViewById(R.id.editTextTallyGoal)).getText().toString());
+
+            //Take different actions depending on the unit system
+            if (sharedSettings.getUnitSystem().equals(Keys.IMPERIAL_MODE)) {
+                //passed in value is assumed to be Imperial
+                imperialTallyGoal = Tools.IMPERIAL_TALLY_FORMAT.format(goalDouble);
+                metricTallyGoal = Tools.convertToMetricAndFormat(goalDouble);
+            }
+            else if (sharedSettings.getUnitSystem().equals(Keys.METRIC_MODE)) {
+                //passed in value is assumed to be Metric
+                metricTallyGoal = Tools.METRIC_TALLY_FORMAT.format(goalDouble);
+                imperialTallyGoal = Tools.convertToImperialAndFormat(goalDouble);
+            }
+
+        }
+
+        else {
+            imperialTallyGoal = "";
+            metricTallyGoal = "";
+        }
+
+    }//end of JobInfoActivity::setTallyGoals
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -759,12 +806,13 @@ public class JobInfoActivity extends Activity {
             writer.println("Facility=" + facility);
             writer.println("Grade=" + grade);
             writer.println("Imperial Adjustment=" + imperialAdjustment);
+            writer.println("Imperial Tally Goal=" + imperialTallyGoal);
             writer.println("Job=" + job);
             writer.println("Metric Adjustment=" + metricAdjustment);
+            writer.println("Metric Tally Goal=" + metricTallyGoal);
             writer.println("Rack=" + rack);
             writer.println("Range=" + range);
             writer.println("Rig=" + rig);
-            writer.println("Tally Goal=" + tallyGoal);
             writer.println("Wall=" + wall);
 
         }
