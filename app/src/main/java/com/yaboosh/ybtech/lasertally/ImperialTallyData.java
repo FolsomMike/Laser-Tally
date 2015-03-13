@@ -59,10 +59,9 @@ public class ImperialTallyData extends TallyData {
                                                         + jobInfo.getJobName()
                                                         + " ~ TallyData ~ Imperial.csv";
 
-        setAdjustmentValue(Double.parseDouble(jobInfo.getImperialAdjustment()));
+        setAdjustmentValue(jobInfo.getImperialAdjustment());
 
-        //hss wip//--should be class/unit system specific
-        setTallyGoal(jobInfo.getTallyGoal());
+        setTallyGoal(jobInfo.getImperialTallyGoal());
 
     }//end of ImperialTallyData::setJobInfoVariables
     //-----------------------------------------------------------------------------
@@ -78,10 +77,9 @@ public class ImperialTallyData extends TallyData {
     void setSharedSettingsVariables()
     {
 
-        //hss wip//--should be class/unit system specific
-        calibrationValue = Double.parseDouble(sharedSettings.getCalibrationValue());
-        maxAllowed = Double.parseDouble(sharedSettings.getMaximumMeasurementAllowed());
-        minAllowed = Double.parseDouble(sharedSettings.getMinimumMeasurementAllowed());
+        setCalibrationValue(sharedSettings.getImperialCalibrationValue());
+        setMaxAllowed(sharedSettings.getMaximumImperialMeasurementAllowed());
+        setMinAllowed(sharedSettings.getMinimumImperialMeasurementAllowed());
 
     }//end of ImperialTallyData::setSharedSettingsVariables
     //-----------------------------------------------------------------------------

@@ -59,10 +59,9 @@ public class MetricTallyData extends TallyData {
                                                         + jobInfo.getJobName()
                                                         + " ~ TallyData ~ Metric.csv";
 
-        setAdjustmentValue(Double.parseDouble(jobInfo.getMetricAdjustment()));
+        setAdjustmentValue(jobInfo.getMetricAdjustment());
 
-        //hss wip//--should be class/unit system specific
-        setTallyGoal(jobInfo.getTallyGoal());
+        setTallyGoal(jobInfo.getMetricTallyGoal());
 
     }//end of MetricTallyData::setJobInfoVariables
     //-----------------------------------------------------------------------------
@@ -78,10 +77,9 @@ public class MetricTallyData extends TallyData {
     void setSharedSettingsVariables()
     {
 
-        //hss wip//--should be class/unit system specific
-        calibrationValue = Double.parseDouble(sharedSettings.getCalibrationValue());
-        maxAllowed = Double.parseDouble(sharedSettings.getMaximumMeasurementAllowed());
-        minAllowed = Double.parseDouble(sharedSettings.getMinimumMeasurementAllowed());
+        setCalibrationValue(sharedSettings.getMetricCalibrationValue());
+        setMaxAllowed(sharedSettings.getMaximumMetricMeasurementAllowed());
+        setMinAllowed(sharedSettings.getMinimumMetricMeasurementAllowed());
 
     }//end of MetricTallyData::setSharedSettingsVariables
     //-----------------------------------------------------------------------------

@@ -56,6 +56,7 @@ public abstract class TallyData {
     String nL = System.lineSeparator();
 
     double calibrationValue;
+    public double getCalibrationValue() { return calibrationValue; }
     double maxAllowed;
     double minAllowed;
     double tallyGoal;
@@ -147,11 +148,14 @@ public abstract class TallyData {
     {
 
         double dTotal = pTotalLength;
+        dTotal += calibrationValue;
+
         //since all values coming from the tally device are
         //already Imperial, the passed in length only needs
-        //to be converted if the Metric is needed
-        if (thisClassUnitSystem.equals(Keys.METRIC_MODE)) { dTotal = convert(dTotal); }
-        dTotal += calibrationValue;
+        //to be converted if the class system is Metric
+        if (thisClassUnitSystem.equals(Keys.METRIC_MODE)) {
+            dTotal = Tools.convertToMetric(dTotal);
+        }
 
         String pipe = Integer.toString(determineNextPipeNumber());
         String adjusted = calculateAdjustedValue(dTotal);
@@ -315,9 +319,8 @@ public abstract class TallyData {
     // The unit system that the value is converted to depends on what value the
     // conversion factor is set to by children classes.
     //
-    //
 
-    public double convert(double pValue)
+    private double convert(double pValue)
     {
 
         double newValue = pValue;
@@ -597,25 +600,6 @@ public abstract class TallyData {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyData::setAdjustmentValue
-    //
-    // Sets the adjustment value to passed in value and recalculates all of the
-    // adjusted values.
-    //
-
-    void setAdjustmentValue(double pValue)
-    {
-
-        //return if the adjustment value hasn't changed
-        if (adjustmentValue == pValue) { return; }
-
-        adjustmentValue = pValue;
-        calculateAdjustedValues();
-
-    }//end of TallyData::setAdjustmentValue
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
     // TallyData::saveDataToFile
     //
 
@@ -658,6 +642,43 @@ public abstract class TallyData {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // TallyData::setAdjustmentValue
+    //
+    // Sets the adjustment value using the passed in strings and recalculates all
+    // of the adjusted values.
+    //
+    // If the string is blank, then the adjustment value is set to 0.
+    //
+
+    void setAdjustmentValue(String pValue)
+    {
+
+        if ((pValue.equals(""))) { adjustmentValue = 0; }
+        else { adjustmentValue = Double.parseDouble(pValue); }
+
+        calculateAdjustedValues();
+
+    }//end of TallyData::setAdjustmentValue
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyData::setCalibrationValue
+    //
+    // Sets the calibration value using the passed in string.
+    //
+    // If the string is blank or equals zero, then the calibration is set to 0.
+    //
+
+    void setCalibrationValue(String pValue)
+    {
+
+        if ((pValue.equals(""))) { calibrationValue = 0; }
+        else { calibrationValue = Double.parseDouble(pValue); }
+
+    }//end of TallyData::setCalibrationValue
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // TallyData::setJobInfo
     //
 
@@ -670,6 +691,42 @@ public abstract class TallyData {
         calculateTotals();
 
     }//end of TallyData::setJobInfo
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyData::setMaxAllowed
+    //
+    // Sets the maximum value allowed using the passed in string.
+    //
+    // If the string is blank or equals zero, then the maximum allowed is set to
+    // Double.MAX_VALUE.
+    //
+
+    void setMaxAllowed(String pValue)
+    {
+
+        if ((pValue.equals(""))) { maxAllowed = Double.MAX_VALUE; }
+        else { maxAllowed = Double.parseDouble(pValue); }
+
+    }//end of TallyData::setMaxAllowed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyData::setMinAllowed
+    //
+    // Sets the minimum value allowed using the passed in string.
+    //
+    // If the string is blank or equals zero, then the minimum allowed is set to
+    // Double.MIN_VALUE.
+    //
+
+    void setMinAllowed(String pValue)
+    {
+
+        if ((pValue.equals(""))) { minAllowed = Double.MIN_VALUE; }
+        else { minAllowed = Double.parseDouble(pValue); }
+
+    }//end of TallyData::setMinAllowed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -740,7 +797,6 @@ public abstract class TallyData {
 
         boolean valid = true;
 
-        convert(pLength);
         if (isLessThanMinValueAllowed(pLength) || isGreaterThanMaxValueAllowed(pLength)) {
             valid = false;
         }
