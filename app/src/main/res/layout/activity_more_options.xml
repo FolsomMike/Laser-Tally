@@ -208,15 +208,6 @@
                     android:layout_height="1dp" >
                 </View>
 
-                <Spinner
-                    android:id="@id/addSubCalibrationValueSpinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:entries="@array/spinner_choices"
-                    android:prompt="@string/spinner_prompt"
-                    android:paddingLeft="0dp"
-                    android:paddingRight="20dp"/>
-
                 <!-- horizontal spacer -->
                 <View
                     android:layout_width="10dp"
@@ -226,7 +217,7 @@
                 <EditText
                     android:id="@id/calibrationValueEditText"
                     android:inputType="number"
-                    android:digits="0123456789,."
+                    android:digits="0123456789,.-"
                     android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

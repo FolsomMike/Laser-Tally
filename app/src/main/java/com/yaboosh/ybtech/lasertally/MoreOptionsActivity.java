@@ -48,7 +48,6 @@ public class MoreOptionsActivity extends Activity {
     private EditText maximumMeasurementAllowedEditText;
     private EditText minimumMeasurementAllowedEditText;
     private EditText calibrationValueEditText;
-    private Spinner addSubCalibrationValueSpinner;
 
     private String unitSystem;
     private String switchToImperialButtonText = "Switch to Imperial";
@@ -97,7 +96,6 @@ public class MoreOptionsActivity extends Activity {
         maximumMeasurementAllowedEditText = ((EditText)findViewById(R.id.editTextMaximumMeasurementAllowed));
         minimumMeasurementAllowedEditText = ((EditText)findViewById(R.id.editTextMinimumMeasurementAllowed));
         calibrationValueEditText = ((EditText)findViewById(R.id.calibrationValueEditText));
-        addSubCalibrationValueSpinner = ((Spinner)findViewById(R.id.addSubCalibrationValueSpinner));
 
         Bundle bundle = getIntent().getExtras();
         sharedSettings = bundle.getParcelable(Keys.SHARED_SETTINGS_KEY);
@@ -143,6 +141,7 @@ public class MoreOptionsActivity extends Activity {
 
         setSwitchUnitSystemButtonText();
         setMaxAndMinEditTextFields();
+        setCalibrationValueEditTextField();
 
 
     }//end of MenuOptionsActivity::onResume
@@ -236,31 +235,12 @@ public class MoreOptionsActivity extends Activity {
     //-----------------------------------------------------------------------------
     // MenuOptionsActivity::getCalibrationValue
     //
-    // Gets and returns the calibration value allowed measurement from the edit
-    // text field.
-    //
-    // Uses the add/subtract spinner to determine whether or not the value should
-    // be negative or positive.
+    // Gets and returns the calibration value from the proper edit text field.
     //
 
     private String getCalibrationValue() {
 
-
-        String calValueString = calibrationValueEditText.getText().toString();
-
-        //if the edit text field was left blank,
-        // then just return the empty string
-        if (calValueString.equals("")) { return calValueString; }
-
-        double cal = Double.parseDouble(calValueString);
-
-        //determine whether or not the cal value
-        //should be negative
-        String addOrSub = addSubCalibrationValueSpinner.getSelectedItem().toString();
-        if (addOrSub.equals("sub")) { cal = -cal; }
-        calValueString = Double.toString(cal);
-
-        return calValueString;
+        return calibrationValueEditText.getText().toString();
 
     }//end of MenuOptionsActivity::getCalibrationValue
     //-----------------------------------------------------------------------------
@@ -346,6 +326,29 @@ public class MoreOptionsActivity extends Activity {
         setSwitchUnitSystemButtonText();
 
     }//end of MenuOptionsActivity::handleSwitchUnitSystemButtonPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MenuOptionsActivity::setCalibrationValueEditTextField
+    //
+    // Sets the calibration value edit text field to either the Imperial or Metric
+    // calibration value stored in SharedSettings depending on the unit system.
+    //
+
+    private void setCalibrationValueEditTextField() {
+
+        String cal = "";
+
+        if (unitSystem.equals(Keys.IMPERIAL_MODE)) {
+            cal = sharedSettings.getImperialCalibrationValue();
+        }
+        else if (unitSystem.equals(Keys.METRIC_MODE)) {
+            cal = sharedSettings.getMetricCalibrationValue();
+        }
+
+        calibrationValueEditText.setText(cal);
+
+    }//end of MenuOptionsActivity::setCalibrationValueEditTextField
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
