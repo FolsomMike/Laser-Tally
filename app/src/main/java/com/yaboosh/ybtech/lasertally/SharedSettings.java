@@ -36,13 +36,20 @@ import android.os.Environment;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
+import android.widget.TableRow;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Scanner;
 
 public class SharedSettings implements Parcelable {
@@ -50,6 +57,9 @@ public class SharedSettings implements Parcelable {
     private static final String LOG_TAG = "SharedSettings";
 
     public static Parcelable.Creator CREATOR;
+
+    String fileFormat = "UTF-8";
+    String nL = System.lineSeparator();
 
     private Context context;
     public Context getContext() { return context; }
@@ -175,6 +185,39 @@ public class SharedSettings implements Parcelable {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // SharedSettings::generateFileText
+    //
+    // Generates the file text used for saving the general settings to file.
+    //
+    // Comment lines are began with "#"
+    //
+
+    private String generateFileText()
+    {
+
+        String fileText = ("Imperial Calibration Value=" + imperialCalibrationValue)
+                            + nL
+                            + ("Metric Calibration Value=" + metricCalibrationValue)
+                            + nL
+                            + ("Maximum Imperial Measurement Allowed="
+                                    + maximumImperialMeasurementAllowed)
+                            + nL
+                            + ("Maximum Metric Measurement Allowed="
+                                    + maximumMetricMeasurementAllowed)
+                            + nL
+                            + ("Minimum Imperial Measurement Allowed="
+                                    + minimumImperialMeasurementAllowed)
+                            + ("Minimum Metric Measurement Allowed="
+                                    + minimumMetricMeasurementAllowed)
+                            + nL
+                            + ("Unit System=" + unitSystem);
+
+        return fileText;
+
+    }//end of SharedSettings::generateFileText
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // SharedSettings::loadAppSettingsFromFile
     //
     // Loads the app settings from the ini file if it exists. If it doesn't exist,
@@ -186,28 +229,34 @@ public class SharedSettings implements Parcelable {
         //reset settings
         resetSettings();
 
+        FileInputStream fileInputStream = null;
+        InputStreamReader inputStreamReader = null;
+        BufferedReader in = null;
         ArrayList<String> fileLines = new ArrayList<String>();
-        FileInputStream fStream = null;
-        Scanner br = null;
 
-        try {
+        try{
 
-            File file = new File(context.getFilesDir(), "general.ini");
+            fileInputStream = new FileInputStream(context.getFilesDir() + "general.ini");
 
-            fStream = new FileInputStream(file);
-            br = new Scanner(new InputStreamReader(fStream));
-            while (br.hasNext()) { fileLines.add(br.nextLine()); }
+            inputStreamReader = new InputStreamReader(fileInputStream, fileFormat);
 
+            in = new BufferedReader(inputStreamReader);
+
+            //read until end of file reached
+            String line;
+            while ((line = in.readLine()) != null){ fileLines.add(line); }
         }
-        catch (Exception e) {}
-        finally {
+        catch (FileNotFoundException e){ Log.e(LOG_TAG, "Line 249 :: " + e.getMessage()); }
+        catch(IOException e){ Log.e(LOG_TAG, "Line 250 :: " + e.getMessage()); }
+        finally{
+            try { if (in != null) { in.close(); } }
+            catch (IOException e) { Log.e(LOG_TAG, "Line 253 :: " + e.getMessage()); }
 
-            try {
-                if (br != null) { br.close(); }
-                if (fStream != null) { fStream.close(); }
-            }
-            catch (Exception e) {}
+            try { if (inputStreamReader != null) { inputStreamReader.close(); } }
+            catch (IOException e) { Log.e(LOG_TAG, "Line 256 :: " + e.getMessage()); }
 
+            try { if (fileInputStream != null) { fileInputStream.close(); } }
+            catch (IOException e) { Log.e(LOG_TAG, "Line 259 :: " + e.getMessage()); }
         }
 
         //if the file failed to load or there were no lines in the
@@ -355,31 +404,38 @@ public class SharedSettings implements Parcelable {
 
     private void saveGeneralSettingsToFile() {
 
-        PrintWriter writer = null;
+        //create a buffered writer stream
 
-        try {
+        FileOutputStream fileOutputStream = null;
+        OutputStreamWriter outputStreamWriter = null;
+        BufferedWriter out = null;
+
+        try{
 
             File file = new File(context.getFilesDir(), "general.ini");
             if (!file.exists()) { file.createNewFile(); }
+            fileOutputStream = new FileOutputStream(file);
+            outputStreamWriter = new OutputStreamWriter(fileOutputStream, fileFormat);
+            out = new BufferedWriter(outputStreamWriter);
 
-            // Use a PrintWriter to write to the file
-            writer = new PrintWriter(file, "UTF-8");
+            out.write(generateFileText());
 
-            writer.println("Imperial Calibration Value=" + imperialCalibrationValue);
-            writer.println("Metric Calibration Value=" + metricCalibrationValue);
-            writer.println("Maximum Imperial Measurement Allowed="
-                                                            + maximumImperialMeasurementAllowed);
-            writer.println("Maximum Metric Measurement Allowed=" + maximumMetricMeasurementAllowed);
-            writer.println("Minimum Imperial Measurement Allowed="
-                                                            + minimumImperialMeasurementAllowed);
-            writer.println("Minimum Metric Measurement Allowed=" + minimumMetricMeasurementAllowed);
-            writer.println("Unit System=" + unitSystem);
+            //Note! You MUST flush to make sure everything is written.
+            out.flush();
 
-        } catch (Exception e) {}
-        finally {
+        }
+        catch(IOException e){
+            Log.e(LOG_TAG, "Line 340 :: " + e.getMessage());
+        }
+        finally{
+            try{ if (out != null) {out.close();} }
+            catch(IOException e){ Log.e(LOG_TAG, "Line 386 :: " + e.getMessage());}
 
-            try { if (writer != null) { writer.close(); } } catch (Exception e) {}
+            try{ if (outputStreamWriter != null) {outputStreamWriter.close();} }
+            catch(IOException e){ Log.e(LOG_TAG, "Line 389 :: " + e.getMessage());}
 
+            try{ if (fileOutputStream != null) {fileOutputStream.close();} }
+            catch(IOException e){ Log.e(LOG_TAG, "Line 392 :: " + e.getMessage()); }
         }
 
     }// end of SharedSettings::saveGeneralSettingsToFile
