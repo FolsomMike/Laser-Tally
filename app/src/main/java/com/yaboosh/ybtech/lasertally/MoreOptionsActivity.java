@@ -45,11 +45,18 @@ public class MoreOptionsActivity extends Activity {
     private SharedSettings sharedSettings;
     private JobInfo jobInfo;
 
+    private String CAL_VALUE_KEY = "CAL_VALUE_KEY";
+    private String MAX_ALLOWED_KEY = "MAX_ALLOWED_KEY";
+    private String MIN_ALLOWED_KEY = "MIN_ALLOWED_KEY";
+    private String UNIT_SYSTEM_KEY = "UNIT_SYSTEM_KEY";
+    private String calValue;
+    private String maxAllowed;
+    private String minAllowed;
+    private String unitSystem;
+    private EditText calibrationValueEditText;
     private EditText maximumMeasurementAllowedEditText;
     private EditText minimumMeasurementAllowedEditText;
-    private EditText calibrationValueEditText;
 
-    private String unitSystem;
     private String switchToImperialButtonText = "Switch to Imperial";
     private String switchToMetricButtonText = "Switch to Metric";
 
@@ -72,9 +79,9 @@ public class MoreOptionsActivity extends Activity {
     //
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle pSavedInstanceState) {
 
-        super.onCreate(savedInstanceState);
+        super.onCreate(pSavedInstanceState);
 
         setContentView(R.layout.activity_more_options);
 
@@ -93,15 +100,44 @@ public class MoreOptionsActivity extends Activity {
 
         createUiChangeListener();
 
-        maximumMeasurementAllowedEditText = ((EditText)findViewById(R.id.editTextMaximumMeasurementAllowed));
-        minimumMeasurementAllowedEditText = ((EditText)findViewById(R.id.editTextMinimumMeasurementAllowed));
-        calibrationValueEditText = ((EditText)findViewById(R.id.calibrationValueEditText));
-
         Bundle bundle = getIntent().getExtras();
         sharedSettings = bundle.getParcelable(Keys.SHARED_SETTINGS_KEY);
         jobInfo = bundle.getParcelable(Keys.JOB_INFO_KEY);
 
-        unitSystem = sharedSettings.getUnitSystem();
+        // Check whether we're recreating a previously destroyed instance
+        if (pSavedInstanceState != null) {
+            // Restore values from saved state
+
+            //Set the values to stored data
+            calValue = pSavedInstanceState.getString(CAL_VALUE_KEY);
+            maxAllowed = pSavedInstanceState.getString(MAX_ALLOWED_KEY);
+            minAllowed = pSavedInstanceState.getString(MIN_ALLOWED_KEY);
+            unitSystem = pSavedInstanceState.getString(UNIT_SYSTEM_KEY);
+
+        } else {
+            //initialize members with values from sharedSettings
+
+            unitSystem = sharedSettings.getUnitSystem();
+
+            //initialize variables using Imperial or Metric
+            //values, depending on the unit system
+            if (unitSystem.equals(Keys.IMPERIAL_MODE)) {
+                calValue = sharedSettings.getImperialCalibrationValue();
+                maxAllowed = sharedSettings.getMaximumImperialMeasurementAllowed();
+                minAllowed = sharedSettings.getMinimumImperialMeasurementAllowed();
+            }
+            else if (unitSystem.equals(Keys.METRIC_MODE)) {
+                calValue = sharedSettings.getMetricCalibrationValue();
+                maxAllowed = sharedSettings.getMaximumMetricMeasurementAllowed();
+                minAllowed = sharedSettings.getMinimumMetricMeasurementAllowed();
+            }
+
+
+        }
+
+        maximumMeasurementAllowedEditText = ((EditText)findViewById(R.id.editTextMaximumMeasurementAllowed));
+        minimumMeasurementAllowedEditText = ((EditText)findViewById(R.id.editTextMinimumMeasurementAllowed));
+        calibrationValueEditText = ((EditText)findViewById(R.id.calibrationValueEditText));
 
     }//end of MenuOptionsActivity::onCreate
     //-----------------------------------------------------------------------------
@@ -161,6 +197,32 @@ public class MoreOptionsActivity extends Activity {
         super.onPause();
 
     }//end of MenuOptionsActivity::onPause
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MenuOptionsActivity::onSaveInstanceState
+    //
+    // As the activity begins to stop, the system calls onSaveInstanceState()
+    // so the activity can save state information with a collection of key-value
+    // pairs. This functions is overridden so that additional state information can
+    // be saved.
+    //
+
+    @Override
+    public void onSaveInstanceState(Bundle pSavedInstanceState) {
+
+        //store necessary data
+        pSavedInstanceState.putString(CAL_VALUE_KEY, calibrationValueEditText.getText().toString());
+        pSavedInstanceState.putString(MAX_ALLOWED_KEY,
+                                            maximumMeasurementAllowedEditText.getText().toString());
+        pSavedInstanceState.putString(MIN_ALLOWED_KEY,
+                                            minimumMeasurementAllowedEditText.getText().toString());
+        pSavedInstanceState.putString(UNIT_SYSTEM_KEY, unitSystem);
+
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(pSavedInstanceState);
+
+    }//end of MenuOptionsActivity::onSaveInstanceState
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -331,22 +393,12 @@ public class MoreOptionsActivity extends Activity {
     //-----------------------------------------------------------------------------
     // MenuOptionsActivity::setCalibrationValueEditTextField
     //
-    // Sets the calibration value edit text field to either the Imperial or Metric
-    // calibration value stored in SharedSettings depending on the unit system.
+    // Sets the calibration value edit text field to the passed in value.
     //
 
-    private void setCalibrationValueEditTextField() {
+    private void setCalibrationValueEditTextField(String pVal) {
 
-        String cal = "";
-
-        if (unitSystem.equals(Keys.IMPERIAL_MODE)) {
-            cal = sharedSettings.getImperialCalibrationValue();
-        }
-        else if (unitSystem.equals(Keys.METRIC_MODE)) {
-            cal = sharedSettings.getMetricCalibrationValue();
-        }
-
-        calibrationValueEditText.setText(cal);
+        calibrationValueEditText.setText(pVal);
 
     }//end of MenuOptionsActivity::setCalibrationValueEditTextField
     //-----------------------------------------------------------------------------
@@ -355,26 +407,13 @@ public class MoreOptionsActivity extends Activity {
     // MenuOptionsActivity::setMaxAndMinEditTextFields
     //
     // Sets the maximum and minimum measurements allowed edit text fields to
-    // the Imperial or Metric maximum and minimum values allowed depending on
-    // the unit system.
+    // the passed in values.
     //
 
-    private void setMaxAndMinEditTextFields() {
+    private void setMaxAndMinEditTextFields(String pMax, String pMin) {
 
-        String max = "";
-        String min = "";
-
-        if (unitSystem.equals(Keys.IMPERIAL_MODE)) {
-            max = sharedSettings.getMaximumImperialMeasurementAllowed();
-            min = sharedSettings.getMinimumImperialMeasurementAllowed();
-        }
-        else if (unitSystem.equals(Keys.METRIC_MODE)) {
-            max = sharedSettings.getMaximumMetricMeasurementAllowed();
-            min = sharedSettings.getMinimumMetricMeasurementAllowed();
-        }
-
-        maximumMeasurementAllowedEditText.setText(max);
-        minimumMeasurementAllowedEditText.setText(min);
+        maximumMeasurementAllowedEditText.setText(pMax);
+        minimumMeasurementAllowedEditText.setText(pMin);
 
     }//end of MenuOptionsActivity::setMaxAndMinEditTextFields
     //-----------------------------------------------------------------------------

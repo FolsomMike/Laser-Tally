@@ -97,39 +97,51 @@ public class JobDisplayActivity extends Activity {
     //
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle pSavedInstanceState) {
 
-        super.onCreate(savedInstanceState);
+        super.onCreate(pSavedInstanceState);
 
         setContentView(R.layout.activity_job_display);
 
         decorView = getWindow().getDecorView();
 
         uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
         createUiChangeListener();
 
         measureConnectButton = (Button)findViewById(R.id.measureConnectButton);
         redoButton = (Button)findViewById(R.id.redoButton);
 
-        //Get the extras from the intent
-        Bundle bundle = getIntent().getExtras();
+        // Check whether we're recreating a previously destroyed instance
+        if (pSavedInstanceState != null) {
+            // Restore values from saved state
 
-        sharedSettings = bundle.getParcelable(Keys.SHARED_SETTINGS_KEY);
-        sharedSettings.setContext(this);
+            jobInfo = pSavedInstanceState.getParcelable(Keys.JOB_INFO_KEY);
+            sharedSettings = pSavedInstanceState.getParcelable(Keys.SHARED_SETTINGS_KEY);
 
-        if (bundle.getBoolean(Keys.JOB_INFO_INCLUDED_KEY, false)) {
+        } else {
+            //initialize members with default values for a new instance
 
-            jobInfo = bundle.getParcelable(Keys.JOB_INFO_KEY);
-            setJobName(jobInfo.getJobName());
+            //Get the extras from the intent
+            Bundle bundle = getIntent().getExtras();
+
+            sharedSettings = bundle.getParcelable(Keys.SHARED_SETTINGS_KEY);
+            sharedSettings.setContext(this);
+
+            //if job info is included, then get it from the bundle
+            if (bundle.getBoolean(Keys.JOB_INFO_INCLUDED_KEY, false)) {
+                jobInfo = bundle.getParcelable(Keys.JOB_INFO_KEY);
+            }
 
         }
-        //end of get the extras from the intent
+
+        //set the job name
+        setJobName(jobInfo.getJobName());
 
         //Create a TallyDataHandler and give it its own MeasurementsTableHandler and a reference
         //to jobInfo
@@ -219,6 +231,28 @@ public class JobDisplayActivity extends Activity {
         } catch (Exception e) { service = null; }
 
     }//end of JobDisplayActivity::onPause
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobDisplayActivity::onSaveInstanceState
+    //
+    // As the activity begins to stop, the system calls onSaveInstanceState()
+    // so the activity can save state information with a collection of key-value
+    // pairs. This functions is overridden so that additional state information can
+    // be saved.
+    //
+
+    @Override
+    public void onSaveInstanceState(Bundle pSavedInstanceState) {
+
+        //store necessary data
+        pSavedInstanceState.putParcelable(Keys.JOB_INFO_KEY, jobInfo);
+        pSavedInstanceState.putParcelable(Keys.SHARED_SETTINGS_KEY, sharedSettings);
+
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(pSavedInstanceState);
+
+    }//end of JobDisplayActivity::onSaveInstanceState
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
