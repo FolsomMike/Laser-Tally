@@ -319,6 +319,7 @@ public class TallyDataHandler {
 
         measurementsTableHandler.removeLastAddedRow();
 
+        setAmountsLeft();
         setAndCheckTotals();
 
     }//end of TallyDataHandler::removeLastDataEntry
