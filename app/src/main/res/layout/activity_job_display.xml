@@ -121,6 +121,32 @@
                 android:visibility="invisible"
                 style="@style/styledButtonWhiteText" />
 
+            <!-- vertical spacer -->
+            <View
+                android:layout_width="1dp"
+                android:layout_height="30dp" >
+            </View>
+
+            <TextView
+                android:id="@id/numberOfPipesLeftTextView"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textSize="30dp"
+                />
+
+            <!-- vertical spacer -->
+            <View
+                android:layout_width="1dp"
+                android:layout_height="10dp" >
+            </View>
+
+            <TextView
+                android:id="@id/distanceLeftTextView"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textSize="30dp"
+                />
+
         </LinearLayout>
 
         <!-- horizontal spacer -->

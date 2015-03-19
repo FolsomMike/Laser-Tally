@@ -141,7 +141,9 @@ public class JobDisplayActivity extends Activity {
                         findViewById(R.id.measurementsTableBottomBorderLine),
                         (TableLayout)findViewById(R.id.totalsTable),
                         (TextView)findViewById(R.id.totalOfAdjustedColumnTextView),
-                        (TextView)findViewById(R.id.totalOfTotalLengthColumnTextView)));
+                        (TextView)findViewById(R.id.totalOfTotalLengthColumnTextView)),
+                (TextView)findViewById(R.id.distanceLeftTextView),
+                (TextView)findViewById(R.id.numberOfPipesLeftTextView));
         tallyDataHandler.init();
 
         //Start the TallyDeviceService

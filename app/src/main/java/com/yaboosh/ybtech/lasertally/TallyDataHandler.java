@@ -21,6 +21,7 @@ package com.yaboosh.ybtech.lasertally;
 
 import android.util.Log;
 import android.widget.TableRow;
+import android.widget.TextView;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -40,6 +41,8 @@ public class TallyDataHandler {
     public static final String LOG_TAG = "TallyDataHandler";
 
     private MeasurementsTableHandler measurementsTableHandler;
+    private TextView distanceLeftTextView;
+    private TextView numberOfPipesLeftTextView;
 
     private SharedSettings sharedSettings;
     public void setSharedSettings(SharedSettings pSet) { sharedSettings = pSet; handleSharedSettingsChanged(); }
@@ -57,12 +60,15 @@ public class TallyDataHandler {
     // TallyDataHandler::TallyDataHandler (constructor)
     //
 
-    public TallyDataHandler(SharedSettings pSet, JobInfo pJobInfo, MeasurementsTableHandler pHandler)
+    public TallyDataHandler(SharedSettings pSet, JobInfo pJobInfo, MeasurementsTableHandler pHandler,
+                                TextView pDistanceLeft, TextView pPipesLeft)
     {
 
         sharedSettings = pSet;
         jobInfo = pJobInfo;
         measurementsTableHandler = pHandler;
+        distanceLeftTextView = pDistanceLeft;
+        numberOfPipesLeftTextView = pPipesLeft;
 
     }//end of TallyDataHandler::TallyDataHandler (constructor)
     //-----------------------------------------------------------------------------
@@ -108,7 +114,7 @@ public class TallyDataHandler {
         imperialTallyData.addData(tR, pTotal);
         metricTallyData.addData(tR, pTotal);
 
-        putTallyDataIntoTable();
+        putTallyDataIntoActivity();
 
     }//end of TallyDataHandler::addDataEntry
     //-----------------------------------------------------------------------------
@@ -134,7 +140,7 @@ public class TallyDataHandler {
         imperialTallyData.addData(tR, pPipeNumber, pImperialAdjustedLength, pImperialTotalLength);
         metricTallyData.addData(tR, pPipeNumber, pMetricAdjustedLength, pMetricTotalLength);
 
-        putTallyDataIntoTable();
+        putTallyDataIntoActivity();
 
     }//end of TallyDataHandler::addDataEntry
     //-----------------------------------------------------------------------------
@@ -163,8 +169,7 @@ public class TallyDataHandler {
         imperialTallyData.addData(pRow, pipeNumber, newTotal, pRenumberAllAfterRow);
         metricTallyData.addData(pRow, pipeNumber, newTotal, pRenumberAllAfterRow);
 
-        putTallyDataIntoTable();
-        setAndCheckTotals();
+        putTallyDataIntoActivity();
 
     }//end of TallyDataHandler::changeValuesOfExistingRow
     //-----------------------------------------------------------------------------
@@ -209,8 +214,7 @@ public class TallyDataHandler {
 
         imperialTallyData.setJobInfo(jobInfo);
         metricTallyData.setJobInfo(jobInfo);
-        putTallyDataIntoTable();
-        setAndCheckTotals();
+        putTallyDataIntoActivity();
 
     }//end of TallyDataHandler::handleJobInfoChanged
     //-----------------------------------------------------------------------------
@@ -250,21 +254,25 @@ public class TallyDataHandler {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyDataHandler::putTallyDataIntoTable
+    // TallyDataHandler::putTallyDataIntoActivity
     //
-    // Puts the tally data into the measurements table.
+    // Puts the tally data into the measurements table, number of pipes left into
+    // the number of pipes left text view, distance left into the distance left
+    // text view, and the totals into their table.
     //
 
-    private void putTallyDataIntoTable()
+    private void putTallyDataIntoActivity()
     {
 
         measurementsTableHandler.setValues(tallyData.getAdjustedValues(),
                                                 tallyData.getPipeNumbers(),
                                                 tallyData.getTotalLengthValues());
 
+        setAmountsLeft();
+
         setAndCheckTotals();
 
-    }//end of TallyDataHandler::putTallyDataIntoTable
+    }//end of TallyDataHandler::putTallyDataIntoActivity
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -317,6 +325,21 @@ public class TallyDataHandler {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // TallyDataHandler::setAmountsLeft
+    //
+    // Sets the distance left number of pipes left text views.
+    //
+
+    private void setAmountsLeft()
+    {
+
+        distanceLeftTextView.setText(tallyData.getDistanceLeft());
+        numberOfPipesLeftTextView.setText(tallyData.getNumberOfPipesLeft());
+
+    }//end of TallyDataHandler::setAmountsLeft
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // TallyDataHandler::setAndCheckTotals
     //
     // Calculates the Adjustment and Total Length totals, checks to see if the tally
@@ -353,7 +376,7 @@ public class TallyDataHandler {
         if (unitSystem.equals(Keys.IMPERIAL_MODE)) { tallyData = imperialTallyData; }
         else if (unitSystem.equals(Keys.METRIC_MODE)) { tallyData = metricTallyData; }
 
-        putTallyDataIntoTable();
+        putTallyDataIntoActivity();
 
     }//end of TallyDataHandler::setUnitSystem
     //-----------------------------------------------------------------------------

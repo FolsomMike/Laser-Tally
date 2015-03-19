@@ -408,6 +408,68 @@ public abstract class TallyData {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // TallyData::getDistanceLeft
+    //
+    // Calculates and returns the distance left until the adjusted values equal
+    // the tally goal is reached. This is calculated by subtracting the tally goal
+    // from the adjusted values total.
+    //
+    // The distance is returned as Imperial or Metric depending on class set
+    // variables.
+    //
+
+    public String getDistanceLeft()
+    {
+
+        String distanceLeft = "";
+
+        double adjTotal = Double.parseDouble(getAdjustedValuesTotal());
+
+        if (adjTotal == 0 || tallyGoal == Double.MAX_VALUE) {
+            return distanceLeft;
+        }
+
+        distanceLeft = format(tallyGoal - adjTotal);
+
+        return distanceLeft;
+
+    }//end of TallyData::getDistanceLeft
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyData::getNumberOfPipesLeft
+    //
+    // Calculates and returns the number of pipes left until the adjusted values
+    // equal the tally goal is reached. This is calculated by subtracting the tally goal
+    // from the adjusted values total.
+    //
+    // The distance is returned as Imperial or Metric depending on class set
+    // variables.
+    //
+
+    public String getNumberOfPipesLeft()
+    {
+
+        String numberOfPipesLeft = "";
+
+        double adjTotal = Double.parseDouble(getAdjustedValuesTotal());
+        double numberOfPipes = pipeNumbers.size();
+        String distanceLeft = getDistanceLeft();
+
+        if (adjTotal == 0 || numberOfPipes == 0 || distanceLeft.isEmpty()) {
+            return numberOfPipesLeft;
+        }
+
+        double average = adjTotal / numberOfPipes;
+
+        numberOfPipesLeft = format(Double.parseDouble(distanceLeft) / average);
+
+        return numberOfPipesLeft;
+
+    }//end of TallyData::getNumberOfPipesLeft
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // TallyData::getPipeNumberFromFileLine
     //
     // Strips and returns the pipe number within the passed in file line.
