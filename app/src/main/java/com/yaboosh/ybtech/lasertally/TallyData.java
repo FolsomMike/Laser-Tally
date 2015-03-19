@@ -462,7 +462,8 @@ public abstract class TallyData {
 
         double average = adjTotal / numberOfPipes;
 
-        numberOfPipesLeft = format(Double.parseDouble(distanceLeft) / average);
+        int pipesLeft = (int)Math.ceil(Double.parseDouble(distanceLeft) / average);
+        numberOfPipesLeft = Integer.toString(pipesLeft);
 
         return numberOfPipesLeft;
 
