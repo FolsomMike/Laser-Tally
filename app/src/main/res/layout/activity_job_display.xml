@@ -124,13 +124,14 @@
             <!-- vertical spacer -->
             <View
                 android:layout_width="1dp"
-                android:layout_height="30dp" >
+                android:layout_height="60dp" >
             </View>
 
             <TextView
                 android:id="@id/numberOfPipesLeftTextView"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:gravity="start"
                 android:textSize="30dp"
                 />
 
@@ -144,6 +145,7 @@
                 android:id="@id/distanceLeftTextView"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:gravity="start"
                 android:textSize="30dp"
                 />
 
