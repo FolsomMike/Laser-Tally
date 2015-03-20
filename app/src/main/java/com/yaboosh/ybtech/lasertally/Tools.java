@@ -34,19 +34,19 @@ public class Tools {
 
     public static final String LOG_TAG = "Tools";
 
-    private static DecimalFormat imperialTallyFormat = new DecimalFormat("#.##");
-    private static DecimalFormat metricTallyFormat = new DecimalFormat("#.###");
+    public static final DecimalFormat IMPERIAL_TALLY_FORMAT = new DecimalFormat("#.00");
+    public static final DecimalFormat METRIC_TALLY_FORMAT = new DecimalFormat("#.000");
 
     //-----------------------------------------------------------------------------
     // Tools::convertToImperial
     //
     // Converts the passed in value from metric to imperial. Returns the result
-    // as a string.
+    // as a double.
     //
 
-    public static String convertToImperial(Double pValue) {
+    public static double convertToImperial(Double pValue) {
 
-        return imperialTallyFormat.format(pValue / 0.3048);
+        return (pValue / 0.3048);
 
     }//end of Tools::convertToImperial
     //-----------------------------------------------------------------------------
@@ -55,12 +55,40 @@ public class Tools {
     // Tools::convertToMetric
     //
     // Converts the passed in value from metric to imperial. Returns the result as
-    // as string.
+    // as a double.
     //
 
-    public static String convertToMetric(Double pValue) {
+    public static double convertToMetric(Double pValue) {
 
-        return metricTallyFormat.format(pValue * 0.3048);
+        return (pValue * 0.3048);
+
+    }//end of Tools::convertToMetric
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // Tools::convertToImperial
+    //
+    // Converts the passed in value from metric to imperial. Returns the result
+    // as a formatted string.
+    //
+
+    public static String convertToImperialAndFormat(Double pValue) {
+
+        return IMPERIAL_TALLY_FORMAT.format(pValue / 0.3048);
+
+    }//end of Tools::convertToImperial
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // Tools::convertToMetric
+    //
+    // Converts the passed in value from metric to imperial. Returns the result as
+    // as a formatted string.
+    //
+
+    public static String convertToMetricAndFormat(Double pValue) {
+
+        return METRIC_TALLY_FORMAT.format(pValue * 0.3048);
 
     }//end of Tools::convertToMetric
     //-----------------------------------------------------------------------------

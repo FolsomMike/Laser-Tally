@@ -16,35 +16,13 @@ package com.yaboosh.ybtech.lasertally;
 
 //-----------------------------------------------------------------------------
 
-import android.app.ActionBar;
 import android.app.Activity;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.graphics.Color;
-import android.os.Binder;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
 import android.util.Log;
-import android.util.SparseIntArray;
 import android.view.View;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
 
-import java.io.File;
-import java.lang.ref.WeakReference;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -211,10 +189,10 @@ public class MainActivity extends Activity {
 
     public void handleCreateNewJobButtonPressed(View pView) {
 
-        Intent intent = new Intent(this, EditJobInfoActivity.class);
+        Intent intent = new Intent(this, JobInfoActivity.class);
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
         intent.putExtra(Keys.EDIT_JOB_INFO_ACTIVITY_MODE_KEY,
-                                            EditJobInfoActivity.EditJobInfoActivityMode.CREATE_JOB);
+                                            JobInfoActivity.EditJobInfoActivityMode.CREATE_JOB);
         startActivity(intent);
 
     }//end of MainActivity::handleCreateNewJobButtonPressed

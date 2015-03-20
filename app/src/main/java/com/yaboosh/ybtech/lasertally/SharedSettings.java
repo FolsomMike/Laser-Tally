@@ -36,13 +36,20 @@ import android.os.Environment;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
+import android.widget.TableRow;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Scanner;
 
 public class SharedSettings implements Parcelable {
@@ -51,40 +58,79 @@ public class SharedSettings implements Parcelable {
 
     public static Parcelable.Creator CREATOR;
 
+    String fileFormat = "UTF-8";
+    String nL = System.lineSeparator();
+
     private Context context;
-    // Getter and setter functions
     public Context getContext() { return context; }
     public void setContext(Context pNewContext) { context = pNewContext; }
 
     private String dataFolderPath;
-    // Getter and setter functions
     public String getDataFolderPath() { return dataFolderPath; }
     public void setDataFolderPath(String pNewPath) { dataFolderPath = pNewPath; }
 
     private String reportsFolderPath = "";
-    // Getter and setter functions
     public String getReportsFolderPath() { return reportsFolderPath; }
     public void setReportsFolderPath(String pNewPath) { reportsFolderPath = pNewPath; }
 
     private String jobsFolderPath = "";
-    // Getter and setter functions
     public String getJobsFolderPath() { return jobsFolderPath; }
     public void setJobsFolderPath(String pNewPath) { jobsFolderPath = pNewPath; }
 
     //default general settings
-    private String defaultMaximumMeasurementAllowed = "60";
-    private String defaultMinimumMeasurementAllowed = "1";
+    private String defaultImperialCalibrationValue = "0"; //hss wip// -- should be changed
+    private String defaultMetricCalibrationValue = "0"; //hss wip// -- should be changed
+    private String defaultMaximumImperialMeasurementAllowed = "60.00"; //hss wip// -- should be changed
+    private String defaultMaximumMetricMeasurementAllowed = "18.283"; //hss wip// -- should be changed
+    private String defaultMinimumImperialMeasurementAllowed = "1.00"; //hss wip// -- should be changed
+    private String defaultMinimumMetricMeasurementAllowed = "0.3048"; //hss wip// -- should be changed
     private String defaultUnitSystem = Keys.IMPERIAL_MODE;
     //end of default general settings
 
     //general settings for ini file
-    private String maximumMeasurementAllowed;
-    public String getMaximumMeasurementAllowed() { return maximumMeasurementAllowed; }
-    public void setMaximumMeasurementAllowed(String pMax) { maximumMeasurementAllowed = pMax; saveGeneralSettingsToFile(); }
+    private String imperialCalibrationValue;
+    public String getImperialCalibrationValue() { return imperialCalibrationValue; }
+    public void setImperialCalibrationValue(String pValue) {
+        imperialCalibrationValue = pValue; saveGeneralSettingsToFile();
+    }
 
-    private String minimumMeasurementAllowed;
-    public String getMinimumMeasurementAllowed() { return minimumMeasurementAllowed; }
-    public void setMinimumMeasurementAllowed(String pMin) { minimumMeasurementAllowed = pMin; saveGeneralSettingsToFile(); }
+    private String metricCalibrationValue;
+    public String getMetricCalibrationValue() { return metricCalibrationValue; }
+    public void setMetricCalibrationValue(String pValue) {
+        metricCalibrationValue = pValue; saveGeneralSettingsToFile();
+    }
+
+    private String maximumImperialMeasurementAllowed;
+    public String getMaximumImperialMeasurementAllowed() {
+        return maximumImperialMeasurementAllowed;
+    }
+    public void setMaximumImperialMeasurementAllowed(String pMax) {
+        maximumImperialMeasurementAllowed = pMax; saveGeneralSettingsToFile();
+    }
+
+    private String minimumImperialMeasurementAllowed;
+    public String getMinimumImperialMeasurementAllowed() {
+        return minimumImperialMeasurementAllowed;
+    }
+    public void setMinimumImperialMeasurementAllowed(String pMin) {
+        minimumImperialMeasurementAllowed = pMin; saveGeneralSettingsToFile();
+    }
+
+    private String maximumMetricMeasurementAllowed;
+    public String getMaximumMetricMeasurementAllowed() {
+        return maximumMetricMeasurementAllowed;
+    }
+    public void setMaximumMetricMeasurementAllowed(String pMax) {
+        maximumMetricMeasurementAllowed = pMax; saveGeneralSettingsToFile();
+    }
+
+    private String minimumMetricMeasurementAllowed;
+    public String getMinimumMetricMeasurementAllowed() {
+        return minimumMetricMeasurementAllowed;
+    }
+    public void setMinimumMetricMeasurementAllowed(String pMin) {
+        minimumMetricMeasurementAllowed = pMin; saveGeneralSettingsToFile();
+    }
 
     private String unitSystem;
     public String getUnitSystem() { return unitSystem; }
@@ -139,6 +185,39 @@ public class SharedSettings implements Parcelable {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // SharedSettings::generateFileText
+    //
+    // Generates the file text used for saving the general settings to file.
+    //
+    // Comment lines are began with "#"
+    //
+
+    private String generateFileText()
+    {
+
+        String fileText = ("Imperial Calibration Value=" + imperialCalibrationValue)
+                            + nL
+                            + ("Metric Calibration Value=" + metricCalibrationValue)
+                            + nL
+                            + ("Maximum Imperial Measurement Allowed="
+                                    + maximumImperialMeasurementAllowed)
+                            + nL
+                            + ("Maximum Metric Measurement Allowed="
+                                    + maximumMetricMeasurementAllowed)
+                            + nL
+                            + ("Minimum Imperial Measurement Allowed="
+                                    + minimumImperialMeasurementAllowed)
+                            + ("Minimum Metric Measurement Allowed="
+                                    + minimumMetricMeasurementAllowed)
+                            + nL
+                            + ("Unit System=" + unitSystem);
+
+        return fileText;
+
+    }//end of SharedSettings::generateFileText
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // SharedSettings::loadAppSettingsFromFile
     //
     // Loads the app settings from the ini file if it exists. If it doesn't exist,
@@ -147,51 +226,60 @@ public class SharedSettings implements Parcelable {
 
     private void loadAppSettingsFromFile() {
 
+        //reset settings
+        resetSettings();
+
+        FileInputStream fileInputStream = null;
+        InputStreamReader inputStreamReader = null;
+        BufferedReader in = null;
         ArrayList<String> fileLines = new ArrayList<String>();
-        FileInputStream fStream = null;
-        Scanner br = null;
 
-        try {
+        try{
 
-            File file = new File(context.getFilesDir(), "general.ini");
+            fileInputStream = new FileInputStream(context.getFilesDir() + "general.ini");
 
-            fStream = new FileInputStream(file);
-            br = new Scanner(new InputStreamReader(fStream));
-            while (br.hasNext()) {
-                String strLine = br.nextLine();
-                fileLines.add(strLine);
-            }
+            inputStreamReader = new InputStreamReader(fileInputStream, fileFormat);
 
+            in = new BufferedReader(inputStreamReader);
+
+            //read until end of file reached
+            String line;
+            while ((line = in.readLine()) != null){ fileLines.add(line); }
         }
-        catch (Exception e) {}
-        finally {
+        catch (FileNotFoundException e){ Log.e(LOG_TAG, "Line 249 :: " + e.getMessage()); }
+        catch(IOException e){ Log.e(LOG_TAG, "Line 250 :: " + e.getMessage()); }
+        finally{
+            try { if (in != null) { in.close(); } }
+            catch (IOException e) { Log.e(LOG_TAG, "Line 253 :: " + e.getMessage()); }
 
-            try {
-                if (br != null) { br.close(); }
-                if (fStream != null) { fStream.close(); }
-            }
-            catch (Exception e) {}
+            try { if (inputStreamReader != null) { inputStreamReader.close(); } }
+            catch (IOException e) { Log.e(LOG_TAG, "Line 256 :: " + e.getMessage()); }
 
+            try { if (fileInputStream != null) { fileInputStream.close(); } }
+            catch (IOException e) { Log.e(LOG_TAG, "Line 259 :: " + e.getMessage()); }
         }
 
         //if the file failed to load or there were no lines in the
         //file, use default settings and quit this function
         if (fileLines.isEmpty()) { useDefaultSettings(); return; }
 
-        maximumMeasurementAllowed = Tools.getValueFromList("Maximum Measurement Allowed", fileLines);
-        minimumMeasurementAllowed = Tools.getValueFromList("Minimum Measurement Allowed", fileLines);
+        imperialCalibrationValue = Tools.getValueFromList("Imperial Calibration Value", fileLines);
+        metricCalibrationValue = Tools.getValueFromList("Metric Calibration Value", fileLines);
+
+        maximumImperialMeasurementAllowed =
+                        Tools.getValueFromList("Maximum Imperial Measurement Allowed", fileLines);
+        maximumMetricMeasurementAllowed =
+                        Tools.getValueFromList("Maximum Metric Measurement Allowed", fileLines);
+
+        minimumImperialMeasurementAllowed =
+                        Tools.getValueFromList("Minimum Imperial Measurement Allowed", fileLines);
+        minimumMetricMeasurementAllowed =
+                        Tools.getValueFromList("Minimum Metric Measurement Allowed", fileLines);
+
         unitSystem = Tools.getValueFromList("Unit System", fileLines);
 
         //if any of the values weren't found in the list set them equal to their defaults
-        if (maximumMeasurementAllowed.equals("")) {
-            setMaximumMeasurementAllowed(defaultMaximumMeasurementAllowed);
-        }
-        if (minimumMeasurementAllowed.equals("")) {
-            setMinimumMeasurementAllowed(defaultMinimumMeasurementAllowed);
-        }
-        if (unitSystem.equals("")) {
-            setUnitSystem(defaultUnitSystem);
-        }
+        useDefaultSettings();
 
     }// end of SharedSettings::loadAppSettingsFromFile
     //-----------------------------------------------------------------------------
@@ -274,14 +362,38 @@ public class SharedSettings implements Parcelable {
     private void readFromParcel(Parcel pParcel) {
 
         //!!GET VARIABLES FROM PARCEL HERE!!
+        imperialCalibrationValue = pParcel.readString();
+        metricCalibrationValue = pParcel.readString();
         dataFolderPath = pParcel.readString();
         reportsFolderPath = pParcel.readString();
         jobsFolderPath = pParcel.readString();
-        maximumMeasurementAllowed = pParcel.readString();
-        minimumMeasurementAllowed = pParcel.readString();
+        maximumImperialMeasurementAllowed = pParcel.readString();
+        maximumMetricMeasurementAllowed = pParcel.readString();
+        minimumImperialMeasurementAllowed = pParcel.readString();
+        minimumMetricMeasurementAllowed = pParcel.readString();
         unitSystem = pParcel.readString();
 
     }// end of SharedSettings::readFromParcel
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // SharedSettings::resetSettings
+    //
+    // Resets all of the settings that are read from the ini file
+    // back to blank values.
+    //
+
+    private void resetSettings() {
+
+        imperialCalibrationValue = "";
+        metricCalibrationValue = "";
+        maximumImperialMeasurementAllowed = "";
+        maximumMetricMeasurementAllowed ="";
+        minimumImperialMeasurementAllowed = "";
+        minimumMetricMeasurementAllowed ="";
+        unitSystem = "";
+
+    }// end of SharedSettings::resetSettings
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -292,41 +404,97 @@ public class SharedSettings implements Parcelable {
 
     private void saveGeneralSettingsToFile() {
 
-        PrintWriter writer = null;
+        //create a buffered writer stream
 
-        try {
+        FileOutputStream fileOutputStream = null;
+        OutputStreamWriter outputStreamWriter = null;
+        BufferedWriter out = null;
+
+        try{
 
             File file = new File(context.getFilesDir(), "general.ini");
             if (!file.exists()) { file.createNewFile(); }
+            fileOutputStream = new FileOutputStream(file);
+            outputStreamWriter = new OutputStreamWriter(fileOutputStream, fileFormat);
+            out = new BufferedWriter(outputStreamWriter);
 
-            // Use a PrintWriter to write to the file
-            writer = new PrintWriter(file, "UTF-8");
+            out.write(generateFileText());
 
-            writer.println("Maximum Measurement Allowed=" + maximumMeasurementAllowed);
-            writer.println("Minimum Measurement Allowed=" + minimumMeasurementAllowed);
-            writer.println("Unit System=" + unitSystem);
+            //Note! You MUST flush to make sure everything is written.
+            out.flush();
 
-        } catch (Exception e) {}
-        finally {
+        }
+        catch(IOException e){
+            Log.e(LOG_TAG, "Line 340 :: " + e.getMessage());
+        }
+        finally{
+            try{ if (out != null) {out.close();} }
+            catch(IOException e){ Log.e(LOG_TAG, "Line 386 :: " + e.getMessage());}
 
-            try { if (writer != null) { writer.close(); } } catch (Exception e) {}
+            try{ if (outputStreamWriter != null) {outputStreamWriter.close();} }
+            catch(IOException e){ Log.e(LOG_TAG, "Line 389 :: " + e.getMessage());}
 
+            try{ if (fileOutputStream != null) {fileOutputStream.close();} }
+            catch(IOException e){ Log.e(LOG_TAG, "Line 392 :: " + e.getMessage()); }
         }
 
     }// end of SharedSettings::saveGeneralSettingsToFile
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // SharedSettings::setCalibrationValues
+    //
+    // Sets the Imperial and Metric calibration values using the passed in value.
+    //
+
+    private void setCalibrationValues(String pVal) {
+
+        if (pVal.isEmpty()) {
+            imperialCalibrationValue= "";
+            metricCalibrationValue = "";
+            return;
+        }
+
+        if (unitSystem.equals(Keys.IMPERIAL_MODE)
+                && !pVal.equals(imperialCalibrationValue))
+        {
+
+            //unit system is Imperial
+            //passed in values are
+            //assumed to be Imperial
+            imperialCalibrationValue = pVal;
+            metricCalibrationValue = Tools.convertToMetricAndFormat(Double.parseDouble(pVal));
+
+        }
+
+        else if (unitSystem.equals(Keys.METRIC_MODE)
+                && !pVal.equals(metricCalibrationValue))
+        {
+
+            //unit system is Metric
+            //passed in values are
+            //assumed to be Metric
+            metricCalibrationValue = pVal;
+            imperialCalibrationValue = Tools.convertToImperialAndFormat(Double.parseDouble(pVal));
+
+        }
+
+    }// end of SharedSettings::setCalibrationValues
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // SharedSettings::setGeneralSettings
     //
-    // Sets all of the general settings to the passed in values.
+    // Sets all of the general settings using the passed in values.
     //
 
-    public void setGeneralSettings(String pSystem, String pMinimum, String pMaximum) {
+    public void setGeneralSettings(String pSystem, String pMinimum, String pMaximum, String pCal) {
 
         unitSystem = pSystem;
-        minimumMeasurementAllowed = pMinimum;
-        maximumMeasurementAllowed = pMaximum;
+
+        setCalibrationValues(pCal);
+        setMaximumsAllowed(pMaximum);
+        setMinimumsAllowed(pMinimum);
 
         saveGeneralSettingsToFile();
 
@@ -334,16 +502,123 @@ public class SharedSettings implements Parcelable {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // SharedSettings::setMaximumsAllowed
+    //
+    // Sets the maximum Imperial and Metric values allowed using the passed in
+    // value.
+    //
+
+    private void setMaximumsAllowed(String pMax) {
+
+        if (pMax.isEmpty()) {
+            maximumImperialMeasurementAllowed = "";
+            maximumMetricMeasurementAllowed = "";
+            return;
+        }
+
+        if (unitSystem.equals(Keys.IMPERIAL_MODE)
+                && !pMax.equals(maximumImperialMeasurementAllowed))
+        {
+
+            //unit system is Imperial
+            //passed in values are
+            //assumed to be Imperial
+            maximumImperialMeasurementAllowed = pMax;
+            maximumMetricMeasurementAllowed =
+                                        Tools.convertToMetricAndFormat(Double.parseDouble(pMax));
+
+        }
+
+        else if (unitSystem.equals(Keys.METRIC_MODE)
+                    && !pMax.equals(maximumMetricMeasurementAllowed))
+        {
+
+            //unit system is Metric
+            //passed in values are
+            //assumed to be Metric
+            maximumMetricMeasurementAllowed = pMax;
+                maximumImperialMeasurementAllowed =
+                                        Tools.convertToImperialAndFormat(Double.parseDouble(pMax));
+
+        }
+
+    }// end of SharedSettings::setMaximumsAllowed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // SharedSettings::setMinimumsAllowed
+    //
+    // Sets the minimum Imperial and Metric values allowed using the passed in
+    // value.
+    //
+
+    private void setMinimumsAllowed(String pMin) {
+
+        if (pMin.isEmpty()) {
+            minimumImperialMeasurementAllowed = "";
+            minimumMetricMeasurementAllowed = "";
+            return;
+        }
+
+        if (unitSystem.equals(Keys.IMPERIAL_MODE)
+                && !pMin.equals(minimumImperialMeasurementAllowed))
+        {
+
+            //unit system is Imperial
+            //passed in values are
+            //assumed to be Imperial
+            minimumImperialMeasurementAllowed = pMin;
+            minimumMetricMeasurementAllowed =
+                    Tools.convertToMetricAndFormat(Double.parseDouble(pMin));
+
+        }
+
+        else if (unitSystem.equals(Keys.METRIC_MODE)
+                && !pMin.equals(minimumMetricMeasurementAllowed))
+        {
+
+            //unit system is Metric
+            //passed in values are
+            //assumed to be Metric
+            minimumMetricMeasurementAllowed = pMin;
+            minimumImperialMeasurementAllowed =
+                    Tools.convertToImperialAndFormat(Double.parseDouble(pMin));
+
+        }
+
+    }// end of SharedSettings::setMinimumsAllowed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // SharedSettings::useDefaultSettings
     //
-    // Uses defaults for the general settings and save them to file.
+    // Uses defaults for any of the general settings that are blank and saves
+    // them to file.
     //
 
     private void useDefaultSettings() {
 
-        maximumMeasurementAllowed = defaultMaximumMeasurementAllowed;
-        minimumMeasurementAllowed = defaultMinimumMeasurementAllowed;
-        unitSystem = defaultUnitSystem;
+        if (imperialCalibrationValue.equals("")) {
+            imperialCalibrationValue = defaultImperialCalibrationValue;
+        }
+        if (metricCalibrationValue.equals("")) {
+            metricCalibrationValue = defaultMetricCalibrationValue;
+        }
+        if (maximumImperialMeasurementAllowed.equals("")) {
+            maximumImperialMeasurementAllowed = defaultMaximumImperialMeasurementAllowed;
+        }
+        if (maximumMetricMeasurementAllowed.equals("")) {
+            maximumMetricMeasurementAllowed = defaultMaximumMetricMeasurementAllowed;
+        }
+        if (minimumImperialMeasurementAllowed.equals("")) {
+            minimumImperialMeasurementAllowed = defaultMinimumImperialMeasurementAllowed;
+        }
+        if (minimumMetricMeasurementAllowed.equals("")) {
+            minimumMetricMeasurementAllowed = defaultMinimumMetricMeasurementAllowed;
+        }
+        if (unitSystem.equals("")) {
+            unitSystem = defaultUnitSystem;
+        }
 
         saveGeneralSettingsToFile();
 
@@ -378,11 +653,15 @@ public class SharedSettings implements Parcelable {
     public void writeToParcel(Parcel pParcel, int pFlags) {
 
         //!!STORE VARIABLES IN PARCEL HERE!!
+        pParcel.writeString(imperialCalibrationValue);
+        pParcel.writeString(metricCalibrationValue);
         pParcel.writeString(dataFolderPath);
         pParcel.writeString(reportsFolderPath);
         pParcel.writeString(jobsFolderPath);
-        pParcel.writeString(maximumMeasurementAllowed);
-        pParcel.writeString(minimumMeasurementAllowed);
+        pParcel.writeString(maximumImperialMeasurementAllowed);
+        pParcel.writeString(maximumMetricMeasurementAllowed);
+        pParcel.writeString(minimumImperialMeasurementAllowed);
+        pParcel.writeString(minimumMetricMeasurementAllowed);
         pParcel.writeString(unitSystem);
 
     }// end of SharedSettings::writeToParcel

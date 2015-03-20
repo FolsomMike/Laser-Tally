@@ -20,6 +20,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -34,17 +35,18 @@ public class TallyReportHTMLMaker {
     SharedSettings sharedSettings;
     JobInfo jobInfo;
 
+
+    DecimalFormat decFormat;
+    String filePath;
+    static final int NUM_TALLY_ROWS = 42;
+
     //debug hss// -- should be added to job info
     String jobDate = "02/20/15";
-
+    String adjustmentValue;
+    String tallyTarget;
     double tallyTotal = 0;
     double adjTallyTotal = 0;
     int numTubes;
-    double tallyTarget;
-
-    DecimalFormat decFormat = new  DecimalFormat("#.00");
-
-    static final int NUM_TALLY_ROWS = 42;
 
     private ArrayList<String> adjustedValuesFromFile = new ArrayList<String>();
     private ArrayList<String> pipeNumbersFromFile = new ArrayList<String>();
@@ -83,10 +85,6 @@ public class TallyReportHTMLMaker {
 
         sharedSettings = pSharedSettings;
         jobInfo = pJobInfo;
-        tallyTarget = Double.parseDouble(jobInfo.getTallyGoal());
-
-        //if user left entry blank or entered very large value, print 0 for target
-        if (tallyTarget > 999999){ tallyTarget = 0; }
 
     }// end of TallyReportHTMLMaker::TallyReportHTMLMaker (constructor)
     //-----------------------------------------------------------------------------
@@ -102,6 +100,30 @@ public class TallyReportHTMLMaker {
 
         loadTallyDataFromFile();
         numTubes = pipeNumbersFromFile.size();
+
+        //set values to imperial or metric
+        if (sharedSettings.getUnitSystem().equals(Keys.IMPERIAL_MODE)) {
+            filePath = jobInfo.getCurrentJobDirectoryPath() + File.separator
+                                                            + jobInfo.getJobName()
+                                                            + " ~ TallyData ~ Imperial.csv";
+
+            decFormat = new DecimalFormat("#.00");
+
+            adjustmentValue = jobInfo.getImperialAdjustment();
+
+            tallyTarget = jobInfo.getImperialTallyGoal();
+        }
+        else if (sharedSettings.getUnitSystem().equals(Keys.METRIC_MODE)) {
+            filePath = jobInfo.getCurrentJobDirectoryPath() + File.separator
+                                                            + jobInfo.getJobName()
+                                                            + " ~ TallyData ~ Metric.csv";
+
+            decFormat = new DecimalFormat("#.000");
+
+            adjustmentValue = jobInfo.getMetricAdjustment();
+
+            tallyTarget = jobInfo.getMetricTallyGoal();
+        }
 
     }// end of TallyReportHTMLMaker::init
     //-----------------------------------------------------------------------------
@@ -210,8 +232,8 @@ public class TallyReportHTMLMaker {
                 + "<b>Job Name: </b>" + jobInfo.getJobName() + sp + sp + sp + sp
                 + "<b>Date: </b>" + jobDate + sp
                 + "<br>"
-                + "<b>Adjustment: </b>" +  jobInfo.getMakeupAdjustment() + sp
-                + "<b>Tally Target: </b>" + decFormat.format(tallyTarget) + sp + "<br>"
+                + "<b>Adjustment: </b>" +  adjustmentValue + sp
+                + "<b>Tally Target: </b>" + tallyTarget + sp + "<br>"
                 + "<b>Tube Count: </b>" + pNumTubes + sp
                 + "<b>Total Tally: </b>" + decFormat.format(tallyTotal) + " / "
                 + decFormat.format(adjTallyTotal) + sp
@@ -349,14 +371,7 @@ public class TallyReportHTMLMaker {
 
         try {
 
-            if (sharedSettings.getUnitSystem().equals(Keys.IMPERIAL_MODE)) {
-                fileReader = new FileReader(sharedSettings.getJobsFolderPath()
-                                        + jobInfo.getJobName() + " ~ Imperial ~ TallyData.csv");
-            }
-            else if (sharedSettings.getUnitSystem().equals(Keys.METRIC_MODE)) {
-                fileReader = new FileReader(sharedSettings.getJobsFolderPath()
-                                        + jobInfo.getJobName() + " ~ Metric ~ TallyData.csv");
-            }
+            fileReader = new FileReader(filePath);
 
             bufferedReader = new BufferedReader(fileReader);
 

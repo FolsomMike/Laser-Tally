@@ -21,16 +21,13 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
-import android.os.Parcelable;
 import android.os.RemoteException;
 import android.util.Log;
-import android.util.SparseIntArray;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ScrollView;
@@ -38,13 +35,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import java.io.BufferedWriter;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.lang.ref.WeakReference;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -150,7 +141,9 @@ public class JobDisplayActivity extends Activity {
                         findViewById(R.id.measurementsTableBottomBorderLine),
                         (TableLayout)findViewById(R.id.totalsTable),
                         (TextView)findViewById(R.id.totalOfAdjustedColumnTextView),
-                        (TextView)findViewById(R.id.totalOfTotalLengthColumnTextView)));
+                        (TextView)findViewById(R.id.totalOfTotalLengthColumnTextView)),
+                (TextView)findViewById(R.id.distanceLeftTextView),
+                (TextView)findViewById(R.id.numberOfPipesLeftTextView));
         tallyDataHandler.init();
 
         //Start the TallyDeviceService
@@ -492,11 +485,11 @@ public class JobDisplayActivity extends Activity {
 
     public void handleJobInfoButtonPressed(View pView) {
 
-        Intent intent = new Intent(this, EditJobInfoActivity.class);
+        Intent intent = new Intent(this, JobInfoActivity.class);
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
         intent.putExtra(Keys.JOB_NAME_KEY, jobName);
         intent.putExtra(Keys.EDIT_JOB_INFO_ACTIVITY_MODE_KEY,
-                                        EditJobInfoActivity.EditJobInfoActivityMode.EDIT_JOB_INFO);
+                                        JobInfoActivity.EditJobInfoActivityMode.EDIT_JOB_INFO);
         startActivityForResult(intent, Keys.ACTIVITY_RESULT_JOB_INFO);
 
     }//end of JobDisplayActivity::handleJobInfoButtonPressed

@@ -51,128 +51,191 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:orientation="vertical"
+    <ScrollView
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="30dp"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:paddingTop="30dp"
-        android:gravity="center" >
-
-        <Button
-            android:id="@id/switchUnitSystemButton"
-            android:background="@drawable/white_styled_button_dark_gray_border"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="10dp"
-            android:paddingTop="10dp"
-            android:text=""
-            android:textSize="30sp"
-            style="@style/whiteStyledButton"
-            android:onClick="handleSwitchUnitSystemButtonPressed" />
-
-        <!-- vertical spacer -->
-        <View
-            android:layout_width="1dp"
-            android:layout_height="40dp" >
-        </View>
+        android:layout_height="400dp"
+        android:scrollbars="vertical"
+        android:fadeScrollbars="false" >
 
         <LinearLayout
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="0dp"
-            android:paddingLeft="0dp"
-            android:paddingRight="0dp"
-            android:paddingTop="0dp"
+            android:paddingBottom="30dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="30dp"
             android:gravity="center" >
 
-            <TextView
-                android:layout_width="wrap_content"
+            <Button
+                android:id="@id/switchUnitSystemButton"
+                android:background="@drawable/white_styled_button_dark_gray_border"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Minimum Measurement Allowed:"
-                android:textColor="#000000"
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp"
+                android:text=""
                 android:textSize="30sp"
-                android:gravity="end" />
+                style="@style/whiteStyledButton"
+                android:onClick="handleSwitchUnitSystemButtonPressed" />
 
-            <!-- horizontal spacer -->
+            <!-- vertical spacer -->
             <View
-                android:layout_width="10dp"
-                android:layout_height="1dp" >
+                android:layout_width="1dp"
+                android:layout_height="40dp" >
             </View>
 
-            <EditText
-                android:id="@id/editTextMinimumMeasurementAllowed"
-                android:inputType="number"
-                android:digits="0123456789,."
-                android:layout_weight="1"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:textColor="#000000"
-                android:textSize="35sp"
-                android:maxLength="5"
-                android:paddingBottom="10dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingTop="10dp"
-                android:background="@drawable/black_border" >
-            </EditText>
+                android:paddingBottom="0dp"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                android:paddingTop="0dp"
+                android:gravity="center" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Minimum Measurement Allowed:"
+                    android:textColor="#000000"
+                    android:textSize="30sp"
+                    android:gravity="end" />
+
+                <!-- horizontal spacer -->
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="1dp" >
+                </View>
+
+                <EditText
+                    android:id="@id/editTextMinimumMeasurementAllowed"
+                    android:inputType="number"
+                    android:digits="0123456789,."
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textColor="#000000"
+                    android:textSize="35sp"
+                    android:maxLength="10"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="10dp"
+                    android:background="@drawable/black_border" >
+                </EditText>
+
+            </LinearLayout>
+
+            <!-- vertical spacer -->
+            <View
+                android:layout_width="1dp"
+                android:layout_height="40dp" >
+            </View>
+
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="0dp"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                android:paddingTop="0dp"
+                android:gravity="center" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Maximum Measurement Allowed:"
+                    android:textColor="#000000"
+                    android:textSize="30sp"
+                    android:gravity="end" />
+
+                <!-- horizontal spacer -->
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="1dp" >
+                </View>
+
+                <EditText
+                    android:id="@id/editTextMaximumMeasurementAllowed"
+                    android:inputType="number"
+                    android:digits="0123456789,."
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textColor="#000000"
+                    android:textSize="35sp"
+                    android:maxLength="10"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="10dp"
+                    android:background="@drawable/black_border" >
+                </EditText>
+
+            </LinearLayout>
+
+            <!-- vertical spacer -->
+            <View
+                android:layout_width="1dp"
+                android:layout_height="40dp" >
+            </View>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="0dp"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                android:paddingTop="0dp"
+                android:gravity="center" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Calibration Value:"
+                    android:textColor="#000000"
+                    android:textSize="30sp"
+                    android:gravity="end" />
+
+                <!-- horizontal spacer -->
+                <View
+                    android:layout_width="20dp"
+                    android:layout_height="1dp" >
+                </View>
+
+                <!-- horizontal spacer -->
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="1dp" >
+                </View>
+
+                <EditText
+                    android:id="@id/calibrationValueEditText"
+                    android:inputType="number"
+                    android:digits="0123456789,.-"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textColor="#000000"
+                    android:textSize="35sp"
+                    android:maxLength="10"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="10dp"
+                    android:background="@drawable/black_border" >
+                </EditText>
+
+            </LinearLayout>
 
         </LinearLayout>
 
-        <!-- vertical spacer -->
-        <View
-            android:layout_width="1dp"
-            android:layout_height="40dp" >
-        </View>
-
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="0dp"
-            android:paddingLeft="0dp"
-            android:paddingRight="0dp"
-            android:paddingTop="0dp"
-            android:gravity="center" >
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Maximum Measurement Allowed:"
-                android:textColor="#000000"
-                android:textSize="30sp"
-                android:gravity="end" />
-
-            <!-- horizontal spacer -->
-            <View
-                android:layout_width="10dp"
-                android:layout_height="1dp" >
-            </View>
-
-            <EditText
-                android:id="@id/editTextMaximumMeasurementAllowed"
-                android:inputType="number"
-                android:digits="0123456789,."
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:textColor="#000000"
-                android:textSize="35sp"
-                android:maxLength="5"
-                android:paddingBottom="10dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingTop="10dp"
-                android:background="@drawable/black_border" >
-            </EditText>
-
-        </LinearLayout>
-
-    </LinearLayout>
+    </ScrollView>
 
     <LinearLayout
         android:orientation="horizontal"

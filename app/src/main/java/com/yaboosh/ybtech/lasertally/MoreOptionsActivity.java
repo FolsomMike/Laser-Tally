@@ -28,6 +28,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -46,6 +47,7 @@ public class MoreOptionsActivity extends Activity {
 
     private EditText maximumMeasurementAllowedEditText;
     private EditText minimumMeasurementAllowedEditText;
+    private EditText calibrationValueEditText;
 
     private String unitSystem;
     private String switchToImperialButtonText = "Switch to Imperial";
@@ -93,6 +95,7 @@ public class MoreOptionsActivity extends Activity {
 
         maximumMeasurementAllowedEditText = ((EditText)findViewById(R.id.editTextMaximumMeasurementAllowed));
         minimumMeasurementAllowedEditText = ((EditText)findViewById(R.id.editTextMinimumMeasurementAllowed));
+        calibrationValueEditText = ((EditText)findViewById(R.id.calibrationValueEditText));
 
         Bundle bundle = getIntent().getExtras();
         sharedSettings = bundle.getParcelable(Keys.SHARED_SETTINGS_KEY);
@@ -137,8 +140,9 @@ public class MoreOptionsActivity extends Activity {
         sharedSettings.setContext(this);
 
         setSwitchUnitSystemButtonText();
-        setEditTextFields(sharedSettings.getMaximumMeasurementAllowed(),
-                                sharedSettings.getMinimumMeasurementAllowed());
+        setMaxAndMinEditTextFields();
+        setCalibrationValueEditTextField();
+
 
     }//end of MenuOptionsActivity::onResume
     //-----------------------------------------------------------------------------
@@ -213,7 +217,8 @@ public class MoreOptionsActivity extends Activity {
 
     private void exitActivityByOk() {
 
-        sharedSettings.setGeneralSettings(unitSystem, getMinimumAllowed(), getMaximumAllowed());
+        sharedSettings.setGeneralSettings(unitSystem, getMinimumAllowed(), getMaximumAllowed(),
+                                                                            getCalibrationValue());
 
         Intent intent = new Intent();
 
@@ -225,6 +230,19 @@ public class MoreOptionsActivity extends Activity {
         finish();
 
     }//end of MenuOptionsActivity::exitActivityByOk
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MenuOptionsActivity::getCalibrationValue
+    //
+    // Gets and returns the calibration value from the proper edit text field.
+    //
+
+    private String getCalibrationValue() {
+
+        return calibrationValueEditText.getText().toString();
+
+    }//end of MenuOptionsActivity::getCalibrationValue
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -304,50 +322,61 @@ public class MoreOptionsActivity extends Activity {
         if (unitSystem.equals(Keys.IMPERIAL_MODE)) { unitSystem = Keys.METRIC_MODE; }
         else if (unitSystem.equals(Keys.METRIC_MODE)) { unitSystem = Keys.IMPERIAL_MODE; }
 
-        setMaximumAndMinimumMeasurementsAllowed();
+        setMaxAndMinEditTextFields();
         setSwitchUnitSystemButtonText();
 
     }//end of MenuOptionsActivity::handleSwitchUnitSystemButtonPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MenuOptionsActivity::setEditTextFields
+    // MenuOptionsActivity::setCalibrationValueEditTextField
     //
-    // Sets the maximum and minimum measurements allowed edit text fields passed
-    // in.
-    //
-
-    private void setEditTextFields(String pMax, String pMin) {
-
-        maximumMeasurementAllowedEditText.setText(pMax);
-
-        minimumMeasurementAllowedEditText.setText(pMin);
-
-    }//end of MenuOptionsActivity::setEditTextFields
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // MenuOptionsActivity::setMaximumAndMinimumMeasurementsAllowed
-    //
-    // Converts the maximum and minimum measurements allowed to either Imperial
-    // or Metric, depending on the unit system. The new values are sent to the
-    // edit text fields.
+    // Sets the calibration value edit text field to either the Imperial or Metric
+    // calibration value stored in SharedSettings depending on the unit system.
     //
 
-    private void setMaximumAndMinimumMeasurementsAllowed() {
+    private void setCalibrationValueEditTextField() {
+
+        String cal = "";
 
         if (unitSystem.equals(Keys.IMPERIAL_MODE)) {
-            String newMax = Tools.convertToImperial(Double.parseDouble(getMaximumAllowed()));
-            String newMin = Tools.convertToImperial(Double.parseDouble(getMinimumAllowed()));
-            setEditTextFields(newMax, newMin);
+            cal = sharedSettings.getImperialCalibrationValue();
         }
         else if (unitSystem.equals(Keys.METRIC_MODE)) {
-            String newMax = Tools.convertToMetric(Double.parseDouble(getMaximumAllowed()));
-            String newMin = Tools.convertToMetric(Double.parseDouble(getMinimumAllowed()));
-            setEditTextFields(newMax, newMin);
+            cal = sharedSettings.getMetricCalibrationValue();
         }
 
-    }//end of MenuOptionsActivity::setMaximumAndMinimumMeasurementsAllowed
+        calibrationValueEditText.setText(cal);
+
+    }//end of MenuOptionsActivity::setCalibrationValueEditTextField
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MenuOptionsActivity::setMaxAndMinEditTextFields
+    //
+    // Sets the maximum and minimum measurements allowed edit text fields to
+    // the Imperial or Metric maximum and minimum values allowed depending on
+    // the unit system.
+    //
+
+    private void setMaxAndMinEditTextFields() {
+
+        String max = "";
+        String min = "";
+
+        if (unitSystem.equals(Keys.IMPERIAL_MODE)) {
+            max = sharedSettings.getMaximumImperialMeasurementAllowed();
+            min = sharedSettings.getMinimumImperialMeasurementAllowed();
+        }
+        else if (unitSystem.equals(Keys.METRIC_MODE)) {
+            max = sharedSettings.getMaximumMetricMeasurementAllowed();
+            min = sharedSettings.getMinimumMetricMeasurementAllowed();
+        }
+
+        maximumMeasurementAllowedEditText.setText(max);
+        minimumMeasurementAllowedEditText.setText(min);
+
+    }//end of MenuOptionsActivity::setMaxAndMinEditTextFields
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
