@@ -25,6 +25,9 @@
     <item type="id" name="measurementsTableRowDivider" />
     <item type="id" name="measurementsTableScrollView" />
 
+    <item type="id" name="distanceLeftTextView" />
+    <item type="id" name="numberOfPipesLeftTextView" />
+
     <item type="id" name="calibrationValueEditText" />
     <item type="id" name="checkBoxRenumberAllBelow" />
     <item type="id" name="editJobInfoActivityTitleTextView" />
