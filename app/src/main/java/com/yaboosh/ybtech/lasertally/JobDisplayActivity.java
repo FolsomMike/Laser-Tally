@@ -575,7 +575,7 @@ public class JobDisplayActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobDisplayActivity::handleMoreActivityResultOk(
+    // JobDisplayActivity::handleMoreActivityResultOk
     //
     // Stores the new instance of SharedSettings and passes a reference on to
     // TallyDataHandler
