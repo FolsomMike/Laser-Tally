@@ -40,8 +40,7 @@ public class TallyReportHTMLMaker {
     String filePath;
     static final int NUM_TALLY_ROWS = 42;
 
-    //debug hss// -- should be added to job info
-    String jobDate = "02/20/15";
+    String jobDate;
     String adjustmentValue;
     String tallyTarget;
     double tallyTotal = 0;
@@ -98,8 +97,7 @@ public class TallyReportHTMLMaker {
     public void init()
     {
 
-        loadTallyDataFromFile();
-        numTubes = pipeNumbersFromFile.size();
+        jobDate = jobInfo.getDate();
 
         //set values to imperial or metric
         if (sharedSettings.getUnitSystem().equals(Keys.IMPERIAL_MODE)) {
@@ -124,6 +122,9 @@ public class TallyReportHTMLMaker {
 
             tallyTarget = jobInfo.getMetricTallyGoal();
         }
+
+        loadTallyDataFromFile();
+        numTubes = pipeNumbersFromFile.size();
 
     }// end of TallyReportHTMLMaker::init
     //-----------------------------------------------------------------------------

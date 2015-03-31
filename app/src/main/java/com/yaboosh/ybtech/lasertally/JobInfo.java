@@ -48,6 +48,10 @@ public class JobInfo implements Parcelable {
     public String getCompanyName() { return companyName; }
     public void setCompanyName(String pCompanyName) { companyName = pCompanyName; }
 
+    String date;
+    public String getDate() { return date; }
+    public void setDate(String pDate) { date = pDate; }
+
     String diameter;
     public String getDiameter() { return diameter; }
     public void setDiameter(String pDiameter) { diameter = pDiameter; }
@@ -102,14 +106,16 @@ public class JobInfo implements Parcelable {
     // Constructor to be used for initial creation.
     //
 
-    public JobInfo(String pPath, String pCompanyName, String pDiameter, String pFacility,
-                       String pGrade, String pImperialAdjustment, String pImperialTallyGoal,
-                       String pJobName, String pMetricAdjustment, String pMetricTallyGoal,
-                       String pRack, String pRange, String pRig, String pWall)
+    public JobInfo(String pPath, String pCompanyName, String pDate, String pDiameter,
+                       String pFacility, String pGrade, String pImperialAdjustment,
+                       String pImperialTallyGoal, String pJobName, String pMetricAdjustment,
+                       String pMetricTallyGoal, String pRack, String pRange, String pRig,
+                       String pWall)
     {
 
         currentJobDirectoryPath = pPath;
         companyName = pCompanyName;
+        date = pDate;
         diameter = pDiameter;
         facility = pFacility;
         grade = pGrade;
@@ -195,6 +201,7 @@ public class JobInfo implements Parcelable {
         //!!STORE VARIABLES IN PARCEL HERE!!
         companyName = pParcel.readString();
         currentJobDirectoryPath = pParcel.readString();
+        date = pParcel.readString();
         diameter = pParcel.readString();
         facility = pParcel.readString();
         grade = pParcel.readString();
@@ -241,6 +248,7 @@ public class JobInfo implements Parcelable {
         //!!STORE VARIABLES IN PARCEL HERE!!
         pParcel.writeString(companyName);
         pParcel.writeString(currentJobDirectoryPath);
+        pParcel.writeString(date);
         pParcel.writeString(diameter);
         pParcel.writeString(facility);
         pParcel.writeString(grade);

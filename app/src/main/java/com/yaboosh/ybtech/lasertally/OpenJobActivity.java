@@ -63,6 +63,7 @@ public class OpenJobActivity extends Activity {
     private String selectedJobInfoFilePath;
 
     private String companyName;
+    private String date;
     private String diameter;
     private String facility;
     private String grade;
@@ -315,6 +316,7 @@ public class OpenJobActivity extends Activity {
         if (fileLines.isEmpty()) { return; }
 
         companyName = Tools.getValueFromList("Company Name", fileLines);
+        date = Tools.getValueFromList("Date", fileLines);
         diameter = Tools.getValueFromList("Diameter", fileLines);
         facility = Tools.getValueFromList("Facility", fileLines);
         grade = Tools.getValueFromList("Grade", fileLines);
@@ -349,8 +351,8 @@ public class OpenJobActivity extends Activity {
 
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
 
-        JobInfo jobInfo = new JobInfo(selectedJobDirectoryPath, companyName, diameter, facility,
-                                        grade, imperialAdjustment, imperialTallyGoal, job,
+        JobInfo jobInfo = new JobInfo(selectedJobDirectoryPath, companyName, date, diameter,
+                                        facility, grade, imperialAdjustment, imperialTallyGoal, job,
                                         metricAdjustment, metricTallyGoal, rack, range, rig, wall);
         jobInfo.init();
         intent.putExtra(Keys.JOB_INFO_INCLUDED_KEY, true);

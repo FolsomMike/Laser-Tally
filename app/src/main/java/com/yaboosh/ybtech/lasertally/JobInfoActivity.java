@@ -78,6 +78,7 @@ public class JobInfoActivity extends Activity {
 
     //Keys to be used for saving an instance of the activity
     private final String COMPANY_NAME_KEY = "COMPANY_NAME_KEY";
+    private final String DATE_KEY = "DATE_KEY";
     private final String DIAMETER_KEY = "DIAMETER_KEY";
     private final String FACILITY_KEY = "FACILITY_KEY";
     private final String GRADE_KEY = "GRADE_KEY";
@@ -92,6 +93,7 @@ public class JobInfoActivity extends Activity {
     private final String WALL_KEY = "WALL_KEY";
 
     private String companyName;
+    private String date;
     private String diameter;
     private String facility;
     private String grade;
@@ -158,6 +160,7 @@ public class JobInfoActivity extends Activity {
             // Restore values from saved state
 
             companyName = pSavedInstanceState.getString(COMPANY_NAME_KEY);
+            date = pSavedInstanceState.getString(DATE_KEY);
             diameter = pSavedInstanceState.getString(DIAMETER_KEY);
             facility = pSavedInstanceState.getString(FACILITY_KEY);
             grade = pSavedInstanceState.getString(GRADE_KEY);
@@ -277,6 +280,7 @@ public class JobInfoActivity extends Activity {
 
         //store necessary data
         pSavedInstanceState.putString(COMPANY_NAME_KEY, companyName);
+        pSavedInstanceState.putString(DATE_KEY, date);
         pSavedInstanceState.putString(DIAMETER_KEY, diameter);
         pSavedInstanceState.putString(FACILITY_KEY, facility);
         pSavedInstanceState.putString(GRADE_KEY, grade);
@@ -452,8 +456,8 @@ public class JobInfoActivity extends Activity {
 
         saveInformationToFile();
 
-        JobInfo jobInfo = new JobInfo(newJobFolderPath, companyName, diameter, facility, grade,
-                                        imperialAdjustment, imperialTallyGoal, job,
+        JobInfo jobInfo = new JobInfo(newJobFolderPath, companyName, date, diameter, facility,
+                                        grade, imperialAdjustment, imperialTallyGoal, job,
                                         metricAdjustment, metricTallyGoal, rack, range, rig, wall);
         jobInfo.init();
 
@@ -479,6 +483,8 @@ public class JobInfoActivity extends Activity {
     private void getAndStoreJobInfoFromUserInput() {
 
         companyName = ((EditText) findViewById(R.id.editTextCompanyName)).getText().toString();
+
+        date = ((EditText) findViewById(R.id.editTextDate)).getText().toString();
 
         diameter = ((EditText) findViewById(R.id.editTextDiameter)).getText().toString();
 
@@ -548,6 +554,9 @@ public class JobInfoActivity extends Activity {
 
         ((EditText) findViewById(R.id.editTextCompanyName)).setText
                                             (Tools.getValueFromList("Company Name", fileLines));
+
+        ((EditText) findViewById(R.id.editTextDate)).setText
+                                                    (Tools.getValueFromList("Date", fileLines));
 
         ((EditText) findViewById(R.id.editTextDiameter)).setText
                                             (Tools.getValueFromList("Diameter", fileLines));
@@ -874,6 +883,7 @@ public class JobInfoActivity extends Activity {
             writer = new PrintWriter(jobInfoFile, "UTF-8");
 
             writer.println("Company Name=" + companyName);
+            writer.println("Date=" + date);
             writer.println("Diameter=" + diameter);
             writer.println("Facility=" + facility);
             writer.println("Grade=" + grade);
