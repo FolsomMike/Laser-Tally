@@ -60,9 +60,9 @@ public class MoreActivity extends Activity {
     //
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle pSavedInstanceState) {
 
-        super.onCreate(savedInstanceState);
+        super.onCreate(pSavedInstanceState);
 
         setContentView(R.layout.activity_more);
 
@@ -81,9 +81,25 @@ public class MoreActivity extends Activity {
 
         createUiChangeListener();
 
-        Bundle bundle = getIntent().getExtras();
-        sharedSettings = bundle.getParcelable(Keys.SHARED_SETTINGS_KEY);
-        jobInfo = bundle.getParcelable(Keys.JOB_INFO_KEY);
+        // Check whether we're recreating a previously destroyed instance
+        if (pSavedInstanceState != null) {
+            // Restore values from saved state
+
+            jobInfo = pSavedInstanceState.getParcelable(Keys.JOB_INFO_KEY);
+            sharedSettings = pSavedInstanceState.getParcelable(Keys.SHARED_SETTINGS_KEY);
+
+        } else {
+            //initialize members with default values for a new instance
+
+            //Get the extras from the intent
+            Bundle bundle = getIntent().getExtras();
+
+            sharedSettings = bundle.getParcelable(Keys.SHARED_SETTINGS_KEY);
+            sharedSettings.setContext(this);
+
+            jobInfo = bundle.getParcelable(Keys.JOB_INFO_KEY);
+
+        }
 
     }//end of MenuActivity::onCreate
     //-----------------------------------------------------------------------------
@@ -138,6 +154,28 @@ public class MoreActivity extends Activity {
         super.onPause();
 
     }//end of MenuActivity::onPause
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MoreActivity::onSaveInstanceState
+    //
+    // As the activity begins to stop, the system calls onSaveInstanceState()
+    // so the activity can save state information with a collection of key-value
+    // pairs. This functions is overridden so that additional state information can
+    // be saved.
+    //
+
+    @Override
+    public void onSaveInstanceState(Bundle pSavedInstanceState) {
+
+        //store necessary data
+        pSavedInstanceState.putParcelable(Keys.JOB_INFO_KEY, jobInfo);
+        pSavedInstanceState.putParcelable(Keys.SHARED_SETTINGS_KEY, sharedSettings);
+
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(pSavedInstanceState);
+
+    }//end of MoreActivity::onSaveInstanceState
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
