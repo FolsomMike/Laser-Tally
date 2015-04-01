@@ -45,11 +45,18 @@ public class MoreOptionsActivity extends Activity {
     private SharedSettings sharedSettings;
     private JobInfo jobInfo;
 
+    private String CAL_VALUE_KEY = "CAL_VALUE_KEY";
+    private String MAX_ALLOWED_KEY = "MAX_ALLOWED_KEY";
+    private String MIN_ALLOWED_KEY = "MIN_ALLOWED_KEY";
+    private String UNIT_SYSTEM_KEY = "UNIT_SYSTEM_KEY";
+    private String calValue;
+    private String maxAllowed;
+    private String minAllowed;
+    private String unitSystem;
+    private EditText calibrationValueEditText;
     private EditText maximumMeasurementAllowedEditText;
     private EditText minimumMeasurementAllowedEditText;
-    private EditText calibrationValueEditText;
 
-    private String unitSystem;
     private String switchToImperialButtonText = "Switch to Imperial";
     private String switchToMetricButtonText = "Switch to Metric";
 
@@ -72,9 +79,9 @@ public class MoreOptionsActivity extends Activity {
     //
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle pSavedInstanceState) {
 
-        super.onCreate(savedInstanceState);
+        super.onCreate(pSavedInstanceState);
 
         setContentView(R.layout.activity_more_options);
 
@@ -93,15 +100,44 @@ public class MoreOptionsActivity extends Activity {
 
         createUiChangeListener();
 
-        maximumMeasurementAllowedEditText = ((EditText)findViewById(R.id.editTextMaximumMeasurementAllowed));
-        minimumMeasurementAllowedEditText = ((EditText)findViewById(R.id.editTextMinimumMeasurementAllowed));
-        calibrationValueEditText = ((EditText)findViewById(R.id.calibrationValueEditText));
-
         Bundle bundle = getIntent().getExtras();
         sharedSettings = bundle.getParcelable(Keys.SHARED_SETTINGS_KEY);
         jobInfo = bundle.getParcelable(Keys.JOB_INFO_KEY);
 
-        unitSystem = sharedSettings.getUnitSystem();
+        // Check whether we're recreating a previously destroyed instance
+        if (pSavedInstanceState != null) {
+            // Restore values from saved state
+
+            //Set the values to stored data
+            calValue = pSavedInstanceState.getString(CAL_VALUE_KEY);
+            maxAllowed = pSavedInstanceState.getString(MAX_ALLOWED_KEY);
+            minAllowed = pSavedInstanceState.getString(MIN_ALLOWED_KEY);
+            unitSystem = pSavedInstanceState.getString(UNIT_SYSTEM_KEY);
+
+        } else {
+            //initialize members with values from sharedSettings
+
+            unitSystem = sharedSettings.getUnitSystem();
+
+            //initialize variables using Imperial or Metric
+            //values, depending on the unit system
+            if (unitSystem.equals(Keys.IMPERIAL_MODE)) {
+                calValue = sharedSettings.getImperialCalibrationValue();
+                maxAllowed = sharedSettings.getMaximumImperialMeasurementAllowed();
+                minAllowed = sharedSettings.getMinimumImperialMeasurementAllowed();
+            }
+            else if (unitSystem.equals(Keys.METRIC_MODE)) {
+                calValue = sharedSettings.getMetricCalibrationValue();
+                maxAllowed = sharedSettings.getMaximumMetricMeasurementAllowed();
+                minAllowed = sharedSettings.getMinimumMetricMeasurementAllowed();
+            }
+
+
+        }
+
+        maximumMeasurementAllowedEditText = ((EditText)findViewById(R.id.editTextMaximumMeasurementAllowed));
+        minimumMeasurementAllowedEditText = ((EditText)findViewById(R.id.editTextMinimumMeasurementAllowed));
+        calibrationValueEditText = ((EditText)findViewById(R.id.calibrationValueEditText));
 
     }//end of MenuOptionsActivity::onCreate
     //-----------------------------------------------------------------------------
@@ -161,6 +197,162 @@ public class MoreOptionsActivity extends Activity {
         super.onPause();
 
     }//end of MenuOptionsActivity::onPause
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MenuOptionsActivity::onSaveInstanceState
+    //
+    // As the activity begins to stop, the system calls onSaveInstanceState()
+    // so the activity can save state information with a collection of key-value
+    // pairs. This functions is overridden so that additional state information can
+    // be saved.
+    //
+
+    @Override
+    public void onSaveInstanceState(Bundle pSavedInstanceState) {
+
+        //store necessary data
+        pSavedInstanceState.putString(CAL_VALUE_KEY, getCalibrationValue());
+        pSavedInstanceState.putString(MAX_ALLOWED_KEY, getMaximumAllowed());
+        pSavedInstanceState.putString(MIN_ALLOWED_KEY, getMinimumAllowed());
+        pSavedInstanceState.putString(UNIT_SYSTEM_KEY, unitSystem);
+
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(pSavedInstanceState);
+
+    }//end of MenuOptionsActivity::onSaveInstanceState
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MenuOptionsActivity::convertCalValue
+    //
+    // Converts the calibration value allowed to Imperial and Metric, depending on
+    // the passed in unit system.
+    //
+
+    private void convertCalValue(String pSys) {
+
+        if (pSys.equals(Keys.IMPERIAL_MODE)) {
+
+            // If the user hasn't changed the measurement or left the
+            // text field blank, then no conversion needs to be done --
+            // the Imperial value can just be gotten from sharedSettings
+            if (calValue.equals(sharedSettings.getMetricCalibrationValue())
+                    || calValue.equals(""))
+            {
+                calValue = sharedSettings.getImperialCalibrationValue();
+            }
+            else {
+                calValue = Tools.convertToImperialAndFormat(Double.parseDouble(calValue));
+            }
+
+        }
+
+        else if (pSys.equals(Keys.METRIC_MODE)) {
+
+            // If the user hasn't changed the measurement or left the
+            // text field blank, then no conversion needs to be done --
+            // the Metric value can just be gotten from sharedSettings
+            if (calValue.equals(sharedSettings.getImperialCalibrationValue())
+                    || calValue.equals(""))
+            {
+                calValue = sharedSettings.getMetricCalibrationValue();
+            }
+            else {
+                calValue = Tools.convertToMetricAndFormat(Double.parseDouble(calValue));
+            }
+
+        }
+
+    }//end of MenuOptionsActivity::convertCalValue
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MenuOptionsActivity::convertMaxValueAllowed
+    //
+    // Converts the maximum value allowed to Imperial and Metric, depending on
+    // the passed in unit system.
+    //
+
+    private void convertMaxValueAllowed(String pSys) {
+
+        if (pSys.equals(Keys.IMPERIAL_MODE)) {
+
+            // If the user hasn't changed the measurement or left the
+            // text field blank, then no conversion needs to be done --
+            // the Imperial value can just be gotten from sharedSettings
+            if (maxAllowed.equals(sharedSettings.getMaximumMetricMeasurementAllowed())
+                    || maxAllowed.equals(""))
+            {
+                maxAllowed = sharedSettings.getMaximumImperialMeasurementAllowed();
+            }
+            else {
+                maxAllowed = Tools.convertToImperialAndFormat(Double.parseDouble(maxAllowed));
+            }
+
+        }
+
+        else if (pSys.equals(Keys.METRIC_MODE)) {
+
+            // If the user hasn't changed the measurement or left the
+            // text field blank, then no conversion needs to be done --
+            // the Metric value can just be gotten from sharedSettings
+            if (maxAllowed.equals(sharedSettings.getMaximumImperialMeasurementAllowed())
+                    || maxAllowed.equals(""))
+            {
+                maxAllowed = sharedSettings.getMaximumMetricMeasurementAllowed();
+            }
+            else {
+                maxAllowed = Tools.convertToMetricAndFormat(Double.parseDouble(maxAllowed));
+            }
+
+        }
+
+    }//end of MenuOptionsActivity::convertMaxValueAllowed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MenuOptionsActivity::convertMinValueAllowed
+    //
+    // Converts the minimum value allowed to Imperial and Metric, depending on
+    // the passed in unit system.
+    //
+
+    private void convertMinValueAllowed(String pSys) {
+
+        if (pSys.equals(Keys.IMPERIAL_MODE)) {
+
+            // If the user hasn't changed the measurement or left the
+            // text field blank, then no conversion needs to be done --
+            // the Imperial value can just be gotten from sharedSettings
+            if (minAllowed.equals(sharedSettings.getMinimumMetricMeasurementAllowed())
+                    || minAllowed.equals(""))
+            {
+                minAllowed = sharedSettings.getMinimumImperialMeasurementAllowed();
+            }
+            else {
+                minAllowed = Tools.convertToImperialAndFormat(Double.parseDouble(minAllowed));
+            }
+
+        }
+
+        else if (pSys.equals(Keys.METRIC_MODE)) {
+
+            // If the user hasn't changed the measurement or left the
+            // text field blank, then no conversion needs to be done --
+            // the Metric value can just be gotten from sharedSettings
+            if (minAllowed.equals(sharedSettings.getMinimumImperialMeasurementAllowed())
+                    || minAllowed.equals(""))
+            {
+                minAllowed = sharedSettings.getMinimumMetricMeasurementAllowed();
+            }
+            else {
+                minAllowed = Tools.convertToMetricAndFormat(Double.parseDouble(minAllowed));
+            }
+
+        }
+
+    }//end of MenuOptionsActivity::convertMinValueAllowed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -319,11 +511,8 @@ public class MoreOptionsActivity extends Activity {
 
     public void handleSwitchUnitSystemButtonPressed(View pView) {
 
-        if (unitSystem.equals(Keys.IMPERIAL_MODE)) { unitSystem = Keys.METRIC_MODE; }
-        else if (unitSystem.equals(Keys.METRIC_MODE)) { unitSystem = Keys.IMPERIAL_MODE; }
-
-        setMaxAndMinEditTextFields();
-        setSwitchUnitSystemButtonText();
+        if (unitSystem.equals(Keys.IMPERIAL_MODE)) { setUnitSystem(Keys.METRIC_MODE); }
+        else if (unitSystem.equals(Keys.METRIC_MODE)) { setUnitSystem(Keys.IMPERIAL_MODE); }
 
     }//end of MenuOptionsActivity::handleSwitchUnitSystemButtonPressed
     //-----------------------------------------------------------------------------
@@ -331,22 +520,12 @@ public class MoreOptionsActivity extends Activity {
     //-----------------------------------------------------------------------------
     // MenuOptionsActivity::setCalibrationValueEditTextField
     //
-    // Sets the calibration value edit text field to either the Imperial or Metric
-    // calibration value stored in SharedSettings depending on the unit system.
+    // Sets the calibration value edit text field to a preset value.
     //
 
     private void setCalibrationValueEditTextField() {
 
-        String cal = "";
-
-        if (unitSystem.equals(Keys.IMPERIAL_MODE)) {
-            cal = sharedSettings.getImperialCalibrationValue();
-        }
-        else if (unitSystem.equals(Keys.METRIC_MODE)) {
-            cal = sharedSettings.getMetricCalibrationValue();
-        }
-
-        calibrationValueEditText.setText(cal);
+        calibrationValueEditText.setText(calValue);
 
     }//end of MenuOptionsActivity::setCalibrationValueEditTextField
     //-----------------------------------------------------------------------------
@@ -355,26 +534,13 @@ public class MoreOptionsActivity extends Activity {
     // MenuOptionsActivity::setMaxAndMinEditTextFields
     //
     // Sets the maximum and minimum measurements allowed edit text fields to
-    // the Imperial or Metric maximum and minimum values allowed depending on
-    // the unit system.
+    // the preset variables.
     //
 
     private void setMaxAndMinEditTextFields() {
 
-        String max = "";
-        String min = "";
-
-        if (unitSystem.equals(Keys.IMPERIAL_MODE)) {
-            max = sharedSettings.getMaximumImperialMeasurementAllowed();
-            min = sharedSettings.getMinimumImperialMeasurementAllowed();
-        }
-        else if (unitSystem.equals(Keys.METRIC_MODE)) {
-            max = sharedSettings.getMaximumMetricMeasurementAllowed();
-            min = sharedSettings.getMinimumMetricMeasurementAllowed();
-        }
-
-        maximumMeasurementAllowedEditText.setText(max);
-        minimumMeasurementAllowedEditText.setText(min);
+        maximumMeasurementAllowedEditText.setText(maxAllowed);
+        minimumMeasurementAllowedEditText.setText(minAllowed);
 
     }//end of MenuOptionsActivity::setMaxAndMinEditTextFields
     //-----------------------------------------------------------------------------
@@ -399,6 +565,32 @@ public class MoreOptionsActivity extends Activity {
         else if (unitSystem.equals(Keys.METRIC_MODE)) { button.setText(switchToImperialButtonText); }
 
     }//end of MenuOptionsActivity::setSwitchUnitSystemButtonText
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MenuOptionsActivity::setUnitSystem
+    //
+    // The unit system is set to either Imperial mode or Metric mode, depending
+    // on the current mode. zzz
+    //
+
+    private void setUnitSystem(String pSys) {
+
+        unitSystem = pSys;
+
+        //get the values from the edit text fields
+        calValue = getCalibrationValue();
+        maxAllowed = getMaximumAllowed();
+        minAllowed = getMinimumAllowed();
+
+        setSwitchUnitSystemButtonText();
+        convertCalValue(unitSystem);
+        setCalibrationValueEditTextField();
+        convertMaxValueAllowed(unitSystem);
+        convertMinValueAllowed(unitSystem);
+        setMaxAndMinEditTextFields();
+
+    }//end of MenuOptionsActivity::setUnitSystem
     //-----------------------------------------------------------------------------
 
 }//end of class MenuOptionsActivity

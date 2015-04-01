@@ -207,6 +207,7 @@ public class SharedSettings implements Parcelable {
                             + nL
                             + ("Minimum Imperial Measurement Allowed="
                                     + minimumImperialMeasurementAllowed)
+                            + nL
                             + ("Minimum Metric Measurement Allowed="
                                     + minimumMetricMeasurementAllowed)
                             + nL
@@ -236,7 +237,9 @@ public class SharedSettings implements Parcelable {
 
         try{
 
-            fileInputStream = new FileInputStream(context.getFilesDir() + "general.ini");
+            File file = new File(context.getFilesDir(), "general.ini");
+
+            fileInputStream = new FileInputStream(file);
 
             inputStreamReader = new InputStreamReader(fileInputStream, fileFormat);
 

@@ -33,6 +33,7 @@
     <item type="id" name="editJobInfoActivityTitleTextView" />
     <item type="id" name="editJobInfoMenuButton" />
     <item type="id" name="editTextCompanyName" />
+    <item type="id" name="editTextDate" />
     <item type="id" name="editTextDiameter" />
     <item type="id" name="editTextFacility" />
     <item type="id" name="editTextGrade" />

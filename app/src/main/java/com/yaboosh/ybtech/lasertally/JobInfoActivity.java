@@ -76,7 +76,24 @@ public class JobInfoActivity extends Activity {
     private String originalJobFolderPath;
     private String originalJobInfoFilePath;
 
+    //Keys to be used for saving an instance of the activity
+    private final String COMPANY_NAME_KEY = "COMPANY_NAME_KEY";
+    private final String DATE_KEY = "DATE_KEY";
+    private final String DIAMETER_KEY = "DIAMETER_KEY";
+    private final String FACILITY_KEY = "FACILITY_KEY";
+    private final String GRADE_KEY = "GRADE_KEY";
+    private final String IMPERIAL_ADJUSTMENT_KEY = "IMPERIAL_ADJUSTMENT_KEY";
+    private final String IMPERIAL_TALLY_GOAL_KEY = "IMPERIAL_TALLY_GOAL_KEY";
+    private final String JOB_KEY = "JOB_KEY";
+    private final String METRIC_ADJUSTMENT_KEY = "METRIC_ADJUSTMENT_KEY";
+    private final String METRIC_TALLY_GOAL_KEY = "METRIC_TALLY_GOAL_KEY";
+    private final String RACK_KEY = "RACK_KEY";
+    private final String RANGE_KEY = "RANGE_KEY";
+    private final String RIG_KEY = "RIG_KEY";
+    private final String WALL_KEY = "WALL_KEY";
+
     private String companyName;
+    private String date;
     private String diameter;
     private String facility;
     private String grade;
@@ -109,9 +126,9 @@ public class JobInfoActivity extends Activity {
     //
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle pSavedInstanceState) {
 
-        super.onCreate(savedInstanceState);
+        super.onCreate(pSavedInstanceState);
 
         Log.d(LOG_TAG, "Inside of JobInfoActivity onCreate");
 
@@ -132,17 +149,46 @@ public class JobInfoActivity extends Activity {
 
         createUiChangeListener();
 
-        //Pull data out of intent extras
+        //Get the extras from the intent
         Bundle bundle = getIntent().getExtras();
-        sharedSettings = bundle.getParcelable(Keys.SHARED_SETTINGS_KEY);
-        //although the passed in job name may be null if the activity
-        //mode is CREATE, we can still attempt to pull it out at this
-        //point, so long as we do not attempt to use it unless the
-        //mode is EDIT
-        passedInJobName = bundle.getString(Keys.JOB_NAME_KEY);
 
         //Set the activity mode
         setActivityMode(bundle.getString(Keys.EDIT_JOB_INFO_ACTIVITY_MODE_KEY));
+
+        // Check whether we're recreating a previously destroyed instance
+        if (pSavedInstanceState != null) {
+            // Restore values from saved state
+
+            companyName = pSavedInstanceState.getString(COMPANY_NAME_KEY);
+            date = pSavedInstanceState.getString(DATE_KEY);
+            diameter = pSavedInstanceState.getString(DIAMETER_KEY);
+            facility = pSavedInstanceState.getString(FACILITY_KEY);
+            grade = pSavedInstanceState.getString(GRADE_KEY);
+            imperialAdjustment = pSavedInstanceState.getString(IMPERIAL_ADJUSTMENT_KEY);
+            imperialTallyGoal = pSavedInstanceState.getString(IMPERIAL_TALLY_GOAL_KEY);
+            job = pSavedInstanceState.getString(JOB_KEY);
+            metricAdjustment = pSavedInstanceState.getString(METRIC_ADJUSTMENT_KEY);
+            metricTallyGoal = pSavedInstanceState.getString(METRIC_TALLY_GOAL_KEY);
+            rack = pSavedInstanceState.getString(RACK_KEY);
+            range = pSavedInstanceState.getString(RANGE_KEY);
+            rig = pSavedInstanceState.getString(RIG_KEY);
+            wall = pSavedInstanceState.getString(WALL_KEY);
+
+        } else {
+            //initialize members with values from the bundle for a new instance
+
+            sharedSettings = bundle.getParcelable(Keys.SHARED_SETTINGS_KEY);
+            //although the passed in job name may be null if the activity
+            //mode is CREATE, we can still attempt to pull it out at this
+            //point, so long as we do not attempt to use it unless the
+            //mode is EDIT
+            passedInJobName = bundle.getString(Keys.JOB_NAME_KEY);
+
+            setOriginalFilePaths(passedInJobName);
+
+            getJobInfoFromFile();
+
+        }
 
         //Add a listener to the job name edit text field to listen for changes
         ((TextView)findViewById(R.id.editTextJob)).addTextChangedListener(new TextWatcher() {
@@ -219,6 +265,42 @@ public class JobInfoActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // JobInfoActivity::onSaveInstanceState
+    //
+    // As the activity begins to stop, the system calls onSaveInstanceState()
+    // so the activity can save state information with a collection of key-value
+    // pairs. This functions is overridden so that additional state information can
+    // be saved.
+    //
+
+    @Override
+    public void onSaveInstanceState(Bundle pSavedInstanceState) {
+
+        getAndStoreJobInfoFromUserInput();
+
+        //store necessary data
+        pSavedInstanceState.putString(COMPANY_NAME_KEY, companyName);
+        pSavedInstanceState.putString(DATE_KEY, date);
+        pSavedInstanceState.putString(DIAMETER_KEY, diameter);
+        pSavedInstanceState.putString(FACILITY_KEY, facility);
+        pSavedInstanceState.putString(GRADE_KEY, grade);
+        pSavedInstanceState.putString(IMPERIAL_ADJUSTMENT_KEY, imperialAdjustment);
+        pSavedInstanceState.putString(IMPERIAL_TALLY_GOAL_KEY, imperialTallyGoal);
+        pSavedInstanceState.putString(JOB_KEY, job);
+        pSavedInstanceState.putString(METRIC_ADJUSTMENT_KEY, metricAdjustment);
+        pSavedInstanceState.putString(METRIC_TALLY_GOAL_KEY, metricTallyGoal);
+        pSavedInstanceState.putString(RACK_KEY, rack);
+        pSavedInstanceState.putString(RANGE_KEY, range);
+        pSavedInstanceState.putString(RIG_KEY, rig);
+        pSavedInstanceState.putString(WALL_KEY, wall);
+
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(pSavedInstanceState);
+
+    }//end of JobInfoActivity::onSaveInstanceState
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // JobInfoActivity::setActivityMode
     //
     // Sets the activity mode to the passed in value and takes different
@@ -240,7 +322,6 @@ public class JobInfoActivity extends Activity {
             titleTextView.setText(activityPurposeCreateJobTitle);
             menuButton.setVisibility(View.INVISIBLE);
             enableOkButton(false);
-
             intent = new Intent(this, JobDisplayActivity.class);
 
         }
@@ -250,11 +331,6 @@ public class JobInfoActivity extends Activity {
             titleTextView.setText(activityPurposeEditJobInfoTitle);
             menuButton.setVisibility(View.VISIBLE);
             enableOkButton(true);
-
-            setOriginalFilePaths(passedInJobName);
-
-            getJobInfoFromFile();
-
             intent = new Intent();
 
         }
@@ -380,8 +456,8 @@ public class JobInfoActivity extends Activity {
 
         saveInformationToFile();
 
-        JobInfo jobInfo = new JobInfo(newJobFolderPath, companyName, diameter, facility, grade,
-                                        imperialAdjustment, imperialTallyGoal, job,
+        JobInfo jobInfo = new JobInfo(newJobFolderPath, companyName, date, diameter, facility,
+                                        grade, imperialAdjustment, imperialTallyGoal, job,
                                         metricAdjustment, metricTallyGoal, rack, range, rig, wall);
         jobInfo.init();
 
@@ -407,6 +483,8 @@ public class JobInfoActivity extends Activity {
     private void getAndStoreJobInfoFromUserInput() {
 
         companyName = ((EditText) findViewById(R.id.editTextCompanyName)).getText().toString();
+
+        date = ((EditText) findViewById(R.id.editTextDate)).getText().toString();
 
         diameter = ((EditText) findViewById(R.id.editTextDiameter)).getText().toString();
 
@@ -476,6 +554,9 @@ public class JobInfoActivity extends Activity {
 
         ((EditText) findViewById(R.id.editTextCompanyName)).setText
                                             (Tools.getValueFromList("Company Name", fileLines));
+
+        ((EditText) findViewById(R.id.editTextDate)).setText
+                                                    (Tools.getValueFromList("Date", fileLines));
 
         ((EditText) findViewById(R.id.editTextDiameter)).setText
                                             (Tools.getValueFromList("Diameter", fileLines));
@@ -802,6 +883,7 @@ public class JobInfoActivity extends Activity {
             writer = new PrintWriter(jobInfoFile, "UTF-8");
 
             writer.println("Company Name=" + companyName);
+            writer.println("Date=" + date);
             writer.println("Diameter=" + diameter);
             writer.println("Facility=" + facility);
             writer.println("Grade=" + grade);
