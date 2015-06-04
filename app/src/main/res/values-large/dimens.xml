@@ -16,6 +16,13 @@
     <dimen name="dialog_height_standard">500dp</dimen>
     <!-- END OF DIALOGS -->
 
+    <!-- FIXED OKAY CANCEL BUTTONS LAYOUT -->
+    <dimen name="focbl_padding_bottom">3dp</dimen>
+    <dimen name="focbl_padding_left">0dp</dimen>
+    <dimen name="focbl_padding_right">0dp</dimen>
+    <dimen name="focbl_padding_top">3dp</dimen>
+    <!-- END OF FIXED OKAY CANCEL BUTTONS LAYOUT -->
+
     <!-- PADDING -->
     <dimen name="padding_none">0dp</dimen>
     <dimen name="padding_xxsmall">2dp</dimen>
@@ -53,15 +60,17 @@
 
     <!-- TITLE BAR LAYOUT -->
     <dimen name="title_bar_layout_height">70dp</dimen>
-    <dimen name="title_bar_layout_padding_bottom">0dp</dimen>
+    <dimen name="title_bar_layout_padding_bottom">10dp</dimen>
     <dimen name="title_bar_layout_padding_left">10dp</dimen>
     <dimen name="title_bar_layout_padding_right">10dp</dimen>
-    <dimen name="title_bar_layout_padding_top">0dp</dimen>
+    <dimen name="title_bar_layout_padding_top">10dp</dimen>
     <dimen name="title_bar_layout_title_text_size">40dp</dimen>
     <!-- END OF TITLE BAR LAYOUT -->
 
     <!-- activity_job_display.xml -->
-    <dimen name="ajd_ttbl_height">80dp</dimen>
+    <dimen name="ajd_measure_connect_button_height">200dp</dimen>
+    <dimen name="ajd_measure_connect_button_width">225dp</dimen>
+    <dimen name="ajd_ttbl_title_text_view_width">400dp</dimen>
     <!-- end of activity_job_display.xml -->
 
     <!-- activity_job_info.xml -->

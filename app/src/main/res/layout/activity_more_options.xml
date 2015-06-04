@@ -14,7 +14,7 @@
     <!-- TITLE BAR LAYOUT-->
     <LinearLayout
         android:id="@+id/titleBarLayout"
-        android:layout_height="@dimen/title_bar_layout_height"
+        android:layout_height="wrap_content"
         android:layout_width="fill_parent"
         android:background="#1A1A1A"
         android:gravity="center"
@@ -28,7 +28,7 @@
         <TextView
             android:gravity="center"
             android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
             android:padding="0dp"
             android:textColor="#B2B2B2"
             android:text="Options"
@@ -220,17 +220,17 @@
     </ScrollView>
     <!-- END OF OPTIONS SCROLLVIEW -->
 
-    <!-- OK CANCEL BUTTONS LAYOUT -->
+    <!-- FIXED OK CANCEL BUTTONS LAYOUT -->
     <LinearLayout
         android:id="@+id/okCancelButtonsLayout"
         android:orientation="horizontal"
         android:layout_width="fill_parent"
-        android:layout_height="@dimen/aji_ml_ocbl_height"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:paddingBottom="@dimen/padding_normal"
-        android:paddingLeft="@dimen/padding_none"
-        android:paddingRight="@dimen/padding_none"
-        android:paddingTop="@dimen/padding_xsmall"
+        android:paddingBottom="@dimen/focbl_padding_bottom"
+        android:paddingLeft="@dimen/focbl_padding_left"
+        android:paddingRight="@dimen/focbl_padding_right"
+        android:paddingTop="@dimen/focbl_padding_top"
         android:gravity="center"
         android:background="#1A1A1A" >
 
@@ -246,7 +246,7 @@
             style="@style/whiteStyledButton"
             android:onClick="handleCancelButtonPressed" />
 
-        <!-- OK CANCEL BUTTONS LAYOUT horizontal spacer 1 -->
+        <!-- FIXED OK CANCEL BUTTONS LAYOUT horizontal spacer 1 -->
         <View
             android:layout_width="@dimen/spacer_horizontal_xxwide"
             android:layout_height="1dp" >
@@ -265,7 +265,7 @@
             style="@style/whiteStyledButton" />
 
     </LinearLayout>
-    <!-- END OF OK CANCEL BUTTONS LAYOUT -->
+    <!-- END OF FIXED OK CANCEL BUTTONS LAYOUT -->
 
 </RelativeLayout>
 <!-- END OF MAIN LAYOUT -->

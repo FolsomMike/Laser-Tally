@@ -1,35 +1,43 @@
 <!-- MAIN LAYOUT -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
+<RelativeLayout
+    android:id="@+id/main_content"
+    android:layout_height="fill_parent"
+    android:layout_width="fill_parent"
     android:baselineAligned="false"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     android:background="#808080"
-    tools:context="com.yaboosh.lasertally.development.main.JobDisplayActivity" >
+    android:orientation="vertical"
+    android:padding="@dimen/padding_none"
+    tools:context="com.yaboosh.lasertally.development.main.JobDisplayActivity"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" >
 
     <!-- TOP TITLE BAR LAYOUT -->
     <LinearLayout
-        android:orientation="horizontal"
+        android:id="@+id/titleBarLayout"
+        android:layout_height="wrap_content"
         android:layout_width="fill_parent"
-        android:layout_height="@dimen/ajd_ttbl_height"
-        android:paddingBottom="2dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="2dp"
-        android:background="#1A1A1A" >
+        android:background="#1A1A1A"
+        android:gravity="center"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/padding_xxsmall"
+        android:paddingLeft="@dimen/padding_normal"
+        android:paddingRight="@dimen/padding_normal"
+        android:paddingTop="@dimen/padding_xxsmall" >
 
         <TextView
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:padding="@dimen/padding_none"
             android:textColor="#B2B2B2"
             android:text="Job: "
             android:textSize="@dimen/text_size_xxlarge"/>
 
         <TextView
             android:id="@id/jobNameTextView"
-            android:layout_width="400dp"
             android:layout_height="wrap_content"
+            android:layout_width="@dimen/ajd_ttbl_title_text_view_width"
+            android:padding="@dimen/padding_none"
             android:textColor="#FFFFFF"
             android:text=""
             android:textSize="@dimen/text_size_xxlarge"/>
@@ -70,99 +78,118 @@
 
     <!-- MAIN LAYOUT horizontal line 1 -->
     <View
-        android:layout_width="fill_parent"
+        android:id="@+id/mainLayoutHorizontalLine1"
         android:layout_height="2dp"
-        android:background="#191919" >
+        android:layout_width="fill_parent"
+        android:background="#191919"
+        android:layout_below="@+id/titleBarLayout" >
     </View>
 
     <!-- LEFT AND RIGHT PANEL CONTAINER LAYOUT -->
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+    <RelativeLayout
+        android:id="@+id/leftAndRightPanelContainerLayout"
+        android:layout_height="fill_parent"
+        android:layout_width="fill_parent"
+        android:layout_below="@+id/mainLayoutHorizontalLine1"
         android:padding="@dimen/padding_normal" >
 
         <!-- LEFT PANEL LAYOUT (connect, measure, and redo buttons) -->
         <LinearLayout
-            android:orientation="vertical"
+            android:id="@+id/leftPanelLayout"
+            android:layout_height="fill_parent"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/padding_none"
-            tools:context="com.yaboosh.lasertally.development.main.MainActivity" >
+            android:layout_alignParentStart="true"
+            android:orientation="vertical"
+            android:padding="@dimen/padding_none" >
 
             <!-- LEFT PANEL LAYOUT vertical spacer 1 -->
             <View
+                android:id="@+id/leftPanelLayoutVerticalSpacer1"
                 android:layout_width="1dp"
-                android:layout_height="@dimen/spacer_vertical_normal" >
+                android:layout_height="@dimen/spacer_vertical_xshort" >
             </View>
 
             <Button
                 android:id="@id/redoButton"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:background="@drawable/red_styled_button"
                 android:text="@string/redoButtonText"
                 android:textSize="@dimen/text_size_xxlarge"
-                style="@style/redStyledButton"
-                android:background="@drawable/red_styled_button"
-                android:visibility="invisible" />
+                android:visibility="invisible"
+                style="@style/redStyledButton" />
 
             <!-- LEFT PANEL LAYOUT vertical spacer 2 -->
             <View
-                android:layout_width="1dp"
-                android:layout_height="@dimen/spacer_vertical_xshort" >
+                android:id="@+id/leftPanelLayoutVerticalSpacer2"
+                android:layout_height="@dimen/spacer_vertical_xshort"
+                android:layout_width="1dp" >
             </View>
 
             <Button
                 android:id="@id/measureConnectButton"
-                android:layout_width="225dp"
-                android:layout_height="200dp"
+                android:layout_height="@dimen/ajd_measure_connect_button_height"
+                android:layout_width="@dimen/ajd_measure_connect_button_width"
                 android:textSize="@dimen/text_size_xxlarge"
                 android:visibility="invisible"
                 style="@style/styledButtonWhiteText" />
 
-            <!-- LEFT PANEL LAYOUT vertical spacer 3 -->
-            <View
-                android:layout_width="1dp"
-                android:layout_height="@dimen/spacer_vertical_xxtall" >
-            </View>
-
-            <TextView
-                android:id="@id/numberOfPipesLeftTextView"
+            <!-- DISTANCE AND PIPE LEFT LAYOUT -->
+            <RelativeLayout
+                android:id="@+id/distanceAndPipeLeftLayout"
+                android:layout_height="fill_parent"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="start"
-                android:textSize="@dimen/text_size_normal" />
+                android:padding="@dimen/padding_none" >
 
-            <!-- LEFT PANEL LAYOUT vertical spacer 4 -->
-            <View
-                android:layout_width="1dp"
-                android:layout_height="@dimen/spacer_vertical_xshort" >
-            </View>
+                <TextView
+                    android:id="@id/numberOfPipesLeftTextView"
+                    android:layout_height="wrap_content"
+                    android:layout_width="fill_parent"
+                    android:gravity="start"
+                    android:layout_above="@+id/distanceAndPipeLeftLayoutVerticalSpacer1"
+                    android:padding="@dimen/padding_none"
+                    android:textSize="@dimen/text_size_normal"  />
 
-            <TextView
-                android:id="@id/distanceLeftTextView"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="start"
-                android:textSize="@dimen/text_size_normal" />
+                <!-- DISTANCE AND PIPE LEFT LAYOUT vertical spacer 1 -->
+                <View
+                    android:id="@+id/distanceAndPipeLeftLayoutVerticalSpacer1"
+                    android:layout_width="1dp"
+                    android:layout_height="@dimen/spacer_vertical_xshort"
+                    android:layout_above="@+id/distanceLeftTextView" >
+                </View>
+
+                <TextView
+                    android:id="@id/distanceLeftTextView"
+                    android:layout_height="wrap_content"
+                    android:layout_width="fill_parent"
+                    android:gravity="start"
+                    android:layout_alignParentBottom="true"
+                    android:padding="@dimen/padding_none"
+                    android:textSize="@dimen/text_size_normal"  />
+
+            </RelativeLayout>
+            <!-- END OF DISTANCE AND PIPE LEFT LAYOUT -->
 
         </LinearLayout>
         <!-- END OF LEFT PANEL LAYOUT (connect, measure, and redo buttons) -->
 
         <!-- LEFT AND RIGHT PANEL CONTAINER LAYOUT horizontal spacer 1 -->
         <View
+            android:id="@+id/leftAndRightPanelContainerLayoutHorizontalSpacer1"
+            android:layout_height="1dp"
             android:layout_width="@dimen/spacer_horizontal_xslim"
-            android:layout_height="1dp" >
+            android:layout_toEndOf="@+id/leftPanelLayout" >
         </View>
 
         <!-- RIGHT PANEL LAYOUT (measurements table) -->
         <LinearLayout
+            android:id="@+id/rightPanelLayout"
+            android:layout_height="fill_parent"
+            android:layout_width="fill_parent"
+            android:background="#DDDDDD"
+            android:layout_toEndOf="@+id/leftAndRightPanelContainerLayoutHorizontalSpacer1"
             android:orientation="vertical"
-            android:layout_weight="1"
-            android:layout_width="0dip"
-            android:layout_height="match_parent"
-            android:padding="@dimen/padding_none"
-            android:background="#DDDDDD" >
+            android:padding="@dimen/padding_none" >
 
             <!-- TABLE HEADER LAYOUT (measurements table) -->
             <TableLayout
@@ -290,8 +317,8 @@
         </LinearLayout>
         <!-- END OF RIGHT PANEL LAYOUT (measurements table) -->
 
-    </LinearLayout>
+    </RelativeLayout>
     <!-- END OF LEFT AND RIGHT PANEL CONTAINER LAYOUT -->
 
-</LinearLayout>
+</RelativeLayout>
 <!-- END OF MAIN LAYOUT -->
