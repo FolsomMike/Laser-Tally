@@ -1,27 +1,27 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<!-- MAIN LAYOUT -->
+<RelativeLayout
     android:id="@+id/main_content"
-    android:layout_width="400dp"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:layout_width="@dimen/dialog_width_standard"
     android:background="#CFCFCF"
-    android:paddingBottom="0dp"
-    android:paddingLeft="0dp"
-    android:paddingRight="0dp"
-    android:paddingTop="0dp"
+    android:padding="@dimen/padding_none"
     tools:context="com.yaboosh.ybtech.lasertally.MoreActivity"
-    android:gravity="center" >
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" >
 
+    <!-- TITLE BAR LAYOUT-->
     <LinearLayout
+        android:id="@+id/titleBarLayout"
+        android:layout_height="@dimen/title_bar_layout_height"
+        android:layout_width="fill_parent"
         android:background="#1A1A1A"
         android:gravity="center"
-        android:layout_width="fill_parent"
-        android:layout_height="70dp"
+        android:layout_alignParentTop="true"
         android:orientation="horizontal"
-        android:paddingBottom="0dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="0dp" >
+        android:paddingBottom="@dimen/title_bar_layout_padding_bottom"
+        android:paddingLeft="@dimen/title_bar_layout_padding_left"
+        android:paddingRight="@dimen/title_bar_layout_padding_right"
+        android:paddingTop="@dimen/title_bar_layout_padding_top" >
 
         <TextView
             android:gravity="center"
@@ -29,10 +29,10 @@
             android:layout_height="fill_parent"
             android:padding="0dp"
             android:textColor="#B2B2B2"
-            android:text="Menu"
-            android:textSize="40sp" />
+            android:text="More"
+            android:textSize="@dimen/title_bar_layout_title_text_size" />
 
-        <!-- horizontal spacer -->
+        <!-- TITLE BAR LAYOUT horizontal spacer 1 -->
         <View
             android:layout_weight="1"
             android:layout_width="0dp"
@@ -48,32 +48,33 @@
             android:onClick="handleRedXButtonPressed"/>
 
     </LinearLayout>
+    <!-- END OF TITLE BAR LAYOUT-->
 
+    <!-- BUTTONS LAYOUT -->
     <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="30dp"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:paddingTop="30dp"
+        android:layout_width="fill_parent"
+        android:layout_below="@+id/titleBarLayout"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/padding_xxxlarge"
+        android:paddingLeft="@dimen/padding_xlarge"
+        android:paddingRight="@dimen/padding_xlarge"
+        android:paddingTop="@dimen/padding_xxxlarge"
         android:gravity="center" >
 
         <Button
             android:background="@drawable/white_styled_button_dark_gray_border"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="10dp"
-            android:paddingTop="10dp"
             android:text="print"
-            android:textSize="30sp"
+            android:textSize="@dimen/text_size_normal"
             style="@style/whiteStyledButton"
             android:onClick="handlePrintButtonPressed" />
 
-        <!-- vertical spacer -->
+        <!-- BUTTONS LAYOUT vertical spacer 1 -->
         <View
             android:layout_width="1dp"
-            android:layout_height="40dp" >
+            android:layout_height="@dimen/spacer_vertical_tall" >
         </View>
 
         <Button
@@ -81,10 +82,12 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="options"
-            android:textSize="30sp"
+            android:textSize="@dimen/text_size_normal"
             style="@style/whiteStyledButton"
             android:onClick="handleOptionsButtonPressed" />
 
     </LinearLayout>
+    <!-- END OF BUTTONS LAYOUT -->
 
-</LinearLayout>
+</RelativeLayout>
+<!-- END OF MAIN LAYOUT -->

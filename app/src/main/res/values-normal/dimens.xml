@@ -1,0 +1,84 @@
+<resources>
+
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+
+    <!-- ////////////////////////////////////////////////////////////////////////////////////// -->
+
+    <!-- BUTTONS -->
+    <dimen name="button_width_standard">125dp</dimen>
+    <!-- END OF BUTTONS -->
+
+    <!-- DIALOGS -->
+    <dimen name="dialog_width_standard">650dp</dimen>
+    <dimen name="dialog_height_standard">500dp</dimen>
+    <!-- END OF DIALOGS -->
+
+    <!-- PADDING -->
+    <dimen name="padding_none">0dp</dimen>
+    <dimen name="padding_xxsmall">2dp</dimen>
+    <dimen name="padding_xsmall">3dp</dimen>
+    <dimen name="padding_small">5dp</dimen>
+    <dimen name="padding_normal">10dp</dimen>
+    <dimen name="padding_large">15dp</dimen>
+    <dimen name="padding_xlarge">20dp</dimen>
+    <dimen name="padding_xxlarge">25dp</dimen>
+    <dimen name="padding_xxxlarge">30dp</dimen>
+    <dimen name="padding_4xlarge">55dp</dimen>
+    <!-- END OF PADDING -->
+
+    <!-- SPACERS -->
+    <dimen name="spacer_horizontal_xslim">10dp</dimen>
+    <dimen name="spacer_horizontal_normal">30dp</dimen>
+    <dimen name="spacer_horizontal_xxwide">60dp</dimen>
+
+    <dimen name="spacer_vertical_xshort">10dp</dimen>
+    <dimen name="spacer_vertical_short">20dp</dimen>
+    <dimen name="spacer_vertical_normal">30dp</dimen>
+    <dimen name="spacer_vertical_tall">40dp</dimen>
+    <dimen name="spacer_vertical_xxtall">60dp</dimen>
+    <!-- END OF SPACERS -->
+
+    <!-- TEXT SIZES -->
+    <dimen name="text_size_xxsmall">17dp</dimen>
+    <dimen name="text_size_xsmall">20dp</dimen>
+    <dimen name="text_size_small">25dp</dimen>
+    <dimen name="text_size_normal">30dp</dimen>
+    <dimen name="text_size_large">35dp</dimen>
+    <dimen name="text_size_xlarge">40dp</dimen>
+    <dimen name="text_size_xxlarge">50dp</dimen>
+    <!-- END OF TEXT SIZES -->
+
+    <!-- TITLE BAR LAYOUT -->
+    <dimen name="title_bar_layout_height">70dp</dimen>
+    <dimen name="title_bar_layout_padding_bottom">0dp</dimen>
+    <dimen name="title_bar_layout_padding_left">10dp</dimen>
+    <dimen name="title_bar_layout_padding_right">10dp</dimen>
+    <dimen name="title_bar_layout_padding_top">0dp</dimen>
+    <dimen name="title_bar_layout_title_text_size">40dp</dimen>
+    <!-- END OF TITLE BAR LAYOUT -->
+
+    <!-- activity_job_display.xml -->
+    <dimen name="ajd_ttbl_height">80dp</dimen>
+    <!-- end of activity_job_display.xml -->
+
+    <!-- activity_job_info.xml -->
+    <dimen name="aji_ml_ocbl_height">70dp</dimen>
+    <!-- end of activity_job_info.xml -->
+
+    <!-- activity_more_options.xml -->
+    <dimen name="amo_ml_ocbl_height">70dp</dimen>
+    <!-- end of activity_more_options.xml -->
+
+    <!-- activity_tally_device_connection_status_message.xml -->
+    <dimen name="atdcsm_ml_pbcml_check_mark_height">100dp</dimen>
+    <dimen name="atdcsm_ml_pbcml_check_mark_width">100dp</dimen>
+    <!-- end of activity_tally_device_connection_status_message.xml -->
+
+    <!-- activity_tally_device_scan.xml -->
+    <dimen name="atds_ml_sl_height">50dp</dimen>
+    <!-- end of activity_tally_device_scan.xml -->
+
+</resources>
