@@ -1,163 +1,132 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<!-- MAIN LAYOUT -->
+<RelativeLayout
     android:id="@+id/main_content"
-    android:layout_width="600dp"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:layout_width="@dimen/dialog_width_standard"
     android:background="#CFCFCF"
-    android:paddingBottom="0dp"
-    android:paddingLeft="0dp"
-    android:paddingRight="0dp"
-    android:paddingTop="0dp"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:padding="@dimen/padding_none"
     tools:context="com.yaboosh.ybtech.lasertally.TableRowEditorActivity"
-    android:gravity="center" >
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" >
 
+    <!-- TITLE BAR LAYOUT-->
     <LinearLayout
-        android:orientation="horizontal"
+        android:id="@+id/titleBarLayout"
+        android:layout_height="wrap_content"
         android:layout_width="fill_parent"
-        android:layout_height="70dp"
-        android:paddingBottom="0dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="0dp"
-        android:background="#1A1A1A" >
+        android:background="#1A1A1A"
+        android:gravity="center"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/title_bar_layout_padding_bottom"
+        android:paddingLeft="@dimen/title_bar_layout_padding_left"
+        android:paddingRight="@dimen/title_bar_layout_padding_right"
+        android:paddingTop="@dimen/title_bar_layout_padding_top" >
 
-        <LinearLayout
-            android:orientation="vertical"
+        <TextView
+            android:gravity="center"
             android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:paddingBottom="0dp"
-            android:paddingLeft="0dp"
-            android:paddingRight="0dp"
-            android:paddingTop="0dp" >
+            android:layout_height="wrap_content"
+            android:padding="0dp"
+            android:textColor="#B2B2B2"
+            android:text="Edit Entry"
+            android:textSize="@dimen/title_bar_layout_title_text_size" />
 
-            <!-- vertical spacer -->
-            <View
-                android:layout_width="0dp"
-                android:layout_height="5dp" >
-            </View>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:textColor="#B2B2B2"
-                android:text="Edit Entry"
-                android:textSize="40dp" />
-
-        </LinearLayout>
-
-        <!-- horizontal spacer -->
+        <!-- TITLE BAR LAYOUT horizontal spacer 1 -->
         <View
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="1dp" >
         </View>
 
-        <LinearLayout
-            android:orientation="vertical"
+        <Button
+            android:id="@id/tableRowEditorRedXButton"
+            android:background="@drawable/close_x_button"
+            android:gravity="center"
             android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:paddingBottom="0dp"
-            android:paddingLeft="0dp"
-            android:paddingRight="0dp"
-            android:paddingTop="0dp" >
-
-            <!-- vertical spacer -->
-            <View
-                android:layout_width="0dp"
-                android:layout_height="15dp" >
-            </View>
-
-            <Button
-                android:id="@id/tableRowEditorRedXButton"
-                android:background="@drawable/close_x_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="handleRedXButtonPressed"/>
-
-        </LinearLayout>
+            android:layout_height="wrap_content"
+            android:onClick="handleRedXButtonPressed"/>
 
     </LinearLayout>
+    <!-- END OF TITLE BAR LAYOUT-->
 
+    <!-- EDIT ENTRY LAYOUT -->
     <LinearLayout
-        android:orientation="vertical"
+        android:layout_height="wrap_content"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:paddingBottom="20dp"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:paddingTop="20dp"
-        android:gravity="center" >
+        android:gravity="center"
+        android:layout_below="@+id/titleBarLayout"
+        android:orientation="vertical"
+        android:padding="@dimen/padding_xlarge">
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="0dp"
-            android:paddingLeft="0dp"
-            android:paddingRight="0dp"
-            android:paddingTop="0dp"
+            android:padding="@dimen/padding_none"
             android:gravity="center" >
 
             <TextView
-                android:layout_weight="1"
-                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="@dimen/padding_none"
                 android:text="Pipe Number:"
                 android:textColor="#000000"
-                android:textSize="40sp"
-                style="@android:style/Widget.ProgressBar.Large"
-                android:gravity="center" />
+                android:textSize="@dimen/text_size_xlarge" />
 
-            <!-- horizontal spacer -->
+            <!-- EDIT ENTRY LAYOUT horizontal spacer 1 -->
             <View
-                android:layout_width="10dp"
-                android:layout_height="1dp" >
+                android:layout_height="1dp"
+                android:layout_width="@dimen/spacer_horizontal_xslim"
+                android:padding="@dimen/padding_none" >
             </View>
 
             <EditText
                 android:id="@id/editTextPipeNumber"
-                android:layout_weight="1"
-                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textColor="#000000"
-                android:textSize="35sp"
-                android:inputType="number"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:background="@drawable/black_border"
                 android:digits="0123456789"
-                android:paddingBottom="10dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingTop="10dp"
+                android:imeOptions="flagNoExtractUi"
+                android:inputType="number"
+                android:lines="1"
+                android:maxLines="1"
+                android:padding="@dimen/padding_normal"
                 android:selectAllOnFocus="true"
-                android:background="@drawable/black_border" >
+                android:singleLine="true"
+                android:textColor="#000000"
+                android:textSize="@dimen/text_size_large" >
             </EditText>
 
         </LinearLayout>
 
         <CheckBox
             android:id="@id/checkBoxRenumberAllBelow"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:padding="@dimen/padding_none"
             android:text="renumber all below"
             android:textColor="#333333"
-            android:textSize="20sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:textSize="@dimen/text_size_xsmall" >
         </CheckBox>
 
-        <!-- vertical spacer -->
+        <!-- EDIT ENTRY LAYOUT vertical spacer 1 -->
         <View
             android:layout_width="1dp"
-            android:layout_height="20dp"
-            android:padding="0dp" >
+            android:layout_height="@dimen/spacer_vertical_short"
+            android:padding="@dimen/padding_none" >
         </View>
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="0dp"
-            android:paddingLeft="0dp"
-            android:paddingRight="0dp"
-            android:paddingTop="0dp"
+            android:padding="@dimen/padding_none"
             android:gravity="center" >
 
             <TextView
@@ -166,80 +135,79 @@
                 android:layout_height="wrap_content"
                 android:text="Total Length:"
                 android:textColor="#000000"
-                android:textSize="40sp"
-                style="@android:style/Widget.ProgressBar.Large"
+                android:textSize="@dimen/text_size_xlarge"
                 android:gravity="center" />
 
-            <!-- horizontal spacer -->
+            <!-- EDIT ENTRY LAYOUT horizontal spacer 2 -->
             <View
-                android:layout_width="10dp"
+                android:layout_width="@dimen/spacer_horizontal_xslim"
                 android:layout_height="1dp" >
             </View>
 
             <EditText
                 android:id="@id/editTextTotalLength"
-                android:layout_weight="1"
-                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textColor="#000000"
-                android:textSize="35sp"
-                android:inputType="numberDecimal"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:background="@drawable/black_border"
                 android:digits="0123456789,."
-                android:paddingBottom="10dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingTop="10dp"
+                android:imeOptions="flagNoExtractUi"
+                android:inputType="numberDecimal"
+                android:lines="1"
+                android:maxLines="1"
+                android:padding="@dimen/padding_normal"
                 android:selectAllOnFocus="true"
-                android:background="@drawable/black_border" >
+                android:singleLine="true"
+                android:textColor="#000000"
+                android:textSize="@dimen/text_size_large" >
             </EditText>
 
         </LinearLayout>
 
-        <!-- vertical spacer -->
+        <!-- EDIT ENTRY LAYOUT vertical spacer 2 -->
         <View
             android:layout_width="1dp"
-            android:layout_height="40dp"
-            android:padding="0dp" >
+            android:layout_height="@dimen/spacer_vertical_tall"
+            android:padding="@dimen/padding_none" >
         </View>
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="0dp"
-            android:paddingLeft="0dp"
-            android:paddingRight="0dp"
-            android:paddingTop="0dp"
+            android:padding="@dimen/padding_none"
             android:gravity="center" >
 
             <Button
                 android:id="@id/tableRowEditorCancelButton"
                 android:background="@drawable/white_styled_button"
-                android:layout_width="125dp"
+                android:layout_width="@dimen/button_width_standard"
                 android:layout_height="wrap_content"
                 android:text="cancel"
-                android:textSize="30sp"
+                android:textSize="@dimen/text_size_normal"
                 style="@style/whiteStyledButton"
                 android:onClick="handleCancelButtonPressed" />
 
-            <!-- horizontal spacer -->
+            <!-- EDIT ENTRY LAYOUT horizontal spacer 3 -->
             <View
-                android:layout_width="60dp"
+                android:layout_width="@dimen/spacer_horizontal_xxwide"
                 android:layout_height="1dp" >
             </View>
 
             <Button
                 android:id="@id/okButton"
                 android:background="@drawable/white_styled_button"
-                android:layout_width="125dp"
+                android:layout_width="@dimen/button_width_standard"
                 android:layout_height="wrap_content"
                 android:text="ok"
-                android:textSize="30sp"
+                android:textSize="@dimen/text_size_normal"
                 style="@style/whiteStyledButton"
                 android:onClick="handleOkButtonPressed" />
 
         </LinearLayout>
 
     </LinearLayout>
+    <!-- END OF EDIT ENTRY LAYOUT -->
 
-</LinearLayout>
+</RelativeLayout>
+<!-- END OF MAIN LAYOUT -->

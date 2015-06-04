@@ -1,38 +1,48 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
+<!-- MAIN LAYOUT -->
+<RelativeLayout
+    android:id="@+id/main_content"
+    android:layout_height="fill_parent"
+    android:layout_width="fill_parent"
     android:baselineAligned="false"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     android:background="#808080"
-    tools:context="com.yaboosh.lasertally.development.main.JobDisplayActivity" >
+    android:orientation="vertical"
+    android:padding="@dimen/padding_none"
+    tools:context="com.yaboosh.lasertally.development.main.JobDisplayActivity"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" >
 
+    <!-- TOP TITLE BAR LAYOUT -->
     <LinearLayout
-        android:orientation="horizontal"
+        android:id="@+id/titleBarLayout"
+        android:layout_height="wrap_content"
         android:layout_width="fill_parent"
-        android:layout_height="80dp"
-        android:paddingBottom="2dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="2dp"
-        android:background="#1A1A1A" >
+        android:background="#1A1A1A"
+        android:gravity="center"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/padding_xxsmall"
+        android:paddingLeft="@dimen/padding_normal"
+        android:paddingRight="@dimen/padding_normal"
+        android:paddingTop="@dimen/padding_xxsmall" >
 
         <TextView
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:padding="@dimen/padding_none"
             android:textColor="#B2B2B2"
             android:text="Job: "
-            android:textSize="50dp"/>
+            android:textSize="@dimen/text_size_xxlarge"/>
 
         <TextView
             android:id="@id/jobNameTextView"
-            android:layout_width="400dp"
             android:layout_height="wrap_content"
+            android:layout_width="@dimen/ajd_ttbl_title_text_view_width"
+            android:padding="@dimen/padding_none"
             android:textColor="#FFFFFF"
             android:text=""
-            android:textSize="50dp"/>
+            android:textSize="@dimen/text_size_xxlarge"/>
 
-        <!-- horizontal spacer -->
+        <!-- TOP TITLE BAR LAYOUT horizontal spacer 1 -->
         <View
             android:layout_weight="1"
             android:layout_width="0dp"
@@ -44,13 +54,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/jobInfoButtonText"
-            android:textSize="30sp"
+            android:textSize="@dimen/text_size_normal"
             style="@style/whiteStyledButton"
             android:onClick="handleJobInfoButtonPressed" />
 
-        <!-- horizontal spacer -->
+        <!-- TOP TITLE BAR LAYOUT horizontal spacer 2 -->
         <View
-            android:layout_width="10dp"
+            android:layout_width="@dimen/spacer_horizontal_xslim"
             android:layout_height="1dp" >
         </View>
 
@@ -59,120 +69,134 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/moreButtonText"
-            android:textSize="30sp"
+            android:textSize="@dimen/text_size_normal"
             style="@style/whiteStyledButton"
             android:onClick="handleMoreButtonPressed" />
 
     </LinearLayout>
+    <!-- END OF TOP TITLE BAR LAYOUT -->
 
-    <!-- horizontal line -->
+    <!-- MAIN LAYOUT horizontal line 1 -->
     <View
-        android:layout_width="fill_parent"
+        android:id="@+id/mainLayoutHorizontalLine1"
         android:layout_height="2dp"
-        android:background="#191919" >
+        android:layout_width="fill_parent"
+        android:background="#191919"
+        android:layout_below="@+id/titleBarLayout" >
     </View>
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingBottom="10dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="10dp" >
+    <!-- LEFT AND RIGHT PANEL CONTAINER LAYOUT -->
+    <RelativeLayout
+        android:id="@+id/leftAndRightPanelContainerLayout"
+        android:layout_height="fill_parent"
+        android:layout_width="fill_parent"
+        android:layout_below="@+id/mainLayoutHorizontalLine1"
+        android:padding="@dimen/padding_normal" >
 
+        <!-- LEFT PANEL LAYOUT (connect, measure, and redo buttons) -->
         <LinearLayout
-            android:orientation="vertical"
+            android:id="@+id/leftPanelLayout"
+            android:layout_height="fill_parent"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingBottom="0dp"
-            android:paddingLeft="0dp"
-            android:paddingRight="0dp"
-            android:paddingTop="0dp"
-            tools:context="com.yaboosh.lasertally.development.main.MainActivity" >
+            android:layout_alignParentStart="true"
+            android:orientation="vertical"
+            android:padding="@dimen/padding_none" >
 
-            <!-- vertical spacer -->
+            <!-- LEFT PANEL LAYOUT vertical spacer 1 -->
             <View
+                android:id="@+id/leftPanelLayoutVerticalSpacer1"
                 android:layout_width="1dp"
-                android:layout_height="30dp" >
+                android:layout_height="@dimen/spacer_vertical_xshort" >
             </View>
 
             <Button
                 android:id="@id/redoButton"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/redoButtonText"
-                android:textSize="50sp"
-                style="@style/redStyledButton"
+                android:layout_width="wrap_content"
                 android:background="@drawable/red_styled_button"
-                android:visibility="invisible" />
+                android:text="@string/redoButtonText"
+                android:textSize="@dimen/text_size_xxlarge"
+                android:visibility="invisible"
+                style="@style/redStyledButton" />
 
-            <!-- vertical spacer -->
+            <!-- LEFT PANEL LAYOUT vertical spacer 2 -->
             <View
-                android:layout_width="1dp"
-                android:layout_height="10dp" >
+                android:id="@+id/leftPanelLayoutVerticalSpacer2"
+                android:layout_height="@dimen/spacer_vertical_xshort"
+                android:layout_width="1dp" >
             </View>
 
             <Button
                 android:id="@id/measureConnectButton"
-                android:layout_width="225dp"
-                android:layout_height="200dp"
-                android:textSize="50sp"
+                android:layout_height="@dimen/ajd_measure_connect_button_height"
+                android:layout_width="@dimen/ajd_measure_connect_button_width"
+                android:textSize="@dimen/text_size_xxlarge"
                 android:visibility="invisible"
                 style="@style/styledButtonWhiteText" />
 
-            <!-- vertical spacer -->
-            <View
-                android:layout_width="1dp"
-                android:layout_height="60dp" >
-            </View>
-
-            <TextView
-                android:id="@id/numberOfPipesLeftTextView"
+            <!-- DISTANCE AND PIPE LEFT LAYOUT -->
+            <RelativeLayout
+                android:id="@+id/distanceAndPipeLeftLayout"
+                android:layout_height="fill_parent"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="start"
-                android:textSize="30dp"
-                />
+                android:padding="@dimen/padding_none" >
 
-            <!-- vertical spacer -->
-            <View
-                android:layout_width="1dp"
-                android:layout_height="10dp" >
-            </View>
+                <TextView
+                    android:id="@id/numberOfPipesLeftTextView"
+                    android:layout_height="wrap_content"
+                    android:layout_width="fill_parent"
+                    android:gravity="start"
+                    android:layout_above="@+id/distanceAndPipeLeftLayoutVerticalSpacer1"
+                    android:padding="@dimen/padding_none"
+                    android:textSize="@dimen/text_size_normal"  />
 
-            <TextView
-                android:id="@id/distanceLeftTextView"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="start"
-                android:textSize="30dp"
-                />
+                <!-- DISTANCE AND PIPE LEFT LAYOUT vertical spacer 1 -->
+                <View
+                    android:id="@+id/distanceAndPipeLeftLayoutVerticalSpacer1"
+                    android:layout_width="1dp"
+                    android:layout_height="@dimen/spacer_vertical_xshort"
+                    android:layout_above="@+id/distanceLeftTextView" >
+                </View>
+
+                <TextView
+                    android:id="@id/distanceLeftTextView"
+                    android:layout_height="wrap_content"
+                    android:layout_width="fill_parent"
+                    android:gravity="start"
+                    android:layout_alignParentBottom="true"
+                    android:padding="@dimen/padding_none"
+                    android:textSize="@dimen/text_size_normal"  />
+
+            </RelativeLayout>
+            <!-- END OF DISTANCE AND PIPE LEFT LAYOUT -->
 
         </LinearLayout>
+        <!-- END OF LEFT PANEL LAYOUT (connect, measure, and redo buttons) -->
 
-        <!-- horizontal spacer -->
+        <!-- LEFT AND RIGHT PANEL CONTAINER LAYOUT horizontal spacer 1 -->
         <View
-            android:layout_width="10dp"
-            android:layout_height="1dp" >
+            android:id="@+id/leftAndRightPanelContainerLayoutHorizontalSpacer1"
+            android:layout_height="1dp"
+            android:layout_width="@dimen/spacer_horizontal_xslim"
+            android:layout_toEndOf="@+id/leftPanelLayout" >
         </View>
 
+        <!-- RIGHT PANEL LAYOUT (measurements table) -->
         <LinearLayout
+            android:id="@+id/rightPanelLayout"
+            android:layout_height="fill_parent"
+            android:layout_width="fill_parent"
+            android:background="#DDDDDD"
+            android:layout_toEndOf="@+id/leftAndRightPanelContainerLayoutHorizontalSpacer1"
             android:orientation="vertical"
-            android:layout_weight="1"
-            android:layout_width="0dip"
-            android:layout_height="match_parent"
-            android:paddingBottom="0dp"
-            android:paddingLeft="0dp"
-            android:paddingRight="0dp"
-            android:paddingTop="0dp"
-            android:background="#DDDDDD" >
+            android:padding="@dimen/padding_none" >
 
+            <!-- TABLE HEADER LAYOUT (measurements table) -->
             <TableLayout
                 android:id = "@+id/pipeMeasurementsHeaderTable"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:padding="0dp"
+                android:padding="@dimen/padding_none"
                 android:background="#000000">
                 <TableRow>
                     <View style="@style/tableSideBorderLine" />
@@ -180,37 +204,37 @@
                     <TextView
                         android:id="@+id/pipeNumberRow"
                         android:text="Pipe #"
-                        style="@style/headerTableColumn"
-                        />
+                        style="@style/headerTableColumn" />
 
                     <View style="@style/headerTableColumnDivider" />
 
                     <TextView
                         android:id="@+id/threadOnRow"
                         android:text="Total Length"
-                        style="@style/headerTableColumn"
-                        />
+                        style="@style/headerTableColumn" />
 
                     <View style="@style/headerTableColumnDivider" />
 
                     <TextView
                         android:id="@+id/threadOffRow"
                         android:text="Adjusted"
-                        style="@style/headerTableColumn"
-                        />
+                        style="@style/headerTableColumn" />
 
                     <View style="@style/tableSideBorderLine" />
                 </TableRow>
             </TableLayout>
+            <!-- TABLE HEADER LAYOUT (measurements table) -->
 
+            <!-- MEASUREMENTS AND TOTALS TABLES CONTAINER LAYOUT -->
             <RelativeLayout
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent" >
 
+                <!-- MEASUREMENTS TABLE LAYOUT -->
                 <LinearLayout
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:paddingBottom="55dp" >
+                    android:paddingBottom="@dimen/padding_4xlarge" >
 
                     <ScrollView
                         android:id="@id/measurementsTableScrollView"
@@ -224,7 +248,7 @@
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:background="@color/measurementsTableColor"
-                            android:padding="0dp" >
+                            android:padding="@dimen/padding_none" >
 
                             <View
                                 android:id="@id/measurementsTableBottomBorderLine"
@@ -236,14 +260,16 @@
                     </ScrollView>
 
                 </LinearLayout>
+                <!-- END OF MEASUREMENTS TABLE LAYOUT -->
 
+                <!-- TOTALS TABLE LAYOUT -->
                 <TableLayout
                     android:id="@id/totalsTable"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:background="#000000"
                     android:layout_alignParentBottom="true"
-                    android:padding="0dp" >
+                    android:padding="@dimen/padding_none" >
 
                     <View style="@style/tableTopBorderLineThick" />
 
@@ -253,8 +279,8 @@
 
                         <TextView
                             android:gravity="start"
-                            android:paddingLeft="15dp"
-                            android:paddingRight="15dp"
+                            android:paddingLeft="@dimen/padding_large"
+                            android:paddingRight="@dimen/padding_large"
                             android:text="Total"
                             style="@style/headerTableColumn" />
 
@@ -263,8 +289,8 @@
                         <TextView
                             android:id="@id/totalOfTotalLengthColumnTextView"
                             android:gravity="start"
-                            android:paddingLeft="15dp"
-                            android:paddingRight="15dp"
+                            android:paddingLeft="@dimen/padding_large"
+                            android:paddingRight="@dimen/padding_large"
                             style="@style/headerTableColumn" />
 
                         <View style="@style/headerTableColumnDivider" />
@@ -272,8 +298,8 @@
                         <TextView
                             android:id="@id/totalOfAdjustedColumnTextView"
                             android:gravity="start"
-                            android:paddingLeft="15dp"
-                            android:paddingRight="15dp"
+                            android:paddingLeft="@dimen/padding_large"
+                            android:paddingRight="@dimen/padding_large"
                             style="@style/headerTableColumn" />
 
                         <View style="@style/tableSideBorderLine" />
@@ -283,11 +309,16 @@
                     <View style="@style/tableBottomBorderLineThick" />
 
                 </TableLayout>
+                <!-- END OF TOTALS TABLE LAYOUT -->
 
             </RelativeLayout>
+            <!-- END OF MEASUREMENTS AND TOTALS TABLES CONTAINER LAYOUT -->
 
         </LinearLayout>
+        <!-- END OF RIGHT PANEL LAYOUT (measurements table) -->
 
-    </LinearLayout>
+    </RelativeLayout>
+    <!-- END OF LEFT AND RIGHT PANEL CONTAINER LAYOUT -->
 
-</LinearLayout>
+</RelativeLayout>
+<!-- END OF MAIN LAYOUT -->

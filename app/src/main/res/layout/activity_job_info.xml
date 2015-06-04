@@ -1,42 +1,42 @@
 <!-- This activity can be used for both creating a job and editing the job info -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<!-- MAIN LAYOUT -->
+<RelativeLayout
     android:id="@+id/main_content"
-    android:layout_width="645dp"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:layout_height="@dimen/dialog_height_standard"
+    android:layout_width="@dimen/dialog_width_standard"
     android:background="#CFCFCF"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    android:paddingBottom="0dp"
-    android:paddingLeft="0dp"
-    android:paddingRight="0dp"
-    android:paddingTop="0dp"
+    android:padding="@dimen/padding_none"
     tools:context="com.yaboosh.ybtech.lasertally.JobInfoActivity"
-    android:gravity="center" >
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" >
 
+    <!-- TITLE BAR LAYOUT -->
     <LinearLayout
+        android:id="@+id/titleBarLayout"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
         android:background="#1A1A1A"
         android:gravity="center"
-        android:layout_width="fill_parent"
-        android:layout_height="70dp"
+        android:layout_alignParentTop="true"
         android:orientation="horizontal"
-        android:paddingBottom="0dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="5dp" >
+        android:paddingBottom="@dimen/title_bar_layout_padding_bottom"
+        android:paddingLeft="@dimen/title_bar_layout_padding_left"
+        android:paddingRight="@dimen/title_bar_layout_padding_right"
+        android:paddingTop="@dimen/title_bar_layout_padding_top" >
 
         <TextView
             android:id="@id/editJobInfoActivityTitleTextView"
             android:gravity="center"
             android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
             android:padding="0dp"
             android:textColor="#B2B2B2"
-            android:textSize="40sp" />
+            android:textSize="@dimen/title_bar_layout_title_text_size" />
 
-        <!-- horizontal spacer -->
+        <!-- TITLE BAR LAYOUT horizontal spacer 1 -->
         <View
             android:layout_weight="1"
             android:layout_width="0dp"
@@ -47,22 +47,22 @@
             android:id="@id/editJobInfoMenuButton"
             android:background="@drawable/white_styled_button"
             android:gravity="center"
-            android:layout_width="125dp"
+            android:layout_width="@dimen/button_width_standard"
             android:layout_height="wrap_content"
             android:layout_margin="0dp"
-            android:paddingBottom="5dp"
-            android:paddingLeft="2dp"
-            android:paddingRight="2dp"
-            android:paddingTop="0dp"
+            android:paddingBottom="@dimen/padding_small"
+            android:paddingLeft="@dimen/padding_xxsmall"
+            android:paddingRight="@dimen/padding_xxsmall"
+            android:paddingTop="@dimen/padding_none"
             android:text="menu"
-            android:textSize="30sp"
+            android:textSize="@dimen/text_size_normal"
             android:visibility="invisible"
             style="@style/whiteStyledButton"
             android:onClick="handleMenuButtonPressed" />
 
-        <!-- horizontal spacer -->
+        <!-- TITLE BAR LAYOUT horizontal spacer 2 -->
         <View
-            android:layout_width="30dp"
+            android:layout_width="@dimen/spacer_horizontal_normal"
             android:layout_height="1dp" >
         </View>
 
@@ -75,21 +75,74 @@
             android:onClick="handleRedXButtonPressed"/>
 
     </LinearLayout>
+    <!-- END OF TITLE BAR LAYOUT -->
 
+    <!-- FIXED OK CANCEL BUTTONS LAYOUT -->
+    <LinearLayout
+        android:id="@+id/okCancelButtonsLayout"
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:paddingBottom="@dimen/focbl_padding_bottom"
+        android:paddingLeft="@dimen/focbl_padding_left"
+        android:paddingRight="@dimen/focbl_padding_right"
+        android:paddingTop="@dimen/focbl_padding_top"
+        android:gravity="center"
+        android:background="#1A1A1A" >
+
+        <Button
+            android:id="@id/jobInfoCancelButton"
+            android:background="@drawable/white_styled_button"
+            android:layout_width="@dimen/button_width_standard"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/padding_small"
+            android:paddingTop="@dimen/padding_small"
+            android:text="cancel"
+            android:textSize="@dimen/text_size_normal"
+            style="@style/whiteStyledButton"
+            android:onClick="handleCancelButtonPressed" />
+
+        <!-- FIXED OK CANCEL BUTTONS LAYOUT horizontal spacer 1 -->
+        <View
+            android:layout_width="@dimen/spacer_horizontal_xxwide"
+            android:layout_height="1dp" >
+        </View>
+
+        <Button
+            android:id="@id/okButton"
+            android:layout_width="@dimen/button_width_standard"
+            android:layout_height="wrap_content"
+            android:background="@drawable/white_styled_button"
+            android:enabled="false"
+            android:onClick="handleOkButtonPressed"
+            android:paddingBottom="@dimen/padding_small"
+            android:paddingTop="@dimen/padding_small"
+            android:text="ok"
+            android:textSize="@dimen/text_size_normal"
+            style="@style/disabledStyledButton" />
+
+    </LinearLayout>
+    <!-- END OF FIXED OK CANCEL BUTTONS LAYOUT -->
+
+    <!-- JOB INFO SCROLLVIEW -->
     <ScrollView
         android:layout_width="fill_parent"
-        android:layout_height="400dp"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/okCancelButtonsLayout"
+        android:layout_below="@+id/titleBarLayout"
         android:scrollbars="vertical"
         android:fadeScrollbars="false" >
 
+        <!-- JOB INFO LAYOUT -->
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="fill_parent"
-            android:layout_height="400dp"
-            android:paddingBottom="10dp"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp"
-            android:paddingTop="10dp"
+            android:layout_height="fill_parent"
+            android:paddingBottom="@dimen/padding_normal"
+            android:paddingLeft="@dimen/padding_xlarge"
+            android:paddingRight="@dimen/padding_xlarge"
+            android:paddingTop="@dimen/padding_normal"
             android:gravity="center" >
 
             <TextView
@@ -97,24 +150,21 @@
                 android:layout_height="wrap_content"
                 android:text="* Must not be left blank"
                 android:textColor="#666666"
-                android:textSize="20sp"
+                android:textSize="@dimen/text_size_xsmall"
                 android:gravity="center" />
 
-            <!-- vertical spacer -->
+            <!-- JOB INFO LAYOUT vertical spacer 1 -->
             <View
                 android:layout_width="1dp"
-                android:layout_height="20dp"
-                android:padding="0dp" >
+                android:layout_height="@dimen/spacer_vertical_short"
+                android:padding="@dimen/padding_none" >
             </View>
 
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="0dp"
-                android:paddingLeft="0dp"
-                android:paddingRight="0dp"
-                android:paddingTop="0dp"
+                android:padding="@dimen/padding_none"
                 android:gravity="center" >
 
                 <TextView
@@ -122,31 +172,25 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
-                    android:paddingStart="5dp"
-                    android:paddingEnd="25dp"
+                    android:paddingEnd="@dimen/padding_xxlarge"
+                    android:paddingStart="@dimen/padding_small"
                     android:text="A job with this name already exists."
                     android:textColor="#FF0000"
-                    android:textSize="17sp"
+                    android:textSize="@dimen/text_size_xxsmall"
                     android:visibility="invisible" />
 
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:paddingBottom="0dp"
-                    android:paddingLeft="0dp"
-                    android:paddingRight="0dp"
-                    android:paddingTop="0dp"
+                    android:padding="@dimen/padding_none"
                     android:gravity="center" >
 
                     <LinearLayout
                         android:layout_weight="1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:paddingBottom="0dp"
-                        android:paddingLeft="0dp"
-                        android:paddingRight="0dp"
-                        android:paddingTop="0dp"
+                        android:padding="@dimen/padding_none"
                         android:gravity="end" >
 
                         <TextView
@@ -154,7 +198,7 @@
                             android:layout_height="wrap_content"
                             android:text="*"
                             android:textColor="#666666"
-                            android:textSize="40sp"
+                            android:textSize="@dimen/text_size_xlarge"
                             android:gravity="end" />
 
                         <TextView
@@ -162,51 +206,49 @@
                             android:layout_height="wrap_content"
                             android:text="Job:"
                             android:textColor="#000000"
-                            android:textSize="40sp"
+                            android:textSize="@dimen/text_size_xlarge"
                             android:gravity="end" />
 
                     </LinearLayout>
 
-                    <!-- horizontal spacer -->
+                    <!-- JOB INFO LAYOUT horizontal spacer 1 -->
                     <View
-                        android:layout_width="10dp"
+                        android:layout_width="@dimen/spacer_horizontal_xslim"
                         android:layout_height="1dp" >
                     </View>
 
                     <EditText
                         android:id="@id/editTextJob"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:textColor="#000000"
-                        android:textSize="35sp"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/black_border"
+                        android:imeOptions="flagNoExtractUi"
+                        android:lines="1"
                         android:maxLength="30"
-                        android:paddingBottom="10dp"
-                        android:paddingLeft="10dp"
-                        android:paddingRight="10dp"
-                        android:paddingTop="10dp"
-                        android:background="@drawable/black_border" >
+                        android:maxLines="1"
+                        android:padding="@dimen/padding_normal"
+                        android:singleLine="true"
+                        android:textColor="#000000"
+                        android:textSize="@dimen/text_size_large">
                     </EditText>
 
                 </LinearLayout>
 
             </LinearLayout>
 
-            <!-- vertical spacer -->
+            <!-- JOB INFO LAYOUT vertical spacer 2 -->
             <View
                 android:layout_width="1dp"
-                android:layout_height="20dp"
-                android:padding="0dp" >
+                android:layout_height="@dimen/spacer_vertical_short"
+                android:padding="@dimen/padding_none" >
             </View>
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="0dp"
-                android:paddingLeft="0dp"
-                android:paddingRight="0dp"
-                android:paddingTop="0dp"
+                android:padding="@dimen/padding_none"
                 android:gravity="center" >
 
                 <TextView
@@ -215,49 +257,47 @@
                     android:layout_height="wrap_content"
                     android:text="Date:"
                     android:textColor="#000000"
-                    android:textSize="40sp"
+                    android:textSize="@dimen/text_size_xlarge"
                     android:gravity="end" />
 
-                <!-- horizontal spacer -->
+                <!-- JOB INFO LAYOUT horizontal spacer 2 -->
                 <View
-                    android:layout_width="10dp"
+                    android:layout_width="@dimen/spacer_horizontal_xslim"
                     android:layout_height="1dp" >
                 </View>
 
                 <EditText
                     android:id="@id/editTextDate"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:background="@drawable/black_border"
                     android:digits="0123456789,./"
+                    android:imeOptions="flagNoExtractUi"
                     android:inputType="number"
+                    android:lines="1"
                     android:maxLength="30"
-                    android:paddingBottom="10dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="10dp"
+                    android:maxLines="1"
+                    android:padding="@dimen/padding_normal"
+                    android:singleLine="true"
                     android:textColor="#000000"
-                    android:textSize="35sp" >
+                    android:textSize="@dimen/text_size_large" >
                 </EditText>
 
             </LinearLayout>
 
-            <!-- vertical spacer -->
+            <!-- JOB INFO LAYOUT vertical spacer 3 -->
             <View
                 android:layout_width="1dp"
-                android:layout_height="20dp"
-                android:padding="0dp" >
+                android:layout_height="@dimen/spacer_vertical_short"
+                android:padding="@dimen/padding_none" >
             </View>
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="0dp"
-                android:paddingLeft="0dp"
-                android:paddingRight="0dp"
-                android:paddingTop="0dp"
+                android:padding="@dimen/padding_none"
                 android:gravity="center" >
 
                 <TextView
@@ -266,49 +306,47 @@
                     android:layout_height="wrap_content"
                     android:text="Tally Goal:"
                     android:textColor="#000000"
-                    android:textSize="40sp"
+                    android:textSize="@dimen/text_size_xlarge"
                     android:gravity="end" />
 
-                <!-- horizontal spacer -->
+                <!-- JOB INFO LAYOUT horizontal spacer 3 -->
                 <View
-                    android:layout_width="10dp"
+                    android:layout_width="@dimen/spacer_horizontal_xslim"
                     android:layout_height="1dp" >
                 </View>
 
                 <EditText
                     android:id="@id/editTextTallyGoal"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:background="@drawable/black_border"
                     android:digits="0123456789,."
+                    android:imeOptions="flagNoExtractUi"
                     android:inputType="number"
+                    android:lines="1"
                     android:maxLength="30"
-                    android:paddingBottom="10dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="10dp"
+                    android:maxLines="1"
+                    android:padding="@dimen/padding_normal"
+                    android:singleLine="true"
                     android:textColor="#000000"
-                    android:textSize="35sp" >
+                    android:textSize="@dimen/text_size_large" >
                 </EditText>
 
             </LinearLayout>
 
-            <!-- vertical spacer -->
+            <!-- JOB INFO LAYOUT vertical spacer 4 -->
             <View
                 android:layout_width="1dp"
-                android:layout_height="20dp"
-                android:padding="0dp" >
+                android:layout_height="@dimen/spacer_vertical_short"
+                android:padding="@dimen/padding_none" >
             </View>
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="0dp"
-                android:paddingLeft="0dp"
-                android:paddingRight="0dp"
-                android:paddingTop="0dp"
+                android:padding="@dimen/padding_none"
                 android:gravity="center" >
 
                 <TextView
@@ -317,47 +355,45 @@
                     android:layout_height="wrap_content"
                     android:text="Company Name:"
                     android:textColor="#000000"
-                    android:textSize="40sp"
+                    android:textSize="@dimen/text_size_xlarge"
                     android:gravity="end" />
 
-                <!-- horizontal spacer -->
+                <!-- JOB INFO LAYOUT horizontal spacer 4 -->
                 <View
-                    android:layout_width="10dp"
+                    android:layout_width="@dimen/spacer_horizontal_xslim"
                     android:layout_height="1dp" >
                 </View>
 
                 <EditText
                     android:id="@id/editTextCompanyName"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textColor="#000000"
-                    android:textSize="35sp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/black_border"
+                    android:imeOptions="flagNoExtractUi"
+                    android:lines="1"
                     android:maxLength="30"
-                    android:paddingBottom="10dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="10dp"
-                    android:background="@drawable/black_border" >
+                    android:maxLines="1"
+                    android:padding="@dimen/padding_normal"
+                    android:singleLine="true"
+                    android:textColor="#000000"
+                    android:textSize="@dimen/text_size_large" >
                 </EditText>
 
             </LinearLayout>
 
-            <!-- vertical spacer -->
+            <!-- JOB INFO LAYOUT vertical spacer 5 -->
             <View
                 android:layout_width="1dp"
-                android:layout_height="20dp"
-                android:padding="0dp" >
+                android:layout_height="@dimen/spacer_vertical_short"
+                android:padding="@dimen/padding_none" >
             </View>
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="0dp"
-                android:paddingLeft="0dp"
-                android:paddingRight="0dp"
-                android:paddingTop="0dp"
+                android:padding="@dimen/padding_none"
                 android:gravity="center" >
 
                 <LinearLayout
@@ -365,10 +401,7 @@
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:paddingBottom="0dp"
-                android:paddingLeft="0dp"
-                android:paddingRight="0dp"
-                android:paddingTop="0dp"
+                android:padding="@dimen/padding_none"
                 android:gravity="end" >
 
                     <TextView
@@ -376,51 +409,49 @@
                         android:layout_height="wrap_content"
                         android:text="Adjustment:"
                         android:textColor="#000000"
-                        android:textSize="40sp"
+                        android:textSize="@dimen/text_size_xlarge"
                         android:gravity="center_horizontal" />
 
                 </LinearLayout>
 
-                <!-- horizontal spacer -->
+                <!-- JOB INFO LAYOUT horizontal spacer 5 -->
                 <View
-                    android:layout_width="10dp"
+                    android:layout_width="@dimen/spacer_horizontal_xslim"
                     android:layout_height="1dp" >
                 </View>
 
                 <EditText
                     android:id="@id/editTextProtectorMakeupAdjustment"
-                    android:inputType="number"
-                    android:digits="0123456789,."
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textColor="#000000"
-                    android:textSize="35sp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/black_border"
+                    android:digits="0123456789,."
+                    android:imeOptions="flagNoExtractUi"
+                    android:inputType="number"
+                    android:lines="1"
                     android:maxLength="5"
-                    android:paddingBottom="10dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="10dp"
-                    android:background="@drawable/black_border" >
+                    android:maxLines="1"
+                    android:padding="@dimen/padding_normal"
+                    android:singleLine="true"
+                    android:textColor="#000000"
+                    android:textSize="@dimen/text_size_large" >
                 </EditText>
 
             </LinearLayout>
 
-            <!-- vertical spacer -->
+            <!-- JOB INFO LAYOUT vertical spacer 6 -->
             <View
                 android:layout_width="1dp"
-                android:layout_height="20dp"
-                android:padding="0dp" >
+                android:layout_height="@dimen/spacer_vertical_short"
+                android:padding="@dimen/padding_none" >
             </View>
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="0dp"
-                android:paddingLeft="0dp"
-                android:paddingRight="0dp"
-                android:paddingTop="0dp"
+                android:padding="@dimen/padding_none"
                 android:gravity="center" >
 
                 <TextView
@@ -429,47 +460,45 @@
                     android:layout_height="wrap_content"
                     android:text="Diameter:"
                     android:textColor="#000000"
-                    android:textSize="40sp"
+                    android:textSize="@dimen/text_size_xlarge"
                     android:gravity="end" />
 
-                <!-- horizontal spacer -->
+                <!-- JOB INFO LAYOUT horizontal spacer 6 -->
                 <View
-                    android:layout_width="10dp"
+                    android:layout_width="@dimen/spacer_horizontal_xslim"
                     android:layout_height="1dp" >
                 </View>
 
                 <EditText
                     android:id="@id/editTextDiameter"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/black_border"
+                    android:imeOptions="flagNoExtractUi"
+                    android:lines="1"
                     android:maxLength="15"
+                    android:maxLines="1"
+                    android:padding="@dimen/padding_normal"
+                    android:singleLine="true"
                     android:textColor="#000000"
-                    android:textSize="35sp"
-                    android:paddingBottom="10dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="10dp"
-                    android:background="@drawable/black_border" >
+                    android:textSize="@dimen/text_size_large" >
                 </EditText>
 
             </LinearLayout>
 
-            <!-- vertical spacer -->
+            <!-- JOB INFO LAYOUT vertical spacer 7 -->
             <View
                 android:layout_width="1dp"
-                android:layout_height="20dp"
-                android:padding="0dp" >
+                android:layout_height="@dimen/spacer_vertical_short"
+                android:padding="@dimen/padding_none" >
             </View>
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="0dp"
-                android:paddingLeft="0dp"
-                android:paddingRight="0dp"
-                android:paddingTop="0dp"
+                android:padding="@dimen/padding_none"
                 android:gravity="center" >
 
                 <TextView
@@ -478,47 +507,45 @@
                     android:layout_height="wrap_content"
                     android:text="Wall:"
                     android:textColor="#000000"
-                    android:textSize="40sp"
+                    android:textSize="@dimen/text_size_xlarge"
                     android:gravity="end" />
 
-                <!-- horizontal spacer -->
+                <!-- JOB INFO LAYOUT horizontal spacer 7 -->
                 <View
-                    android:layout_width="10dp"
+                    android:layout_width="@dimen/spacer_horizontal_xslim"
                     android:layout_height="1dp" >
                 </View>
 
                 <EditText
                     android:id="@id/editTextWall"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/black_border"
+                    android:imeOptions="flagNoExtractUi"
+                    android:lines="1"
                     android:maxLength="7"
+                    android:maxLines="1"
+                    android:padding="@dimen/padding_normal"
+                    android:singleLine="true"
                     android:textColor="#000000"
-                    android:textSize="35sp"
-                    android:paddingBottom="10dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="10dp"
-                    android:background="@drawable/black_border" >
+                    android:textSize="@dimen/text_size_large" >
                 </EditText>
 
             </LinearLayout>
 
-            <!-- vertical spacer -->
+            <!-- JOB INFO LAYOUT vertical spacer 8 -->
             <View
                 android:layout_width="1dp"
-                android:layout_height="20dp"
-                android:padding="0dp" >
+                android:layout_height="@dimen/spacer_vertical_short"
+                android:padding="@dimen/padding_none" >
             </View>
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="0dp"
-                android:paddingLeft="0dp"
-                android:paddingRight="0dp"
-                android:paddingTop="0dp"
+                android:padding="@dimen/padding_none"
                 android:gravity="center" >
 
                 <TextView
@@ -527,47 +554,45 @@
                     android:layout_height="wrap_content"
                     android:text="Grade:"
                     android:textColor="#000000"
-                    android:textSize="40sp"
+                    android:textSize="@dimen/text_size_xlarge"
                     android:gravity="end" />
 
-                <!-- horizontal spacer -->
+                <!-- JOB INFO LAYOUT horizontal spacer 8 -->
                 <View
-                    android:layout_width="10dp"
+                    android:layout_width="@dimen/spacer_horizontal_xslim"
                     android:layout_height="1dp" >
                 </View>
 
                 <EditText
                     android:id="@id/editTextGrade"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/black_border"
+                    android:imeOptions="flagNoExtractUi"
+                    android:lines="1"
                     android:maxLength="7"
+                    android:maxLines="1"
+                    android:padding="@dimen/padding_normal"
+                    android:singleLine="true"
                     android:textColor="#000000"
-                    android:textSize="35sp"
-                    android:paddingBottom="10dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="10dp"
-                    android:background="@drawable/black_border" >
+                    android:textSize="@dimen/text_size_large" >
                 </EditText>
 
             </LinearLayout>
 
-            <!-- vertical spacer -->
+            <!-- JOB INFO LAYOUT vertical spacer 9 -->
             <View
                 android:layout_width="1dp"
-                android:layout_height="20dp"
-                android:padding="0dp" >
+                android:layout_height="@dimen/spacer_vertical_short"
+                android:padding="@dimen/padding_none" >
             </View>
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="0dp"
-                android:paddingLeft="0dp"
-                android:paddingRight="0dp"
-                android:paddingTop="0dp"
+                android:padding="@dimen/padding_none"
                 android:gravity="center" >
 
                 <TextView
@@ -576,47 +601,45 @@
                     android:layout_height="wrap_content"
                     android:text="Range:"
                     android:textColor="#000000"
-                    android:textSize="40sp"
+                    android:textSize="@dimen/text_size_xlarge"
                     android:gravity="end" />
 
-                <!-- horizontal spacer -->
+                <!-- JOB INFO LAYOUT horizontal spacer 9 -->
                 <View
-                    android:layout_width="10dp"
+                    android:layout_width="@dimen/spacer_horizontal_xslim"
                     android:layout_height="1dp" >
                 </View>
 
                 <EditText
                     android:id="@id/editTextRange"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/black_border"
+                    android:imeOptions="flagNoExtractUi"
+                    android:lines="1"
                     android:maxLength="3"
+                    android:maxLines="1"
+                    android:padding="@dimen/padding_normal"
+                    android:singleLine="true"
                     android:textColor="#000000"
-                    android:textSize="35sp"
-                    android:paddingBottom="10dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="10dp"
-                    android:background="@drawable/black_border" >
+                    android:textSize="@dimen/text_size_large" >
                 </EditText>
 
             </LinearLayout>
 
-            <!-- vertical spacer -->
+            <!-- JOB INFO LAYOUT vertical spacer 10 -->
             <View
                 android:layout_width="1dp"
-                android:layout_height="20dp"
-                android:padding="0dp" >
+                android:layout_height="@dimen/spacer_vertical_short"
+                android:padding="@dimen/padding_none" >
             </View>
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="0dp"
-                android:paddingLeft="0dp"
-                android:paddingRight="0dp"
-                android:paddingTop="0dp"
+                android:padding="@dimen/padding_none"
                 android:gravity="center" >
 
                 <TextView
@@ -625,47 +648,45 @@
                     android:layout_height="wrap_content"
                     android:text="Facility:"
                     android:textColor="#000000"
-                    android:textSize="40sp"
+                    android:textSize="@dimen/text_size_xlarge"
                     android:gravity="end" />
 
-                <!-- horizontal spacer -->
+                <!-- JOB INFO LAYOUT horizontal spacer 10 -->
                 <View
-                    android:layout_width="10dp"
+                    android:layout_width="@dimen/spacer_horizontal_xslim"
                     android:layout_height="1dp" >
                 </View>
 
                 <EditText
                     android:id="@id/editTextFacility"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/black_border"
+                    android:imeOptions="flagNoExtractUi"
+                    android:lines="1"
                     android:maxLength="30"
+                    android:maxLines="1"
+                    android:padding="@dimen/padding_normal"
+                    android:singleLine="true"
                     android:textColor="#000000"
-                    android:textSize="35sp"
-                    android:paddingBottom="10dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="10dp"
-                    android:background="@drawable/black_border" >
+                    android:textSize="@dimen/text_size_large" >
                 </EditText>
 
             </LinearLayout>
 
-            <!-- vertical spacer -->
+            <!-- JOB INFO LAYOUT vertical spacer 11 -->
             <View
                 android:layout_width="1dp"
-                android:layout_height="20dp"
-                android:padding="0dp" >
+                android:layout_height="@dimen/spacer_vertical_short"
+                android:padding="@dimen/padding_none" >
             </View>
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="0dp"
-                android:paddingLeft="0dp"
-                android:paddingRight="0dp"
-                android:paddingTop="0dp"
+                android:padding="@dimen/padding_none"
                 android:gravity="center" >
 
                 <TextView
@@ -674,47 +695,45 @@
                     android:layout_height="wrap_content"
                     android:text="Rack:"
                     android:textColor="#000000"
-                    android:textSize="40sp"
+                    android:textSize="@dimen/text_size_xlarge"
                     android:gravity="end" />
 
-                <!-- horizontal spacer -->
+                <!-- JOB INFO LAYOUT horizontal spacer 11 -->
                 <View
-                    android:layout_width="10dp"
+                    android:layout_width="@dimen/spacer_horizontal_xslim"
                     android:layout_height="1dp" >
                 </View>
 
                 <EditText
                     android:id="@id/editTextRack"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/black_border"
+                    android:imeOptions="flagNoExtractUi"
+                    android:lines="1"
                     android:maxLength="20"
+                    android:maxLines="1"
+                    android:padding="@dimen/padding_normal"
+                    android:singleLine="true"
                     android:textColor="#000000"
-                    android:textSize="35sp"
-                    android:paddingBottom="10dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="10dp"
-                    android:background="@drawable/black_border" >
+                    android:textSize="@dimen/text_size_large" >
                 </EditText>
 
             </LinearLayout>
 
-            <!-- vertical spacer -->
+            <!-- JOB INFO LAYOUT vertical spacer 12 -->
             <View
                 android:layout_width="1dp"
-                android:layout_height="20dp"
-                android:padding="0dp" >
+                android:layout_height="@dimen/spacer_vertical_short"
+                android:padding="@dimen/padding_none" >
             </View>
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="0dp"
-                android:paddingLeft="0dp"
-                android:paddingRight="0dp"
-                android:paddingTop="0dp"
+                android:padding="@dimen/padding_none"
                 android:gravity="center" >
 
                 <TextView
@@ -723,79 +742,38 @@
                     android:layout_height="wrap_content"
                     android:text="Rig:"
                     android:textColor="#000000"
-                    android:textSize="40sp"
+                    android:textSize="@dimen/text_size_xlarge"
                     android:gravity="end" />
 
-                <!-- horizontal spacer -->
+                <!-- JOB INFO LAYOUT horizontal spacer 12 -->
                 <View
-                    android:layout_width="10dp"
+                    android:layout_width="@dimen/spacer_horizontal_xslim"
                     android:layout_height="1dp" >
                 </View>
 
                 <EditText
                     android:id="@id/editTextRig"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/black_border"
+                    android:imeOptions="flagNoExtractUi"
+                    android:lines="1"
                     android:maxLength="30"
+                    android:maxLines="1"
+                    android:padding="@dimen/padding_normal"
+                    android:singleLine="true"
                     android:textColor="#000000"
-                    android:textSize="35sp"
-                    android:paddingBottom="10dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="10dp"
-                    android:background="@drawable/black_border" >
+                    android:textSize="@dimen/text_size_large">
                 </EditText>
 
             </LinearLayout>
 
         </LinearLayout>
+        <!-- END OF JOB INFO LAYOUT -->
 
     </ScrollView>
+    <!-- END OF JOB INFO SCROLLVIEW -->
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="70dp"
-        android:paddingBottom="10dp"
-        android:paddingLeft="0dp"
-        android:paddingRight="0dp"
-        android:paddingTop="3dp"
-        android:gravity="center"
-        android:background="#1A1A1A" >
-
-        <Button
-            android:id="@id/jobInfoCancelButton"
-            android:background="@drawable/white_styled_button"
-            android:layout_width="125dp"
-            android:layout_height="wrap_content"
-            android:paddingBottom="5dp"
-            android:paddingTop="5dp"
-            android:text="cancel"
-            android:textSize="30sp"
-            style="@style/whiteStyledButton"
-            android:onClick="handleCancelButtonPressed" />
-
-        <!-- horizontal spacer -->
-
-        <View
-            android:layout_width="60dp"
-            android:layout_height="1dp" >
-        </View>
-
-        <Button
-            android:id="@id/okButton"
-            android:layout_width="125dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/white_styled_button"
-            android:enabled="false"
-            android:onClick="handleOkButtonPressed"
-            android:paddingBottom="5dp"
-            android:paddingTop="5dp"
-            android:text="ok"
-            android:textSize="30sp"
-            style="@style/disabledStyledButton" />
-
-    </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>
+<!-- END OF MAIN LAYOUT -->

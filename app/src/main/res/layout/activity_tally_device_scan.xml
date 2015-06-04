@@ -1,92 +1,68 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<!-- MAIN LAYOUT -->
+<RelativeLayout
     android:id="@+id/main_content"
-    android:layout_width="500dp"
-    android:layout_height="400dp"
-    android:orientation="vertical"
-    android:background="#808080"
-    android:paddingBottom="0dp"
-    android:paddingLeft="0dp"
-    android:paddingRight="0dp"
-    android:paddingTop="0dp"
-    tools:context="com.yaboosh.ybtech.lasertally.TallyDeviceScanActivity" >
+    android:layout_height="@dimen/dialog_height_standard"
+    android:layout_width="@dimen/dialog_width_standard"
+    android:background="#CFCFCF"
+    android:padding="@dimen/padding_none"
+    tools:context="com.yaboosh.ybtech.lasertally.TallyDeviceScanActivity"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" >
 
+    <!-- TITLE BAR LAYOUT-->
     <LinearLayout
-        android:orientation="horizontal"
+        android:id="@+id/titleBarLayout"
+        android:layout_height="wrap_content"
         android:layout_width="fill_parent"
-        android:layout_height="70dp"
-        android:paddingBottom="0dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="0dp"
-        android:background="#1A1A1A" >
+        android:background="#1A1A1A"
+        android:gravity="center"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/title_bar_layout_padding_bottom"
+        android:paddingLeft="@dimen/title_bar_layout_padding_left"
+        android:paddingRight="@dimen/title_bar_layout_padding_right"
+        android:paddingTop="@dimen/title_bar_layout_padding_top" >
 
-        <LinearLayout
-            android:orientation="vertical"
+        <TextView
+            android:gravity="center"
             android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:paddingBottom="0dp"
-            android:paddingLeft="0dp"
-            android:paddingRight="0dp"
-            android:paddingTop="0dp" >
+            android:layout_height="wrap_content"
+            android:padding="0dp"
+            android:textColor="#B2B2B2"
+            android:text="Select a Device:"
+            android:textSize="@dimen/title_bar_layout_title_text_size" />
 
-            <!-- vertical spacer -->
-            <View
-                android:layout_width="0dp"
-                android:layout_height="5dp" >
-            </View>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:textColor="#B2B2B2"
-                android:text="Select a Device: "
-                android:textSize="40dp" />
-
-        </LinearLayout>
-
-        <!-- horizontal spacer -->
+        <!-- TITLE BAR LAYOUT horizontal spacer 1 -->
         <View
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="1dp" >
         </View>
 
-        <LinearLayout
-            android:orientation="vertical"
+        <Button
+            android:id="@id/tableRowEditorRedXButton"
+            android:background="@drawable/close_x_button"
+            android:gravity="center"
             android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:paddingBottom="0dp"
-            android:paddingLeft="0dp"
-            android:paddingRight="0dp"
-            android:paddingTop="0dp" >
-
-            <!-- vertical spacer -->
-            <View
-                android:layout_width="0dp"
-                android:layout_height="15dp" >
-            </View>
-
-            <Button
-                android:background="@drawable/close_x_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="handleCloseXButtonPressed" />
-
-        </LinearLayout>
+            android:layout_height="wrap_content"
+            android:onClick="handleRedXButtonPressed"/>
 
     </LinearLayout>
+    <!-- END OF TITLE BAR LAYOUT-->
 
+    <!-- STATUS LAYOUT -->
     <LinearLayout
-        android:orientation="horizontal"
+        android:id="@+id/statusLayout"
+        android:layout_height="@dimen/atds_ml_sl_height"
         android:layout_width="fill_parent"
-        android:layout_height="50dp"
-        android:paddingBottom="0dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="0dp" >
+        android:layout_below="@+id/titleBarLayout"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/padding_none"
+        android:paddingLeft="@dimen/padding_normal"
+        android:paddingRight="@dimen/padding_normal"
+        android:paddingTop="@dimen/padding_none" >
 
-        <!-- horizontal center -->
+        <!-- STATUS LAYOUT horizontal center 1 -->
             <!-- will only work if another view identical to
                     to this one is used on the other side of
                     whatever you are trying to center -->
@@ -103,10 +79,10 @@
             style="@android:style/Widget.ProgressBar"
             android:gravity="center" />
 
-        <!-- horizontal spacer -->
+        <!-- STATUS LAYOUT horizontal spacer 1 -->
         <View
             android:id="@id/specialHorizontalSpacer"
-            android:layout_width="10dp"
+            android:layout_width="@dimen/spacer_horizontal_xslim"
             android:layout_height="0dp" >
         </View>
 
@@ -114,10 +90,11 @@
             android:id="@id/tallyDeviceScanningText"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textSize="20dp"
+            android:textColor="#333333"
+            android:textSize="@dimen/text_size_xsmall"
             android:gravity="center" />
 
-        <!-- horizontal center -->
+        <!-- STATUS LAYOUT horizontal center 1 -->
             <!-- will only work if another view identical to
                     to this one is used on the other side of
                     whatever you are trying to center -->
@@ -128,13 +105,18 @@
         </View>
 
     </LinearLayout>
+    <!-- END OF STATUS LAYOUT -->
 
-        <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#FFFFFF"
-            tools:context="com.yaboosh.ybtech.lasertally.DeviceListFragment" >
+    <!-- JOBS LIST LAYOUT -->
+    <FrameLayout
+        android:id="@+id/jobsListLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#FFFFFF"
+        android:layout_below="@+id/statusLayout"
+        tools:context="com.yaboosh.ybtech.lasertally.DeviceListFragment"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools" >
 
         <ListView
             android:id="@android:id/list"
@@ -152,5 +134,7 @@
             android:visibility="gone" />
 
     </FrameLayout>
+    <!-- END OF JOBS LIST LAYOUT -->
 
-</LinearLayout>
+</RelativeLayout>
+<!-- END OF MAIN LAYOUT -->

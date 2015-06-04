@@ -1,0 +1,99 @@
+<resources>
+
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+
+    <!-- ////////////////////////////////////////////////////////////////////////////////////// -->
+
+    <!-- SCALE FACTOR: .7 -->
+    <!-- NORMAL SCREENS DIMENSIONS = LARGE SCREEN DIMENSIONS * SCALE FACTOR -->
+
+    <!-- NOTE: The scale factor was not used for all dimensions.  Some dimensions were determined
+                    through trial and error -->
+
+    <!-- BUTTONS -->
+    <dimen name="button_width_standard">90dp</dimen>
+    <!-- END OF BUTTONS -->
+
+    <!-- DIALOGS -->
+    <dimen name="dialog_width_standard">455dp</dimen>
+    <dimen name="dialog_height_standard">325dp</dimen>
+    <!-- END OF DIALOGS -->
+
+    <!-- OKAY CANCEL BUTTONS LAYOUT -->
+    <dimen name="focbl_padding_bottom">2dp</dimen>
+    <dimen name="focbl_padding_left">0dp</dimen>
+    <dimen name="focbl_padding_right">0dp</dimen>
+    <dimen name="focbl_padding_top">2dp</dimen>
+    <!-- END OF OKAY CANCEL BUTTONS LAYOUT -->
+
+    <!-- PADDING -->
+    <dimen name="padding_none">0dp</dimen>
+    <dimen name="padding_xxsmall">1dp</dimen>
+    <dimen name="padding_xsmall">2dp</dimen>
+    <dimen name="padding_small">4dp</dimen>
+    <dimen name="padding_normal">7dp</dimen>
+    <dimen name="padding_large">11dp</dimen>
+    <dimen name="padding_xlarge">14dp</dimen>
+    <dimen name="padding_xxlarge">18dp</dimen>
+    <dimen name="padding_xxxlarge">21dp</dimen>
+    <dimen name="padding_4xlarge">39dp</dimen>
+    <!-- END OF PADDING -->
+
+    <!-- SPACERS -->
+    <dimen name="spacer_horizontal_xslim">7dp</dimen>
+    <dimen name="spacer_horizontal_normal">21dp</dimen>
+    <dimen name="spacer_horizontal_xxwide">42dp</dimen>
+
+    <dimen name="spacer_vertical_xshort">7dp</dimen>
+    <dimen name="spacer_vertical_short">14dp</dimen>
+    <dimen name="spacer_vertical_normal">21dp</dimen>
+    <dimen name="spacer_vertical_tall">28dp</dimen>
+    <dimen name="spacer_vertical_xxtall">42dp</dimen>
+    <!-- END OF SPACERS -->
+
+    <!-- TEXT SIZES -->
+    <dimen name="text_size_xxsmall">12dp</dimen>
+    <dimen name="text_size_xsmall">14dp</dimen>
+    <dimen name="text_size_small">18dp</dimen>
+    <dimen name="text_size_normal">21dp</dimen>
+    <dimen name="text_size_large">25dp</dimen>
+    <dimen name="text_size_xlarge">28dp</dimen>
+    <dimen name="text_size_xxlarge">35dp</dimen>
+    <!-- END OF TEXT SIZES -->
+
+    <!-- TITLE BAR LAYOUT -->
+    <dimen name="title_bar_layout_height">49dp</dimen>
+    <dimen name="title_bar_layout_padding_bottom">7dp</dimen>
+    <dimen name="title_bar_layout_padding_left">7dp</dimen>
+    <dimen name="title_bar_layout_padding_right">7dp</dimen>
+    <dimen name="title_bar_layout_padding_top">7dp</dimen>
+    <dimen name="title_bar_layout_title_text_size">28dp</dimen>
+    <!-- END OF TITLE BAR LAYOUT -->
+
+    <!-- activity_job_display.xml -->
+    <dimen name="ajd_measure_connect_button_height">140dp</dimen>
+    <dimen name="ajd_measure_connect_button_width">160dp</dimen>
+    <dimen name="ajd_ttbl_title_text_view_width">280dp</dimen>
+    <!-- end of activity_job_display.xml -->
+
+    <!-- activity_job_info.xml -->
+    <dimen name="aji_ml_ocbl_height">50dp</dimen>
+    <!-- end of activity_job_info.xml -->
+
+    <!-- activity_more_options.xml -->
+    <dimen name="amo_ml_ocbl_height">50dp</dimen>
+    <!-- end of activity_more_options.xml -->
+
+    <!-- activity_tally_device_connection_status_message.xml -->
+    <dimen name="atdcsm_ml_pbcml_check_mark_height">70dp</dimen>
+    <dimen name="atdcsm_ml_pbcml_check_mark_width">70dp</dimen>
+    <!-- end of activity_tally_device_connection_status_message.xml -->
+
+    <!-- activity_tally_device_scan.xml -->
+    <dimen name="atds_ml_sl_height">35dp</dimen>
+    <!-- end of activity_tally_device_scan.xml -->
+
+</resources>

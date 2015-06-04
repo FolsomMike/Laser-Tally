@@ -1,40 +1,40 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<!-- MAIN LAYOUT -->
+<RelativeLayout
     android:id="@+id/main_content"
-    android:layout_width="645dp"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:layout_height="@dimen/dialog_height_standard"
+    android:layout_width="@dimen/dialog_width_standard"
     android:background="#CFCFCF"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    android:paddingBottom="0dp"
-    android:paddingLeft="0dp"
-    android:paddingRight="0dp"
-    android:paddingTop="0dp"
+    android:padding="@dimen/padding_none"
     tools:context="com.yaboosh.ybtech.lasertally.MoreOptionsActivity"
-    android:gravity="center" >
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" >
 
+    <!-- TITLE BAR LAYOUT-->
     <LinearLayout
+        android:id="@+id/titleBarLayout"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
         android:background="#1A1A1A"
         android:gravity="center"
-        android:layout_width="fill_parent"
-        android:layout_height="70dp"
+        android:layout_alignParentTop="true"
         android:orientation="horizontal"
-        android:paddingBottom="0dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="0dp" >
+        android:paddingBottom="@dimen/title_bar_layout_padding_bottom"
+        android:paddingLeft="@dimen/title_bar_layout_padding_left"
+        android:paddingRight="@dimen/title_bar_layout_padding_right"
+        android:paddingTop="@dimen/title_bar_layout_padding_top" >
 
         <TextView
             android:gravity="center"
             android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
             android:padding="0dp"
             android:textColor="#B2B2B2"
             android:text="Options"
-            android:textSize="40sp" />
+            android:textSize="@dimen/title_bar_layout_title_text_size" />
 
-        <!-- horizontal spacer -->
+        <!-- TITLE BAR LAYOUT horizontal spacer 1 -->
         <View
             android:layout_weight="1"
             android:layout_width="0dp"
@@ -50,21 +50,26 @@
             android:onClick="handleRedXButtonPressed"/>
 
     </LinearLayout>
+    <!-- END OF TITLE BAR LAYOUT-->
 
+    <!-- OPTIONS SCROLLVIEW -->
     <ScrollView
         android:layout_width="fill_parent"
-        android:layout_height="400dp"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/okCancelButtonsLayout"
+        android:layout_below="@+id/titleBarLayout"
         android:scrollbars="vertical"
         android:fadeScrollbars="false" >
 
+        <!-- OPTIONS LAYOUT -->
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="30dp"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp"
-            android:paddingTop="30dp"
+            android:paddingBottom="@dimen/padding_xxxlarge"
+            android:paddingLeft="@dimen/padding_xlarge"
+            android:paddingRight="@dimen/padding_xlarge"
+            android:paddingTop="@dimen/padding_xxxlarge"
             android:gravity="center" >
 
             <Button
@@ -72,27 +77,24 @@
                 android:background="@drawable/white_styled_button_dark_gray_border"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="10dp"
-                android:paddingTop="10dp"
+                android:paddingBottom="@dimen/padding_normal"
+                android:paddingTop="@dimen/padding_normal"
                 android:text=""
-                android:textSize="30sp"
+                android:textSize="@dimen/text_size_normal"
                 style="@style/whiteStyledButton"
                 android:onClick="handleSwitchUnitSystemButtonPressed" />
 
-            <!-- vertical spacer -->
+            <!-- OPTIONS LAYOUT vertical spacer 1 -->
             <View
                 android:layout_width="1dp"
-                android:layout_height="40dp" >
+                android:layout_height="@dimen/spacer_vertical_tall" >
             </View>
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="0dp"
-                android:paddingLeft="0dp"
-                android:paddingRight="0dp"
-                android:paddingTop="0dp"
+                android:padding="@dimen/padding_none"
                 android:gravity="center" >
 
                 <TextView
@@ -100,38 +102,39 @@
                     android:layout_height="wrap_content"
                     android:text="Minimum Measurement Allowed:"
                     android:textColor="#000000"
-                    android:textSize="30sp"
+                    android:textSize="@dimen/text_size_normal"
                     android:gravity="end" />
 
-                <!-- horizontal spacer -->
+                <!-- OPTIONS LAYOUT horizontal spacer 1 -->
                 <View
-                    android:layout_width="10dp"
+                    android:layout_width="@dimen/spacer_horizontal_xslim"
                     android:layout_height="1dp" >
                 </View>
 
                 <EditText
                     android:id="@id/editTextMinimumMeasurementAllowed"
-                    android:inputType="number"
-                    android:digits="0123456789,."
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textColor="#000000"
-                    android:textSize="35sp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/black_border"
+                    android:digits="0123456789,."
+                    android:imeOptions="flagNoExtractUi"
+                    android:inputType="number"
+                    android:lines="1"
                     android:maxLength="10"
-                    android:paddingBottom="10dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="10dp"
-                    android:background="@drawable/black_border" >
+                    android:maxLines="1"
+                    android:padding="@dimen/padding_normal"
+                    android:singleLine="true"
+                    android:textColor="#000000"
+                    android:textSize="@dimen/text_size_large" >
                 </EditText>
 
             </LinearLayout>
 
-            <!-- vertical spacer -->
+            <!-- OPTIONS LAYOUT vertical spacer 2 -->
             <View
                 android:layout_width="1dp"
-                android:layout_height="40dp" >
+                android:layout_height="@dimen/spacer_vertical_tall" >
             </View>
 
 
@@ -139,10 +142,7 @@
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="0dp"
-                android:paddingLeft="0dp"
-                android:paddingRight="0dp"
-                android:paddingTop="0dp"
+                android:padding="@dimen/padding_none"
                 android:gravity="center" >
 
                 <TextView
@@ -150,48 +150,46 @@
                     android:layout_height="wrap_content"
                     android:text="Maximum Measurement Allowed:"
                     android:textColor="#000000"
-                    android:textSize="30sp"
+                    android:textSize="@dimen/text_size_normal"
                     android:gravity="end" />
 
-                <!-- horizontal spacer -->
+                <!-- OPTIONS LAYOUT horizontal spacer 2 -->
                 <View
-                    android:layout_width="10dp"
+                    android:layout_width="@dimen/spacer_horizontal_xslim"
                     android:layout_height="1dp" >
                 </View>
 
                 <EditText
                     android:id="@id/editTextMaximumMeasurementAllowed"
-                    android:inputType="number"
-                    android:digits="0123456789,."
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textColor="#000000"
-                    android:textSize="35sp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/black_border"
+                    android:digits="0123456789,."
+                    android:imeOptions="flagNoExtractUi"
+                    android:inputType="number"
+                    android:lines="1"
                     android:maxLength="10"
-                    android:paddingBottom="10dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="10dp"
-                    android:background="@drawable/black_border" >
+                    android:maxLines="1"
+                    android:padding="@dimen/padding_normal"
+                    android:singleLine="true"
+                    android:textColor="#000000"
+                    android:textSize="@dimen/text_size_large" >
                 </EditText>
 
             </LinearLayout>
 
-            <!-- vertical spacer -->
+            <!-- OPTIONS LAYOUT vertical spacer 3 -->
             <View
                 android:layout_width="1dp"
-                android:layout_height="40dp" >
+                android:layout_height="@dimen/spacer_vertical_tall" >
             </View>
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="0dp"
-                android:paddingLeft="0dp"
-                android:paddingRight="0dp"
-                android:paddingTop="0dp"
+                android:padding="@dimen/padding_none"
                 android:gravity="center" >
 
                 <TextView
@@ -199,86 +197,87 @@
                     android:layout_height="wrap_content"
                     android:text="Calibration Value:"
                     android:textColor="#000000"
-                    android:textSize="30sp"
+                    android:textSize="@dimen/text_size_normal"
                     android:gravity="end" />
 
-                <!-- horizontal spacer -->
+                <!-- OPTIONS LAYOUT horizontal spacer 3 -->
                 <View
-                    android:layout_width="20dp"
-                    android:layout_height="1dp" >
-                </View>
-
-                <!-- horizontal spacer -->
-                <View
-                    android:layout_width="10dp"
+                    android:layout_width="@dimen/spacer_horizontal_xslim"
                     android:layout_height="1dp" >
                 </View>
 
                 <EditText
                     android:id="@id/calibrationValueEditText"
-                    android:inputType="number"
-                    android:digits="0123456789,.-"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textColor="#000000"
-                    android:textSize="35sp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/black_border"
+                    android:digits="0123456789,.-"
+                    android:imeOptions="flagNoExtractUi"
+                    android:inputType="number"
+                    android:lines="1"
                     android:maxLength="10"
-                    android:paddingBottom="10dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="10dp"
-                    android:background="@drawable/black_border" >
+                    android:maxLines="1"
+                    android:padding="@dimen/padding_normal"
+                    android:singleLine="true"
+                    android:textColor="#000000"
+                    android:textSize="@dimen/text_size_large" >
                 </EditText>
 
             </LinearLayout>
 
         </LinearLayout>
+        <!-- END OF OPTIONS LAYOUT -->
 
     </ScrollView>
+    <!-- END OF OPTIONS SCROLLVIEW -->
 
+    <!-- FIXED OK CANCEL BUTTONS LAYOUT -->
     <LinearLayout
+        android:id="@+id/okCancelButtonsLayout"
         android:orientation="horizontal"
         android:layout_width="fill_parent"
-        android:layout_height="70dp"
-        android:paddingBottom="10dp"
-        android:paddingLeft="0dp"
-        android:paddingRight="0dp"
-        android:paddingTop="3dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:paddingBottom="@dimen/focbl_padding_bottom"
+        android:paddingLeft="@dimen/focbl_padding_left"
+        android:paddingRight="@dimen/focbl_padding_right"
+        android:paddingTop="@dimen/focbl_padding_top"
         android:gravity="center"
         android:background="#1A1A1A" >
 
         <Button
             android:id="@id/jobInfoCancelButton"
             android:background="@drawable/white_styled_button"
-            android:layout_width="125dp"
+            android:layout_width="@dimen/button_width_standard"
             android:layout_height="wrap_content"
-            android:paddingBottom="5dp"
-            android:paddingTop="5dp"
+            android:paddingBottom="@dimen/padding_small"
+            android:paddingTop="@dimen/padding_small"
             android:text="cancel"
-            android:textSize="30sp"
+            android:textSize="@dimen/text_size_normal"
             style="@style/whiteStyledButton"
             android:onClick="handleCancelButtonPressed" />
 
-        <!-- horizontal spacer -->
-
+        <!-- FIXED OK CANCEL BUTTONS LAYOUT horizontal spacer 1 -->
         <View
-            android:layout_width="60dp"
+            android:layout_width="@dimen/spacer_horizontal_xxwide"
             android:layout_height="1dp" >
         </View>
 
         <Button
             android:id="@id/okButton"
-            android:layout_width="125dp"
+            android:layout_width="@dimen/button_width_standard"
             android:layout_height="wrap_content"
             android:background="@drawable/white_styled_button"
             android:onClick="handleOkButtonPressed"
-            android:paddingBottom="5dp"
-            android:paddingTop="5dp"
+            android:paddingBottom="@dimen/padding_small"
+            android:paddingTop="@dimen/padding_small"
             android:text="ok"
-            android:textSize="30sp"
+            android:textSize="@dimen/text_size_normal"
             style="@style/whiteStyledButton" />
 
     </LinearLayout>
+    <!-- END OF FIXED OK CANCEL BUTTONS LAYOUT -->
 
-</LinearLayout>
+</RelativeLayout>
+<!-- END OF MAIN LAYOUT -->

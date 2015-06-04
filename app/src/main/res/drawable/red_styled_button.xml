@@ -13,10 +13,10 @@
                 <corners
                     android:radius="6dp" />
                 <padding
-                    android:left="10dp"
-                    android:top="10dp"
-                    android:right="10dp"
-                    android:bottom="10dp" />
+                    android:left="@dimen/padding_normal"
+                    android:top="@dimen/padding_normal"
+                    android:right="@dimen/padding_normal"
+                    android:bottom="@dimen/padding_normal" />
             </shape>
     </item>
 
@@ -30,10 +30,10 @@
           <corners
               android:radius="6dp" />
           <padding
-              android:left="10dp"
-              android:top="10dp"
-              android:right="10dp"
-              android:bottom="10dp" />
+              android:left="@dimen/padding_normal"
+              android:top="@dimen/padding_normal"
+              android:right="@dimen/padding_normal"
+              android:bottom="@dimen/padding_normal" />
         </shape>
     </item>
 
