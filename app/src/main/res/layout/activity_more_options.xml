@@ -113,16 +113,20 @@
 
                 <EditText
                     android:id="@id/editTextMinimumMeasurementAllowed"
-                    android:inputType="number"
-                    android:digits="0123456789,."
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textColor="#000000"
-                    android:textSize="@dimen/text_size_large"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/black_border"
+                    android:digits="0123456789,."
+                    android:imeOptions="flagNoExtractUi"
+                    android:inputType="number"
+                    android:lines="1"
                     android:maxLength="10"
+                    android:maxLines="1"
                     android:padding="@dimen/padding_normal"
-                    android:background="@drawable/black_border" >
+                    android:singleLine="true"
+                    android:textColor="#000000"
+                    android:textSize="@dimen/text_size_large" >
                 </EditText>
 
             </LinearLayout>
@@ -157,16 +161,20 @@
 
                 <EditText
                     android:id="@id/editTextMaximumMeasurementAllowed"
-                    android:inputType="number"
-                    android:digits="0123456789,."
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textColor="#000000"
-                    android:textSize="@dimen/text_size_large"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/black_border"
+                    android:digits="0123456789,."
+                    android:imeOptions="flagNoExtractUi"
+                    android:inputType="number"
+                    android:lines="1"
                     android:maxLength="10"
+                    android:maxLines="1"
                     android:padding="@dimen/padding_normal"
-                    android:background="@drawable/black_border" >
+                    android:singleLine="true"
+                    android:textColor="#000000"
+                    android:textSize="@dimen/text_size_large" >
                 </EditText>
 
             </LinearLayout>
@@ -200,16 +208,20 @@
 
                 <EditText
                     android:id="@id/calibrationValueEditText"
-                    android:inputType="number"
-                    android:digits="0123456789,.-"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textColor="#000000"
-                    android:textSize="@dimen/text_size_large"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/black_border"
+                    android:digits="0123456789,.-"
+                    android:imeOptions="flagNoExtractUi"
+                    android:inputType="number"
+                    android:lines="1"
                     android:maxLength="10"
+                    android:maxLines="1"
                     android:padding="@dimen/padding_normal"
-                    android:background="@drawable/black_border" >
+                    android:singleLine="true"
+                    android:textColor="#000000"
+                    android:textSize="@dimen/text_size_large" >
                 </EditText>
 
             </LinearLayout>

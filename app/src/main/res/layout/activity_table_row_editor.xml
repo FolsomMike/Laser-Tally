@@ -69,44 +69,50 @@
             android:gravity="center" >
 
             <TextView
-                android:layout_weight="1"
-                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="@dimen/padding_none"
                 android:text="Pipe Number:"
                 android:textColor="#000000"
-                android:textSize="@dimen/text_size_xlarge"
-                style="@android:style/Widget.ProgressBar.Large"
-                android:gravity="center" />
+                android:textSize="@dimen/text_size_xlarge" />
 
             <!-- EDIT ENTRY LAYOUT horizontal spacer 1 -->
             <View
+                android:layout_height="1dp"
                 android:layout_width="@dimen/spacer_horizontal_xslim"
-                android:layout_height="1dp" >
+                android:padding="@dimen/padding_none" >
             </View>
 
             <EditText
                 android:id="@id/editTextPipeNumber"
-                android:layout_weight="1"
-                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textColor="#000000"
-                android:textSize="@dimen/text_size_large"
-                android:inputType="number"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:background="@drawable/black_border"
                 android:digits="0123456789"
+                android:imeOptions="flagNoExtractUi"
+                android:inputType="number"
+                android:lines="1"
+                android:maxLines="1"
                 android:padding="@dimen/padding_normal"
                 android:selectAllOnFocus="true"
-                android:background="@drawable/black_border" >
+                android:singleLine="true"
+                android:textColor="#000000"
+                android:textSize="@dimen/text_size_large" >
             </EditText>
 
         </LinearLayout>
 
         <CheckBox
             android:id="@id/checkBoxRenumberAllBelow"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:padding="@dimen/padding_none"
             android:text="renumber all below"
             android:textColor="#333333"
-            android:textSize="@dimen/text_size_xsmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:textSize="@dimen/text_size_xsmall" >
         </CheckBox>
 
         <!-- EDIT ENTRY LAYOUT vertical spacer 1 -->
@@ -130,7 +136,6 @@
                 android:text="Total Length:"
                 android:textColor="#000000"
                 android:textSize="@dimen/text_size_xlarge"
-                style="@android:style/Widget.ProgressBar.Large"
                 android:gravity="center" />
 
             <!-- EDIT ENTRY LAYOUT horizontal spacer 2 -->
@@ -141,16 +146,20 @@
 
             <EditText
                 android:id="@id/editTextTotalLength"
-                android:layout_weight="1"
-                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textColor="#000000"
-                android:textSize="@dimen/text_size_large"
-                android:inputType="numberDecimal"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:background="@drawable/black_border"
                 android:digits="0123456789,."
+                android:imeOptions="flagNoExtractUi"
+                android:inputType="numberDecimal"
+                android:lines="1"
+                android:maxLines="1"
                 android:padding="@dimen/padding_normal"
                 android:selectAllOnFocus="true"
-                android:background="@drawable/black_border" >
+                android:singleLine="true"
+                android:textColor="#000000"
+                android:textSize="@dimen/text_size_large" >
             </EditText>
 
         </LinearLayout>
