@@ -320,16 +320,16 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyDeviceScanActivity::handleCloseXButtonPressed
+    // TallyDeviceScanActivity::handleRedXButtonPressed
     //
     // Closes the activity.
     //
 
-    public void handleCloseXButtonPressed(View pView) {
+    public void handleRedXButtonPressed(View pView) {
 
         exitActivity();
 
-    }//end of TallyDeviceScanActivity::handleCloseXButtonPressed
+    }//end of TallyDeviceScanActivity::handleRedXButtonPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
