@@ -29,6 +29,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 import android.util.SparseIntArray;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ScrollView;
@@ -145,11 +146,9 @@ public class MeasurementsTableHandler {
 
     private TextView createNewColumn() {
 
-        TextView col = new TextView(sharedSettings.getContext());
+        LayoutInflater inflater = LayoutInflater.from(sharedSettings.getContext());
+        TextView col = (TextView)inflater.inflate(R.layout.table_column_template, null);
         col.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1));
-        col.setTextColor(Color.BLACK);
-        col.setTextSize(30);
-        col.setPadding(15, 25, 15, 25);
 
         return col;
 
