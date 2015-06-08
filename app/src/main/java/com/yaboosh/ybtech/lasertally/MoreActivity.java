@@ -1,13 +1,14 @@
 /******************************************************************************
- * Title: MenuActivity.java
+ * Title: MoreActivity.java
  * Author: Hunter Schoonover
  * Date: 02/20/15
  *
  * Purpose:
  *
- * This class is used as an activity to display a menu for the application
+ * This class is used as an activity to display more buttons and actions
+ * for the application.
  * .
- * The menu displays buttons:
+ * The activity displays buttons:
  *      Print
  *      Options
  *
@@ -28,157 +29,57 @@ import android.view.WindowManager;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-// class MenuActivity
+// class MoreActivity
 //
 
-public class MoreActivity extends Activity {
-
-    public static final String LOG_TAG = "MoreActivity";
-
-    private View decorView;
-    private int uiOptions;
-
-    private SharedSettings sharedSettings;
-    private JobInfo jobInfo;
+public class MoreActivity extends StandardActivity {
 
     //-----------------------------------------------------------------------------
-    // MenuActivity::MenuActivity (constructor)
+    // MoreActivity::MoreActivity (constructor)
+    //
+    // Constructor to be used for initial creation.
     //
 
-    public MoreActivity() {
-
-        super();
-
-    }//end of MenuActivity::MenuActivity (constructor)
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // MenuActivity::onCreate
-    //
-    // Automatically called when the activity is created.
-    // All functions that must be done upon creation should be called here.
-    //
-
-    @Override
-    protected void onCreate(Bundle pSavedInstanceState) {
-
-        super.onCreate(pSavedInstanceState);
-
-        setContentView(R.layout.activity_more);
-
-        this.setFinishOnTouchOutside(false);
-
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        decorView = getWindow().getDecorView();
-
-        uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-
-        createUiChangeListener();
-
-        // Check whether we're recreating a previously destroyed instance
-        if (pSavedInstanceState != null) {
-            // Restore values from saved state
-
-            jobInfo = pSavedInstanceState.getParcelable(Keys.JOB_INFO_KEY);
-            sharedSettings = pSavedInstanceState.getParcelable(Keys.SHARED_SETTINGS_KEY);
-
-        } else {
-            //initialize members with default values for a new instance
-
-            //Get the extras from the intent
-            Bundle bundle = getIntent().getExtras();
-
-            sharedSettings = bundle.getParcelable(Keys.SHARED_SETTINGS_KEY);
-            sharedSettings.setContext(this);
-
-            jobInfo = bundle.getParcelable(Keys.JOB_INFO_KEY);
-
-        }
-
-    }//end of MenuActivity::onCreate
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // MenuActivity::onDestroy
-    //
-    // Automatically called when the activity is destroyed.
-    // All functions that must be done upon destruction should be called here.
-    //
-
-    @Override
-    protected void onDestroy()
+    public MoreActivity()
     {
 
-        super.onDestroy();
+        layoutResID = R.layout.activity_more;
 
-    }//end of MenuActivity::onDestroy
+        LOG_TAG = "MoreActivity";
+
+    }//end of MoreActivity::MoreActivity (constructor)
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MenuActivity::onResume
+    // MoreActivity::handleF3KeyPressed
     //
-    // Automatically called when the activity is paused when it does not have
-    // user's focus but it still partially visible.
-    // All functions that must be done upon instantiation should be called here.
-    //
-
-    @Override
-    protected void onResume() {
-
-        super.onResume();
-
-        decorView.setSystemUiVisibility(uiOptions);
-
-        sharedSettings.setContext(this);
-
-    }//end of MenuActivity::onResume
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // MenuActivity::onPause
-    //
-    // Automatically called when the activity is paused when it does not have
-    // user's focus but it still partially visible.
-    // All functions that must be done upon instantiation should be called here.
+    // If a view is in focus, perform a click on that view.
     //
 
     @Override
-    protected void onPause() {
+    protected void handleF3KeyPressed() {
 
-        super.onPause();
+        if (viewInFocus != null) { viewInFocus.performClick(); }
 
-    }//end of MenuActivity::onPause
+    }//end of MoreActivity::handleF3KeyPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MoreActivity::onSaveInstanceState
+    // MoreActivity::performOnCreateActivitySpecificActions
     //
-    // As the activity begins to stop, the system calls onSaveInstanceState()
-    // so the activity can save state information with a collection of key-value
-    // pairs. This functions is overridden so that additional state information can
-    // be saved.
+    // All actions that must be done upon instantiation should be done here.
     //
 
     @Override
-    public void onSaveInstanceState(Bundle pSavedInstanceState) {
+    protected void performOnCreateActivitySpecificActions() {
 
-        //store necessary data
-        pSavedInstanceState.putParcelable(Keys.JOB_INFO_KEY, jobInfo);
-        pSavedInstanceState.putParcelable(Keys.SHARED_SETTINGS_KEY, sharedSettings);
+        //WIP HSS// -- add objects to focus array
 
-        // Always call the superclass so it can save the view hierarchy state
-        super.onSaveInstanceState(pSavedInstanceState);
-
-    }//end of MoreActivity::onSaveInstanceState
+    }//end of MoreActivity::performOnCreateActivitySpecificActions
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobDisplayActivity::onActivityResult
+    // MoreActivity::onActivityResult
     //
     // Listens for activity results and decides what actions to take depending on
     // their request codes and requests' result codes.
@@ -202,39 +103,11 @@ public class MoreActivity extends Activity {
 
         }
 
-    }//end of JobDisplayActivity::onActivityResult
+    }//end of MoreActivity::onActivityResult
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MenuActivity::createUiChangeListener
-    //
-    // Listens for visibility changes in the ui.
-    //
-    // If the system bars are visible, the system visibility is set to the uiOptions.
-    //
-    //
-
-    private void createUiChangeListener() {
-
-        decorView.setOnSystemUiVisibilityChangeListener (
-                new View.OnSystemUiVisibilityChangeListener() {
-
-                    @Override
-                    public void onSystemUiVisibilityChange(int pVisibility) {
-
-                        if ((pVisibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
-                            decorView.setSystemUiVisibility(uiOptions);
-                        }
-
-                    }
-
-                });
-
-    }//end of MenuActivity::createUiChangeListener
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // MenuActivity::handleOptionsButtonPressed
+    // MoreActivity::handleOptionsButtonPressed
     //
     // Starts the MoreOptionsActivity.
     //
@@ -246,11 +119,11 @@ public class MoreActivity extends Activity {
         intent.putExtra(Keys.JOB_INFO_KEY, jobInfo);
         startActivityForResult(intent, Keys.ACTIVITY_RESULT_MORE_OPTIONS);
 
-    }//end of MenuActivity::handleOptionsButtonPressed
+    }//end of MoreActivity::handleOptionsButtonPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MenuActivity::handlePrintButtonPressed
+    // MoreActivity::handlePrintButtonPressed
     //
     // Prints the tally data saved to file.
     //
@@ -268,11 +141,11 @@ public class MoreActivity extends Activity {
         tallyReportFileMaker.init();
         tallyReportFileMaker.printTallyReport();*/
 
-    }//end of MenuActivity::handlePrintButtonPressed
+    }//end of MoreActivity::handlePrintButtonPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MenuActivity::handleRedXButtonPressed
+    // MoreActivity::handleRedXButtonPressed
     //
     // Exits the activity with a RESULT_OK.
     //
@@ -287,9 +160,9 @@ public class MoreActivity extends Activity {
 
         finish();
 
-    }//end of MenuActivity::handleRedXButtonPressed
+    }//end of MoreActivity::handleRedXButtonPressed
     //-----------------------------------------------------------------------------
 
-}//end of class MenuActivity
+}//end of class MoreActivity
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------

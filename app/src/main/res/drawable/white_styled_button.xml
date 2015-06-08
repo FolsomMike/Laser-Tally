@@ -20,6 +20,23 @@
         </shape>
     </item>
 
+    <item android:state_focused="true" >
+        <shape>
+            <solid
+                android:color="#FFFFFF" />
+            <stroke
+                android:width="3dp"
+                android:color="#0000FF" />
+            <corners
+                android:radius="6dp" />
+            <padding
+                android:left="10dp"
+                android:top="10dp"
+                android:right="10dp"
+                android:bottom="10dp" />
+        </shape>
+    </item>
+
     <item android:state_pressed="true" >
         <shape>
           <solid

@@ -29,6 +29,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
@@ -42,15 +43,7 @@ import java.lang.ref.WeakReference;
 // class JobDisplayActivity
 //
 
-public class JobDisplayActivity extends Activity {
-
-    public static final String TAG = "JobDisplayActivity";
-
-    private View decorView;
-    private int uiOptions;
-
-    private SharedSettings sharedSettings;
-    private JobInfo jobInfo;
+public class JobDisplayActivity extends StandardActivity {
 
     private Handler handler = new Handler();
 
@@ -79,10 +72,14 @@ public class JobDisplayActivity extends Activity {
     //-----------------------------------------------------------------------------
     // JobDisplayActivity::JobDisplayActivity (constructor)
     //
+    // Constructor to be used for initial creation.
+    //
 
-    public JobDisplayActivity() {
+    public JobDisplayActivity()
+    {
+        LOG_TAG = "JobDisplayActivity";
 
-        super();
+        layoutResID = R.layout.activity_job_display;
 
         messenger = new Messenger(new IncomingHandler(this));
 
@@ -90,53 +87,67 @@ public class JobDisplayActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobDisplayActivity::onCreate
+    // JobDisplayActivity::onDestroy
     //
-    // Automatically called when the activity is created.
-    // All functions that must be done upon instantiation should be called here.
+    // Automatically called when the activity is destroyed.
+    // All functions that must be done upon destruction should be called here.
     //
 
     @Override
-    protected void onCreate(Bundle pSavedInstanceState) {
+    protected void onDestroy()
+    {
 
-        super.onCreate(pSavedInstanceState);
+        stopService(serviceIntent);
 
-        setContentView(R.layout.activity_job_display);
+        super.onDestroy();
 
-        decorView = getWindow().getDecorView();
+    }//end of JobDisplayActivity::onDestroy
+    //-----------------------------------------------------------------------------
 
-        uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+    //-----------------------------------------------------------------------------
+    // JobDisplayActivity::onPause
+    //
+    // Automatically called when the activity is paused when it does not have
+    // user's focus but it still partially visible.
+    //
+    // All functions that must be done upon activity pause should be called here.
+    //
 
-        createUiChangeListener();
+    @Override
+    protected void onPause() {
+
+        super.onPause();
+
+        try { unbindService(connection); } catch (Exception e) {}
+
+        if (service == null) { return; }
+
+        try {
+
+            Message msg = Message.obtain(null,
+                    TallyDeviceService.MSG_UNREGISTER_JOB_DISPLAY_ACTIVITY);
+            if (msg == null) { return; }
+            msg.replyTo = messenger;
+            service.send(msg);
+
+        } catch (Exception e) { service = null; }
+
+    }//end of JobDisplayActivity::onPause
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobDisplayActivity::performOnCreateActivitySpecificActions
+    //
+    // All actions that must be done upon instantiation should be done here.
+    //
+
+    @Override
+    protected void performOnCreateActivitySpecificActions() {
+
+        //WIP HSS// -- add objects to focus array
 
         measureConnectButton = (Button)findViewById(R.id.measureConnectButton);
         redoButton = (Button)findViewById(R.id.redoButton);
-
-        // Check whether we're recreating a previously destroyed instance
-        if (pSavedInstanceState != null) {
-            // Restore values from saved state
-
-            jobInfo = pSavedInstanceState.getParcelable(Keys.JOB_INFO_KEY);
-            sharedSettings = pSavedInstanceState.getParcelable(Keys.SHARED_SETTINGS_KEY);
-
-        } else {
-            //initialize members with default values for a new instance
-
-            //Get the extras from the intent
-            Bundle bundle = getIntent().getExtras();
-
-            sharedSettings = bundle.getParcelable(Keys.SHARED_SETTINGS_KEY);
-            sharedSettings.setContext(this);
-
-            //if job info is included, then get it from the bundle
-            if (bundle.getBoolean(Keys.JOB_INFO_INCLUDED_KEY, false)) {
-                jobInfo = bundle.getParcelable(Keys.JOB_INFO_KEY);
-            }
-
-        }
 
         //set the job name
         setJobName(jobInfo.getJobName());
@@ -160,99 +171,20 @@ public class JobDisplayActivity extends Activity {
         serviceIntent = new Intent(this, TallyDeviceService.class);
         startService(serviceIntent);
 
-    }//end of JobDisplayActivity::onCreate
+    }//end of JobDisplayActivity::performOnCreateActivitySpecificActions
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobDisplayActivity::onDestroy
+    // JobDisplayActivity::performOnResumeActivitySpecificActions
     //
-    // Automatically called when the activity is destroyed.
-    // All functions that must be done upon destruction should be called here.
-    //
-
-    @Override
-    protected void onDestroy()
-    {
-
-        stopService(serviceIntent);
-
-        super.onDestroy();
-
-    }//end of JobDisplayActivity::onDestroy
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobDisplayActivity::onResume
-    //
-    // Automatically called when the activity is paused when it does not have
-    // user's focus but it still partially visible.
-    // All functions that must be done upon instantiation should be called here.
+    // All functions that must be done upon activity resume should be called here.
     //
 
-    @Override
-    protected void onResume() {
-
-        super.onResume();
-
-        decorView.setSystemUiVisibility(uiOptions);
+    protected void performOnResumeActivitySpecificActions() {
 
         bindService(serviceIntent, connection, BIND_AUTO_CREATE);
 
-        sharedSettings.setContext(this);
-
-    }//end of JobDisplayActivity::onResume
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobDisplayActivity::onPause
-    //
-    // Automatically called when the activity is paused when it does not have
-    // user's focus but it still partially visible.
-    // All functions that must be done upon instantiation should be called here.
-    //
-
-    @Override
-    protected void onPause() {
-
-        super.onPause();
-
-        try { unbindService(connection); } catch (Exception e) {}
-
-        if (service == null) { return; }
-
-        try {
-
-            Message msg = Message.obtain(null,
-                                            TallyDeviceService.MSG_UNREGISTER_JOB_DISPLAY_ACTIVITY);
-            if (msg == null) { return; }
-            msg.replyTo = messenger;
-            service.send(msg);
-
-        } catch (Exception e) { service = null; }
-
-    }//end of JobDisplayActivity::onPause
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobDisplayActivity::onSaveInstanceState
-    //
-    // As the activity begins to stop, the system calls onSaveInstanceState()
-    // so the activity can save state information with a collection of key-value
-    // pairs. This functions is overridden so that additional state information can
-    // be saved.
-    //
-
-    @Override
-    public void onSaveInstanceState(Bundle pSavedInstanceState) {
-
-        //store necessary data
-        pSavedInstanceState.putParcelable(Keys.JOB_INFO_KEY, jobInfo);
-        pSavedInstanceState.putParcelable(Keys.SHARED_SETTINGS_KEY, sharedSettings);
-
-        // Always call the superclass so it can save the view hierarchy state
-        super.onSaveInstanceState(pSavedInstanceState);
-
-    }//end of JobDisplayActivity::onSaveInstanceState
+    }//end of JobDisplayActivity::performOnResumeActivitySpecificActions
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -383,34 +315,6 @@ public class JobDisplayActivity extends Activity {
         }
 
     };//end of JobDisplayActivity::onClickListener
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobDisplayActivity::createUiChangeListener
-    //
-    // Listens for visibility changes in the ui.
-    //
-    // If the system bars are visible, the system visibility is set to the uiOptions.
-    //
-    //
-
-    private void createUiChangeListener() {
-
-        decorView.setOnSystemUiVisibilityChangeListener (
-                new View.OnSystemUiVisibilityChangeListener() {
-
-                    @Override
-                    public void onSystemUiVisibilityChange(int pVisibility) {
-
-                        if ((pVisibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
-                            decorView.setSystemUiVisibility(uiOptions);
-                        }
-
-                    }
-
-                });
-
-    }//end of JobDisplayActivity::createUiChangeListener
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -707,7 +611,7 @@ public class JobDisplayActivity extends Activity {
     private void registerWithService() {
 
         //debug hss//
-        Log.d(TAG, "register with service");
+        Log.d(LOG_TAG, "register with service");
 
         try {
 
@@ -852,7 +756,7 @@ public class JobDisplayActivity extends Activity {
         state = pNewState;
 
         //debug hss//
-        Log.d(TAG, "State changed: " + state);
+        Log.d(LOG_TAG, "State changed: " + state);
 
         if (state == TallyDeviceService.State.CONNECTED) { handleConnectedState(); }
         else if (state == TallyDeviceService.State.DISCONNECTED) { handleDisconnectedState(); }
@@ -898,7 +802,7 @@ public class JobDisplayActivity extends Activity {
             JobDisplayActivity tempActivity = activity.get();
             if (tempActivity != null) {
 
-                Log.d(TAG, "message received: " + pMsg.what);
+                Log.d(LOG_TAG, "message received: " + pMsg.what);
 
                 switch (pMsg.what) {
 

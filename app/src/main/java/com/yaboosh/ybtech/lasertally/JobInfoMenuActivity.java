@@ -36,120 +36,54 @@ import java.io.File;
 // class JobInfoMenuActivity
 //
 
-public class JobInfoMenuActivity extends Activity {
+public class JobInfoMenuActivity extends StandardActivity {
 
-    public static final String TAG = "JobInfoMenuActivity";
-
-    private View decorView;
-    private int uiOptions;
-
-    private SharedSettings sharedSettings;
     private String jobName;
 
     //-----------------------------------------------------------------------------
     // JobInfoMenuActivity::JobInfoMenuActivity (constructor)
     //
+    // Constructor to be used for initial creation.
+    //
 
-    public JobInfoMenuActivity() {
+    public JobInfoMenuActivity()
+    {
 
-        super();
+        layoutResID = R.layout.activity_job_info_menu;
+
+        LOG_TAG = "JobInfoMenuActivity";
 
     }//end of JobInfoMenuActivity::JobInfoMenuActivity (constructor)
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoMenuActivity::onCreate
+    // JobInfoMenuActivity::handleF3KeyPressed
     //
-    // Automatically called when the activity is created.
-    // All functions that must be done upon creation should be called here.
-    //
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-
-        super.onCreate(savedInstanceState);
-
-        Log.d(TAG, "Inside of onCreate :: " + TAG);
-
-        setContentView(R.layout.activity_job_info_menu);
-
-        this.setFinishOnTouchOutside(false);
-
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        decorView = getWindow().getDecorView();
-
-        uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-
-        createUiChangeListener();
-
-        Bundle bundle = getIntent().getExtras();
-        sharedSettings = bundle.getParcelable(Keys.SHARED_SETTINGS_KEY);
-        jobName = bundle.getString(Keys.JOB_NAME_KEY);
-
-    }//end of JobInfoMenuActivity::onCreate
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobInfoMenuActivity::onDestroy
-    //
-    // Automatically called when the activity is destroyed.
-    // All functions that must be done upon destruction should be called here.
+    // If a view is in focus, perform a click on that view.
     //
 
     @Override
-    protected void onDestroy()
-    {
+    protected void handleF3KeyPressed() {
 
-        Log.d(TAG, "Inside of onDestroy :: " + TAG);
+        if (viewInFocus != null) { viewInFocus.performClick(); }
 
-        super.onDestroy();
-
-    }//end of JobInfoMenuActivity::onDestroy
+    }//end of JobInfoMenuActivity::handleF3KeyPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoMenuActivity::onResume
+    // JobInfoMenuActivity::performOnCreateActivitySpecificActions
     //
-    // Automatically called when the activity is paused when it does not have
-    // user's focus but it still partially visible.
-    // All functions that must be done upon instantiation should be called here.
+    // All actions that must be done upon instantiation should be done here.
     //
 
     @Override
-    protected void onResume() {
+    protected void performOnCreateActivitySpecificActions() {
 
-        super.onResume();
+        //WIP HSS// -- add objects to focus array
 
-        Log.d(TAG, "Inside of onResume :: " + TAG);
+        jobName = getIntent().getExtras().getString(Keys.JOB_NAME_KEY);
 
-        decorView.setSystemUiVisibility(uiOptions);
-
-        sharedSettings.setContext(this);
-
-    }//end of JobInfoMenuActivity::onResume
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobInfoMenuActivity::onPause
-    //
-    // Automatically called when the activity is paused when it does not have
-    // user's focus but it still partially visible.
-    // All functions that must be done upon instantiation should be called here.
-    //
-
-    @Override
-    protected void onPause() {
-
-        super.onPause();
-
-        Log.d(TAG, "Inside of onPause :: " + TAG);
-
-    }//end of JobInfoMenuActivity::onPause
+    }//end of JobInfoMenuActivity::performOnCreateActivitySpecificActions
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -179,34 +113,6 @@ public class JobInfoMenuActivity extends Activity {
         }
 
     }//end of JobInfoMenuActivity::onActivityResult
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobInfoMenuActivity::createUiChangeListener
-    //
-    // Listens for visibility changes in the ui.
-    //
-    // If the system bars are visible, the system visibility is set to the uiOptions.
-    //
-    //
-
-    private void createUiChangeListener() {
-
-        decorView.setOnSystemUiVisibilityChangeListener (
-                new View.OnSystemUiVisibilityChangeListener() {
-
-                    @Override
-                    public void onSystemUiVisibilityChange(int pVisibility) {
-
-                        if ((pVisibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
-                            decorView.setSystemUiVisibility(uiOptions);
-                        }
-
-                    }
-
-                });
-
-    }//end of JobInfoMenuActivity::createUiChangeListener
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -270,7 +176,7 @@ public class JobInfoMenuActivity extends Activity {
     public void handleDeleteThisJobButtonPressed(View pView) {
 
         Intent intent = new Intent(this, VerifyActionActivity.class);
-        intent.putExtra(VerifyActionActivity.TEXT_VIEW_TEXT,
+        intent.putExtra(VerifyActionActivity.TEXT_VIEW_TEXT_KEY,
                             "Are you sure that you want to delete " + "the job \""
                                             + jobName + "\"?  This cannot be undone.");
         startActivityForResult(intent, Keys.ACTIVITY_RESULT_VERIFY_ACTION);

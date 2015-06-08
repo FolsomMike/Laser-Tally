@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:background="#CFCFCF"
     android:padding="@dimen/padding_4xlarge"
-    tools:context="com.yaboosh.ybtech.lasertally.TallyDeviceConnectionStatusMessageActivity"
+    tools:context="com.yaboosh.ybtech.lasertally.TallyDeviceConnectionStatusActivity"
     android:gravity="center" >
 
     <!-- PROGRESS BAR CHECK MARK LAYOUT -->

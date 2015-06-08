@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -41,148 +42,58 @@ import java.util.Scanner;
 // class VerifyActionActivity
 //
 
-public class VerifyActionActivity extends Activity {
+public class VerifyActionActivity extends StandardActivity {
 
-    public static final String TAG = "VerifyActionActivity";
-
-    private View decorView;
-    private int uiOptions;
-
-    public static final String TEXT_VIEW_TEXT = "TEXT_VIEW_TEXT";
-
-    private String textViewText;
+    public static final String TEXT_VIEW_TEXT_KEY = "TEXT_VIEW_TEXT_KEY";
 
     //-----------------------------------------------------------------------------
     // VerifyActionActivity::VerifyActionActivity (constructor)
     //
+    // Constructor to be used for initial creation.
+    //
 
-    public VerifyActionActivity() {
+    public VerifyActionActivity()
+    {
 
-        super();
+        layoutResID = R.layout.activity_verify_action;
+
+        LOG_TAG = "VerifyActionActivity";
 
     }//end of VerifyActionActivity::VerifyActionActivity (constructor)
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // VerifyActionActivity::onCreate
+    // VerifyActionActivity::handleF3KeyPressed
     //
-    // Automatically called when the activity is created.
-    // All functions that must be done upon creation should be called here.
+    // If a view is in focus, perform a click on that view.
     //
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void handleF3KeyPressed() {
 
-        super.onCreate(savedInstanceState);
+        Button okButton = (Button) findViewById(R.id.okButton);
+        if (okButton != null) { okButton.performClick(); }
 
-        Log.d(TAG, "Inside of onCreate :: " + TAG);
+    }//end of VerifyActionActivity::handleF3KeyPressed
+    //-----------------------------------------------------------------------------
 
-        setContentView(R.layout.activity_verify_action);
+    //-----------------------------------------------------------------------------
+    // VerifyActionActivity::performOnCreateActivitySpecificActions
+    //
+    // All actions that must be done upon instantiation should be done here.
+    //
 
-        this.setFinishOnTouchOutside(false);
+    @Override
+    protected void performOnCreateActivitySpecificActions() {
 
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        //WIP HSS// -- add objects to focus array
 
-        decorView = getWindow().getDecorView();
-
-        uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-
-        createUiChangeListener();
-
-        Bundle bundle = getIntent().getExtras();
-        textViewText = bundle.getString(TEXT_VIEW_TEXT);
-
+        //get the text view text (activity to verify text) from the intent extras
+        //and put it into the TextView to be displayed to users
+        String textViewText = getIntent().getExtras().getString(TEXT_VIEW_TEXT_KEY);
         ((TextView)findViewById(R.id.verifyActionTextView)).setText(textViewText);
 
-    }//end of VerifyActionActivity::onCreate
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // VerifyActionActivity::onDestroy
-    //
-    // Automatically called when the activity is destroyed.
-    // All functions that must be done upon destruction should be called here.
-    //
-
-    @Override
-    protected void onDestroy()
-    {
-
-        Log.d(TAG, "Inside of onDestroy :: " + TAG);
-
-        super.onDestroy();
-
-    }//end of VerifyActionActivity::onDestroy
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // VerifyActionActivity::onResume
-    //
-    // Automatically called when the activity is paused when it does not have
-    // user's focus but it still partially visible.
-    // All functions that must be done upon instantiation should be called here.
-    //
-
-    @Override
-    protected void onResume() {
-
-        super.onResume();
-
-        Log.d(TAG, "Inside of onResume :: " + TAG);
-
-        decorView.setSystemUiVisibility(uiOptions);
-
-    }//end of VerifyActionActivity::onResume
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // VerifyActionActivity::onPause
-    //
-    // Automatically called when the activity is paused when it does not have
-    // user's focus but it still partially visible.
-    // All functions that must be done upon instantiation should be called here.
-    //
-
-    @Override
-    protected void onPause() {
-
-        super.onPause();
-
-        Log.d(TAG, "Inside of onDestroy :: " + TAG);
-
-    }//end of VerifyActionActivity::onPause
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // VerifyActionActivity::createUiChangeListener
-    //
-    // Listens for visibility changes in the ui.
-    //
-    // If the system bars are visible, the system visibility is set to the uiOptions.
-    //
-    //
-
-    private void createUiChangeListener() {
-
-        decorView.setOnSystemUiVisibilityChangeListener (
-                new View.OnSystemUiVisibilityChangeListener() {
-
-                    @Override
-                    public void onSystemUiVisibilityChange(int pVisibility) {
-
-                        if ((pVisibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
-                            decorView.setSystemUiVisibility(uiOptions);
-                        }
-
-                    }
-
-                });
-
-    }//end of VerifyActionActivity::createUiChangeListener
+    }//end of VerifyActionActivity::performOnCreateActivitySpecificActions
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -231,7 +142,7 @@ public class VerifyActionActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoActivity::handleOkButtonPressed
+    // VerifyActionActivity::handleOkButtonPressed
     //
     // Exits the activity by calling exitActivityByOk().
     //
@@ -240,11 +151,11 @@ public class VerifyActionActivity extends Activity {
 
         exitActivityByOk();
 
-    }//end of JobInfoActivity::handleOkButtonPressed
+    }//end of VerifyActionActivity::handleOkButtonPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // OpenJobActivity::handleRedXButtonPressed
+    // VerifyActionActivity::handleRedXButtonPressed
     //
     // Exits the activity by finish().
     //
@@ -253,9 +164,9 @@ public class VerifyActionActivity extends Activity {
 
         exitActivityByCancel();
 
-    }//end of OpenJobActivity::handleRedXButtonPressed
+    }//end of VerifyActionActivity::handleRedXButtonPressed
     //-----------------------------------------------------------------------------
 
-}//end of class OpenJobActivity
+}//end of class VerifyActionActivity
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------

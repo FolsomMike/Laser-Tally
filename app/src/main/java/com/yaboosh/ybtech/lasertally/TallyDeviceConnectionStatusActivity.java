@@ -1,5 +1,5 @@
 /******************************************************************************
- * Title: TallyDeviceConnectionStatusMessageActivity.java
+ * Title: TallyDeviceConnectionStatusActivity.java
  * Author: Hunter Schoonover
  * Date: 10/09/14
  *
@@ -19,17 +19,16 @@ package com.yaboosh.ybtech.lasertally;
 
 //-----------------------------------------------------------------------------
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -37,17 +36,10 @@ import java.lang.ref.WeakReference;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-// class TallyDeviceConnectionStatusMessageActivity
+// class TallyDeviceConnectionStatusActivity
 //
 
-public class TallyDeviceConnectionStatusMessageActivity extends Activity {
-
-    public static final String TAG = "TallyDeviceConnectionStatusMessageActivity";
-
-    private View decorView;
-    private int uiOptions;
-
-    private SharedSettings sharedSettings;
+public class TallyDeviceConnectionStatusActivity extends StandardActivity {
 
     private TallyDeviceService.State state = TallyDeviceService.State.UNKNOWN;
     private final Messenger messenger;
@@ -58,91 +50,80 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
     private static String tallyDeviceName;
 
     //-----------------------------------------------------------------------------
-    // TallyDeviceConnectionStatusMessageActivity::MessageActivity (constructor)
+    // TallyDeviceConnectionStatusActivity::TallyDeviceConnectionStatusActivity (constructor)
+    //
+    // Constructor to be used for initial creation.
     //
 
-    public TallyDeviceConnectionStatusMessageActivity() {
+    public TallyDeviceConnectionStatusActivity()
+    {
 
-        super();
+        layoutResID = R.layout.activity_tally_device_connection_status;
+
+        LOG_TAG = "TallyDeviceConnectionStatusActivity";
 
         messenger = new Messenger(new IncomingHandler(this));
 
-    }//end of TallyDeviceConnectionStatusMessageActivity::MessageActivity (constructor)
+    }//end of TallyDeviceConnectionStatusActivity::TallyDeviceConnectionStatusActivity (constructor)
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyDeviceConnectionStatusMessageActivity::onCreate
+    // TallyDeviceConnectionStatusActivity::handleEscapeKeyPressed
     //
-    // Automatically called when the activity is created.
-    // All functions that must be done upon creation should be called here.
+    // This functions is overridden and left blank so that the user cannot use
+    // the escape key to exit the activity.
+    //
+
+    protected void handleEscapeKeyPressed() {
+
+    }//end of TallyDeviceConnectionStatusActivity::handleEscapeKeyPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceConnectionStatusActivity::onBackPressed
+    //
+    // This functions is overridden and left blank so that the user cannot use
+    // the back button to exit the activity.
     //
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onBackPressed() {
 
-        super.onCreate(savedInstanceState);
+    }//end of TallyDeviceConnectionStatusActivity::onBackPressed
+    //-----------------------------------------------------------------------------
 
-        setContentView(R.layout.activity_tally_device_connection_status_message);
+    //-----------------------------------------------------------------------------
+    // TallyDeviceConnectionStatusActivity::performOnCreateActivitySpecificActions
+    //
+    // All actions that must be done upon instantiation should be done here.
+    //
 
-        this.setFinishOnTouchOutside(false);
+    @Override
+    protected void performOnCreateActivitySpecificActions() {
 
-        decorView = getWindow().getDecorView();
-
-        uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-
-        createUiChangeListener();
-
-        Bundle bundle = getIntent().getExtras();
-        sharedSettings = bundle.getParcelable(Keys.SHARED_SETTINGS_KEY);
+        //WIP HSS// -- add objects to focus array
 
         serviceIntent = new Intent(this, TallyDeviceService.class);
 
-    }//end of TallyDeviceConnectionStatusMessageActivity::onCreate
+    }//end of TallyDeviceConnectionStatusActivity::performOnCreateActivitySpecificActions
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyDeviceConnectionStatusMessageActivity::onDestroy
+    // TallyDeviceConnectionStatusActivity::performOnResumeActivitySpecificActions
     //
-    // Automatically called when the activity is destroyed.
-    // All functions that must be done upon destruction should be called here.
-    //
-
-    @Override
-    protected void onDestroy()
-    {
-
-        super.onDestroy();
-
-    }//end of TallyDeviceConnectionStatusMessageActivity::onDestroy
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // TallyDeviceConnectionStatusMessageActivity::onResume
-    //
-    // Automatically called when the activity is paused when it does not have
-    // user's focus but it still partially visible.
-    // All functions that must be done upon resume should be called here.
+    // All actions that must be done upon activity resume should be done here.
     //
 
     @Override
-    protected void onResume() {
-
-        super.onResume();
-
-        decorView.setSystemUiVisibility(uiOptions);
-
-        sharedSettings.setContext(this);
+    protected void performOnResumeActivitySpecificActions() {
 
         bindService(serviceIntent, connection, BIND_AUTO_CREATE);
 
-    }//end of TallyDeviceConnectionStatusMessageActivity::onResume
+    }//end of TallyDeviceConnectionStatusActivity::performOnResumeActivitySpecificActions
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyDeviceConnectionStatusMessageActivity::onPause
+    // TallyDeviceConnectionStatusActivity::onPause
     //
     // Automatically called when the activity is paused when it does not have
     // user's focus but it still partially visible.
@@ -167,11 +148,11 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
 
         } catch (Exception e) { service = null; }
 
-    }//end of TallyDeviceConnectionStatusMessageActivity::onPause
+    }//end of TallyDeviceConnectionStatusActivity::onPause
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyDeviceConnectionStatusMessageActivity::connection
+    // TallyDeviceConnectionStatusActivity::connection
     //
     // Not really a function
     //
@@ -197,39 +178,11 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
 
         }
 
-    };//end of TallyDeviceConnectionStatusMessageActivity::connection
+    };//end of TallyDeviceConnectionStatusActivity::connection
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyDeviceConnectionStatusMessageActivity::createUiChangeListener
-    //
-    // Listens for visibility changes in the ui.
-    //
-    // If the system bars are visible, the system visibility is set to the uiOptions.
-    //
-    //
-
-    private void createUiChangeListener() {
-
-        decorView.setOnSystemUiVisibilityChangeListener (
-                new View.OnSystemUiVisibilityChangeListener() {
-
-                    @Override
-                    public void onSystemUiVisibilityChange(int pVisibility) {
-
-                        if ((pVisibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
-                            decorView.setSystemUiVisibility(uiOptions);
-                        }
-
-                    }
-
-                });
-
-    }//end of TallyDeviceConnectionStatusMessageActivity::createUiChangeListener
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // TallyDeviceConnectionStatusMessageActivity::exitActivity
+    // TallyDeviceConnectionStatusActivity::exitActivity
     //
     // Finishes and closes the activity.
     //
@@ -238,11 +191,11 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
 
         finish();
 
-    }//end of TallyDeviceConnectionStatusMessageActivity::exitActivity
+    }//end of TallyDeviceConnectionStatusActivity::exitActivity
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyDeviceConnectionStatusMessageActivity::handleConnectedState
+    // TallyDeviceConnectionStatusActivity::handleConnectedState
     //
     // Displays text to the user about being connected to the remote device with
     // the preset name.
@@ -250,8 +203,8 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
 
     public void handleConnectedState() {
 
-        ///debug hss//
-        Log.d(TAG, "Handle connected state");
+        //DEBUG HSS//
+        Log.d(LOG_TAG, "Handle connected state");
 
         setProgressBarVisible(false);
         setGreenCheckMarkVisible(true);
@@ -271,11 +224,11 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
 
         }, 2000);
 
-    }//end of TallyDeviceConnectionStatusMessageActivity::handleConnectedState
+    }//end of TallyDeviceConnectionStatusActivity::handleConnectedState
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyDeviceConnectionStatusMessageActivity::handleConnectingState
+    // TallyDeviceConnectionStatusActivity::handleConnectingState
     //
     // Displays text to the user about connecting to the remote device with the
     // preset name.
@@ -283,17 +236,17 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
 
     public void handleConnectingState() {
 
-        //debug hss//
-        Log.d(TAG, "Handle connecting state");
+        //DEBUG HSS//
+        Log.d(LOG_TAG, "Handle connecting state");
         setProgressBarVisible(true);
         setGreenCheckMarkVisible(false);
         setMessageText("Connecting to " + tallyDeviceName);
 
-    }//end of TallyDeviceConnectionStatusMessageActivity::handleConnectingState
+    }//end of TallyDeviceConnectionStatusActivity::handleConnectingState
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyDeviceConnectionStatusMessageActivity::handleDisconnectedState
+    // TallyDeviceConnectionStatusActivity::handleDisconnectedState
     //
     // Displays a message to the user saying that connecting failed.
     //
@@ -304,11 +257,11 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
         setGreenCheckMarkVisible(false);
         setMessageText("Failed to connect to " + tallyDeviceName);
 
-    }//end of TallyDeviceConnectionStatusMessageActivity::handleDisconnectedState
+    }//end of TallyDeviceConnectionStatusActivity::handleDisconnectedState
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyDeviceConnectionStatusMessageActivity::registerWithService
+    // TallyDeviceConnectionStatusActivity::registerWithService
     //
     // Sends a message to the TallyDeviceService to register.
     //
@@ -325,11 +278,11 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
 
         } catch (Exception e) { service = null; }
 
-    }//end of TallyDeviceConnectionStatusMessageActivity::registerWithService
+    }//end of TallyDeviceConnectionStatusActivity::registerWithService
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyDeviceConnectionStatusMessageActivity::setGreenCheckMarkVisible
+    // TallyDeviceConnectionStatusActivity::setGreenCheckMarkVisible
     //
     // Gets the green check mark.
     //
@@ -348,11 +301,11 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
             tempCheck.setVisibility(View.GONE);
         }
 
-    }//end of TallyDeviceConnectionStatusMessageActivity::setGreenCheckMarkVisible
+    }//end of TallyDeviceConnectionStatusActivity::setGreenCheckMarkVisible
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyDeviceConnectionStatusMessageActivity::setMessageText
+    // TallyDeviceConnectionStatusActivity::setMessageText
     //
     // Gets the text view used for messages and sets its text to the passed in
     // message.
@@ -364,11 +317,11 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
 
         tempText.setText(pMessage);
 
-    }//end of TallyDeviceConnectionStatusMessageActivity::setMessageText
+    }//end of TallyDeviceConnectionStatusActivity::setMessageText
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyDeviceConnectionStatusMessageActivity::setProgressBarVisible
+    // TallyDeviceConnectionStatusActivity::setProgressBarVisible
     //
     // Sets the progress bar is set to VISIBLE or GONE depending on the passed in
     // boolean.
@@ -381,19 +334,19 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
         if (pBool) { tempBar.setVisibility(View.VISIBLE); }
         else { tempBar.setVisibility(View.GONE); }
 
-    }//end of TallyDeviceConnectionStatusMessageActivity::setProgressBarVisible
+    }//end of TallyDeviceConnectionStatusActivity::setProgressBarVisible
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyDeviceConnectionStatusMessageActivity::stateChanged
+    // TallyDeviceConnectionStatusActivity::stateChanged
     //
     // Performs different operations depending on the passed in state.
     //
 
     private void stateChanged(TallyDeviceService.State pNewState, Message pMsg) {
 
-        //debug hss//
-        Log.d(TAG, "connection state changed: " + pNewState);
+        //DEBUG HSS//
+        Log.d(LOG_TAG, "connection state changed: " + pNewState);
 
         state = pNewState;
 
@@ -407,12 +360,12 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
             handleDisconnectedState();
         }
 
-    }//end of TallyDeviceConnectionStatusMessageActivity::stateChanged
+    }//end of TallyDeviceConnectionStatusActivity::stateChanged
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
     //-----------------------------------------------------------------------------
-    // class TallyDeviceConnectionStatusMessageActivity::IncomingHandler
+    // class TallyDeviceConnectionStatusActivity::IncomingHandler
     //
     // Purpose:
     //
@@ -422,15 +375,15 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
 
     private static class IncomingHandler extends Handler {
 
-        private final WeakReference<TallyDeviceConnectionStatusMessageActivity> activity;
+        private final WeakReference<TallyDeviceConnectionStatusActivity> activity;
 
         //-----------------------------------------------------------------------------
         // IncomingHandler::IncomingHandler (constructor)
         //
 
-        public IncomingHandler(TallyDeviceConnectionStatusMessageActivity pActivity) {
+        public IncomingHandler(TallyDeviceConnectionStatusActivity pActivity) {
 
-            activity = new WeakReference<TallyDeviceConnectionStatusMessageActivity>(pActivity);
+            activity = new WeakReference<TallyDeviceConnectionStatusActivity>(pActivity);
 
         }//end of IncomingHandler::IncomingHandler (constructor)
         //-----------------------------------------------------------------------------
@@ -444,7 +397,7 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
         @Override
         public void handleMessage(Message pMsg) {
 
-            TallyDeviceConnectionStatusMessageActivity tempActivity = activity.get();
+            TallyDeviceConnectionStatusActivity tempActivity = activity.get();
             if (tempActivity != null) {
 
                 switch (pMsg.what) {
@@ -462,10 +415,10 @@ public class TallyDeviceConnectionStatusMessageActivity extends Activity {
         }//end of IncomingHandler::handleMessage
         //-----------------------------------------------------------------------------
 
-    }//end of class TallyDeviceConnectionStatusMessageActivity::IncomingHandler
+    }//end of class TallyDeviceConnectionStatusActivity::IncomingHandler
     //-----------------------------------------------------------------------------
     //-----------------------------------------------------------------------------
 
-}//end of class TallyDeviceConnectionStatusMessageActivity
+}//end of class TallyDeviceConnectionStatusActivity
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------

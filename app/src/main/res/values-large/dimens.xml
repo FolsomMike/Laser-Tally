@@ -81,10 +81,10 @@
     <dimen name="amo_ml_ocbl_height">70dp</dimen>
     <!-- end of activity_more_options.xml -->
 
-    <!-- activity_tally_device_connection_status_message.xml -->
-    <dimen name="atdcsm_ml_pbcml_check_mark_height">100dp</dimen>
+    <!-- activity_tally_device_connection_status.xml -->
+     <dimen name="atdcsm_ml_pbcml_check_mark_height">100dp</dimen>
     <dimen name="atdcsm_ml_pbcml_check_mark_width">100dp</dimen>
-    <!-- end of activity_tally_device_connection_status_message.xml -->
+    <!-- end of activity_tally_device_connection_status.xml  -->
 
     <!-- activity_tally_device_scan.xml -->
     <dimen name="atds_ml_sl_height">50dp</dimen>

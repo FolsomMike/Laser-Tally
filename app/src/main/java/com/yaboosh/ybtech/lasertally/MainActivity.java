@@ -31,167 +31,50 @@ import java.util.ArrayList;
 // class MainActivity
 //
 
-public class MainActivity extends Activity {
-
-    public static final String TAG = "MainActivity";
-
-    private View decorView;
-    private int uiOptions;
-
-    private SharedSettings sharedSettings;
-
-    private ArrayList<String> jobNames = new ArrayList<String>();
+public class MainActivity extends StandardActivity {
 
     //-----------------------------------------------------------------------------
     // MainActivity::MainActivity (constructor)
     //
+    // Constructor to be used for initial creation.
+    //
 
-    public MainActivity() {
+    public MainActivity()
+    {
 
-        super();
+        layoutResID = R.layout.activity_main;
+
+        LOG_TAG = "MainActivity";
 
     }//end of MainActivity::MainActivity (constructor)
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MainActivity::onCreate
+    // MainActivity::handleF3KeyPressed
     //
-    // Automatically called when the activity is created.
-    // All functions that must be done upon instantiation should be called here.
-    //
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-
-        super.onCreate(savedInstanceState);
-
-        Log.d(TAG, "Inside of MainActivity onCreate");
-
-        setContentView(R.layout.activity_main);
-
-        decorView = getWindow().getDecorView();
-
-        uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-
-        createUiChangeListener();
-
-        //If the sharedSettings object is included
-        //in the bundle, set the sharedSettings
-        //object to the one in the bundle
-        //If it's not, initialize the sharedSettings
-        //object
-        if (getIntent().hasExtra(Keys.SHARED_SETTINGS_KEY)) {
-            sharedSettings = getIntent().getExtras().getParcelable(Keys.SHARED_SETTINGS_KEY);
-        }
-        else {
-            sharedSettings = new SharedSettings(this);
-            sharedSettings.init();
-        }
-
-        //Determine screen size ///debug hss//
-        if ((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_LARGE) {
-            Toast.makeText(this, "Large screen", Toast.LENGTH_LONG).show();
-        }
-        else if ((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_NORMAL) {
-            Toast.makeText(this, "Normal sized screen", Toast.LENGTH_LONG).show();
-        }
-        else if ((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_SMALL) {
-            Toast.makeText(this, "Small sized screen", Toast.LENGTH_LONG).show();
-        }
-        else {
-            Toast.makeText(this, "Screen size is neither large, normal or small", Toast.LENGTH_LONG).show();
-        }//debug hss//
-
-    }//end of MainActivity::onCreate
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // MainActivity::onDestroy
-    //
-    // Automatically called when the activity is destroyed.
-    // All functions that must be done upon destruction should be called here.
+    // If a view is in focus, perform a click on that view.
     //
 
     @Override
-    protected void onDestroy()
-    {
+    protected void handleF3KeyPressed() {
 
-        Log.d(TAG, "Inside of MainActivity onDestroy");
+        if (viewInFocus != null) { viewInFocus.performClick(); }
 
-        super.onDestroy();
-
-    }//end of MainActivity::onDestroy
+    }//end of MainActivity::handleF3KeyPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MainActivity::onResume
+    // MainActivity::performOnCreateActivitySpecificActions
     //
-    // Automatically called when the activity is paused when it does not have
-    // user's focus but it still partially visible.
-    // All functions that must be done upon instantiation should be called here.
+    // All actions that must be done upon instantiation should be done here.
     //
 
     @Override
-    protected void onResume() {
+    protected void performOnCreateActivitySpecificActions() {
 
-        super.onResume();
+        //WIP HSS// -- add objects to focus array
 
-        Log.d(TAG, "Inside of MainActivity onResume");
-
-        decorView.setSystemUiVisibility(uiOptions);
-
-        sharedSettings.setContext(this);
-
-    }//end of MainActivity::onResume
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // MainActivity::onPause
-    //
-    // Automatically called when the activity is paused when it does not have
-    // user's focus but it still partially visible.
-    // All functions that must be done upon instantiation should be called here.
-    //
-
-    @Override
-    protected void onPause() {
-
-        super.onPause();
-
-        Log.d(TAG, "Inside of MainActivity onPause");
-
-    }//end of MainActivity::onPause
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // MainActivity::createUiChangeListener
-    //
-    // Listens for visibility changes in the ui.
-    //
-    // If the system bars are visible, the system visibility is set to the uiOptions.
-    //
-    //
-
-    private void createUiChangeListener() {
-
-        decorView.setOnSystemUiVisibilityChangeListener (
-                new View.OnSystemUiVisibilityChangeListener() {
-
-                    @Override
-                    public void onSystemUiVisibilityChange(int pVisibility) {
-
-                        if ((pVisibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
-                            decorView.setSystemUiVisibility(uiOptions);
-                        }
-
-                    }
-
-                });
-
-    }//end of MainActivity::createUiChangeListener
+    }//end of MainActivity::performOnCreateActivitySpecificActions
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

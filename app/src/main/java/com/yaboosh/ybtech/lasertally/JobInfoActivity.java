@@ -46,18 +46,7 @@ import java.util.Scanner;
 // class JobInfoActivity
 //
 
-public class JobInfoActivity extends Activity {
-
-    public static final String LOG_TAG = "JobInfoActivity";
-
-    private SharedSettings sharedSettings;
-
-    private View decorView;
-    private int uiOptions;
-
-    private DecimalFormat tallyFormat = new DecimalFormat("#.##");
-
-    ArrayList<String> fileLines = new ArrayList<String>();
+public class JobInfoActivity extends StandardActivity {
 
     public static class EditJobInfoActivityMode {
         public static String CREATE_JOB = "CREATE_JOB";
@@ -75,6 +64,8 @@ public class JobInfoActivity extends Activity {
     private String newJobInfoFilePath;
     private String originalJobFolderPath;
     private String originalJobInfoFilePath;
+
+    private Button okButton;
 
     //Keys to be used for saving an instance of the activity
     private final String COMPANY_NAME_KEY = "COMPANY_NAME_KEY";
@@ -110,84 +101,51 @@ public class JobInfoActivity extends Activity {
     //-----------------------------------------------------------------------------
     // JobInfoActivity::JobInfoActivity (constructor)
     //
+    // Constructor to be used for initial creation.
+    //
 
-    public JobInfoActivity() {
+    public JobInfoActivity()
+    {
 
-        super();
+        layoutResID = R.layout.activity_job_info;
+
+        LOG_TAG = "JobInfoActivity";
 
     }//end of JobInfoActivity::JobInfoActivity (constructor)
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoActivity::onCreate
+    // JobInfoActivity::handleF3KeyPressed
     //
-    // Automatically called when the activity is created.
-    // All functions that must be done upon creation should be called here.
+    // Perform a click on the ok button.
     //
 
     @Override
-    protected void onCreate(Bundle pSavedInstanceState) {
+    protected void handleF3KeyPressed() {
 
-        super.onCreate(pSavedInstanceState);
+        //WIP HSS// -- I don't actually know if disabling the ok button will
+        //              prevent this from working. I hope it does.
 
-        Log.d(LOG_TAG, "Inside of JobInfoActivity onCreate");
+        if (okButton != null) { okButton.performClick(); }
 
-        setContentView(R.layout.activity_job_info);
+    }//end of JobInfoActivity::handleF3KeyPressed
+    //-----------------------------------------------------------------------------
 
-        this.setFinishOnTouchOutside(false);
+    //-----------------------------------------------------------------------------
+    // JobInfoActivity::performOnCreateActivitySpecificActions
+    //
+    // All actions that must be done upon instantiation should be done here.
+    //
 
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    @Override
+    protected void performOnCreateActivitySpecificActions() {
 
-        decorView = getWindow().getDecorView();
+        //WIP HSS// -- add objects to focus array
 
-        uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-
-        createUiChangeListener();
-
-        //Get the extras from the intent
-        Bundle bundle = getIntent().getExtras();
+        okButton = (Button) findViewById(R.id.okButton);
 
         //Set the activity mode
-        setActivityMode(bundle.getString(Keys.EDIT_JOB_INFO_ACTIVITY_MODE_KEY));
-
-        // Check whether we're recreating a previously destroyed instance
-        if (pSavedInstanceState != null) {
-            // Restore values from saved state
-
-            companyName = pSavedInstanceState.getString(COMPANY_NAME_KEY);
-            date = pSavedInstanceState.getString(DATE_KEY);
-            diameter = pSavedInstanceState.getString(DIAMETER_KEY);
-            facility = pSavedInstanceState.getString(FACILITY_KEY);
-            grade = pSavedInstanceState.getString(GRADE_KEY);
-            imperialAdjustment = pSavedInstanceState.getString(IMPERIAL_ADJUSTMENT_KEY);
-            imperialTallyGoal = pSavedInstanceState.getString(IMPERIAL_TALLY_GOAL_KEY);
-            job = pSavedInstanceState.getString(JOB_KEY);
-            metricAdjustment = pSavedInstanceState.getString(METRIC_ADJUSTMENT_KEY);
-            metricTallyGoal = pSavedInstanceState.getString(METRIC_TALLY_GOAL_KEY);
-            rack = pSavedInstanceState.getString(RACK_KEY);
-            range = pSavedInstanceState.getString(RANGE_KEY);
-            rig = pSavedInstanceState.getString(RIG_KEY);
-            wall = pSavedInstanceState.getString(WALL_KEY);
-
-        } else {
-            //initialize members with values from the bundle for a new instance
-
-            sharedSettings = bundle.getParcelable(Keys.SHARED_SETTINGS_KEY);
-            //although the passed in job name may be null if the activity
-            //mode is CREATE, we can still attempt to pull it out at this
-            //point, so long as we do not attempt to use it unless the
-            //mode is EDIT
-            passedInJobName = bundle.getString(Keys.JOB_NAME_KEY);
-
-            setOriginalFilePaths(passedInJobName);
-
-            getJobInfoFromFile();
-
-        }
+        setActivityMode(getIntent().getExtras().getString(Keys.EDIT_JOB_INFO_ACTIVITY_MODE_KEY));
 
         //Add a listener to the job name edit text field to listen for changes
         ((TextView)findViewById(R.id.editTextJob)).addTextChangedListener(new TextWatcher() {
@@ -197,83 +155,51 @@ public class JobInfoActivity extends Activity {
 
             }
 
-            public void beforeTextChanged(CharSequence pS, int pStart, int pCount, int pAfter) {}
+            public void beforeTextChanged(CharSequence pS, int pStart, int pCount, int pAfter) {
+            }
 
-            public void onTextChanged(CharSequence pS, int pStart, int pBefore, int pCount) {}
+            public void onTextChanged(CharSequence pS, int pStart, int pBefore, int pCount) {
+            }
         });
 
-    }//end of JobInfoActivity::onCreate
+    }//end of JobInfoActivity::performOnCreateActivitySpecificActions
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoActivity::onDestroy
+    // JobInfoActivity::restoreActivitySpecificValuesFromSavedInstance
     //
-    // Automatically called when the activity is destroyed.
-    // All functions that must be done upon destruction should be called here.
-    //
-
-    @Override
-    protected void onDestroy()
-    {
-
-        Log.d(LOG_TAG, "Inside of JobInfoActivity onDestroy");
-
-        super.onDestroy();
-
-    }//end of JobInfoActivity::onDestroy
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobInfoActivity::onResume
-    //
-    // Automatically called when the activity is paused when it does not have
-    // user's focus but it still partially visible.
-    // All functions that must be done upon instantiation should be called here.
+    // Restores values using the passed in saved instance.
     //
 
     @Override
-    protected void onResume() {
+    protected void restoreActivitySpecificValuesFromSavedInstance(Bundle pSavedInstanceState) {
 
-        super.onResume();
+        companyName = pSavedInstanceState.getString(COMPANY_NAME_KEY);
+        date = pSavedInstanceState.getString(DATE_KEY);
+        diameter = pSavedInstanceState.getString(DIAMETER_KEY);
+        facility = pSavedInstanceState.getString(FACILITY_KEY);
+        grade = pSavedInstanceState.getString(GRADE_KEY);
+        imperialAdjustment = pSavedInstanceState.getString(IMPERIAL_ADJUSTMENT_KEY);
+        imperialTallyGoal = pSavedInstanceState.getString(IMPERIAL_TALLY_GOAL_KEY);
+        job = pSavedInstanceState.getString(JOB_KEY);
+        metricAdjustment = pSavedInstanceState.getString(METRIC_ADJUSTMENT_KEY);
+        metricTallyGoal = pSavedInstanceState.getString(METRIC_TALLY_GOAL_KEY);
+        rack = pSavedInstanceState.getString(RACK_KEY);
+        range = pSavedInstanceState.getString(RANGE_KEY);
+        rig = pSavedInstanceState.getString(RIG_KEY);
+        wall = pSavedInstanceState.getString(WALL_KEY);
 
-        Log.d(LOG_TAG, "Inside of JobInfoActivity onResume");
-
-        decorView.setSystemUiVisibility(uiOptions);
-
-        sharedSettings.setContext(this);
-
-    }//end of JobInfoActivity::onResume
+    }//end of JobInfoActivity::restoreActivitySpecificValuesFromSavedInstance
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoActivity::onPause
+    // JobInfoActivity::storeActivitySpecificValuesFromSavedInstance
     //
-    // Automatically called when the activity is paused when it does not have
-    // user's focus but it still partially visible.
-    // All functions that must be done upon instantiation should be called here.
-    //
-
-    @Override
-    protected void onPause() {
-
-        Log.d(LOG_TAG, "Inside of JobInfoActivity onPause");
-
-        super.onPause();
-
-    }//end of JobInfoActivity::onPause
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobInfoActivity::onSaveInstanceState
-    //
-    // As the activity begins to stop, the system calls onSaveInstanceState()
-    // so the activity can save state information with a collection of key-value
-    // pairs. This functions is overridden so that additional state information can
-    // be saved.
+    // Stores activity specific values in the passed in saved instance.
     //
 
     @Override
-    public void onSaveInstanceState(Bundle pSavedInstanceState) {
+    protected void storeActivitySpecificValuesToSavedInstance(Bundle pSavedInstanceState) {
 
         getAndStoreJobInfoFromUserInput();
 
@@ -293,10 +219,31 @@ public class JobInfoActivity extends Activity {
         pSavedInstanceState.putString(RIG_KEY, rig);
         pSavedInstanceState.putString(WALL_KEY, wall);
 
-        // Always call the superclass so it can save the view hierarchy state
-        super.onSaveInstanceState(pSavedInstanceState);
+    }//end of JobInfoActivity::storeActivitySpecificValuesFromSavedInstance
+    //-----------------------------------------------------------------------------
 
-    }//end of JobInfoActivity::onSaveInstanceState
+    //-----------------------------------------------------------------------------
+    // JobInfoActivity::useActivitySpecificActivityStartUpValues
+    //
+    // Uses activity start up values for variables.
+    //
+    // Activity dependent.
+    //
+
+    @Override
+    protected void useActivitySpecificActivityStartUpValues() {
+
+        //although the passed in job name may be null if the activity
+        //mode is CREATE, we can still attempt to pull it out at this
+        //point, so long as we do not attempt to use it unless the
+        //mode is EDIT
+        passedInJobName = getIntent().getExtras().getString(Keys.JOB_NAME_KEY);
+
+        setOriginalFilePaths(passedInJobName);
+
+        getJobInfoFromFile();
+
+    }//end of JobInfoActivity::useActivitySpecificActivityStartUpValues
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -370,35 +317,7 @@ public class JobInfoActivity extends Activity {
         return exists;
 
     }//end of JobInfoActivity::checkIfJobNameAlreadyExists
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobInfoActivity::createUiChangeListener
-    //
-    // Listens for visibility changes in the ui.
-    //
-    // If the system bars are visible, the system visibility is set to the uiOptions.
-    //
-    //
-
-    private void createUiChangeListener() {
-
-        decorView.setOnSystemUiVisibilityChangeListener (
-                new View.OnSystemUiVisibilityChangeListener() {
-
-                    @Override
-                    public void onSystemUiVisibilityChange(int pVisibility) {
-
-                        if ((pVisibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
-                            decorView.setSystemUiVisibility(uiOptions);
-                        }
-
-                    }
-
-                });
-
-    }//end of JobInfoActivity::createUiChangeListener
-    //-----------------------------------------------------------------------------
+    //----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
     // JobInfoActivity::enableOkButton
@@ -408,8 +327,6 @@ public class JobInfoActivity extends Activity {
     //
 
     private void enableOkButton(boolean pBool) {
-
-        Button okButton = (Button) findViewById(R.id.okButton);
 
         if (pBool) {
             okButton.setEnabled(true);

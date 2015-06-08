@@ -48,14 +48,7 @@ import java.util.Scanner;
 // class OpenJobActivity
 //
 
-public class OpenJobActivity extends Activity {
-
-    public static final String LOG_TAG = "OpenJobActivity";
-
-    private View decorView;
-    private int uiOptions;
-
-    private SharedSettings sharedSettings;
+public class OpenJobActivity extends StandardActivity {
 
     ArrayList<String> jobNames = new ArrayList<String>();
 
@@ -80,109 +73,60 @@ public class OpenJobActivity extends Activity {
     //-----------------------------------------------------------------------------
     // OpenJobActivity::OpenJobActivity (constructor)
     //
+    // Constructor to be used for initial creation.
+    //
 
-    public OpenJobActivity() {
+    public OpenJobActivity()
+    {
 
-        super();
+        layoutResID = R.layout.activity_open_job;
+
+        LOG_TAG = "OpenJobActivity";
 
     }//end of OpenJobActivity::OpenJobActivity (constructor)
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // OpenJobActivity::onCreate
+    // OpenJobActivity::handleF3KeyPressed
     //
-    // Automatically called when the activity is created.
-    // All functions that must be done upon creation should be called here.
-    //
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-
-        super.onCreate(savedInstanceState);
-
-        Log.d(LOG_TAG, "Inside of onCreate :: " + LOG_TAG);
-
-        setContentView(R.layout.activity_open_job);
-
-        this.setFinishOnTouchOutside(false);
-
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        decorView = getWindow().getDecorView();
-
-        uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-
-        createUiChangeListener();
-
-        Bundle bundle = getIntent().getExtras();
-        sharedSettings = bundle.getParcelable(Keys.SHARED_SETTINGS_KEY);
-
-    }//end of OpenJobActivity::onCreate
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // OpenJobActivity::onDestroy
-    //
-    // Automatically called when the activity is destroyed.
-    // All functions that must be done upon destruction should be called here.
+    // If a view is in focus, perform a click on that view.
     //
 
     @Override
-    protected void onDestroy()
-    {
+    protected void handleF3KeyPressed() {
 
-        Log.d(LOG_TAG, "Inside of onDestroy :: " + LOG_TAG);
+        if (viewInFocus != null) { viewInFocus.performClick(); }
 
-        super.onDestroy();
-
-    }//end of OpenJobActivity::onDestroy
+    }//end of OpenJobActivity::handleF3KeyPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // OpenJobActivity::onResume
+    // OpenJobActivity::performOnCreateActivitySpecificActions
     //
-    // Automatically called when the activity is paused when it does not have
-    // user's focus but it still partially visible.
-    // All functions that must be done upon instantiation should be called here.
+    // All actions that must be done upon instantiation should be done here.
     //
 
     @Override
-    protected void onResume() {
+    protected void performOnCreateActivitySpecificActions() {
 
-        super.onResume();
+        //WIP HSS// -- add objects to focus array
 
-        Log.d(LOG_TAG, "Inside of onResume :: " + LOG_TAG);
+    }//end of OpenJobActivity::performOnCreateActivitySpecificActions
+    //-----------------------------------------------------------------------------
 
-        decorView.setSystemUiVisibility(uiOptions);
+    //-----------------------------------------------------------------------------
+    // OpenJobActivity::performOnResumeActivitySpecificActions
+    //
+    // All actions that must be done upon activity resume should be done here.
+    //
 
-        sharedSettings.setContext(this);
+    @Override
+    protected void performOnResumeActivitySpecificActions() {
 
         getAndStoreJobs();
         addJobsToListView();
 
-    }//end of OpenJobActivity::onResume
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // OpenJobActivity::onPause
-    //
-    // Automatically called when the activity is paused when it does not have
-    // user's focus but it still partially visible.
-    // All functions that must be done upon instantiation should be called here.
-    //
-
-    @Override
-    protected void onPause() {
-
-        super.onPause();
-
-        Log.d(LOG_TAG, "Inside of onDestroy :: " + LOG_TAG);
-
-    }//end of OpenJobActivity::onPause
+    }//end of OpenJobActivity::performOnResumeActivitySpecificActions
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -211,47 +155,19 @@ public class OpenJobActivity extends Activity {
                                                             R.layout.text_view_template,
                                                             jobNames);
         listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 
-                handleJobSelected(((TextView)arg1).getText().toString());
-                Log.d(LOG_TAG, "Job Selected: " + ((TextView)arg1).getText().toString());
+                handleJobSelected(((TextView) arg1).getText().toString());
+                Log.d(LOG_TAG, "Job Selected: " + ((TextView) arg1).getText().toString());
 
             }
 
         });
 
     }//end of OpenJobActivity::addJobsToListView
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // OpenJobActivity::createUiChangeListener
-    //
-    // Listens for visibility changes in the ui.
-    //
-    // If the system bars are visible, the system visibility is set to the uiOptions.
-    //
-    //
-
-    private void createUiChangeListener() {
-
-        decorView.setOnSystemUiVisibilityChangeListener (
-                new View.OnSystemUiVisibilityChangeListener() {
-
-                    @Override
-                    public void onSystemUiVisibilityChange(int pVisibility) {
-
-                        if ((pVisibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
-                            decorView.setSystemUiVisibility(uiOptions);
-                        }
-
-                    }
-
-                });
-
-    }//end of OpenJobActivity::createUiChangeListener
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

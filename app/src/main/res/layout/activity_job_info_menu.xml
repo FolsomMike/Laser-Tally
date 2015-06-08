@@ -4,6 +4,8 @@
     android:layout_height="wrap_content"
     android:layout_width="@dimen/dialog_width_standard"
     android:background="#CFCFCF"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     android:orientation="vertical"
     android:padding="@dimen/padding_none"
     tools:context="com.yaboosh.ybtech.lasertally.JobInfoMenuActivity"

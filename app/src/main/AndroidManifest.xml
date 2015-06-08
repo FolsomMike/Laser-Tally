@@ -77,7 +77,7 @@
         </activity>
 
         <activity
-            android:name=".TallyDeviceConnectionStatusMessageActivity"
+            android:name=".TallyDeviceConnectionStatusActivity"
             android:label="@string/title_activity_tally_device_connection_status_message"
             android:screenOrientation="reverseLandscape"
             android:theme="@style/activityDialog" >

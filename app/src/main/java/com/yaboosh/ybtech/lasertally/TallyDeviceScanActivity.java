@@ -29,6 +29,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -38,21 +39,13 @@ import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.List;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 // class TallyDeviceScanActivity
 //
 
-public class TallyDeviceScanActivity extends Activity implements AbsListView.OnItemClickListener {
-
-    public static final String TAG = "DeviceScanActivity";
-
-    private View decorView;
-    private int uiOptions;
-
-    private SharedSettings sharedSettings;
+public class TallyDeviceScanActivity extends StandardActivity implements AbsListView.OnItemClickListener {
 
     private TallyDeviceService.State state = TallyDeviceService.State.UNKNOWN;
     private final Messenger messenger;
@@ -65,96 +58,35 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
     ArrayList<String> deviceNames = new ArrayList<String>();
 
     //-----------------------------------------------------------------------------
-    // TallyDeviceScanActivity::TallyDeviceScanActivity (constructor)
+    // TallyDeviceScanActivity::TallyDeviceConnectionStatusActivity (constructor)
+    //
+    // Constructor to be used for initial creation.
     //
 
-    public TallyDeviceScanActivity() {
+    public TallyDeviceScanActivity()
+    {
 
-        super();
+        layoutResID = R.layout.activity_tally_device_scan;
+
+        LOG_TAG = "TallyDeviceScanActivity";
 
         messenger = new Messenger(new IncomingHandler(this));
 
-    }//end of TallyDeviceScanActivity::TallyDeviceScanActivity (constructor)
+    }//end of TallyDeviceScanActivity::TallyDeviceConnectionStatusActivity (constructor)
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyDeviceScanActivity::onCreate
+    // TallyDeviceScanActivity::handleF3KeyPressed
     //
-    // Automatically called when the activity is created.
-    // All functions that must be done upon creation should be called here.
-    //
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-
-        super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_tally_device_scan);
-
-        this.setFinishOnTouchOutside(false);
-
-        decorView = getWindow().getDecorView();
-
-        uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-
-        createUiChangeListener();
-
-        Bundle bundle = getIntent().getExtras();
-        sharedSettings = bundle.getParcelable(Keys.SHARED_SETTINGS_KEY);
-
-        serviceIntent = new Intent(this, TallyDeviceService.class);
-
-        listView = (AbsListView) findViewById(android.R.id.list);
-
-        emptyView = (TextView) findViewById(android.R.id.empty);
-
-        listView.setEmptyView(emptyView);
-
-        // Set OnItemClickListener so we can be notified on item clicks
-        listView.setOnItemClickListener(this);
-
-    }//end of TallyDeviceScanActivity::onCreate
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // TallyDeviceScanActivity::onDestroy
-    //
-    // Automatically called when the activity is destroyed.
-    // All functions that must be done upon destruction should be called here.
+    // If a view is in focus, perform a click on that view.
     //
 
     @Override
-    protected void onDestroy()
-    {
+    protected void handleF3KeyPressed() {
 
-        super.onDestroy();
+        if (viewInFocus != null) { viewInFocus.performClick(); }
 
-    }//end of TallyDeviceScanActivity::onDestroy
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // TallyDeviceScanActivity::onResume
-    //
-    // Automatically called when the activity is paused when it does not have
-    // user's focus but it still partially visible.
-    // All functions that must be done upon instantiation should be called here.
-    //
-
-    @Override
-    protected void onResume() {
-
-        super.onResume();
-
-        decorView.setSystemUiVisibility(uiOptions);
-
-        sharedSettings.setContext(this);
-
-        bindService(serviceIntent, connection, BIND_AUTO_CREATE);
-
-    }//end of TallyDeviceScanActivity::onResume
+    }//end of TallyDeviceScanActivity::handleF3KeyPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -177,7 +109,7 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
         try {
 
             Message msg = Message.obtain(null,
-                                    TallyDeviceService.MSG_UNREGISTER_TALLY_DEVICE_SCAN_ACTIVITY);
+                    TallyDeviceService.MSG_UNREGISTER_TALLY_DEVICE_SCAN_ACTIVITY);
             if (msg == null) { return; }
             msg.replyTo = messenger;
             service.send(msg);
@@ -185,6 +117,44 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
         } catch (Exception e) { service = null; }
 
     }//end of TallyDeviceScanActivity::onPause
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceScanActivity::performOnCreateActivitySpecificActions
+    //
+    // All actions that must be done upon instantiation should be done here.
+    //
+
+    @Override
+    protected void performOnCreateActivitySpecificActions() {
+
+        //WIP HSS// -- add objects to focus array
+
+        serviceIntent = new Intent(this, TallyDeviceService.class);
+
+        listView = (AbsListView) findViewById(android.R.id.list);
+
+        emptyView = (TextView) findViewById(android.R.id.empty);
+
+        listView.setEmptyView(emptyView);
+
+        // Set OnItemClickListener so we can be notified on item clicks
+        listView.setOnItemClickListener(this);
+
+    }//end of TallyDeviceScanActivity::performOnCreateActivitySpecificActions
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceScanActivity::performOnResumeActivitySpecificActions
+    //
+    // All functions that must be done upon activity resume should be called here.
+    //
+
+    protected void performOnResumeActivitySpecificActions() {
+
+        bindService(serviceIntent, connection, BIND_AUTO_CREATE);
+
+    }//end of TallyDeviceScanActivity::performOnResumeActivitySpecificActions
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -260,34 +230,6 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyDeviceScanActivity::createUiChangeListener
-    //
-    // Listens for visibility changes in the ui.
-    //
-    // If the system bars are visible, the system visibility is set to the uiOptions.
-    //
-    //
-
-    private void createUiChangeListener() {
-
-        decorView.setOnSystemUiVisibilityChangeListener (
-                new View.OnSystemUiVisibilityChangeListener() {
-
-                    @Override
-                    public void onSystemUiVisibilityChange(int pVisibility) {
-
-                        if ((pVisibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
-                            decorView.setSystemUiVisibility(uiOptions);
-                        }
-
-                    }
-
-                });
-
-    }//end of TallyDeviceScanActivity::createUiChangeListener
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
     // TallyDeviceScanActivity::exitActivity
     //
     // Finishes and closes the activity.
@@ -308,7 +250,7 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
 
     private void finishActivityAndStartMessageActivity() {
 
-        Intent intent = new Intent(this, TallyDeviceConnectionStatusMessageActivity.class);
+        Intent intent = new Intent(this, TallyDeviceConnectionStatusActivity.class);
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
         startActivity(intent);
 
@@ -354,8 +296,8 @@ public class TallyDeviceScanActivity extends Activity implements AbsListView.OnI
 
     public void handleFinishScanActivityAndStartMessageActivityMessage(Message pMsg) {
 
-        //debug hss//
-        Log.d(TAG, "finish and start message received");
+        //DEBUG HSS//
+        Log.d(LOG_TAG, "finish and start message received");
 
         finishActivityAndStartMessageActivity();
 
