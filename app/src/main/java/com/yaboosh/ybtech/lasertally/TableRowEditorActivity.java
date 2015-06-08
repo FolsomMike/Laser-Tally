@@ -93,6 +93,8 @@ public class TableRowEditorActivity extends StandardActivity {
 
         //WIP HSS// -- add objects to focus array
 
+        setPipeNumberAndTotalLengthValues();
+
     }//end of TableRowEditorActivity::performOnCreateActivitySpecificActions
     //-----------------------------------------------------------------------------
 
@@ -107,8 +109,6 @@ public class TableRowEditorActivity extends StandardActivity {
 
         pipeNumber = pSavedInstanceState.getString(PIPE_NUMBER_KEY);
         totalLength = pSavedInstanceState.getString(TOTAL_LENGTH_KEY);
-
-        setPipeNumberAndTotalLengthValues();
 
     }//end of TableRowEditorActivity::restoreActivitySpecificValuesFromSavedInstance
     //-----------------------------------------------------------------------------
