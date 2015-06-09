@@ -4,6 +4,8 @@
     android:layout_height="wrap_content"
     android:layout_width="@dimen/dialog_width_standard"
     android:background="#CFCFCF"
+    android:focusable="false"
+    android:focusableInTouchMode="false"
     android:padding="@dimen/padding_none"
     tools:context="com.yaboosh.ybtech.lasertally.MoreActivity"
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -15,6 +17,8 @@
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"
         android:background="#1A1A1A"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
         android:gravity="center"
         android:layout_alignParentTop="true"
         android:orientation="horizontal"
@@ -24,9 +28,11 @@
         android:paddingTop="@dimen/title_bar_layout_padding_top" >
 
         <TextView
-            android:gravity="center"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="center"
             android:padding="0dp"
             android:textColor="#B2B2B2"
             android:text="More"
@@ -34,17 +40,21 @@
 
         <!-- TITLE BAR LAYOUT horizontal spacer 1 -->
         <View
-            android:layout_weight="1"
+            android:layout_height="1dp"
             android:layout_width="0dp"
-            android:layout_height="1dp" >
+            android:layout_weight="1"
+            android:focusable="false"
+            android:focusableInTouchMode="false" >
         </View>
 
         <Button
             android:id="@id/tableRowEditorRedXButton"
-            android:background="@drawable/close_x_button"
-            android:gravity="center"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:background="@drawable/close_x_button"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="center"
             android:onClick="handleRedXButtonPressed"/>
 
     </LinearLayout>
@@ -52,39 +62,49 @@
 
     <!-- BUTTONS LAYOUT -->
     <LinearLayout
-        android:layout_height="wrap_content"
         android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:gravity="center"
         android:layout_below="@+id/titleBarLayout"
         android:orientation="vertical"
         android:paddingBottom="@dimen/padding_xxxlarge"
         android:paddingLeft="@dimen/padding_xlarge"
         android:paddingRight="@dimen/padding_xlarge"
-        android:paddingTop="@dimen/padding_xxxlarge"
-        android:gravity="center" >
+        android:paddingTop="@dimen/padding_xxxlarge" >
 
         <Button
-            android:background="@drawable/white_styled_button_dark_gray_border"
-            android:layout_width="fill_parent"
+            android:id="@+id/printButton"
             android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:background="@drawable/white_styled_button_dark_gray_border"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:onClick="handlePrintButtonPressed"
             android:text="print"
             android:textSize="@dimen/text_size_normal"
-            style="@style/whiteStyledButton"
-            android:onClick="handlePrintButtonPressed" />
+            style="@style/whiteStyledButton" />
 
         <!-- BUTTONS LAYOUT vertical spacer 1 -->
         <View
+            android:layout_height="@dimen/spacer_vertical_tall"
             android:layout_width="1dp"
-            android:layout_height="@dimen/spacer_vertical_tall" >
+            android:focusable="false"
+            android:focusableInTouchMode="false" >
         </View>
 
         <Button
-            android:background="@drawable/white_styled_button_dark_gray_border"
-            android:layout_width="fill_parent"
+            android:id="@+id/optionsButton"
             android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:background="@drawable/white_styled_button_dark_gray_border"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:onClick="handleOptionsButtonPressed"
             android:text="options"
             android:textSize="@dimen/text_size_normal"
-            style="@style/whiteStyledButton"
-            android:onClick="handleOptionsButtonPressed" />
+            style="@style/whiteStyledButton" />
 
     </LinearLayout>
     <!-- END OF BUTTONS LAYOUT -->

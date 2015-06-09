@@ -73,7 +73,9 @@ public class MoreActivity extends StandardActivity {
     @Override
     protected void performOnCreateActivitySpecificActions() {
 
-        //WIP HSS// -- add objects to focus array
+        //add buttons to focus array
+        focusArray.add(findViewById(R.id.printButton));
+        focusArray.add(findViewById(R.id.optionsButton));
 
     }//end of MoreActivity::performOnCreateActivitySpecificActions
     //-----------------------------------------------------------------------------
