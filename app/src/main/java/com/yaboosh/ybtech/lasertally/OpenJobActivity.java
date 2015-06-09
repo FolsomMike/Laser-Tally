@@ -16,29 +16,20 @@ package com.yaboosh.ybtech.lasertally;
 
 //-----------------------------------------------------------------------------
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
-
-import com.yaboosh.ybtech.lasertally.util.SystemUiHider;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
@@ -50,7 +41,7 @@ import java.util.Scanner;
 
 public class OpenJobActivity extends StandardActivity {
 
-    ArrayList<String> jobNames = new ArrayList<String>();
+    private ArrayList<String> jobNames = new ArrayList<String>();
 
     private String selectedJobDirectoryPath;
     private String selectedJobInfoFilePath;
@@ -109,8 +100,6 @@ public class OpenJobActivity extends StandardActivity {
     @Override
     protected void performOnCreateActivitySpecificActions() {
 
-        //WIP HSS// -- add objects to focus array
-
     }//end of OpenJobActivity::performOnCreateActivitySpecificActions
     //-----------------------------------------------------------------------------
 
@@ -130,6 +119,34 @@ public class OpenJobActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // OpenJobActivity::onClickListener
+    //
+    // Not really a function.
+    //
+    // Listeners for clicks on the objects to which it was handed.
+    //
+    // Ids are used to determine which object was pressed.
+    // When assigning this listener to any new objects, add the object's id to the
+    // switch statement and handle the case properly.
+    //
+
+    View.OnClickListener onClickListener = new View.OnClickListener() {
+
+        @Override
+        public void onClick(View pV) {
+
+            int id = pV.getId();
+
+            if (id == R.id.jobNameTextView) {
+                handleJobSelected(((TextView) pV).getText().toString());
+            }
+
+        }
+
+    };//end of OpenJobActivity::onClickListener
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // OpenJobActivity::addJobsToListView
     //
     // Adds the job names to the job names list view.
@@ -139,35 +156,43 @@ public class OpenJobActivity extends StandardActivity {
 
     private void addJobsToListView() {
 
-        ListView listView = (ListView)findViewById(R.id.jobNamesListView);
         TextView textView =  (TextView)findViewById(R.id.noJobsTextView);
-
-        if (jobNames.size() == 0) {
-            listView.setVisibility(View.GONE);
-            textView.setVisibility(View.VISIBLE);
-            return;
-        }
-
-        listView.setVisibility(View.VISIBLE);
         textView.setVisibility(View.GONE);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                                                            R.layout.text_view_template,
-                                                            jobNames);
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        //if there are no jobs,
+        //display a message to the user
+        if (jobNames.isEmpty()) { textView.setVisibility(View.VISIBLE); return; }
 
-            @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-
-                handleJobSelected(((TextView) arg1).getText().toString());
-                Log.d(LOG_TAG, "Job Selected: " + ((TextView) arg1).getText().toString());
-
-            }
-
-        });
+        LinearLayout layout = (LinearLayout)findViewById(R.id.jobNamesLayout);
+        for (String j : jobNames) { layout.addView(createJobNameTextView(j)); }
 
     }//end of OpenJobActivity::addJobsToListView
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // OpenJobActivity::createJobNameTextView
+    //
+    // Returns a selectable text view containing the passed in string.
+    //
+    // A pointer to the created TextView is added to the focus array.
+    //
+
+    private TextView createJobNameTextView(String pString) {
+
+        TextView t = (TextView)getLayoutInflater().inflate
+                                                    (R.layout.selectable_text_view_template, null);
+        t.setId(R.id.jobNameTextView);
+        t.setClickable(true);
+        t.setFocusable(true);
+        t.setFocusableInTouchMode(true);
+        t.setOnClickListener(onClickListener);
+        t.setText(pString);
+
+        focusArray.add(t);
+
+        return t;
+
+    }//end of OpenJobActivity::createJobNameTextView
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
