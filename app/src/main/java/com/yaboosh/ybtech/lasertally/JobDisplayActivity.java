@@ -21,6 +21,8 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -37,6 +39,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
+import java.util.Collections;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -59,12 +62,9 @@ public class JobDisplayActivity extends StandardActivity {
 
     final String connectButtonText = "connect";
     final String measureButtonText = "measure";
-    final String noValueString = "No Value";
 
     // Job Info Variables
-    private float adjustmentValue = 0;
     private String jobName = "";
-    private float tallyGoal;
     // End of Job Info Variables
 
     private TableRow lastRowEdited;
@@ -84,6 +84,44 @@ public class JobDisplayActivity extends StandardActivity {
         messenger = new Messenger(new IncomingHandler(this));
 
     }//end of JobDisplayActivity::JobDisplayActivity (constructor)
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // StandardActivity::changeActivitySpecificBackgroundsForFocus
+    //
+    // Changes the background color of all the non-focused TableRows in the focus
+    // array to measurementsTableColor. The focused TableRow's background
+    // color is changed to selectedTableRowColor.
+    //
+    // Used by children classes to change the backgrounds of views depending on
+    // the passed in view (focused view).
+    //
+    // We have to manually handle the changing of backgrounds because Android
+    // has issues the state options ("state_focused", etc.) has issues when
+    // it comes to focusing; it only works sometimes.
+    //
+
+    @Override
+    protected void changeActivitySpecificBackgroundsForFocus() {
+
+        for (View v : focusArray) {
+            int c = getResources().getColor(R.color.measurementsTableColor);
+            if (v == viewInFocus) { c = getResources().getColor(R.color.selectedTableRowColor); }
+            v.setBackgroundColor(c);
+        }
+
+        //scroll to the bottom of the table if the
+        //view in focus is the last row.
+        //This is done because when the user is using
+        //only the keyboard, navigating to the last row
+        //doesn't make the bottom border line visible
+        //which makes it difficult to distinguish the
+        //last row between any other rows
+        if (focusArray.indexOf(viewInFocus) == startingIndexOfFocusArray) {
+            scrollToBottomOfMeasurementsTable();
+        }
+
+    }//end of StandardActivity::changeActivitySpecificBackgroundsForFocus
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -144,8 +182,6 @@ public class JobDisplayActivity extends StandardActivity {
     @Override
     protected void performOnCreateActivitySpecificActions() {
 
-        //WIP HSS// -- add objects to focus array
-
         measureConnectButton = (Button)findViewById(R.id.measureConnectButton);
         redoButton = (Button)findViewById(R.id.redoButton);
 
@@ -154,7 +190,7 @@ public class JobDisplayActivity extends StandardActivity {
 
         //Create a TallyDataHandler and give it its own MeasurementsTableHandler and a reference
         //to jobInfo
-        tallyDataHandler = new TallyDataHandler(sharedSettings, jobInfo,
+        tallyDataHandler = new TallyDataHandler(this, sharedSettings, jobInfo,
                 new MeasurementsTableHandler(
                         sharedSettings,
                         onClickListener,
@@ -180,6 +216,7 @@ public class JobDisplayActivity extends StandardActivity {
     // All functions that must be done upon activity resume should be called here.
     //
 
+    @Override
     protected void performOnResumeActivitySpecificActions() {
 
         bindService(serviceIntent, connection, BIND_AUTO_CREATE);
@@ -326,8 +363,7 @@ public class JobDisplayActivity extends StandardActivity {
 
     public void handleConnectedState() {
 
-        measureConnectButton.setBackground(getResources().getDrawable
-                (R.drawable.blue_styled_button));
+        measureConnectButton.setBackground(getResources().getDrawable(R.drawable.blue_styled_button));
         measureConnectButton.setText(measureButtonText);
         measureConnectButton.setOnClickListener(onClickListener);
         measureConnectButton.setVisibility(View.VISIBLE);
@@ -502,13 +538,13 @@ public class JobDisplayActivity extends StandardActivity {
 
         tallyDataHandler.handleNewDistanceValue(Double.parseDouble(pDistanceValue));
 
-        scrollToBottomOfMeasurementsTable();
-
         //enable the measureConnect and redo buttons
         //so that the user can use them now that the
         //measuring process has been completed
         setMeasureConnectButtonEnabled(true);
         setRedoButtonEnabled(true);
+
+        focusView(focusArray.get(focusArray.size()-1));
 
     }//end of JobDisplayActivity::handleNewDistanceValue
     //-----------------------------------------------------------------------------
@@ -542,7 +578,7 @@ public class JobDisplayActivity extends StandardActivity {
 
         tallyDataHandler.removeLastDataEntry();
 
-        scrollToBottomOfMeasurementsTable();
+        focusView(focusArray.get(focusArray.size()-1));
 
     }//end of JobDisplayActivity::handleRedoButtonPressed
     //-----------------------------------------------------------------------------
@@ -552,14 +588,10 @@ public class JobDisplayActivity extends StandardActivity {
     //
     // Sets the pipe number and total length of the last edited row to the passed
     // in values.
-    // Also sets the background color of the last edited row back to its original
-    // color.
     //
 
     private void handleTableRowEditorActivityResultOk(String pPipeNum, String pTotalLength,
                                                     boolean pRenumberAll) {
-
-        lastRowEdited.setBackgroundColor(getResources().getColor(R.color.measurementsTableColor));
 
         tallyDataHandler.changeValuesOfExistingRow(lastRowEdited, pPipeNum, pTotalLength, pRenumberAll);
 
@@ -569,12 +601,10 @@ public class JobDisplayActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
     // JobDisplayActivity::handleTableRowEditorActivityResultCancel
     //
-    // Sets the background color of the last edited row back to its original color.
+    // Currently does nothing.
     //
 
     private void handleTableRowEditorActivityResultCancel() {
-
-        lastRowEdited.setBackgroundColor(getResources().getColor(R.color.measurementsTableColor));
 
     }//end of JobDisplayActivity::handleTableRowEditorActivityResultCancel
     //-----------------------------------------------------------------------------
@@ -589,7 +619,7 @@ public class JobDisplayActivity extends StandardActivity {
     public void handleTableRowPressed(TableRow pR) {
 
         lastRowEdited = pR;
-        pR.setBackgroundColor(getResources().getColor(R.color.selectedTableRowColor));
+        focusView(lastRowEdited);
         String pipeNum = tallyDataHandler.getPipeNumberOfRow(pR);
         String totalLength = tallyDataHandler.getTotalLengthValueOfRow(pR);
 
@@ -603,6 +633,35 @@ public class JobDisplayActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // JobDisplayActivity::putTableRowsIntoFocusArray
+    //
+    // Retrieves all of the TableRows inside of the measurements table and puts
+    // them into the focus array, bottom to top.
+    //
+
+    void putTableRowsIntoFocusArray() {
+
+        focusArray.clear();
+
+        TableLayout table = (TableLayout)findViewById(R.id.measurementsTable);
+
+        // For each child in the table, check to see if it is
+        // a TableRow. TableRows are added to the focus array.
+        for (int i=0; i<table.getChildCount(); i++) {
+
+            View child = table.getChildAt(i);
+
+            if (child.getId() == R.id.measurementsTableRow) { focusArray.add(child); }
+
+        }
+
+        //start the focus array at the bottom of the table
+        startingIndexOfFocusArray = focusArray.size()-1;
+
+    }//end of JobDisplayActivity::putTableRowsIntoFocusArray
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // JobDisplayActivity::registerWithService
     //
     // Sends a message to the TallyDeviceService to register.
@@ -610,7 +669,7 @@ public class JobDisplayActivity extends StandardActivity {
 
     private void registerWithService() {
 
-        //debug hss//
+        //DEBUG HSS//
         Log.d(LOG_TAG, "register with service");
 
         try {
@@ -633,7 +692,7 @@ public class JobDisplayActivity extends StandardActivity {
     // bottom.
     //
 
-    private void scrollToBottomOfMeasurementsTable() {
+    void scrollToBottomOfMeasurementsTable() {
 
         final ScrollView sv = (ScrollView)findViewById(R.id.measurementsTableScrollView);
 
@@ -667,6 +726,8 @@ public class JobDisplayActivity extends StandardActivity {
         //measuring process
         setMeasureConnectButtonEnabled(false);
         setRedoButtonEnabled(false);
+
+        putTableRowsIntoFocusArray();
 
     }//end of JobDisplayActivity::sendMeasureCommandToTallyDevice
     //-----------------------------------------------------------------------------

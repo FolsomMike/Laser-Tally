@@ -21,6 +21,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -185,6 +186,8 @@ public class MeasurementsTableHandler {
         newRow.setId(R.id.measurementsTableRow);
         newRow.setClickable(true);
         newRow.setOnClickListener(onClickListener);
+        newRow.setFocusable(true);
+        newRow.setFocusableInTouchMode(true);
 
         newRow.addView(createNewSideBorder());
 

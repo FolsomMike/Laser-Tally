@@ -5,6 +5,8 @@
     android:layout_width="fill_parent"
     android:baselineAligned="false"
     android:background="#808080"
+    android:focusable="false"
+    android:focusableInTouchMode="false"
     android:orientation="vertical"
     android:padding="@dimen/padding_none"
     tools:context="com.yaboosh.lasertally.development.main.JobDisplayActivity"
@@ -17,6 +19,8 @@
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"
         android:background="#1A1A1A"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
         android:gravity="center"
         android:layout_alignParentTop="true"
         android:orientation="horizontal"
@@ -28,6 +32,8 @@
         <TextView
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
             android:padding="@dimen/padding_none"
             android:textColor="#B2B2B2"
             android:text="Job: "
@@ -37,6 +43,8 @@
             android:id="@id/jobNameTextView"
             android:layout_height="wrap_content"
             android:layout_width="@dimen/ajd_ttbl_title_text_view_width"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
             android:padding="@dimen/padding_none"
             android:textColor="#FFFFFF"
             android:text=""
@@ -46,13 +54,17 @@
         <View
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="1dp" >
+            android:layout_height="1dp"
+            android:focusable="false"
+            android:focusableInTouchMode="false" >
         </View>
 
         <Button
             android:background="@drawable/white_styled_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
             android:text="@string/jobInfoButtonText"
             android:textSize="@dimen/text_size_normal"
             style="@style/whiteStyledButton"
@@ -61,13 +73,17 @@
         <!-- TOP TITLE BAR LAYOUT horizontal spacer 2 -->
         <View
             android:layout_width="@dimen/spacer_horizontal_xslim"
-            android:layout_height="1dp" >
+            android:layout_height="1dp"
+            android:focusable="false"
+            android:focusableInTouchMode="false" >
         </View>
 
         <Button
             android:background="@drawable/white_styled_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
             android:text="@string/moreButtonText"
             android:textSize="@dimen/text_size_normal"
             style="@style/whiteStyledButton"
@@ -82,6 +98,8 @@
         android:layout_height="2dp"
         android:layout_width="fill_parent"
         android:background="#191919"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
         android:layout_below="@+id/titleBarLayout" >
     </View>
 
@@ -90,6 +108,8 @@
         android:id="@+id/leftAndRightPanelContainerLayout"
         android:layout_height="fill_parent"
         android:layout_width="fill_parent"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
         android:layout_below="@+id/mainLayoutHorizontalLine1"
         android:padding="@dimen/padding_normal" >
 
@@ -98,6 +118,8 @@
             android:id="@+id/leftPanelLayout"
             android:layout_height="fill_parent"
             android:layout_width="wrap_content"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
             android:layout_alignParentStart="true"
             android:orientation="vertical"
             android:padding="@dimen/padding_none" >
@@ -106,7 +128,9 @@
             <View
                 android:id="@+id/leftPanelLayoutVerticalSpacer1"
                 android:layout_width="1dp"
-                android:layout_height="@dimen/spacer_vertical_xshort" >
+                android:layout_height="@dimen/spacer_vertical_xshort"
+                android:focusable="false"
+                android:focusableInTouchMode="false" >
             </View>
 
             <Button
@@ -114,6 +138,8 @@
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:background="@drawable/red_styled_button"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
                 android:text="@string/redoButtonText"
                 android:textSize="@dimen/text_size_xxlarge"
                 android:visibility="invisible"
@@ -123,13 +149,17 @@
             <View
                 android:id="@+id/leftPanelLayoutVerticalSpacer2"
                 android:layout_height="@dimen/spacer_vertical_xshort"
-                android:layout_width="1dp" >
+                android:layout_width="1dp"
+                android:focusable="false"
+                android:focusableInTouchMode="false" >
             </View>
 
             <Button
                 android:id="@id/measureConnectButton"
                 android:layout_height="@dimen/ajd_measure_connect_button_height"
                 android:layout_width="@dimen/ajd_measure_connect_button_width"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
                 android:textSize="@dimen/text_size_xxlarge"
                 android:visibility="invisible"
                 style="@style/styledButtonWhiteText" />
@@ -139,12 +169,16 @@
                 android:id="@+id/distanceAndPipeLeftLayout"
                 android:layout_height="fill_parent"
                 android:layout_width="fill_parent"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
                 android:padding="@dimen/padding_none" >
 
                 <TextView
                     android:id="@id/numberOfPipesLeftTextView"
                     android:layout_height="wrap_content"
                     android:layout_width="fill_parent"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
                     android:gravity="start"
                     android:layout_above="@+id/distanceAndPipeLeftLayoutVerticalSpacer1"
                     android:padding="@dimen/padding_none"
@@ -155,6 +189,8 @@
                     android:id="@+id/distanceAndPipeLeftLayoutVerticalSpacer1"
                     android:layout_width="1dp"
                     android:layout_height="@dimen/spacer_vertical_xshort"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
                     android:layout_above="@+id/distanceLeftTextView" >
                 </View>
 
@@ -163,6 +199,8 @@
                     android:layout_height="wrap_content"
                     android:layout_width="fill_parent"
                     android:gravity="start"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
                     android:layout_alignParentBottom="true"
                     android:padding="@dimen/padding_none"
                     android:textSize="@dimen/text_size_normal"  />
@@ -178,6 +216,8 @@
             android:id="@+id/leftAndRightPanelContainerLayoutHorizontalSpacer1"
             android:layout_height="1dp"
             android:layout_width="@dimen/spacer_horizontal_xslim"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
             android:layout_toEndOf="@+id/leftPanelLayout" >
         </View>
 
@@ -187,6 +227,8 @@
             android:layout_height="fill_parent"
             android:layout_width="fill_parent"
             android:background="#DDDDDD"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
             android:layout_toEndOf="@+id/leftAndRightPanelContainerLayoutHorizontalSpacer1"
             android:orientation="vertical"
             android:padding="@dimen/padding_none" >
@@ -196,31 +238,49 @@
                 android:id = "@+id/pipeMeasurementsHeaderTable"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
                 android:padding="@dimen/padding_none"
                 android:background="#000000">
                 <TableRow>
-                    <View style="@style/tableSideBorderLine" />
+                    <View
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        style="@style/tableSideBorderLine" />
 
                     <TextView
                         android:id="@+id/pipeNumberRow"
                         android:text="Pipe #"
                         style="@style/headerTableColumn" />
 
-                    <View style="@style/headerTableColumnDivider" />
+                    <View
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        style="@style/headerTableColumnDivider" />
 
                     <TextView
                         android:id="@+id/threadOnRow"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
                         android:text="Total Length"
                         style="@style/headerTableColumn" />
 
-                    <View style="@style/headerTableColumnDivider" />
+                    <View
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        style="@style/headerTableColumnDivider" />
 
                     <TextView
                         android:id="@+id/threadOffRow"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
                         android:text="Adjusted"
                         style="@style/headerTableColumn" />
 
-                    <View style="@style/tableSideBorderLine" />
+                    <View
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        style="@style/tableSideBorderLine" />
                 </TableRow>
             </TableLayout>
             <!-- TABLE HEADER LAYOUT (measurements table) -->
@@ -228,12 +288,16 @@
             <!-- MEASUREMENTS AND TOTALS TABLES CONTAINER LAYOUT -->
             <RelativeLayout
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent" >
+                android:layout_height="fill_parent"
+                android:focusable="false"
+                android:focusableInTouchMode="false" >
 
                 <!-- MEASUREMENTS TABLE LAYOUT -->
                 <LinearLayout
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
                     android:paddingBottom="@dimen/padding_4xlarge" >
 
                     <ScrollView
@@ -241,6 +305,8 @@
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
                         android:fadeScrollbars="false"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
                         android:scrollbars="vertical" >
 
                         <TableLayout
@@ -248,10 +314,14 @@
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:background="@color/measurementsTableColor"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"
                             android:padding="@dimen/padding_none" >
 
                             <View
                                 android:id="@id/measurementsTableBottomBorderLine"
+                                android:focusable="false"
+                                android:focusableInTouchMode="false"
                                 android:visibility="gone"
                                 style="@style/tableBottomBorderLine" />
 
@@ -268,45 +338,71 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:background="#000000"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
                     android:layout_alignParentBottom="true"
                     android:padding="@dimen/padding_none" >
 
-                    <View style="@style/tableTopBorderLineThick" />
+                    <View
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        style="@style/tableTopBorderLineThick" />
 
                     <TableRow>
 
-                        <View style="@style/tableSideBorderLine" />
+                        <View
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"
+                            style="@style/tableSideBorderLine" />
 
                         <TextView
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"
                             android:gravity="start"
                             android:paddingLeft="@dimen/padding_large"
                             android:paddingRight="@dimen/padding_large"
                             android:text="Total"
                             style="@style/headerTableColumn" />
 
-                        <View style="@style/headerTableColumnDivider" />
+                        <View
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"
+                            style="@style/headerTableColumnDivider" />
 
                         <TextView
                             android:id="@id/totalOfTotalLengthColumnTextView"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"
                             android:gravity="start"
                             android:paddingLeft="@dimen/padding_large"
                             android:paddingRight="@dimen/padding_large"
                             style="@style/headerTableColumn" />
 
-                        <View style="@style/headerTableColumnDivider" />
+                        <View
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"
+                            style="@style/headerTableColumnDivider" />
 
                         <TextView
                             android:id="@id/totalOfAdjustedColumnTextView"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"
                             android:gravity="start"
                             android:paddingLeft="@dimen/padding_large"
                             android:paddingRight="@dimen/padding_large"
                             style="@style/headerTableColumn" />
 
-                        <View style="@style/tableSideBorderLine" />
+                        <View
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"
+                            style="@style/tableSideBorderLine" />
 
                     </TableRow>
 
-                    <View style="@style/tableBottomBorderLineThick" />
+                    <View
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        style="@style/tableBottomBorderLineThick" />
 
                 </TableLayout>
                 <!-- END OF TOTALS TABLE LAYOUT -->

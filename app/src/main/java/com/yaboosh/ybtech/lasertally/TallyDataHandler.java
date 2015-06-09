@@ -44,6 +44,8 @@ public class TallyDataHandler {
     private TextView distanceLeftTextView;
     private TextView numberOfPipesLeftTextView;
 
+    private JobDisplayActivity parentActivity;
+
     private SharedSettings sharedSettings;
     public void setSharedSettings(SharedSettings pSet) { sharedSettings = pSet; handleSharedSettingsChanged(); }
 
@@ -60,10 +62,12 @@ public class TallyDataHandler {
     // TallyDataHandler::TallyDataHandler (constructor)
     //
 
-    public TallyDataHandler(SharedSettings pSet, JobInfo pJobInfo, MeasurementsTableHandler pHandler,
+    public TallyDataHandler(JobDisplayActivity pParentActivity, SharedSettings pSet,
+                                JobInfo pJobInfo, MeasurementsTableHandler pHandler,
                                 TextView pDistanceLeft, TextView pPipesLeft)
     {
 
+        parentActivity = pParentActivity;
         sharedSettings = pSet;
         jobInfo = pJobInfo;
         measurementsTableHandler = pHandler;
@@ -265,11 +269,13 @@ public class TallyDataHandler {
     {
 
         measurementsTableHandler.setValues(tallyData.getAdjustedValues(),
-                                                tallyData.getPipeNumbers(),
-                                                tallyData.getTotalLengthValues());
+                tallyData.getPipeNumbers(),
+                tallyData.getTotalLengthValues());
+
+        parentActivity.scrollToBottomOfMeasurementsTable();
+        parentActivity.putTableRowsIntoFocusArray();
 
         setAmountsLeft();
-
         setAndCheckTotals();
 
     }//end of TallyDataHandler::putTallyDataIntoActivity
@@ -319,8 +325,7 @@ public class TallyDataHandler {
 
         measurementsTableHandler.removeLastAddedRow();
 
-        setAmountsLeft();
-        setAndCheckTotals();
+        putTallyDataIntoActivity();
 
     }//end of TallyDataHandler::removeLastDataEntry
     //-----------------------------------------------------------------------------
