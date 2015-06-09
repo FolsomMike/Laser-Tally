@@ -35,7 +35,10 @@ package com.yaboosh.ybtech.lasertally;
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.ScrollView;
+
+import java.util.ArrayList;
 
 public class FixedFocusScrollView extends ScrollView {
 
@@ -54,6 +57,11 @@ public class FixedFocusScrollView extends ScrollView {
     @Override
     protected boolean onRequestFocusInDescendants(int direction, Rect previouslyFocusedRect) {
         return true;
+    }
+
+    @Override
+    public ArrayList<View> getFocusables(int direction) {
+        return new ArrayList<View>();
     }
 
 }//end of class FixedFocusScrollView
