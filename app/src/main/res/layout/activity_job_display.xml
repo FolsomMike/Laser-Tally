@@ -300,7 +300,7 @@
                     android:focusableInTouchMode="false"
                     android:paddingBottom="@dimen/padding_4xlarge" >
 
-                    <ScrollView
+                    <com.yaboosh.ybtech.lasertally.FixedFocusScrollView
                         android:id="@id/measurementsTableScrollView"
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
@@ -327,7 +327,7 @@
 
                         </TableLayout>
 
-                    </ScrollView>
+                    </com.yaboosh.ybtech.lasertally.FixedFocusScrollView>
 
                 </LinearLayout>
                 <!-- END OF MEASUREMENTS TABLE LAYOUT -->

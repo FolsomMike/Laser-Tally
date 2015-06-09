@@ -53,7 +53,7 @@
     <!-- END OF TITLE BAR LAYOUT-->
 
     <!-- OPTIONS SCROLLVIEW -->
-    <ScrollView
+    <com.yaboosh.ybtech.lasertally.FixedFocusScrollView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_above="@+id/okCancelButtonsLayout"
@@ -229,7 +229,7 @@
         </LinearLayout>
         <!-- END OF OPTIONS LAYOUT -->
 
-    </ScrollView>
+    </com.yaboosh.ybtech.lasertally.FixedFocusScrollView>
     <!-- END OF OPTIONS SCROLLVIEW -->
 
     <!-- FIXED OK CANCEL BUTTONS LAYOUT -->
