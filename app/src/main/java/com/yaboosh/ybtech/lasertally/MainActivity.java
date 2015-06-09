@@ -50,6 +50,18 @@ public class MainActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // MainActivity::handleEscapeKeyPressed
+    //
+    // This functions is overridden and left blank so that the user cannot use
+    // the escape key to exit the activity.
+    //
+
+    protected void handleEscapeKeyPressed() {
+
+    }//end of MainActivity::handleEscapeKeyPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // MainActivity::handleF3KeyPressed
     //
     // If a view is in focus, perform a click on that view.
@@ -72,7 +84,9 @@ public class MainActivity extends StandardActivity {
     @Override
     protected void performOnCreateActivitySpecificActions() {
 
-        //WIP HSS// -- add objects to focus array
+        //add buttons to focus array
+        focusArray.add(findViewById(R.id.createNewJobButton));
+        focusArray.add(findViewById(R.id.openJobButton));
 
     }//end of MainActivity::performOnCreateActivitySpecificActions
     //-----------------------------------------------------------------------------

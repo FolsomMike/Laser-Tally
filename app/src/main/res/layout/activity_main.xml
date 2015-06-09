@@ -3,6 +3,8 @@
     android:layout_width="match_parent"
     android:background="#808080"
     android:baselineAligned="false"
+    android:focusable="false"
+    android:focusableInTouchMode="false"
     android:gravity="center"
     android:orientation="vertical"
     tools:context="com.yaboosh.lasertally.development.main.MainActivity"
@@ -10,27 +12,35 @@
     xmlns:tools="http://schemas.android.com/tools" >
 
         <Button
-            android:background="@drawable/white_styled_button"
-            android:layout_width="wrap_content"
+            android:id="@+id/createNewJobButton"
             android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:background="@drawable/white_styled_button"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:onClick="handleCreateNewJobButtonPressed"
             android:text="create new job"
             android:textSize="@dimen/text_size_normal"
-            style="@style/whiteStyledButton"
-            android:onClick="handleCreateNewJobButtonPressed" />
+            style="@style/whiteStyledButton" />
 
         <!-- vertical spacer -->
         <View
+            android:layout_height="50dp"
             android:layout_width="0dp"
-            android:layout_height="50dp" >
+            android:focusable="false"
+            android:focusableInTouchMode="false" >
         </View>
 
         <Button
-            android:background="@drawable/white_styled_button"
-            android:layout_width="wrap_content"
+            android:id="@+id/openJobButton"
             android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:background="@drawable/white_styled_button"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:onClick="handleOpenAnExistingJobButtonPressed"
             android:text="open existing job"
             android:textSize="@dimen/text_size_normal"
-            style="@style/whiteStyledButton"
-            android:onClick="handleOpenAnExistingJobButtonPressed" />
+            style="@style/whiteStyledButton" />
 
 </LinearLayout>
