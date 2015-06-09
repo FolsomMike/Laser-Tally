@@ -202,10 +202,7 @@ public class JobInfoActivity extends StandardActivity {
     @Override
     protected void handleF3KeyPressed() {
 
-        //WIP HSS// -- I don't actually know if disabling the ok button will
-        //              prevent this from working. I hope it does.
-
-        if (okButton != null) { okButton.performClick(); }
+        if (okButton != null && okButton.isEnabled()) { okButton.performClick(); }
 
     }//end of JobInfoActivity::handleF3KeyPressed
     //-----------------------------------------------------------------------------
