@@ -19,14 +19,18 @@ package com.yaboosh.ybtech.lasertally;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import java.io.BufferedWriter;
@@ -56,6 +60,8 @@ public class JobInfoActivity extends StandardActivity {
     private String activityMode;
     private Intent intent;
 
+    private Handler handler = new Handler();
+
     private String activityPurposeCreateJobTitle = "Create Job";
     private String activityPurposeEditJobInfoTitle = "Edit Job";
     private String passedInJobName;
@@ -82,6 +88,19 @@ public class JobInfoActivity extends StandardActivity {
     private final String RANGE_KEY = "RANGE_KEY";
     private final String RIG_KEY = "RIG_KEY";
     private final String WALL_KEY = "WALL_KEY";
+
+    private EditText adjustmentEditText;
+    private EditText companyNameEditText;
+    private EditText dateEditText;
+    private EditText diameterEditText;
+    private EditText facilityEditText;
+    private EditText gradeEditText;
+    private EditText jobNameEditText;
+    private EditText rackEditText;
+    private EditText rangeEditText;
+    private EditText rigEditText;
+    private EditText tallyGoalEditText;
+    private EditText wallEditText;
 
     private String companyName;
     private String date;
@@ -115,6 +134,66 @@ public class JobInfoActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // JobInfoActivity::changeActivitySpecificBackgroundsForFocus
+    //
+    // Changes the backgrounds of all the non-focused EditTexts in the focus array
+    // to the black_border drawable.
+    //
+    // The focused EditText's background color is changed to the blue_border
+    // drawable.
+    //
+    // Used by children classes to change the backgrounds of views depending on
+    // the passed in view (focused view).
+    //
+    // We have to manually handle the changing of backgrounds because Android
+    // has issues the state options ("state_focused", etc.) has issues when
+    // it comes to focusing; it only works sometimes.
+    //
+
+    @Override
+    protected void changeActivitySpecificBackgroundsForFocus() {
+
+        for (View v : focusArray) {
+            Drawable d = getResources().getDrawable(R.drawable.black_border);
+            if (v == viewInFocus) { d = getResources().getDrawable(R.drawable.blue_border); }
+            v.setBackground(d);
+        }
+
+        // Scrolls to the top of the scrollview if the
+        // view in focus is the first EditText.
+        //
+        // Scrolls to the bottom of the scrollview if the
+        // view in focus is the last EditText.
+        //
+        // This is done because when the user is using
+        // the keyboard for navigation, the last and
+        // first EditTexts are are not fully brought into
+        // view.
+        final ScrollView sv = (ScrollView)findViewById(R.id.jobInfoScrollView);
+
+        int index = focusArray.indexOf(viewInFocus);
+        if (index == 0) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    sv.fullScroll(View.FOCUS_UP);
+                }
+            });
+        }
+        else if (index == (focusArray.size()-1)) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    sv.fullScroll(View.FOCUS_DOWN);
+                }
+            });
+        }
+
+
+    }//end of JobInfoActivity::changeActivitySpecificBackgroundsForFocus
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // JobInfoActivity::handleF3KeyPressed
     //
     // Perform a click on the ok button.
@@ -140,9 +219,9 @@ public class JobInfoActivity extends StandardActivity {
     @Override
     protected void performOnCreateActivitySpecificActions() {
 
-        //WIP HSS// -- add objects to focus array
+        getViewsFromLayout();
 
-        okButton = (Button) findViewById(R.id.okButton);
+        addEditTextsToFocusArray();
 
         //Set the activity mode
         setActivityMode(getIntent().getExtras().getString(Keys.EDIT_JOB_INFO_ACTIVITY_MODE_KEY));
@@ -285,6 +364,31 @@ public class JobInfoActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // JobInfoActivity::addEditTextsToFocusArray
+    //
+    // Add all of the EditText views to the focus array.
+    //
+
+    private void addEditTextsToFocusArray() {
+
+        //should be entered in order they appear in layout
+        focusArray.add(jobNameEditText);
+        focusArray.add(dateEditText);
+        focusArray.add(tallyGoalEditText);
+        focusArray.add(companyNameEditText);
+        focusArray.add(adjustmentEditText);
+        focusArray.add(diameterEditText);
+        focusArray.add(wallEditText);
+        focusArray.add(gradeEditText);
+        focusArray.add(rangeEditText);
+        focusArray.add(facilityEditText);
+        focusArray.add(rackEditText);
+        focusArray.add(rigEditText);
+
+    }//end of JobInfoActivity::addEditTextsToFocusArray
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // JobInfoActivity::checkIfJobNameAlreadyExists
     //
     // Searches through the jobs in the jobs directory to see if a job already
@@ -398,32 +502,57 @@ public class JobInfoActivity extends StandardActivity {
 
     private void getAndStoreJobInfoFromUserInput() {
 
-        companyName = ((EditText) findViewById(R.id.editTextCompanyName)).getText().toString();
+        companyName = companyNameEditText.getText().toString();
 
-        date = ((EditText) findViewById(R.id.editTextDate)).getText().toString();
+        date = dateEditText.getText().toString();
 
-        diameter = ((EditText) findViewById(R.id.editTextDiameter)).getText().toString();
+        diameter = diameterEditText.getText().toString();
 
-        facility = ((EditText) findViewById(R.id.editTextFacility)).getText().toString();
+        facility = facilityEditText.getText().toString();
 
-        grade = ((EditText) findViewById(R.id.editTextGrade)).getText().toString();
+        grade = gradeEditText.getText().toString();
 
-        job = ((EditText) findViewById(R.id.editTextJob)).getText().toString();
+        job = jobNameEditText.getText().toString();
 
-        setAdjustmentValues(((EditText)findViewById(R.id.editTextProtectorMakeupAdjustment)).
-                                                                            getText().toString());
+        setAdjustmentValues(adjustmentEditText.getText().toString());
 
-        rack = ((EditText) findViewById(R.id.editTextRack)).getText().toString();
+        rack = rackEditText.getText().toString();
 
-        range = ((EditText) findViewById(R.id.editTextRange)).getText().toString();
+        range = rangeEditText.getText().toString();
 
-        rig = ((EditText) findViewById(R.id.editTextRig)).getText().toString();
+        rig = rigEditText.getText().toString();
 
-        setTallyGoals(((EditText)findViewById(R.id.editTextTallyGoal)).getText().toString());
+        setTallyGoals(tallyGoalEditText.getText().toString());
 
-        wall = ((EditText) findViewById(R.id.editTextWall)).getText().toString();
+        wall = wallEditText.getText().toString();
 
     }//end of JobInfoActivity::getAndStoreJobInfoFromUserInput
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobInfoActivity::getViewsFromLayout
+    //
+    // Get all of the Views necessary from the xml layout using their ids and
+    // assign pointers to them.
+    //
+
+    private void getViewsFromLayout() {
+
+        okButton = (Button) findViewById(R.id.okButton);
+        adjustmentEditText = (EditText)findViewById(R.id.editTextProtectorMakeupAdjustment);
+        companyNameEditText = (EditText)findViewById(R.id.editTextCompanyName);
+        dateEditText = (EditText)findViewById(R.id.editTextDate);
+        diameterEditText = (EditText)findViewById(R.id.editTextDiameter);
+        facilityEditText = (EditText)findViewById(R.id.editTextFacility);
+        gradeEditText = (EditText)findViewById(R.id.editTextGrade);
+        jobNameEditText = (EditText)findViewById(R.id.editTextJob);
+        rackEditText = (EditText)findViewById(R.id.editTextRack);
+        rangeEditText = (EditText)findViewById(R.id.editTextRange);
+        rigEditText = (EditText)findViewById(R.id.editTextRig);
+        tallyGoalEditText = (EditText)findViewById(R.id.editTextTallyGoal);
+        wallEditText = (EditText)findViewById(R.id.editTextWall);
+
+    }//end of JobInfoActivity::getViewsFromLayout
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
