@@ -22,11 +22,15 @@ package com.yaboosh.ybtech.lasertally;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ScrollView;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -34,6 +38,8 @@ import android.widget.EditText;
 //
 
 public class MoreOptionsActivity extends StandardActivity {
+
+    private Handler handler = new Handler();
 
     private String CAL_VALUE_KEY = "CAL_VALUE_KEY";
     private String MAX_ALLOWED_KEY = "MAX_ALLOWED_KEY";
@@ -67,16 +73,77 @@ public class MoreOptionsActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // MoreOptionsActivity::changeActivitySpecificBackgroundsForFocus
+    //
+    // Changes the backgrounds of all the non-focused EditTexts in the focus array
+    // to the black_border drawable.
+    //
+    // The focused EditText's background color is changed to the blue_border
+    // drawable.
+    //
+    // Used by children classes to change the backgrounds of views depending on
+    // the passed in view (focused view).
+    //
+    // We have to manually handle the changing of backgrounds because Android
+    // has issues the state options ("state_focused", etc.) has issues when
+    // it comes to focusing; it only works sometimes.
+    //
+
+    @Override
+    protected void changeActivitySpecificBackgroundsForFocus() {
+
+        // Scrolls to the top of the scrollview if the
+        // view in focus is the first item in the array.
+        //
+        // Scrolls to the bottom of the scrollview if the
+        // view in focus is the last item in the array.
+        //
+        // This is done because when the user is using
+        // the keyboard for navigation, the last and
+        // first views are are not fully brought into
+        // sight.
+        final ScrollView sv = (ScrollView)findViewById(R.id.optionsScrollView);
+        sv.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                v.requestFocusFromTouch();
+                return false;
+            }
+        });
+
+        int index = focusArray.indexOf(viewInFocus);
+        if (index == 0) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    sv.fullScroll(View.FOCUS_UP);
+                }
+            });
+        }
+        else if (index == (focusArray.size()-1)) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    sv.fullScroll(View.FOCUS_DOWN);
+                }
+            });
+        }
+
+
+    }//end of MoreOptionsActivity::changeActivitySpecificBackgroundsForFocus
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // MoreOptionsActivity::handleF3KeyPressed
     //
-    // If a view is in focus, perform a click on that view.
+    // Perform a click on the ok button.
     //
 
     @Override
     protected void handleF3KeyPressed() {
 
         Button okButton = (Button) findViewById(R.id.okButton);
-        if (okButton != null) { okButton.performClick(); }
+        if (okButton != null && okButton.isEnabled()) { okButton.performClick(); }
 
     }//end of MoreOptionsActivity::handleF3KeyPressed
     //-----------------------------------------------------------------------------
@@ -90,7 +157,11 @@ public class MoreOptionsActivity extends StandardActivity {
     @Override
     protected void performOnCreateActivitySpecificActions() {
 
-        //WIP HSS// -- add objects to focus array
+        //add Views to focus array
+        focusArray.add(findViewById(R.id.switchUnitSystemButton));
+        focusArray.add(findViewById(R.id.editTextMinimumMeasurementAllowed));
+        focusArray.add(findViewById(R.id.editTextMaximumMeasurementAllowed));
+        focusArray.add(findViewById(R.id.calibrationValueEditText));
 
         maximumMeasurementAllowedEditText = ((EditText)findViewById(R.id.editTextMaximumMeasurementAllowed));
         minimumMeasurementAllowedEditText = ((EditText)findViewById(R.id.editTextMinimumMeasurementAllowed));
