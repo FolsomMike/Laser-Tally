@@ -79,7 +79,11 @@ public class JobInfoMenuActivity extends StandardActivity {
     @Override
     protected void performOnCreateActivitySpecificActions() {
 
-        //WIP HSS// -- add objects to focus array
+        //add buttons to focus array
+        focusArray.add(findViewById(R.id.openJobButton));
+        focusArray.add(findViewById(R.id.createNewJobButton));
+        focusArray.add(findViewById(R.id.closeJobButton));
+        focusArray.add(findViewById(R.id.deleteJobButton));
 
         jobName = getIntent().getExtras().getString(Keys.JOB_NAME_KEY);
 
