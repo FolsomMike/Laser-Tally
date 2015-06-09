@@ -87,7 +87,7 @@ public class JobDisplayActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // StandardActivity::changeActivitySpecificBackgroundsForFocus
+    // JobDisplayActivity::changeActivitySpecificBackgroundsForFocus
     //
     // Changes the background color of all the non-focused TableRows in the focus
     // array to measurementsTableColor. The focused TableRow's background
@@ -121,7 +121,35 @@ public class JobDisplayActivity extends StandardActivity {
             scrollToBottomOfMeasurementsTable();
         }
 
-    }//end of StandardActivity::changeActivitySpecificBackgroundsForFocus
+    }//end of JobDisplayActivity::changeActivitySpecificBackgroundsForFocus
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobDisplayActivity::handleEscapeKeyPressed
+    //
+    // Performs a click on the redo button.
+    //
+
+    @Override
+    protected void handleEscapeKeyPressed() {
+
+        redoButton.performClick();
+
+    }//end of JobDisplayActivity::handleEscapeKeyPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobDisplayActivity::handleF2KeyPressed
+    //
+    // Performs a click on the measure/connect button.
+    //
+
+    @Override
+    protected void handleF2KeyPressed() {
+
+        measureConnectButton.performClick();
+
+    }//end of JobDisplayActivity::handleF2KeyPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
