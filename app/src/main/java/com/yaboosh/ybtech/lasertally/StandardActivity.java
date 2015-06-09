@@ -48,6 +48,7 @@ public class StandardActivity extends Activity {
     //different children activities add different
     //focus elements
     protected ArrayList<View> focusArray = new ArrayList<View>();
+    protected int startingIndexOfFocusArray = 0;
     protected View viewInFocus;
 
     //-----------------------------------------------------------------------------
@@ -116,46 +117,53 @@ public class StandardActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // StandardActivity::onKeyUp
+    // StandardActivity::dispatchKeyEvent
     //
-    // Receives and handles all key up events sent from the keyboard.
+    // Overrides actions for certain key events. If we don't want to override
+    // the action for a key event, then it is passed up to the parent class for
+    // handling.
+    //
+    // Called to process key events. You can override this to intercept all key
+    // events before they are dispatched to the window. Be sure to call this
+    // implementation for key events that should be handled normally.
     //
 
     @Override
-    public boolean onKeyUp(int pKeyCode, KeyEvent pEvent) {
+    public boolean dispatchKeyEvent(KeyEvent pEvent) {
 
-        switch (pKeyCode) {
+        boolean actionUpEvent = false;
+        if (pEvent.getAction() == KeyEvent.ACTION_UP) { actionUpEvent = true; }
+
+        switch (pEvent.getKeyCode()) {
 
             case KeyEvent.KEYCODE_DPAD_DOWN:
-                handleArrowDownKeyPressed();
+                if (actionUpEvent) { handleArrowDownKeyPressed(); }
                 return true;
 
             case KeyEvent.KEYCODE_DPAD_UP:
-                handleArrowUpKeyPressed();
+                if (actionUpEvent) { handleArrowUpKeyPressed(); }
                 return true;
 
             case KeyEvent.KEYCODE_ESCAPE:
-                handleEscapeKeyPressed();
+                if (actionUpEvent) { handleEscapeKeyPressed(); }
                 return true;
 
             case KeyEvent.KEYCODE_F1:
-                handleF1KeyPressed();
+                if (actionUpEvent) { handleF1KeyPressed(); }
                 return true;
 
             case KeyEvent.KEYCODE_F2:
-                handleF2KeyPressed();
+                if (actionUpEvent) { handleF2KeyPressed(); }
                 return true;
 
             case KeyEvent.KEYCODE_F3:
-                handleF3KeyPressed();
+                if (actionUpEvent) { handleF3KeyPressed(); }
                 return true;
-
-            default:
-                return super.onKeyUp(pKeyCode, pEvent);
-
         }
 
-    }//end of StandardActivity::onKeyUp
+        return super.dispatchKeyEvent(pEvent);
+
+    }//end of StandardActivity::onKeyDown
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -180,6 +188,22 @@ public class StandardActivity extends Activity {
         super.onSaveInstanceState(pSavedInstanceState);
 
     }//end of StandardActivity::onSaveInstanceState
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // StandardActivity::changeActivitySpecificBackgroundsForFocus
+    //
+    // Used by children classes to change the backgrounds of views depending on
+    // the passed in view (focused view).
+    //
+    // We have to manually handle the changing of backgrounds because Android
+    // has issues the state options ("state_focused", etc.) has issues when
+    // it comes to focusing; it only works sometimes.
+    //
+
+    protected void changeActivitySpecificBackgroundsForFocus() {
+
+    }//end of StandardActivity::changeActivitySpecificBackgroundsForFocus
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -215,6 +239,25 @@ public class StandardActivity extends Activity {
                 });
 
     }//end of StandardActivity::createUiChangeListener
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // StandardActivity::focusView
+    //
+    // Sets the focus of the activity to the passed in view.
+    //
+
+    protected void focusView(View pView) {
+
+        if (viewInFocus != null) { viewInFocus.clearFocus(); }
+
+        viewInFocus = pView;
+
+        viewInFocus.requestFocus();
+
+        changeActivitySpecificBackgroundsForFocus();
+
+    }//end of StandardActivity::focusView
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -269,16 +312,16 @@ public class StandardActivity extends Activity {
 
         int index = focusArray.indexOf(viewInFocus);
 
-        //if the view in focus was not found in the focus
-        //array, then start at the top of the array
-        if (index == -1) { index = 0; }
-
         //if the focus is already on the last view, return
-        if (index >= focusArray.size()) { return; }
+        if (index >= focusArray.size()-1) { return; }
 
-        viewInFocus = focusArray.get(++index);
+        //if the view in focus was not found in the focus
+        //array, then begin at the starting index
+        //otherwise, go forward one in the array
+        if (index == -1) { index = startingIndexOfFocusArray; }
+        else { ++index; }
 
-        viewInFocus.requestFocus();
+        focusView(focusArray.get(index));
 
     }//end of StandardActivity::handleArrowDownKeyPressed
     //-----------------------------------------------------------------------------
@@ -293,16 +336,16 @@ public class StandardActivity extends Activity {
 
         int index = focusArray.indexOf(viewInFocus);
 
-        //if the view in focus was not found in the focus
-        //array, then start at the top of the array
-        if (index == -1) { index = 0; }
-
         //if the focus is already on the first view, return
-        if (index <= 0) { return; }
+        if (index == 0) { return; }
 
-        viewInFocus = focusArray.get(--index);
+        //if the view in focus was not found in the focus
+        //array, then begin at the starting index
+        //otherwise, go down one in the array
+        if (index == -1) { index = startingIndexOfFocusArray; }
+        else { --index; }
 
-        viewInFocus.requestFocus();
+        focusView(focusArray.get(index));
 
     }//end of StandardActivity::handleArrowUpKeyPressed
     //-----------------------------------------------------------------------------
