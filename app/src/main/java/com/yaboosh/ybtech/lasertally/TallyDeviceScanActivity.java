@@ -247,7 +247,7 @@ public class TallyDeviceScanActivity extends StandardActivity {
         t.setId(R.id.deviceNameTextView);
         t.setClickable(true);
         t.setFocusable(true);
-        t.setFocusableInTouchMode(true);
+        t.setFocusableInTouchMode(false);
         t.setOnClickListener(onClickListener);
         t.setText(pString);
 

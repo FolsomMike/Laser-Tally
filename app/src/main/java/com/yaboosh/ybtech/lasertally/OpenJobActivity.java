@@ -184,7 +184,7 @@ public class OpenJobActivity extends StandardActivity {
         t.setId(R.id.jobNameTextView);
         t.setClickable(true);
         t.setFocusable(true);
-        t.setFocusableInTouchMode(true);
+        t.setFocusableInTouchMode(false);
         t.setOnClickListener(onClickListener);
         t.setText(pString);
 

@@ -187,7 +187,7 @@ public class MeasurementsTableHandler {
         newRow.setClickable(true);
         newRow.setOnClickListener(onClickListener);
         newRow.setFocusable(true);
-        newRow.setFocusableInTouchMode(true);
+        newRow.setFocusableInTouchMode(false);
 
         newRow.addView(createNewSideBorder());
 
