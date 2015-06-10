@@ -192,7 +192,7 @@ public class OpenJobActivity extends StandardActivity {
 
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
 
-        jobsHandler.setJob(pJobName);
+        jobsHandler.loadJobFromFile(pJobName);
         intent.putExtra(Keys.JOBS_HANDLER_KEY, jobsHandler);
 
         startActivity(intent);

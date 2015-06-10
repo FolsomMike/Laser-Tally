@@ -368,41 +368,6 @@ public class JobInfoActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoActivity::checkIfJobNameAlreadyExists
-    //
-    // Searches through the jobs in the jobs directory to see if a job already
-    // has the passed in name.
-    //
-    // Returns true if name already exists. False if it doesn't.
-    //
-    //
-
-    private Boolean checkIfJobNameAlreadyExists(String pJobName) {
-
-        Boolean exists = false;
-
-        try {
-
-            // Retrieve the jobs directory
-            File jobsDir = new File (sharedSettings.getJobsFolderPath());
-
-            // All of the names of the directories in the
-            // jobs directory are job names. If one of the
-            // directory names is equal to the passed
-            // in job, then the job already exists
-            File[] dirs = jobsDir.listFiles();
-            for (File f : dirs) {
-                if (f.isDirectory() && pJobName.equals(f.getName())) { exists = true; }
-            }
-
-        } catch (Exception e) {}
-
-        return exists;
-
-    }//end of JobInfoActivity::checkIfJobNameAlreadyExists
-    //----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
     // JobInfoActivity::enableOkButton
     //
     // Sets the ok button to enabled or disabled depending on the passed in
@@ -451,13 +416,11 @@ public class JobInfoActivity extends StandardActivity {
 
         getAndStoreJobInfoFromUserInput();
 
-        boolean creatingJobForFirstTime = false;
-        if (activityMode.equals(EditJobInfoActivityMode.CREATE_JOB)) {
-            creatingJobForFirstTime = true;
-        }
-        jobsHandler.setJobInfo(companyName, date, diameter, facility, grade, imperialAdjustment,
+        boolean savingForFirstTime = false;
+        if (activityMode.equals(EditJobInfoActivityMode.CREATE_JOB)) { savingForFirstTime = true; }
+        jobsHandler.saveJob(companyName, date, diameter, facility, grade, imperialAdjustment,
                                 imperialTallyGoal, jobName, metricAdjustment, metricTallyGoal, rack,
-                                range, rig, wall, creatingJobForFirstTime);
+                                range, rig, wall, savingForFirstTime);
         intent.putExtra(Keys.JOBS_HANDLER_KEY, jobsHandler);
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
 
@@ -575,7 +538,8 @@ public class JobInfoActivity extends StandardActivity {
 
         // Check to see if the job name already exists and to see if the
         // user did not just retype the original name of the job.
-        if (!pJobName.equals(passedInJobName) && checkIfJobNameAlreadyExists(pJobName)) {
+        if (!pJobName.equals(passedInJobName) && jobsHandler.checkIfJobNameAlreadyExists(pJobName))
+        {
             jobExistsBool = true;
         }
 

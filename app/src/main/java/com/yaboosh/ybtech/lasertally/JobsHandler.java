@@ -223,6 +223,41 @@ public class JobsHandler implements Parcelable {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // JobsHandler::checkIfJobNameAlreadyExists
+    //
+    // Searches through the jobs in the jobs directory to see if a job already
+    // has the passed in name.
+    //
+    // Returns true if name already exists. False if it doesn't.
+    //
+    //
+
+    public Boolean checkIfJobNameAlreadyExists(String pJobName) {
+
+        Boolean exists = false;
+
+        try {
+
+            // Retrieve the jobs directory
+            File jobsDir = new File (sharedSettings.getJobsFolderPath());
+
+            // All of the names of the directories in the
+            // jobs directory are job names. If one of the
+            // directory names is equal to the passed
+            // in job, then the job already exists
+            File[] dirs = jobsDir.listFiles();
+            for (File f : dirs) {
+                if (f.isDirectory() && pJobName.equals(f.getName())) { exists = true; }
+            }
+
+        } catch (Exception e) {}
+
+        return exists;
+
+    }//end of JobsHandler::checkIfJobNameAlreadyExists
+    //----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // JobsHandler::deleteCurrentJob
     //
     // Deletes the current job.
@@ -309,13 +344,63 @@ public class JobsHandler implements Parcelable {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobsHandler::getJobInfoFromFile
+    // JobsHandler::initializeCreatorVariable
+    //
+    // Initializes the CREATOR variable, overriding class functions as necessary.
+    //
+    // "The Parcelable.Creator interface must be implemented and provided as a
+    // public CREATOR field that generates instances of your Parcelable class
+    // from a Parcel." This function does just that.
+    //
+
+    private void initializeCreatorVariable()
+    {
+
+        CREATOR = new Parcelable.Creator() {
+
+            //Create a new instance of the SharedSettings class,
+            //instantiating it from the given Parcel
+            @Override
+            public JobsHandler createFromParcel(Parcel pParcel) {
+                return new JobsHandler(pParcel);
+            }
+
+            //Create a new array of the SharedSettings class
+            @Override
+            public JobsHandler[] newArray(int pSize) {
+                return new JobsHandler[pSize];
+            }
+        };
+
+    }//end of JobsHandler::initializeCreatorVariable
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobsHandler::loadJobFromFile
+    //
+    // Uses the passed in job name to get and store job info from file.
+    //
+
+    public void loadJobFromFile(String pJobName)
+    {
+
+        storeOldJobDirectoryAndName();
+
+        setFilePaths(pJobName);
+
+        loadJobInfoFromFile(currentJobJobInfoPath);
+
+    }//end of JobsHandler::loadJobFromFile
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobsHandler::loadJobInfoFromFile
     //
     // Gets and stores the job info by retrieving the values from the jobInfo.txt
     // file located at the passed in file path.
     //
 
-    private void getJobInfoFromFile(String pPath)
+    private void loadJobInfoFromFile(String pPath)
     {
 
         if (pPath == null || pPath.isEmpty()) { return; }
@@ -372,39 +457,7 @@ public class JobsHandler implements Parcelable {
         rig = Tools.getValueFromList("Rig", fileLines);
         wall = Tools.getValueFromList("Wall", fileLines);
 
-    }//end of JobsHandler::getJobInfoFromFile
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobsHandler::initializeCreatorVariable
-    //
-    // Initializes the CREATOR variable, overriding class functions as necessary.
-    //
-    // "The Parcelable.Creator interface must be implemented and provided as a
-    // public CREATOR field that generates instances of your Parcelable class
-    // from a Parcel." This function does just that.
-    //
-
-    private void initializeCreatorVariable()
-    {
-
-        CREATOR = new Parcelable.Creator() {
-
-            //Create a new instance of the SharedSettings class,
-            //instantiating it from the given Parcel
-            @Override
-            public JobsHandler createFromParcel(Parcel pParcel) {
-                return new JobsHandler(pParcel);
-            }
-
-            //Create a new array of the SharedSettings class
-            @Override
-            public JobsHandler[] newArray(int pSize) {
-                return new JobsHandler[pSize];
-            }
-        };
-
-    }//end of JobsHandler::initializeCreatorVariable
+    }//end of JobsHandler::loadJobInfoFromFile
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -514,49 +567,16 @@ public class JobsHandler implements Parcelable {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobsHandler::setFilePaths
+    // JobsHandler::saveJob
     //
-    // Sets important file paths involving the location of the job files using
-    // the passed in job name.
-    //
-
-    private void setFilePaths(String pJobName) {
-
-        currentJobDirectoryPath = sharedSettings.getJobsFolderPath() + File.separator + pJobName;
-        currentJobJobInfoPath = currentJobDirectoryPath + File.separator + pJobName + " ~ JobInfo.txt";
-
-    }//end of JobsHandler::setFilePaths
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobsHandler::setJob
-    //
-    // Uses the passed in job name to get and store job info from file.
+    // Saves and stores the passed in job info.
     //
 
-    public void setJob(String pJobName)
-    {
-
-        storeOldJobDirectoryAndName();
-
-        setFilePaths(pJobName);
-
-        getJobInfoFromFile(currentJobJobInfoPath);
-
-    }//end of JobsHandler::setJob
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobsHandler::setJobInfo
-    //
-    // Sets the job info to the passed in variables and saves the info to file.
-    //
-
-    public void setJobInfo(String pCompanyName, String pDate, String pDiameter, String pFacility,
-                           String pGrade, String pImperialAdjustment, String pImperialTallyGoal,
-                           String pJobName, String pMetricAdjustment, String pMetricTallyGoal,
-                           String pRack, String pRange, String pRig, String pWall,
-                           boolean pCreatingJobForFirstTime)
+    public void saveJob(String pCompanyName, String pDate, String pDiameter, String pFacility,
+                        String pGrade, String pImperialAdjustment, String pImperialTallyGoal,
+                        String pJobName, String pMetricAdjustment, String pMetricTallyGoal,
+                        String pRack, String pRange, String pRig, String pWall,
+                        boolean pSavingJobForFirstTime)
     {
 
         storeOldJobDirectoryAndName();
@@ -578,9 +598,24 @@ public class JobsHandler implements Parcelable {
 
         setFilePaths(jobName);
 
-        saveJobInfoToFile(pCreatingJobForFirstTime);
+        saveJobInfoToFile(pSavingJobForFirstTime);
 
-    }//end of JobsHandler::setJobInfo
+    }//end of JobsHandler::saveJob
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobsHandler::setFilePaths
+    //
+    // Sets important file paths involving the location of the job files using
+    // the passed in job name.
+    //
+
+    private void setFilePaths(String pJobName) {
+
+        currentJobDirectoryPath = sharedSettings.getJobsFolderPath() + File.separator + pJobName;
+        currentJobJobInfoPath = currentJobDirectoryPath + File.separator + pJobName + " ~ JobInfo.txt";
+
+    }//end of JobsHandler::setFilePaths
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
