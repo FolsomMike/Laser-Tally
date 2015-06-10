@@ -643,7 +643,6 @@ public class JobDisplayActivity extends StandardActivity {
         String totalLength = tallyDataHandler.getTotalLengthValueOfRow(pR);
 
         Intent intent = new Intent(this, TableRowEditorActivity.class);
-        intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
         intent.putExtra(TableRowEditorActivity.PIPE_NUMBER_KEY, pipeNum);
         intent.putExtra(TableRowEditorActivity.TOTAL_LENGTH_KEY, totalLength);
         startActivityForResult(intent, Keys.ACTIVITY_RESULT_TABLE_ROW_EDITOR);
