@@ -31,6 +31,8 @@ public class Keys {
     public static final int ACTIVITY_RESULT_ENABLE_BT = 1234;
     public static final int ACTIVITY_RESULT_MORE = 1235;
     public static final int ACTIVITY_RESULT_MORE_OPTIONS = 1236;
+    public static final int ACTIVITY_RESULT_JOB_INFO_MENU = 1237;
+    public static final int ACTIVITY_RESULT_RENAME_JOB = 1238;
 
     public static final String SHARED_SETTINGS_KEY = "SHARED_SETTINGS_KEY";
 

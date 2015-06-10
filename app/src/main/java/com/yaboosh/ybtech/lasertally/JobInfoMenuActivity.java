@@ -55,6 +55,21 @@ public class JobInfoMenuActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // JobInfoMenuActivity::handleEscapeKeyPressed
+    //
+    // This function is overridden so that pressing the Escape key will have the
+    // same effect as pressing the red X button.
+    //
+
+    @Override
+    protected void handleEscapeKeyPressed() {
+
+        handleRedXButtonPressed(null);
+
+    }//end of JobInfoMenuActivity::handleEscapeKeyPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // JobInfoMenuActivity::handleF3KeyPressed
     //
     // If a view is in focus, perform a click on that view.
@@ -69,28 +84,10 @@ public class JobInfoMenuActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoMenuActivity::performOnCreateActivitySpecificActions
-    //
-    // All actions that must be done upon instantiation should be done here.
-    //
-
-    @Override
-    protected void performOnCreateActivitySpecificActions() {
-
-        //add buttons to focus array
-        focusArray.add(findViewById(R.id.openJobButton));
-        focusArray.add(findViewById(R.id.createNewJobButton));
-        focusArray.add(findViewById(R.id.closeJobButton));
-        focusArray.add(findViewById(R.id.deleteJobButton));
-
-    }//end of JobInfoMenuActivity::performOnCreateActivitySpecificActions
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
     // JobInfoMenuActivity::onActivityResult
     //
     // Listens for activity results and decides what actions to take depending on
-    // their request codes and requests' result codes.
+    // their request and result codes.
     //
 
     @Override
@@ -108,6 +105,10 @@ public class JobInfoMenuActivity extends StandardActivity {
 
         }
 
+        else if (pRequestCode == Keys.ACTIVITY_RESULT_RENAME_JOB) {
+            handleRenameJobActivityResult(pData);
+        }
+
         else {
             super.onActivityResult(pRequestCode, pResultCode, pData);
         }
@@ -116,34 +117,53 @@ public class JobInfoMenuActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoMenuActivity::handleCloseThisJobButtonPressed
+    // JobInfoMenuActivity::performOnCreateActivitySpecificActions
     //
-    // Starts the MainActivity.
-    // Should be called from the "Close this job." button onClick().
+    // All actions that must be done upon instantiation should be done here.
     //
 
-    public void handleCloseThisJobButtonPressed(View pView) {
+    @Override
+    protected void performOnCreateActivitySpecificActions() {
 
-        Intent intent = new Intent(this, MainActivity.class);
+        //add buttons to focus array
+        focusArray.add(findViewById(R.id.openJobButton));
+        focusArray.add(findViewById(R.id.createNewJobButton));
+        focusArray.add(findViewById(R.id.renameJobButton));
+        focusArray.add(findViewById(R.id.deleteJobButton));
+
+    }//end of JobInfoMenuActivity::performOnCreateActivitySpecificActions
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobInfoMenuActivity::handleRenameThisJobButtonPressed
+    //
+    // Launches the RenameJobActivity.
+    //
+    // Should be called from the rename job button onClick().
+    //
+
+    public void handleRenameThisJobButtonPressed(View pView) {
+
+        Intent intent = new Intent(this, RenameJobActivity.class);
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
-        startActivity(intent);
+        intent.putExtra(Keys.JOBS_HANDLER_KEY, jobsHandler);
+        startActivityForResult(intent, Keys.ACTIVITY_RESULT_RENAME_JOB);
 
-    }//end of JobInfoMenuActivity::handleCloseThisJobButtonPressed
+    }//end of JobInfoMenuActivity::handleRenameThisJobButtonPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
     // JobInfoMenuActivity::handleCreateANewJobButtonPressed
     //
-    // Starts the editJobInfoActivity in the CREATE_JOB mode.
-    // Should be called from the "Create a new job." button onClick().
+    // Launches CreateJobActivity.
+    //
+    // Should be called from the create a new job button onClick().
     //
 
     public void handleCreateANewJobButtonPressed(View pView) {
 
-        Intent intent = new Intent(this, JobInfoActivity.class);
+        Intent intent = new Intent(this, CreateJobActivity.class);
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
-        intent.putExtra(Keys.EDIT_JOB_INFO_ACTIVITY_MODE_KEY,
-                                            JobInfoActivity.EditJobInfoActivityMode.CREATE_JOB);
         startActivity(intent);
 
     }//end of JobInfoMenuActivity::handleCreateANewJobButtonPressed
@@ -186,14 +206,30 @@ public class JobInfoMenuActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
     // JobInfoMenuActivity::handleRedXButtonPressed
     //
-    // Exits the activity by calling exitActivityByCancel().
+    // Exits the activity.
     //
 
     public void handleRedXButtonPressed(View pView) {
 
+        Intent intent = new Intent();
+        intent.putExtra(Keys.JOBS_HANDLER_KEY, jobsHandler);
+        setResult(Activity.RESULT_OK, intent);
         finish();
 
     }//end of JobInfoMenuActivity::handleRedXButtonPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobInfoMenuActivity::handleRenameJobActivityResult
+    //
+    // Extracts the JobsHandler object from the passed in intent.
+    //
+
+    public void handleRenameJobActivityResult(Intent pData) {
+
+        jobsHandler = pData.getParcelableExtra(Keys.JOBS_HANDLER_KEY);
+
+    }//end of JobInfoMenuActivity::handleRenameJobActivityResult
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

@@ -272,14 +272,7 @@ public class JobDisplayActivity extends StandardActivity {
     {
 
         if (pRequestCode == Keys.ACTIVITY_RESULT_JOB_INFO) {
-
-            if (pResultCode == RESULT_OK) {
-                handleJobInfoActivityResultOk((JobsHandler)pData.getParcelableExtra(Keys.JOBS_HANDLER_KEY));
-            }
-            else if (pResultCode == RESULT_CANCELED) {
-                handleJobInfoActivityResultCancel();
-            }
-
+                handleEditJobActivityResult(pData);
         }
         else if (pRequestCode == Keys.ACTIVITY_RESULT_MORE) {
 
@@ -455,49 +448,35 @@ public class JobDisplayActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobDisplayActivity::handleJobInfoActivityResultOk
+    // JobDisplayActivity::handleEditJobActivityResult
     //
-    // Uses the passed in JobsHandler to set the job name, adjustment value, and
-    // tally goal.
+    // Extracts the JobsHandler from the passed in intent and uses the passed it
+    // to set the job name, adjustment value, and tally goal.
     //
 
-    private void handleJobInfoActivityResultOk(JobsHandler pJobsHandler) {
+    private void handleEditJobActivityResult(Intent pData) {
 
-        jobsHandler = pJobsHandler;
+        jobsHandler = pData.getParcelableExtra(Keys.JOBS_HANDLER_KEY);
         tallyDataHandler.setJobInfo(jobsHandler);
 
         setJobName(jobsHandler.getJobName());
 
-    }//end of JobDisplayActivity::handleJobInfoActivityResultOk
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobDisplayActivity::handleJobInfoActivityResultCancel
-    //
-    // Currently does nothing.
-    //
-
-    private void handleJobInfoActivityResultCancel() {
-
-        //Currently does nothing
-
-    }//end of JobDisplayActivity::handleJobInfoActivityResultCancel
+    }//end of JobDisplayActivity::handleEditJobActivityResult
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
     // JobDisplayActivity::handleJobInfoButtonPressed
     //
-    // Starts an activity for Job Info.
-    // Should be called from the "Job Info" button onClick().
+    // Starts the EditJobActivity.
+    //
+    // Should be called from the job info button onClick().
     //
 
     public void handleJobInfoButtonPressed(View pView) {
 
-        Intent intent = new Intent(this, JobInfoActivity.class);
+        Intent intent = new Intent(this, EditJobActivity.class);
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
         intent.putExtra(Keys.JOBS_HANDLER_KEY, jobsHandler);
-        intent.putExtra(Keys.EDIT_JOB_INFO_ACTIVITY_MODE_KEY,
-                                        JobInfoActivity.EditJobInfoActivityMode.EDIT_JOB_INFO);
         startActivityForResult(intent, Keys.ACTIVITY_RESULT_JOB_INFO);
 
     }//end of JobDisplayActivity::handleJobInfoButtonPressed

@@ -1,0 +1,237 @@
+<!-- MASTER LAYOUT -->
+<RelativeLayout
+    android:layout_height="wrap_content"
+    android:layout_width="@dimen/dialog_width_standard"
+    android:background="#CFCFCF"
+    android:focusable="false"
+    android:focusableInTouchMode="false"
+    android:padding="@dimen/padding_none"
+    tools:context="com.yaboosh.ybtech.lasertally.RenameJobActivity"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" >
+
+    <!-- TITLE BAR LAYOUT-->
+    <LinearLayout
+        android:id="@+id/titleBarLayout"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:background="#1A1A1A"
+        android:gravity="center"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/title_bar_layout_padding_bottom"
+        android:paddingLeft="@dimen/title_bar_layout_padding_left"
+        android:paddingRight="@dimen/title_bar_layout_padding_right"
+        android:paddingTop="@dimen/title_bar_layout_padding_top" >
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="center"
+            android:padding="0dp"
+            android:textColor="#B2B2B2"
+            android:text="Edit Entry"
+            android:textSize="@dimen/title_bar_layout_title_text_size" />
+
+        <!-- TITLE BAR LAYOUT horizontal spacer 1 -->
+        <View
+            android:layout_weight="1"
+            android:layout_height="1dp"
+            android:layout_width="0dp"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:padding="@dimen/padding_none" >
+        </View>
+
+        <Button
+            android:id="@id/tableRowEditorRedXButton"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:background="@drawable/close_x_button"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="center"
+            android:onClick="handleRedXButtonPressed"/>
+
+    </LinearLayout>
+    <!-- END OF TITLE BAR LAYOUT-->
+
+    <!-- MAIN LAYOUT -->
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:gravity="center"
+        android:layout_below="@+id/titleBarLayout"
+        android:orientation="vertical"
+        android:padding="@dimen/padding_xlarge">
+
+        <!-- JOB NAME LAYOUT -->
+        <LinearLayout
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/padding_none" >
+
+            <LinearLayout
+                android:layout_height="30dp"
+                android:layout_width="fill_parent"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:gravity="end"
+                android:orientation="horizontal"
+                android:padding="@dimen/padding_none" >
+
+                <TextView
+                    android:id="@+id/jobNameAlreadyExistsTextView"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:layout_gravity="end"
+                    android:paddingEnd="@dimen/padding_xxlarge"
+                    android:paddingStart="@dimen/padding_small"
+                    android:paddingBottom="@dimen/padding_none"
+                    android:paddingTop="@dimen/padding_none"
+                    android:text="A job with this name already exists."
+                    android:textColor="#FF0000"
+                    android:textSize="@dimen/text_size_xxsmall"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/jobNameCannotBeBlankTextView"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:layout_gravity="end"
+                    android:paddingEnd="@dimen/padding_xxlarge"
+                    android:paddingStart="@dimen/padding_small"
+                    android:paddingBottom="@dimen/padding_none"
+                    android:paddingTop="@dimen/padding_none"
+                    android:text="Job name cannot be blank."
+                    android:textColor="#FF0000"
+                    android:textSize="@dimen/text_size_xxsmall"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_height="wrap_content"
+                android:layout_width="fill_parent"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="@dimen/padding_none" >
+
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:gravity="end"
+                    android:text="Job:"
+                    android:textColor="#000000"
+                    android:textSize="@dimen/text_size_xlarge" />
+
+                <!-- JOB NAME LAYOUT horizontal spacer 1 -->
+                <View
+                    android:layout_height="1dp"
+                    android:layout_width="@dimen/spacer_horizontal_xslim"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:padding="@dimen/padding_none" >
+                </View>
+
+                <EditText
+                    android:id="@+id/editTextJobName"
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/edit_text_background"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:imeOptions="flagNoExtractUi"
+                    android:lines="1"
+                    android:maxLength="30"
+                    android:maxLines="1"
+                    android:padding="@dimen/padding_normal"
+                    android:singleLine="true"
+                    android:textColor="#000000"
+                    android:textSize="@dimen/text_size_large">
+                </EditText>
+
+            </LinearLayout>
+
+        </LinearLayout>
+        <!-- END OF JOB NAME LAYOUT -->
+
+        <!-- MASTER LAYOUT vertical spacer 1 -->
+        <View
+            android:layout_height="@dimen/spacer_vertical_short"
+            android:layout_width="1dp"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:padding="@dimen/padding_none" >
+        </View>
+
+        <!-- OK CANCEL BUTTONS LAYOUT -->
+        <LinearLayout
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="@dimen/padding_none" >
+
+            <Button
+                android:id="@id/tableRowEditorCancelButton"
+                android:layout_height="wrap_content"
+                android:layout_width="@dimen/button_width_standard"
+                android:background="@drawable/white_styled_button"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:onClick="handleCancelButtonPressed"
+                android:text="cancel"
+                android:textSize="@dimen/text_size_normal"
+                style="@style/whiteStyledButton" />
+
+            <!-- MAIN LAYOUT horizontal spacer 3 -->
+            <View
+                android:layout_height="1dp"
+                android:layout_width="@dimen/spacer_horizontal_xxwide"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:padding="@dimen/padding_none" >
+            </View>
+
+            <Button
+                android:id="@+id/okButton"
+                android:layout_height="wrap_content"
+                android:layout_width="@dimen/button_width_standard"
+                android:background="@drawable/white_styled_button"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:onClick="handleOkButtonPressed"
+                android:text="ok"
+                android:textSize="@dimen/text_size_normal"
+                style="@style/whiteStyledButton" />
+
+        </LinearLayout>
+        <!-- END OF OK CANCEL BUTTONS LAYOUT -->
+
+    </LinearLayout>
+    <!-- END OF MAIN LAYOUT -->
+
+</RelativeLayout>
+<!-- END OF MASTER LAYOUT -->

@@ -119,14 +119,14 @@
         </View>
 
         <Button
-            android:id="@+id/closeJobButton"
+            android:id="@+id/renameJobButton"
             android:layout_height="wrap_content"
             android:layout_width="fill_parent"
             android:background="@drawable/white_styled_button_dark_gray_border"
             android:focusable="true"
             android:focusableInTouchMode="false"
-            android:onClick="handleCloseThisJobButtonPressed"
-            android:text="close this job"
+            android:onClick="handleRenameThisJobButtonPressed"
+            android:text="rename this job"
             android:textSize="@dimen/text_size_normal"
             style="@style/whiteStyledButton" />
 

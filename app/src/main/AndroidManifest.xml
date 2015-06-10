@@ -23,8 +23,16 @@
         android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
 
         <activity
-            android:name=".QuickActionActivity"
-            android:label="@string/title_activity_tally_device_scan"
+            android:name=".CreateJobActivity"
+            android:label="@string/title_activity_create_job"
+            android:screenOrientation="reverseLandscape"
+            android:configChanges="keyboard|keyboardHidden"
+            android:theme="@style/activityDialog" >
+        </activity>
+
+        <activity
+            android:name=".EditJobActivity"
+            android:label="@string/title_activity_edit_job"
             android:screenOrientation="reverseLandscape"
             android:configChanges="keyboard|keyboardHidden"
             android:theme="@style/activityDialog" >
@@ -35,14 +43,6 @@
             android:label="@string/title_activity_job_display"
             android:screenOrientation="reverseLandscape"
             android:configChanges="keyboard|keyboardHidden" >
-        </activity>
-
-        <activity
-            android:name=".JobInfoActivity"
-            android:label="@string/title_activity_job_info"
-            android:screenOrientation="reverseLandscape"
-            android:configChanges="keyboard|keyboardHidden"
-            android:theme="@style/activityDialog" >
         </activity>
 
         <activity
@@ -86,6 +86,22 @@
         <activity
             android:name=".OpenJobActivity"
             android:label="@string/title_activity_open_job"
+            android:screenOrientation="reverseLandscape"
+            android:configChanges="keyboard|keyboardHidden"
+            android:theme="@style/activityDialog" >
+        </activity>
+
+        <activity
+            android:name=".QuickActionActivity"
+            android:label="@string/title_activity_quick_action_job"
+            android:screenOrientation="reverseLandscape"
+            android:configChanges="keyboard|keyboardHidden"
+            android:theme="@style/activityDialog" >
+        </activity>
+
+        <activity
+            android:name=".RenameJobActivity"
+            android:label="@string/title_activity_rename_job"
             android:screenOrientation="reverseLandscape"
             android:configChanges="keyboard|keyboardHidden"
             android:theme="@style/activityDialog" >
