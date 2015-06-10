@@ -56,7 +56,8 @@
             android:layout_width="0dp"
             android:layout_height="1dp"
             android:focusable="false"
-            android:focusableInTouchMode="false" >
+            android:focusableInTouchMode="false"
+            android:padding="@dimen/padding_none" >
         </View>
 
         <Button
@@ -75,7 +76,8 @@
             android:layout_width="@dimen/spacer_horizontal_xslim"
             android:layout_height="1dp"
             android:focusable="false"
-            android:focusableInTouchMode="false" >
+            android:focusableInTouchMode="false"
+            android:padding="@dimen/padding_none" >
         </View>
 
         <Button
@@ -130,7 +132,8 @@
                 android:layout_width="1dp"
                 android:layout_height="@dimen/spacer_vertical_xshort"
                 android:focusable="false"
-                android:focusableInTouchMode="false" >
+                android:focusableInTouchMode="false"
+                android:padding="@dimen/padding_none" >
             </View>
 
             <Button
@@ -151,7 +154,8 @@
                 android:layout_height="@dimen/spacer_vertical_xshort"
                 android:layout_width="1dp"
                 android:focusable="false"
-                android:focusableInTouchMode="false" >
+                android:focusableInTouchMode="false"
+                android:padding="@dimen/padding_none" >
             </View>
 
             <Button
@@ -191,7 +195,8 @@
                     android:layout_height="@dimen/spacer_vertical_xshort"
                     android:focusable="false"
                     android:focusableInTouchMode="false"
-                    android:layout_above="@+id/distanceLeftTextView" >
+                    android:layout_above="@+id/distanceLeftTextView"
+                    android:padding="@dimen/padding_none" >
                 </View>
 
                 <TextView
@@ -218,7 +223,8 @@
             android:layout_width="@dimen/spacer_horizontal_xslim"
             android:focusable="false"
             android:focusableInTouchMode="false"
-            android:layout_toEndOf="@+id/leftPanelLayout" >
+            android:layout_toEndOf="@+id/leftPanelLayout"
+            android:padding="@dimen/padding_none" >
         </View>
 
         <!-- RIGHT PANEL LAYOUT (measurements table) -->

@@ -44,7 +44,8 @@
             android:layout_height="1dp"
             android:layout_width="0dp"
             android:focusable="false"
-            android:focusableInTouchMode="false" >
+            android:focusableInTouchMode="false"
+            android:padding="@dimen/padding_none" >
         </View>
 
         <Button
@@ -169,7 +170,8 @@
                 android:layout_height="1dp"
                 android:layout_width="@dimen/spacer_horizontal_xslim"
                 android:focusable="false"
-                android:focusableInTouchMode="false" >
+                android:focusableInTouchMode="false"
+                android:padding="@dimen/padding_none" >
             </View>
 
             <EditText
@@ -229,7 +231,8 @@
                 android:layout_height="1dp"
                 android:layout_width="@dimen/spacer_horizontal_xxwide"
                 android:focusable="false"
-                android:focusableInTouchMode="false" >
+                android:focusableInTouchMode="false"
+                android:padding="@dimen/padding_none" >
             </View>
 
             <Button

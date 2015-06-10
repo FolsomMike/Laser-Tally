@@ -44,7 +44,8 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:focusable="false"
-            android:focusableInTouchMode="false" >
+            android:focusableInTouchMode="false"
+            android:padding="@dimen/padding_none" >
         </View>
 
         <Button
@@ -118,7 +119,8 @@
             android:layout_height="1dp"
             android:layout_width="@dimen/spacer_horizontal_xxwide"
             android:focusable="false"
-            android:focusableInTouchMode="false" >
+            android:focusableInTouchMode="false"
+            android:padding="@dimen/padding_none" >
         </View>
 
         <Button

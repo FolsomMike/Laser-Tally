@@ -28,7 +28,8 @@
             android:layout_height="50dp"
             android:layout_width="0dp"
             android:focusable="false"
-            android:focusableInTouchMode="false" >
+            android:focusableInTouchMode="false"
+            android:padding="@dimen/padding_none" >
         </View>
 
         <Button
