@@ -244,7 +244,11 @@ public class StandardActivity extends Activity {
 
         viewInFocus = pView;
 
-        viewInFocus.requestFocus();
+        try { viewInFocus.requestFocus(); }
+        catch (Exception e) {
+            Log.e(LOG_TAG, "Line 249 :: " + e.getMessage());
+            viewInFocus = null;
+        }
 
         performActivitySpecificActionsForFocusChange();
 

@@ -57,8 +57,6 @@ public class JobsHandler implements Parcelable {
     String fileFormat = "UTF-8";
     String nL = System.lineSeparator();
 
-    public static Parcelable.Creator CREATOR;
-
     private SharedSettings sharedSettings;
     public void setSharedSettings(SharedSettings pS) {sharedSettings = pS; }
 
@@ -165,8 +163,6 @@ public class JobsHandler implements Parcelable {
 
     public void init()
     {
-
-        initializeCreatorVariable();
 
     }//end of JobsHandler::init
     //-----------------------------------------------------------------------------
@@ -367,38 +363,6 @@ public class JobsHandler implements Parcelable {
 
 
     }//end of JobsHandler::getAllJobs
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobsHandler::initializeCreatorVariable
-    //
-    // Initializes the CREATOR variable, overriding class functions as necessary.
-    //
-    // "The Parcelable.Creator interface must be implemented and provided as a
-    // public CREATOR field that generates instances of your Parcelable class
-    // from a Parcel." This function does just that.
-    //
-
-    private void initializeCreatorVariable()
-    {
-
-        CREATOR = new Parcelable.Creator() {
-
-            //Create a new instance of the SharedSettings class,
-            //instantiating it from the given Parcel
-            @Override
-            public JobsHandler createFromParcel(Parcel pParcel) {
-                return new JobsHandler(pParcel);
-            }
-
-            //Create a new array of the SharedSettings class
-            @Override
-            public JobsHandler[] newArray(int pSize) {
-                return new JobsHandler[pSize];
-            }
-        };
-
-    }//end of JobsHandler::initializeCreatorVariable
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -684,6 +648,35 @@ public class JobsHandler implements Parcelable {
         oldJobName = jobName;
 
     }//end of JobsHandler::storeOldJobDirectoryAndName
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobsHandler::CREATOR
+    //
+    // Not really a function.
+    //
+    // "The Parcelable.Creator interface must be implemented and provided as a
+    // public CREATOR field that generates instances of your Parcelable class
+    // from a Parcel." This function does just that.
+    //
+
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+
+        //Create a new instance of the JobsHandler class,
+        //instantiating it from the given Parcel
+        @Override
+        public JobsHandler createFromParcel(Parcel pParcel) {
+            return new JobsHandler(pParcel);
+        }
+
+        //Create a new array of the JobsHandler class
+        @Override
+        public JobsHandler[] newArray(int pSize) {
+            return new JobsHandler[pSize];
+        }
+    };
+
+    //end of JobsHandler::CREATOR
     //-----------------------------------------------------------------------------
 
 }//end of class JobsHandler
