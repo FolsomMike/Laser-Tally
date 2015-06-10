@@ -147,6 +147,20 @@ public class JobDisplayActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // JobDisplayActivity::handleF3KeyPressed
+    //
+    // Performs a click on the focused table row.
+    //
+
+    @Override
+    protected void handleF3KeyPressed() {
+
+        viewInFocus.performClick();
+
+    }//end of JobDisplayActivity::handleF3KeyPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // JobDisplayActivity::onDestroy
     //
     // Automatically called when the activity is destroyed.
