@@ -4,6 +4,8 @@
     android:layout_height="@dimen/dialog_height_standard"
     android:layout_width="@dimen/dialog_width_standard"
     android:background="#CFCFCF"
+    android:focusable="false"
+    android:focusableInTouchMode="false"
     android:padding="@dimen/padding_none"
     tools:context="com.yaboosh.ybtech.lasertally.TallyDeviceScanActivity"
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -15,6 +17,8 @@
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"
         android:background="#1A1A1A"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
         android:gravity="center"
         android:layout_alignParentTop="true"
         android:orientation="horizontal"
@@ -27,6 +31,8 @@
             android:gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
             android:padding="0dp"
             android:textColor="#B2B2B2"
             android:text="Select a Device:"
@@ -36,13 +42,17 @@
         <View
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="1dp" >
+            android:layout_height="1dp"
+            android:focusable="false"
+            android:focusableInTouchMode="false" >
         </View>
 
         <Button
             android:id="@id/tableRowEditorRedXButton"
             android:background="@drawable/close_x_button"
             android:gravity="center"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="handleRedXButtonPressed"/>
@@ -68,6 +78,8 @@
             android:id="@+id/statusLayout"
             android:layout_height="@dimen/atds_ml_sl_height"
             android:layout_width="fill_parent"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
             android:orientation="horizontal"
             android:padding="@dimen/padding_none" >
 
@@ -79,6 +91,8 @@
                 android:layout_height="0dp"
                 android:layout_width="0dp"
                 android:layout_weight="1"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
                 android:padding="@dimen/padding_none" >
             </View>
 
@@ -87,6 +101,8 @@
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:gravity="center"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
                 android:padding="@dimen/padding_none"
                 style="@android:style/Widget.ProgressBar" />
 
@@ -95,6 +111,8 @@
                 android:id="@id/specialHorizontalSpacer"
                 android:layout_height="0dp"
                 android:layout_width="@dimen/spacer_horizontal_xslim"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
                 android:padding="@dimen/padding_none" >
             </View>
 
@@ -102,6 +120,8 @@
                 android:id="@+id/statusTextView"
                 android:layout_height="match_parent"
                 android:layout_width="wrap_content"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
                 android:gravity="center"
                 android:padding="@dimen/padding_none"
                 android:textColor="#333333"
@@ -115,6 +135,8 @@
                 android:layout_height="0dp"
                 android:layout_width="0dp"
                 android:layout_weight="1"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
                 android:padding="@dimen/padding_none" >
             </View>
 

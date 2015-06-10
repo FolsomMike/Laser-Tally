@@ -98,7 +98,7 @@ public class TallyDeviceService extends Service {
     // variable can be initiated using different classes
     // (TallyDeviceBluetoothLeConnectionHandler, TallyDeviceSimulationConnectionHandler, etc.)
     private TallyDeviceConnectionHandler tallyDeviceConnectionHandler = new
-            TallyDeviceBluetoothLeConnectionHandler(this);
+            TallyDeviceSimulationConnectionHandler(this);
     Runnable stopScanRunnable;
 
     private final Messenger messenger;
@@ -369,7 +369,7 @@ public class TallyDeviceService extends Service {
         deviceNames.add(pDeviceName);
         Message msg = Message.obtain(null, MSG_TALLY_DEVICE_NAME);
         if (msg == null) { return; }
-        msg.obj = deviceNames;
+        msg.obj = pDeviceName;
         sendMessageToMessengerClient(msg);
 
     }//end of TallyDeviceService::handleTallyDeviceFound

@@ -251,6 +251,8 @@ public class TallyDeviceScanActivity extends StandardActivity {
         t.setOnClickListener(onClickListener);
         t.setText(pString);
 
+        focusArray.add(t);
+
         return t;
 
     }//end of TallyDeviceScanActivity::createDeviceNameTextView
@@ -383,7 +385,7 @@ public class TallyDeviceScanActivity extends StandardActivity {
 
     private void handleTallyDeviceNameMessage(Message pMsg) {
 
-        setDevices((ArrayList<String>)pMsg.obj);
+        addDeviceName((String)pMsg.obj);
 
     }//end of TallyDeviceScanActivity::handleTallyDeviceNameMessage
     //-----------------------------------------------------------------------------
@@ -411,25 +413,19 @@ public class TallyDeviceScanActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyDeviceScanActivity::setDevices
+    // TallyDeviceScanActivity::addDeviceName
     //
-    // Displays the passed in device names to the user.
+    // Stores and displays to the user the passed in device name.
     //
 
-    private void setDevices(ArrayList<String> pNamesList) {
+    private void addDeviceName(String pName) {
 
-        deviceNames = pNamesList;
-
-        //DEBUG HSS//
-        Log.d(LOG_TAG, "deviceNames: " + deviceNames);
-
-        if (deviceNames == null) { return; }
+        deviceNames.add(pName);
 
         LinearLayout layout = (LinearLayout)findViewById(R.id.deviceNamesLayout);
-        layout.removeAllViews();
-        for (String n : deviceNames) { layout.addView(createDeviceNameTextView(n)); }
+        layout.addView(createDeviceNameTextView(pName));
 
-    }//end of TallyDeviceScanActivity::setDevices
+    }//end of TallyDeviceScanActivity::addDeviceName
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -470,6 +466,8 @@ public class TallyDeviceScanActivity extends StandardActivity {
 
     private void startScan() {
 
+        focusArray.clear();
+        deviceNames.clear();
         setScanning(true);
 
         Message msg = Message.obtain(null, TallyDeviceService.MSG_START_SCAN_FOR_TALLY_DEVICES);
