@@ -36,6 +36,8 @@ public class StandardActivity extends Activity {
 
     public static String LOG_TAG = "StandardActivity";
 
+    private final static String VIEW_IN_FOCUS_ID_KEY = "VIEW_IN_FOCUS_ID_KEY";
+
     protected int layoutResID;
 
     private View decorView;
@@ -179,6 +181,9 @@ public class StandardActivity extends Activity {
     public void onSaveInstanceState(Bundle pSavedInstanceState) {
 
         //store general values that is used by most (hopefully all) activities
+        if (viewInFocus != null) {
+            pSavedInstanceState.putInt(VIEW_IN_FOCUS_ID_KEY, viewInFocus.getId());
+        }
         pSavedInstanceState.putParcelable(Keys.JOB_INFO_KEY, jobInfo);
         pSavedInstanceState.putParcelable(Keys.SHARED_SETTINGS_KEY, sharedSettings);
 
@@ -470,6 +475,12 @@ public class StandardActivity extends Activity {
     //
 
     private void restoreValuesFromSavedInstance(Bundle pSavedInstanceState) {
+
+        if (pSavedInstanceState.containsKey(VIEW_IN_FOCUS_ID_KEY)) {
+            int id = pSavedInstanceState.getInt(VIEW_IN_FOCUS_ID_KEY);
+            viewInFocus = findViewById(id);
+            focusView(viewInFocus);
+        }
 
         if (pSavedInstanceState.containsKey(Keys.JOB_INFO_KEY)) {
             jobInfo = pSavedInstanceState.getParcelable(Keys.JOB_INFO_KEY);
