@@ -29,7 +29,6 @@ import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -42,7 +41,7 @@ public abstract class TallyData {
 
     public static String LOG_TAG;
 
-    JobInfo jobInfo;
+    JobsHandler jobsHandler;
     SharedSettings sharedSettings;
 
     DecimalFormat decFormat;
@@ -107,11 +106,11 @@ public abstract class TallyData {
     // TallyData::TallyData (constructor)
     //
 
-    public TallyData(SharedSettings pSet, JobInfo pJobInfo)
+    public TallyData(SharedSettings pSet, JobsHandler pJobsHandler)
     {
 
         sharedSettings = pSet;
-        jobInfo = pJobInfo;
+        jobsHandler = pJobsHandler;
 
     }//end of TallyData::TallyData(constructor)
     //-----------------------------------------------------------------------------
@@ -745,10 +744,10 @@ public abstract class TallyData {
     // TallyData::setJobInfo
     //
 
-    public void setJobInfo(JobInfo pJobInfo)
+    public void setJobInfo(JobsHandler pJobsHandler)
     {
 
-        jobInfo = pJobInfo;
+        jobsHandler = pJobsHandler;
         setJobInfoVariables();
         calculateAdjustedValues();
         calculateTotals();

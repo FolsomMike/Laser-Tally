@@ -19,22 +19,10 @@ package com.yaboosh.ybtech.lasertally;
 // class TallyDataHandler
 //
 
-import android.util.Log;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class TallyDataHandler {
 
@@ -49,8 +37,8 @@ public class TallyDataHandler {
     private SharedSettings sharedSettings;
     public void setSharedSettings(SharedSettings pSet) { sharedSettings = pSet; handleSharedSettingsChanged(); }
 
-    private JobInfo jobInfo;
-    public void setJobInfo(JobInfo pJobInfo) { jobInfo = pJobInfo; handleJobInfoChanged(); }
+    private JobsHandler jobsHandler;
+    public void setJobInfo(JobsHandler pJobsHandler) { jobsHandler = pJobsHandler; handleJobInfoChanged(); }
 
     String unitSystem = "";
 
@@ -63,13 +51,13 @@ public class TallyDataHandler {
     //
 
     public TallyDataHandler(JobDisplayActivity pParentActivity, SharedSettings pSet,
-                                JobInfo pJobInfo, MeasurementsTableHandler pHandler,
+                                JobsHandler pJobsHandler, MeasurementsTableHandler pHandler,
                                 TextView pDistanceLeft, TextView pPipesLeft)
     {
 
         parentActivity = pParentActivity;
         sharedSettings = pSet;
-        jobInfo = pJobInfo;
+        jobsHandler = pJobsHandler;
         measurementsTableHandler = pHandler;
         distanceLeftTextView = pDistanceLeft;
         numberOfPipesLeftTextView = pPipesLeft;
@@ -84,10 +72,10 @@ public class TallyDataHandler {
     public void init()
     {
 
-        imperialTallyData = new ImperialTallyData(sharedSettings, jobInfo);
+        imperialTallyData = new ImperialTallyData(sharedSettings, jobsHandler);
         imperialTallyData.init();
 
-        metricTallyData = new MetricTallyData(sharedSettings, jobInfo);
+        metricTallyData = new MetricTallyData(sharedSettings, jobsHandler);
         metricTallyData.init();
 
         setUnitSystem(sharedSettings.getUnitSystem());
@@ -216,8 +204,8 @@ public class TallyDataHandler {
     private void handleJobInfoChanged()
     {
 
-        imperialTallyData.setJobInfo(jobInfo);
-        metricTallyData.setJobInfo(jobInfo);
+        imperialTallyData.setJobInfo(jobsHandler);
+        metricTallyData.setJobInfo(jobsHandler);
         putTallyDataIntoActivity();
 
     }//end of TallyDataHandler::handleJobInfoChanged

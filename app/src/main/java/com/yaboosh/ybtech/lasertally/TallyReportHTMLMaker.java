@@ -14,11 +14,6 @@
 
 package com.yaboosh.ybtech.lasertally;
 
-import android.util.SparseIntArray;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -33,7 +28,7 @@ import java.util.ArrayList;
 public class TallyReportHTMLMaker {
 
     SharedSettings sharedSettings;
-    JobInfo jobInfo;
+    JobsHandler jobsHandler;
 
 
     DecimalFormat decFormat;
@@ -79,11 +74,11 @@ public class TallyReportHTMLMaker {
     // TallyReportHTMLMaker::TallyReportHTMLMaker (constructor)
     //
 
-    public TallyReportHTMLMaker(SharedSettings pSharedSettings, JobInfo pJobInfo)
+    public TallyReportHTMLMaker(SharedSettings pSharedSettings, JobsHandler pJobsHandler)
     {
 
         sharedSettings = pSharedSettings;
-        jobInfo = pJobInfo;
+        jobsHandler = pJobsHandler;
 
     }// end of TallyReportHTMLMaker::TallyReportHTMLMaker (constructor)
     //-----------------------------------------------------------------------------
@@ -97,30 +92,30 @@ public class TallyReportHTMLMaker {
     public void init()
     {
 
-        jobDate = jobInfo.getDate();
+        jobDate = jobsHandler.getDate();
 
         //set values to imperial or metric
         if (sharedSettings.getUnitSystem().equals(Keys.IMPERIAL_MODE)) {
-            filePath = jobInfo.getCurrentJobDirectoryPath() + File.separator
-                                                            + jobInfo.getJobName()
+            filePath = jobsHandler.getCurrentJobDirectoryPath() + File.separator
+                                                            + jobsHandler.getJobName()
                                                             + " ~ TallyData ~ Imperial.csv";
 
             decFormat = new DecimalFormat("#.00");
 
-            adjustmentValue = jobInfo.getImperialAdjustment();
+            adjustmentValue = jobsHandler.getImperialAdjustment();
 
-            tallyTarget = jobInfo.getImperialTallyGoal();
+            tallyTarget = jobsHandler.getImperialTallyGoal();
         }
         else if (sharedSettings.getUnitSystem().equals(Keys.METRIC_MODE)) {
-            filePath = jobInfo.getCurrentJobDirectoryPath() + File.separator
-                                                            + jobInfo.getJobName()
+            filePath = jobsHandler.getCurrentJobDirectoryPath() + File.separator
+                                                            + jobsHandler.getJobName()
                                                             + " ~ TallyData ~ Metric.csv";
 
             decFormat = new DecimalFormat("#.000");
 
-            adjustmentValue = jobInfo.getMetricAdjustment();
+            adjustmentValue = jobsHandler.getMetricAdjustment();
 
-            tallyTarget = jobInfo.getMetricTallyGoal();
+            tallyTarget = jobsHandler.getMetricTallyGoal();
         }
 
         loadTallyDataFromFile();
@@ -229,8 +224,8 @@ public class TallyReportHTMLMaker {
         if (pPageNum != pNumPages) { htmlCode += pageBreakHTMLCode; }
 
         htmlCode += ">"
-                + "<b>Company Name: </b>" + jobInfo.getCompanyName() + sp + sp + sp + sp
-                + "<b>Job Name: </b>" + jobInfo.getJobName() + sp + sp + sp + sp
+                + "<b>Company Name: </b>" + jobsHandler.getCompanyName() + sp + sp + sp + sp
+                + "<b>Job Name: </b>" + jobsHandler.getJobName() + sp + sp + sp + sp
                 + "<b>Date: </b>" + jobDate + sp
                 + "<br>"
                 + "<b>Adjustment: </b>" +  adjustmentValue + sp

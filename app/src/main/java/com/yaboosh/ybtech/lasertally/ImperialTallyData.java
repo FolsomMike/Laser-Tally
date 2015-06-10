@@ -28,10 +28,10 @@ public class ImperialTallyData extends TallyData {
     // ImperialTallyData::ImperialTallyData (constructor)
     //
 
-    public ImperialTallyData(SharedSettings pSet, JobInfo pJobInfo)
+    public ImperialTallyData(SharedSettings pSet, JobsHandler pJobsHandler)
     {
 
-        super(pSet, pJobInfo);
+        super(pSet, pJobsHandler);
 
         LOG_TAG = "ImperialTallyData";
 
@@ -47,21 +47,21 @@ public class ImperialTallyData extends TallyData {
     //-----------------------------------------------------------------------------
     // ImperialTallyData::setJobInfoVariables
     //
-    // Sets variables to values stored in JobInfo.
+    // Sets variables to values stored in JobsHandler.
     //
-    // Should be called every time JobInfo changes.
+    // Should be called every time JobsHandler changes.
     //
 
     void setJobInfoVariables()
     {
 
-        filePath = jobInfo.getCurrentJobDirectoryPath() + File.separator
-                                                        + jobInfo.getJobName()
+        filePath = jobsHandler.getCurrentJobDirectoryPath() + File.separator
+                                                        + jobsHandler.getJobName()
                                                         + " ~ TallyData ~ Imperial.csv";
 
-        setAdjustmentValue(jobInfo.getImperialAdjustment());
+        setAdjustmentValue(jobsHandler.getImperialAdjustment());
 
-        setTallyGoal(jobInfo.getImperialTallyGoal());
+        setTallyGoal(jobsHandler.getImperialTallyGoal());
 
     }//end of ImperialTallyData::setJobInfoVariables
     //-----------------------------------------------------------------------------

@@ -22,12 +22,10 @@ package com.yaboosh.ybtech.lasertally;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ScrollView;
@@ -412,7 +410,7 @@ public class MoreOptionsActivity extends StandardActivity {
 
         Intent intent = new Intent();
 
-        intent.putExtra(Keys.JOB_INFO_KEY, jobInfo);
+        intent.putExtra(Keys.JOBS_HANDLER_KEY, jobsHandler);
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
 
         setResult(Activity.RESULT_OK, intent);

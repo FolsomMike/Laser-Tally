@@ -43,7 +43,7 @@ public class StandardActivity extends Activity {
     private View decorView;
     private int uiOptions;
 
-    protected JobInfo jobInfo;
+    protected JobsHandler jobsHandler;
     protected SharedSettings sharedSettings;
 
     //Used for the focus order
@@ -184,7 +184,7 @@ public class StandardActivity extends Activity {
         if (viewInFocus != null) {
             pSavedInstanceState.putInt(VIEW_IN_FOCUS_ID_KEY, viewInFocus.getId());
         }
-        pSavedInstanceState.putParcelable(Keys.JOB_INFO_KEY, jobInfo);
+        pSavedInstanceState.putParcelable(Keys.JOBS_HANDLER_KEY, jobsHandler);
         pSavedInstanceState.putParcelable(Keys.SHARED_SETTINGS_KEY, sharedSettings);
 
         storeActivitySpecificValuesToSavedInstance(pSavedInstanceState);
@@ -268,15 +268,19 @@ public class StandardActivity extends Activity {
     //-----------------------------------------------------------------------------
     // StandardActivity::getJobInfoFromIntentExtras
     //
-    // Extracts the JobInfo object from the intent extras.
+    // Extracts the JobsHandler object from the intent extras.
     //
-    // If a JobInfo object is not found in the extras, nothing is done.
+    // If a JobsHandler object is not found in the extras, nothing is done.
     //
 
     private void getJobInfoFromIntentExtras() {
 
-        if (getIntent().hasExtra(Keys.JOB_INFO_KEY)) {
-            jobInfo = getIntent().getExtras().getParcelable(Keys.JOB_INFO_KEY);
+        if (getIntent().hasExtra(Keys.JOBS_HANDLER_KEY)) {
+            jobsHandler = getIntent().getExtras().getParcelable(Keys.JOBS_HANDLER_KEY);
+        }
+        else {
+            jobsHandler = new JobsHandler(sharedSettings);
+            jobsHandler.init();
         }
 
     }//end of StandardActivity::getJobInfoFromIntentExtras
@@ -293,13 +297,10 @@ public class StandardActivity extends Activity {
     private void getSharedSettingsFromIntentExtras() {
 
         if (getIntent().hasExtra(Keys.SHARED_SETTINGS_KEY)) {
-            //DEBUG HSS//
-            Log.d(LOG_TAG, "sharedSettings object contained in intent extras: YES");
             sharedSettings = getIntent().getExtras().getParcelable(Keys.SHARED_SETTINGS_KEY);
             sharedSettings.setContext(this);
         }
         else {
-            Log.d(LOG_TAG, "sharedSettings object contained in intent extras: NO");
             sharedSettings = new SharedSettings(this);
             sharedSettings.init();
         }
@@ -482,8 +483,8 @@ public class StandardActivity extends Activity {
             focusView(viewInFocus);
         }
 
-        if (pSavedInstanceState.containsKey(Keys.JOB_INFO_KEY)) {
-            jobInfo = pSavedInstanceState.getParcelable(Keys.JOB_INFO_KEY);
+        if (pSavedInstanceState.containsKey(Keys.JOBS_HANDLER_KEY)) {
+            jobsHandler = pSavedInstanceState.getParcelable(Keys.JOBS_HANDLER_KEY);
         }
 
         if (pSavedInstanceState.containsKey(Keys.SHARED_SETTINGS_KEY)) {

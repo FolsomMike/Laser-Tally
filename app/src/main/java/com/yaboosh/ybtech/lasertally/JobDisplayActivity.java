@@ -17,13 +17,9 @@ package com.yaboosh.ybtech.lasertally;
 
 //-----------------------------------------------------------------------------
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -31,7 +27,6 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
@@ -39,7 +34,6 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
-import java.util.Collections;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -214,11 +208,11 @@ public class JobDisplayActivity extends StandardActivity {
         redoButton = (Button)findViewById(R.id.redoButton);
 
         //set the job name
-        setJobName(jobInfo.getJobName());
+        setJobName(jobsHandler.getJobName());
 
         //Create a TallyDataHandler and give it its own MeasurementsTableHandler and a reference
-        //to jobInfo
-        tallyDataHandler = new TallyDataHandler(this, sharedSettings, jobInfo,
+        //to jobsHandler
+        tallyDataHandler = new TallyDataHandler(this, sharedSettings, jobsHandler,
                 new MeasurementsTableHandler(
                         sharedSettings,
                         onClickListener,
@@ -266,7 +260,7 @@ public class JobDisplayActivity extends StandardActivity {
         if (pRequestCode == Keys.ACTIVITY_RESULT_JOB_INFO) {
 
             if (pResultCode == RESULT_OK) {
-                handleJobInfoActivityResultOk((JobInfo)pData.getParcelableExtra(Keys.JOB_INFO_KEY));
+                handleJobInfoActivityResultOk((JobsHandler)pData.getParcelableExtra(Keys.JOBS_HANDLER_KEY));
             }
             else if (pResultCode == RESULT_CANCELED) {
                 handleJobInfoActivityResultCancel();
@@ -449,16 +443,16 @@ public class JobDisplayActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
     // JobDisplayActivity::handleJobInfoActivityResultOk
     //
-    // Uses the passed in JobInfo to set the job name, adjustment value, and
+    // Uses the passed in JobsHandler to set the job name, adjustment value, and
     // tally goal.
     //
 
-    private void handleJobInfoActivityResultOk(JobInfo pJobInfo) {
+    private void handleJobInfoActivityResultOk(JobsHandler pJobsHandler) {
 
-        jobInfo = pJobInfo;
-        tallyDataHandler.setJobInfo(jobInfo);
+        jobsHandler = pJobsHandler;
+        tallyDataHandler.setJobInfo(jobsHandler);
 
-        setJobName(jobInfo.getJobName());
+        setJobName(jobsHandler.getJobName());
 
     }//end of JobDisplayActivity::handleJobInfoActivityResultOk
     //-----------------------------------------------------------------------------
@@ -487,7 +481,7 @@ public class JobDisplayActivity extends StandardActivity {
 
         Intent intent = new Intent(this, JobInfoActivity.class);
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
-        intent.putExtra(Keys.JOB_NAME_KEY, jobName);
+        intent.putExtra(Keys.JOBS_HANDLER_KEY, jobsHandler);
         intent.putExtra(Keys.EDIT_JOB_INFO_ACTIVITY_MODE_KEY,
                                         JobInfoActivity.EditJobInfoActivityMode.EDIT_JOB_INFO);
         startActivityForResult(intent, Keys.ACTIVITY_RESULT_JOB_INFO);
@@ -523,7 +517,7 @@ public class JobDisplayActivity extends StandardActivity {
 
         Intent intent = new Intent(this, MoreActivity.class);
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
-        intent.putExtra(Keys.JOB_INFO_KEY, jobInfo);
+        intent.putExtra(Keys.JOBS_HANDLER_KEY, jobsHandler);
         startActivityForResult(intent, Keys.ACTIVITY_RESULT_MORE);
 
     }//end of JobDisplayActivity::handleMoreButtonPressed

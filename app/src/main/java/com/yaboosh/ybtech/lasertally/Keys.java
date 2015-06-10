@@ -40,9 +40,7 @@ public class Keys {
     //end of unit system keys
 
     // Job Info Keys
-    public static final String JOB_INFO_KEY = "JOB_INFO_KEY";
-    public static final String JOB_INFO_INCLUDED_KEY = "JOB_INFO_INCLUDED_KEY";
-    public static final String JOB_NAME_KEY = "JOB_NAME_KEY";
+    public static final String JOBS_HANDLER_KEY = "JOBS_HANDLER_KEY";
 
     public static final String EDIT_JOB_INFO_ACTIVITY_MODE_KEY = "EDIT_JOB_INFO_ACTIVITY_MODE_KEY";
 

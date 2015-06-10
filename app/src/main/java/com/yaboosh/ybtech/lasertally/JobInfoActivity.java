@@ -17,31 +17,22 @@ package com.yaboosh.ybtech.lasertally;
 //-----------------------------------------------------------------------------
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -64,12 +55,7 @@ public class JobInfoActivity extends StandardActivity {
 
     private String activityPurposeCreateJobTitle = "Create Job";
     private String activityPurposeEditJobInfoTitle = "Edit Job";
-    private String passedInJobName;
-
-    private String newJobFolderPath;
-    private String newJobInfoFilePath;
-    private String originalJobFolderPath;
-    private String originalJobInfoFilePath;
+    private String passedInJobName = "";
 
     private Button okButton;
 
@@ -109,7 +95,7 @@ public class JobInfoActivity extends StandardActivity {
     private String grade;
     private String imperialAdjustment;
     private String imperialTallyGoal;
-    private String job;
+    private String jobName;
     private String metricAdjustment;
     private String metricTallyGoal;
     private String rack;
@@ -216,12 +202,16 @@ public class JobInfoActivity extends StandardActivity {
     @Override
     protected void performOnCreateActivitySpecificActions() {
 
+        passedInJobName = jobsHandler.getJobName();
+
         getViewsFromLayout();
 
         addEditTextsToFocusArray();
 
         //Set the activity mode
         setActivityMode(getIntent().getExtras().getString(Keys.EDIT_JOB_INFO_ACTIVITY_MODE_KEY));
+
+        putJobInfoIntoEditTexts();
 
         //Add a listener to the job name edit text field to listen for changes
         ((TextView)findViewById(R.id.editTextJob)).addTextChangedListener(new TextWatcher() {
@@ -257,7 +247,7 @@ public class JobInfoActivity extends StandardActivity {
         grade = pSavedInstanceState.getString(GRADE_KEY);
         imperialAdjustment = pSavedInstanceState.getString(IMPERIAL_ADJUSTMENT_KEY);
         imperialTallyGoal = pSavedInstanceState.getString(IMPERIAL_TALLY_GOAL_KEY);
-        job = pSavedInstanceState.getString(JOB_KEY);
+        jobName = pSavedInstanceState.getString(JOB_KEY);
         metricAdjustment = pSavedInstanceState.getString(METRIC_ADJUSTMENT_KEY);
         metricTallyGoal = pSavedInstanceState.getString(METRIC_TALLY_GOAL_KEY);
         rack = pSavedInstanceState.getString(RACK_KEY);
@@ -287,7 +277,7 @@ public class JobInfoActivity extends StandardActivity {
         pSavedInstanceState.putString(GRADE_KEY, grade);
         pSavedInstanceState.putString(IMPERIAL_ADJUSTMENT_KEY, imperialAdjustment);
         pSavedInstanceState.putString(IMPERIAL_TALLY_GOAL_KEY, imperialTallyGoal);
-        pSavedInstanceState.putString(JOB_KEY, job);
+        pSavedInstanceState.putString(JOB_KEY, jobName);
         pSavedInstanceState.putString(METRIC_ADJUSTMENT_KEY, metricAdjustment);
         pSavedInstanceState.putString(METRIC_TALLY_GOAL_KEY, metricTallyGoal);
         pSavedInstanceState.putString(RACK_KEY, rack);
@@ -309,15 +299,7 @@ public class JobInfoActivity extends StandardActivity {
     @Override
     protected void useActivitySpecificActivityStartUpValues() {
 
-        //although the passed in job name may be null if the activity
-        //mode is CREATE, we can still attempt to pull it out at this
-        //point, so long as we do not attempt to use it unless the
-        //mode is EDIT
-        passedInJobName = getIntent().getExtras().getString(Keys.JOB_NAME_KEY);
-
-        setOriginalFilePaths(passedInJobName);
-
-        getJobInfoFromFile();
+        getJobInfoFromHandler();
 
     }//end of JobInfoActivity::useActivitySpecificActivityStartUpValues
     //-----------------------------------------------------------------------------
@@ -469,17 +451,14 @@ public class JobInfoActivity extends StandardActivity {
 
         getAndStoreJobInfoFromUserInput();
 
-        setNewFilePaths(job);
-
-        saveInformationToFile();
-
-        JobInfo jobInfo = new JobInfo(newJobFolderPath, companyName, date, diameter, facility,
-                                        grade, imperialAdjustment, imperialTallyGoal, job,
-                                        metricAdjustment, metricTallyGoal, rack, range, rig, wall);
-        jobInfo.init();
-
-        intent.putExtra(Keys.JOB_INFO_INCLUDED_KEY, true);
-        intent.putExtra(Keys.JOB_INFO_KEY, jobInfo);
+        boolean creatingJobForFirstTime = false;
+        if (activityMode.equals(EditJobInfoActivityMode.CREATE_JOB)) {
+            creatingJobForFirstTime = true;
+        }
+        jobsHandler.setJobInfo(companyName, date, diameter, facility, grade, imperialAdjustment,
+                                imperialTallyGoal, jobName, metricAdjustment, metricTallyGoal, rack,
+                                range, rig, wall, creatingJobForFirstTime);
+        intent.putExtra(Keys.JOBS_HANDLER_KEY, jobsHandler);
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
 
         if (activityMode.equals(EditJobInfoActivityMode.CREATE_JOB)) { startActivity(intent); }
@@ -500,30 +479,45 @@ public class JobInfoActivity extends StandardActivity {
     private void getAndStoreJobInfoFromUserInput() {
 
         companyName = companyNameEditText.getText().toString();
-
         date = dateEditText.getText().toString();
-
         diameter = diameterEditText.getText().toString();
-
         facility = facilityEditText.getText().toString();
-
         grade = gradeEditText.getText().toString();
-
-        job = jobNameEditText.getText().toString();
-
+        jobName = jobNameEditText.getText().toString();
         setAdjustmentValues(adjustmentEditText.getText().toString());
-
         rack = rackEditText.getText().toString();
-
         range = rangeEditText.getText().toString();
-
         rig = rigEditText.getText().toString();
-
         setTallyGoals(tallyGoalEditText.getText().toString());
-
         wall = wallEditText.getText().toString();
 
     }//end of JobInfoActivity::getAndStoreJobInfoFromUserInput
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobInfoActivity::getJobInfoFromHandler
+    //
+    // Gets and stores the job info from the jobs handler.
+    //
+
+    private void getJobInfoFromHandler() {
+
+        companyName = jobsHandler.getCompanyName();
+        date = jobsHandler.getDate();
+        diameter = jobsHandler.getDiameter();
+        facility = jobsHandler.getFacility();
+        grade = jobsHandler.getGrade();
+        imperialAdjustment = jobsHandler.getImperialAdjustment();
+        imperialTallyGoal = jobsHandler.getImperialTallyGoal();
+        jobName = jobsHandler.getJobName();
+        metricAdjustment = jobsHandler.getMetricAdjustment();
+        metricTallyGoal = jobsHandler.getMetricTallyGoal();
+        rack = jobsHandler.getRack();
+        range = jobsHandler.getRange();
+        rig = jobsHandler.getRig();
+        wall = jobsHandler.getWall();
+
+    }//end of JobInfoActivity::getJobInfoFromHandler
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -550,101 +544,6 @@ public class JobInfoActivity extends StandardActivity {
         wallEditText = (EditText)findViewById(R.id.editTextWall);
 
     }//end of JobInfoActivity::getViewsFromLayout
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobInfoActivity::getJobInfoFromFile
-    //
-    // Gets and stores the job info by retrieving the values from the jobInfo.txt
-    // file of the current job.
-    //
-
-    private void getJobInfoFromFile() {
-
-        ArrayList<String> fileLines = new ArrayList<String>();
-        FileInputStream fStream = null;
-        Scanner br = null;
-
-        try {
-
-            //Retrieve the job info file for the current job
-            File file = new File(originalJobInfoFilePath);
-
-            //read the file into an array list
-            fStream = new FileInputStream(file);
-            br = new Scanner(new InputStreamReader(fStream));
-            while (br.hasNext()) {
-                String strLine = br.nextLine();
-                fileLines.add(strLine);
-            }
-
-        }
-        catch (Exception e) {}
-        finally {
-
-            try {
-                if (br != null) { br.close(); }
-                if (fStream != null) { fStream.close(); }
-            }
-            catch (Exception e) {}
-
-        }
-
-        // If there were no lines in the file,
-        // this function is exited.
-        if (fileLines.isEmpty()) { return; }
-
-        ((EditText) findViewById(R.id.editTextCompanyName)).setText
-                                            (Tools.getValueFromList("Company Name", fileLines));
-
-        ((EditText) findViewById(R.id.editTextDate)).setText
-                                                    (Tools.getValueFromList("Date", fileLines));
-
-        ((EditText) findViewById(R.id.editTextDiameter)).setText
-                                            (Tools.getValueFromList("Diameter", fileLines));
-
-        ((EditText) findViewById(R.id.editTextFacility)).setText
-                                            (Tools.getValueFromList("Facility", fileLines));
-
-        ((EditText) findViewById(R.id.editTextGrade)).setText
-                                            (Tools.getValueFromList("Grade", fileLines));
-
-        ((EditText) findViewById(R.id.editTextJob)).setText
-                                            (Tools.getValueFromList("Job", fileLines));
-
-        ((EditText) findViewById(R.id.editTextRack)).setText
-                                            (Tools.getValueFromList("Rack", fileLines));
-
-        ((EditText) findViewById(R.id.editTextRange)).setText
-                                            (Tools.getValueFromList("Range", fileLines));
-
-        ((EditText) findViewById(R.id.editTextRig)).setText
-                                            (Tools.getValueFromList("Rig", fileLines));
-
-        ((EditText) findViewById(R.id.editTextWall)).setText
-                                            (Tools.getValueFromList("Wall", fileLines));
-
-
-        imperialAdjustment = Tools.getValueFromList("Imperial Adjustment", fileLines);
-        metricAdjustment = Tools.getValueFromList("Metric Adjustment", fileLines);
-        imperialTallyGoal = Tools.getValueFromList("Imperial Tally Goal", fileLines);
-        metricTallyGoal = Tools.getValueFromList("Metric Tally Goal", fileLines);
-        // use the metric or the imperial values
-        // depending on the unit system
-        String adjustment = "";
-        String goal = "";
-        if (sharedSettings.getUnitSystem().equals(Keys.IMPERIAL_MODE)) {
-            adjustment = imperialAdjustment;
-            goal = imperialTallyGoal;
-        }
-        else if (sharedSettings.getUnitSystem().equals(Keys.METRIC_MODE)) {
-            adjustment = metricAdjustment;
-            goal = metricTallyGoal;
-        }
-        ((EditText) findViewById(R.id.editTextProtectorMakeupAdjustment)).setText(adjustment);
-        ((EditText) findViewById(R.id.editTextTallyGoal)).setText(goal);
-
-    }//end of JobInfoActivity::getJobInfoFromFile
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -707,7 +606,7 @@ public class JobInfoActivity extends StandardActivity {
 
         Intent intent = new Intent(this, JobInfoMenuActivity.class);
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
-        intent.putExtra(Keys.JOB_NAME_KEY, passedInJobName);
+        intent.putExtra(Keys.JOBS_HANDLER_KEY, jobsHandler);
         startActivity(intent);
 
     }//end of JobInfoActivity::handleMenuButtonPressed
@@ -740,12 +639,50 @@ public class JobInfoActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // JobInfoActivity::putJobInfoIntoEditTexts
+    //
+    // Gets and stores the job info by retrieving the values from the jobInfo.txt
+    // file of the current job.
+    //
+
+    private void putJobInfoIntoEditTexts() {
+
+        companyNameEditText.setText(companyName);
+        dateEditText.setText(date);
+        diameterEditText.setText(diameter);
+        facilityEditText.setText(facility);
+        gradeEditText.setText(grade);
+        jobNameEditText.setText(jobName);
+        rackEditText.setText(rack);
+        rangeEditText.setText(range);
+        rigEditText.setText(rig);
+        wallEditText.setText(wall);
+
+        // use the metric or the imperial values
+        // depending on the unit system
+        String adjustment = "";
+        String goal = "";
+        if (sharedSettings.getUnitSystem().equals(Keys.IMPERIAL_MODE)) {
+            adjustment = imperialAdjustment;
+            goal = imperialTallyGoal;
+        }
+        else if (sharedSettings.getUnitSystem().equals(Keys.METRIC_MODE)) {
+            adjustment = metricAdjustment;
+            goal = metricTallyGoal;
+        }
+        adjustmentEditText.setText(adjustment);
+        tallyGoalEditText.setText(goal);
+
+    }//end of JobInfoActivity::putJobInfoIntoEditTexts
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // JobInfoActivity::setAdjustmentValues
     //
     // Sets the imperial and metric adjustment values using the passed in value.
     //
     // If the unit system is set to Imperial, then the passed in value is assumed
-    // to be Imperial and is converted to Metric for the metric ajustment value.
+    // to be Imperial and is converted to Metric for the metric adjustment value.
     //
     // If the unit system is set to Metric, then the passed in value is assumed
     // to be Metric and is converted to Imperial for the imperial adjustment value.
@@ -787,40 +724,6 @@ public class JobInfoActivity extends StandardActivity {
         }
 
     }//end of JobInfoActivity::setAdjustmentValues
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobInfoActivity::setNewFilePaths
-    //
-    // Sets important file paths involving the location of the job files using
-    // the passed in job name.
-    //
-
-    private void setNewFilePaths(String pJobName) {
-
-        newJobFolderPath = sharedSettings.getJobsFolderPath() + File.separator + pJobName;
-        newJobInfoFilePath = newJobFolderPath + File.separator + pJobName + " ~ JobInfo.txt";
-
-    }//end of JobInfoActivity::setNewFilePaths
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobInfoActivity::setOriginalFilePaths
-    //
-    // Sets the originals file paths for important files involving the location of
-    // the job files using the passed in job name.
-    //
-    // The originals are stored so that they can be used later to copy the job
-    // from the old location to a new location; you need to use the original file
-    // paths to copy the job from the original location.
-    //
-
-    private void setOriginalFilePaths(String pJobName) {
-
-        originalJobFolderPath = sharedSettings.getJobsFolderPath() + File.separator + pJobName;
-        originalJobInfoFilePath = originalJobFolderPath + File.separator + pJobName + " ~ JobInfo.txt";
-
-    }//end of JobInfoActivity::setOriginalFilePaths
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -872,78 +775,6 @@ public class JobInfoActivity extends StandardActivity {
         }
 
     }//end of JobInfoActivity::setTallyGoals
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobInfoActivity::saveInformationToFile
-    //
-    // Stores the job info in a file.
-    //
-
-    private void saveInformationToFile() {
-
-        PrintWriter writer = null;
-
-        try {
-
-            // Create the directory for this job
-            // or rename the old directory for the
-            // new job name
-
-            File thisJobDir;
-
-            // Activity is in CREATE mode
-            if (activityMode.equals(EditJobInfoActivityMode.CREATE_JOB)) {
-
-                thisJobDir = new File(newJobFolderPath);
-
-                if (!thisJobDir.exists()) { thisJobDir.mkdir(); }
-
-            }
-            // Activity is in EDIT mode
-            else if (activityMode.equals(EditJobInfoActivityMode.EDIT_JOB_INFO)) {
-
-                thisJobDir = new File(originalJobFolderPath);
-
-                // if the job name has changed, the directory
-                // needs to be renamed
-                if (!job.equals(passedInJobName)) {
-                    thisJobDir.renameTo(new File(newJobFolderPath));
-                }
-
-            }
-
-            // end of Create the directory for this job
-            // or rename the old directory for the
-            // new job name
-
-            //Get the job info file. Create it if it does not exist
-            File jobInfoFile = new File (newJobInfoFilePath);
-            if (!jobInfoFile.exists()) { jobInfoFile.createNewFile(); }
-
-            // Use a PrintWriter to write to the file
-            writer = new PrintWriter(jobInfoFile, "UTF-8");
-
-            writer.println("Company Name=" + companyName);
-            writer.println("Date=" + date);
-            writer.println("Diameter=" + diameter);
-            writer.println("Facility=" + facility);
-            writer.println("Grade=" + grade);
-            writer.println("Imperial Adjustment=" + imperialAdjustment);
-            writer.println("Imperial Tally Goal=" + imperialTallyGoal);
-            writer.println("Job=" + job);
-            writer.println("Metric Adjustment=" + metricAdjustment);
-            writer.println("Metric Tally Goal=" + metricTallyGoal);
-            writer.println("Rack=" + rack);
-            writer.println("Range=" + range);
-            writer.println("Rig=" + rig);
-            writer.println("Wall=" + wall);
-
-        }
-        catch (Exception e) {}
-        finally { try { if (writer != null) { writer.close(); } } catch (Exception e) {} }
-
-    }//end of JobInfoActivity::saveInformationToFile
     //-----------------------------------------------------------------------------
 
 }//end of class JobInfoActivity

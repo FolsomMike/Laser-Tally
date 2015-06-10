@@ -22,10 +22,7 @@ package com.yaboosh.ybtech.lasertally;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
-import android.os.Message;
 import android.view.View;
-import android.view.WindowManager;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -118,7 +115,7 @@ public class MoreActivity extends StandardActivity {
 
         Intent intent = new Intent(this, MoreOptionsActivity.class);
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
-        intent.putExtra(Keys.JOB_INFO_KEY, jobInfo);
+        intent.putExtra(Keys.JOBS_HANDLER_KEY, jobsHandler);
         startActivityForResult(intent, Keys.ACTIVITY_RESULT_MORE_OPTIONS);
 
     }//end of MoreActivity::handleOptionsButtonPressed
@@ -133,7 +130,7 @@ public class MoreActivity extends StandardActivity {
     public void handlePrintButtonPressed(View pView) {
 
         TallyReportHTMLPrintoutMaker tallyReportMaker = new
-                                            TallyReportHTMLPrintoutMaker(sharedSettings, jobInfo);
+                                            TallyReportHTMLPrintoutMaker(sharedSettings, jobsHandler);
         tallyReportMaker.init();
         tallyReportMaker.printTallyReport();
 

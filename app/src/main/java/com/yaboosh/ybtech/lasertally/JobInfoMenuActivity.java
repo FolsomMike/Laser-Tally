@@ -38,8 +38,6 @@ import java.io.File;
 
 public class JobInfoMenuActivity extends StandardActivity {
 
-    private String jobName;
-
     //-----------------------------------------------------------------------------
     // JobInfoMenuActivity::JobInfoMenuActivity (constructor)
     //
@@ -85,8 +83,6 @@ public class JobInfoMenuActivity extends StandardActivity {
         focusArray.add(findViewById(R.id.closeJobButton));
         focusArray.add(findViewById(R.id.deleteJobButton));
 
-        jobName = getIntent().getExtras().getString(Keys.JOB_NAME_KEY);
-
     }//end of JobInfoMenuActivity::performOnCreateActivitySpecificActions
     //-----------------------------------------------------------------------------
 
@@ -117,23 +113,6 @@ public class JobInfoMenuActivity extends StandardActivity {
         }
 
     }//end of JobInfoMenuActivity::onActivityResult
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobInfoMenuActivity::deleteJob
-    //
-    // Deletes the passed in job by deleting its directory.
-    //
-
-    private void deleteJob(String pJobName) {
-
-        try {
-
-            Tools.deleteDirectory(new File(sharedSettings.getJobsFolderPath() + File.separator + pJobName));
-
-        } catch (Exception e) {}
-
-    }//end of JobInfoMenuActivity::deleteJob
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -181,8 +160,8 @@ public class JobInfoMenuActivity extends StandardActivity {
 
         Intent intent = new Intent(this, VerifyActionActivity.class);
         intent.putExtra(VerifyActionActivity.TEXT_VIEW_TEXT_KEY,
-                            "Are you sure that you want to delete " + "the job \""
-                                            + jobName + "\"?  This cannot be undone.");
+                            "Are you sure that you want to delete the job " +
+                                "\"" + jobsHandler.getJobName() + "\"?  This cannot be undone.");
         startActivityForResult(intent, Keys.ACTIVITY_RESULT_VERIFY_ACTION);
 
     }//end of JobInfoMenuActivity::handleDeleteThisJobButtonPressed
@@ -236,7 +215,7 @@ public class JobInfoMenuActivity extends StandardActivity {
 
     public void handleVerifyActionResultOk() {
 
-        deleteJob(jobName);
+        jobsHandler.deleteCurrentJob();
 
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
