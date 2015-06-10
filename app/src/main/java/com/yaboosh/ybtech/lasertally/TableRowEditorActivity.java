@@ -25,12 +25,17 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 // class TableRowEditorActivity
 //
 
 public class TableRowEditorActivity extends StandardActivity {
+
+    public static AtomicInteger activitiesLaunched = new AtomicInteger(0);
 
     public static final String PIPE_NUMBER_KEY =  "PIPE_NUMBER_KEY";
     public static final String RENUMBER_ALL_CHECKBOX_KEY = "RENUMBER_ALL_CHECKBOX_KEY";
@@ -61,28 +66,19 @@ public class TableRowEditorActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TableRowEditorActivity::handleF3KeyPressed
+    // TableRowEditorActivity::onCreate
     //
-    // Perform a click on the ok button.
+    // Automatically called when the activity is created.
     //
-
-    @Override
-    protected void handleF3KeyPressed() {
-
-        Button okButton = (Button) findViewById(R.id.okButton);
-        if (okButton != null) { okButton.performClick(); }
-
-    }//end of TableRowEditorActivity::handleF3KeyPressed
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // TableRowEditorActivity::performOnCreateActivitySpecificActions
-    //
-    // All actions that must be done upon instantiation should be done here.
+    // All functions that must be done upon instantiation should be called here.
     //
 
     @Override
-    protected void performOnCreateActivitySpecificActions() {
+    protected void onCreate(Bundle pSavedInstanceState) {
+
+        if (activitiesLaunched.incrementAndGet() > 1) { finish(); }
+
+        super.onCreate(pSavedInstanceState);
 
         //assign pointers to Views
         checkBoxRenumberAllBelow = (CheckBox)findViewById(R.id.checkBoxRenumberAllBelow);
@@ -96,7 +92,41 @@ public class TableRowEditorActivity extends StandardActivity {
 
         setPipeNumberAndTotalLengthValues();
 
-    }//end of TableRowEditorActivity::performOnCreateActivitySpecificActions
+    }//end of TableRowEditorActivity::onCreate
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TableRowEditorActivity::onDestroy
+    //
+    // Automatically called when the activity is destroyed.
+    //
+    // All functions that must be done upon activity destruction should be
+    // called here.
+    //
+
+    @Override
+    protected void onDestroy() {
+
+        activitiesLaunched.getAndDecrement();
+
+        super.onDestroy();
+
+    }//end of TableRowEditorActivity::onDestroy
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TableRowEditorActivity::handleF3KeyPressed
+    //
+    // Perform a click on the ok button.
+    //
+
+    @Override
+    protected void handleF3KeyPressed() {
+
+        Button okButton = (Button) findViewById(R.id.okButton);
+        if (okButton != null) { okButton.performClick(); }
+
+    }//end of TableRowEditorActivity::handleF3KeyPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

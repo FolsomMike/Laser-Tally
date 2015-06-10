@@ -36,6 +36,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -43,6 +45,8 @@ import java.util.Scanner;
 //
 
 public class VerifyActionActivity extends StandardActivity {
+
+    public static AtomicInteger activitiesLaunched = new AtomicInteger(0);
 
     public static final String TEXT_VIEW_TEXT_KEY = "TEXT_VIEW_TEXT_KEY";
 
@@ -63,6 +67,48 @@ public class VerifyActionActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // VerifyActionActivity::onCreate
+    //
+    // Automatically called when the activity is created.
+    //
+    // All functions that must be done upon instantiation should be called here.
+    //
+
+    @Override
+    protected void onCreate(Bundle pSavedInstanceState) {
+
+        if (activitiesLaunched.incrementAndGet() > 1) { finish(); }
+
+        super.onCreate(pSavedInstanceState);
+
+        //get the text view text (activity to verify text) from the intent extras
+        //and put it into the TextView to be displayed to users
+        String textViewText = getIntent().getExtras().getString(TEXT_VIEW_TEXT_KEY);
+        ((TextView)findViewById(R.id.verifyActionTextView)).setText(textViewText);
+
+    }//end of VerifyActionActivity::onCreate
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // VerifyActionActivity::onDestroy
+    //
+    // Automatically called when the activity is destroyed.
+    //
+    // All functions that must be done upon activity destruction should be
+    // called here.
+    //
+
+    @Override
+    protected void onDestroy() {
+
+        activitiesLaunched.getAndDecrement();
+
+        super.onDestroy();
+
+    }//end of VerifyActionActivity::onDestroy
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // VerifyActionActivity::handleF3KeyPressed
     //
     // If a view is in focus, perform a click on that view.
@@ -75,25 +121,6 @@ public class VerifyActionActivity extends StandardActivity {
         if (okButton != null && okButton.isEnabled()) { okButton.performClick(); }
 
     }//end of VerifyActionActivity::handleF3KeyPressed
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // VerifyActionActivity::performOnCreateActivitySpecificActions
-    //
-    // All actions that must be done upon instantiation should be done here.
-    //
-
-    @Override
-    protected void performOnCreateActivitySpecificActions() {
-
-        //WIP HSS// -- add objects to focus array
-
-        //get the text view text (activity to verify text) from the intent extras
-        //and put it into the TextView to be displayed to users
-        String textViewText = getIntent().getExtras().getString(TEXT_VIEW_TEXT_KEY);
-        ((TextView)findViewById(R.id.verifyActionTextView)).setText(textViewText);
-
-    }//end of VerifyActionActivity::performOnCreateActivitySpecificActions
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

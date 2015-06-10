@@ -17,12 +17,15 @@ package com.yaboosh.ybtech.lasertally;
 //-----------------------------------------------------------------------------
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -30,6 +33,8 @@ import java.util.ArrayList;
 //
 
 public class OpenJobActivity extends StandardActivity {
+
+    public static AtomicInteger activitiesLaunched = new AtomicInteger(0);
 
     private String companyName;
     private String date;
@@ -63,6 +68,43 @@ public class OpenJobActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // OpenJobActivity::onCreate
+    //
+    // Automatically called when the activity is created.
+    //
+    // All functions that must be done upon instantiation should be called here.
+    //
+
+    @Override
+    protected void onCreate(Bundle pSavedInstanceState) {
+
+        if (activitiesLaunched.incrementAndGet() > 1) { finish(); }
+
+        super.onCreate(pSavedInstanceState);
+
+    }//end of OpenJobActivity::onCreate
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // OpenJobActivity::onDestroy
+    //
+    // Automatically called when the activity is destroyed.
+    //
+    // All functions that must be done upon activity destruction should be
+    // called here.
+    //
+
+    @Override
+    protected void onDestroy() {
+
+        activitiesLaunched.getAndDecrement();
+
+        super.onDestroy();
+
+    }//end of OpenJobActivity::onDestroy
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // OpenJobActivity::handleF3KeyPressed
     //
     // If a view is in focus, perform a click on that view.
@@ -74,18 +116,6 @@ public class OpenJobActivity extends StandardActivity {
         if (viewInFocus != null) { viewInFocus.performClick(); }
 
     }//end of OpenJobActivity::handleF3KeyPressed
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // OpenJobActivity::performOnCreateActivitySpecificActions
-    //
-    // All actions that must be done upon instantiation should be done here.
-    //
-
-    @Override
-    protected void performOnCreateActivitySpecificActions() {
-
-    }//end of OpenJobActivity::performOnCreateActivitySpecificActions
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

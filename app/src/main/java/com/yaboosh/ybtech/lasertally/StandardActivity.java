@@ -88,8 +88,6 @@ public class StandardActivity extends Activity {
             useActivitySpecificActivityStartUpValues();
         }
 
-        performOnCreateActivitySpecificActions();
-
     }//end of StandardActivity::onCreate
     //-----------------------------------------------------------------------------
 
@@ -418,20 +416,6 @@ public class StandardActivity extends Activity {
     protected void performActivitySpecificActionsForFocusChange() {
 
     }//end of StandardActivity::performActivitySpecificActionsForFocusChange
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // StandardActivity::performOnCreateActivitySpecificActions
-    //
-    // Children activities can override this function to perform different actions
-    // depending on their individual requirements.
-    //
-    // Activity dependent -- children should override if necessary.
-    //
-
-    protected void performOnCreateActivitySpecificActions() {
-
-    }//end of StandardActivity::performOnCreateActivitySpecificActions
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

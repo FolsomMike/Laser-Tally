@@ -40,6 +40,8 @@ import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -47,6 +49,8 @@ import java.util.ArrayList;
 //
 
 public class TallyDeviceScanActivity extends StandardActivity {
+
+    public static AtomicInteger activitiesLaunched = new AtomicInteger(0);
 
     private TallyDeviceService.State state = TallyDeviceService.State.UNKNOWN;
     private final Messenger messenger;
@@ -74,6 +78,45 @@ public class TallyDeviceScanActivity extends StandardActivity {
         messenger = new Messenger(new IncomingHandler(this));
 
     }//end of TallyDeviceScanActivity::TallyDeviceConnectionStatusActivity (constructor)
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceScanActivity::onCreate
+    //
+    // Automatically called when the activity is created.
+    //
+    // All functions that must be done upon instantiation should be called here.
+    //
+
+    @Override
+    protected void onCreate(Bundle pSavedInstanceState) {
+
+        if (activitiesLaunched.incrementAndGet() > 1) { finish(); }
+
+        super.onCreate(pSavedInstanceState);
+
+        serviceIntent = new Intent(this, TallyDeviceService.class);
+
+    }//end of TallyDeviceScanActivity::onCreate
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceScanActivity::onDestroy
+    //
+    // Automatically called when the activity is destroyed.
+    //
+    // All functions that must be done upon activity destruction should be
+    // called here.
+    //
+
+    @Override
+    protected void onDestroy() {
+
+        activitiesLaunched.getAndDecrement();
+
+        super.onDestroy();
+
+    }//end of TallyDeviceScanActivity::onDestroy
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -118,22 +161,6 @@ public class TallyDeviceScanActivity extends StandardActivity {
         } catch (Exception e) { service = null; }
 
     }//end of TallyDeviceScanActivity::onPause
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // TallyDeviceScanActivity::performOnCreateActivitySpecificActions
-    //
-    // All actions that must be done upon instantiation should be done here.
-    //
-
-    @Override
-    protected void performOnCreateActivitySpecificActions() {
-
-        //WIP HSS// -- add objects to focus array
-
-        serviceIntent = new Intent(this, TallyDeviceService.class);
-
-    }//end of TallyDeviceScanActivity::performOnCreateActivitySpecificActions
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -317,20 +344,6 @@ public class TallyDeviceScanActivity extends StandardActivity {
         finishActivityAndStartMessageActivity();
 
     }//end of TallyDeviceScanActivity::handleDeviceClick
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // TallyDeviceScanActivity::handleFinishScanActivityAndStartMessageActivityMessage
-    //
-
-    public void handleFinishScanActivityAndStartMessageActivityMessage(Message pMsg) {
-
-        //DEBUG HSS//
-        Log.d(LOG_TAG, "finish and start message received");
-
-        finishActivityAndStartMessageActivity();
-
-    }//end of TallyDeviceScanActivity::handleFinishScanActivityAndStartMessageActivityMessage
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

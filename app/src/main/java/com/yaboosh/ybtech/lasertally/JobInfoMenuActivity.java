@@ -30,6 +30,8 @@ import android.view.View;
 import android.view.WindowManager;
 
 import java.io.File;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -37,6 +39,8 @@ import java.io.File;
 //
 
 public class JobInfoMenuActivity extends StandardActivity {
+
+    public static AtomicInteger activitiesLaunched = new AtomicInteger(0);
 
     //-----------------------------------------------------------------------------
     // JobInfoMenuActivity::JobInfoMenuActivity (constructor)
@@ -52,6 +56,49 @@ public class JobInfoMenuActivity extends StandardActivity {
         LOG_TAG = "JobInfoMenuActivity";
 
     }//end of JobInfoMenuActivity::JobInfoMenuActivity (constructor)
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobInfoMenuActivity::onCreate
+    //
+    // Automatically called when the activity is created.
+    //
+    // All functions that must be done upon instantiation should be called here.
+    //
+
+    @Override
+    protected void onCreate(Bundle pSavedInstanceState) {
+
+        if (activitiesLaunched.incrementAndGet() > 1) { finish(); }
+
+        super.onCreate(pSavedInstanceState);
+
+        //add buttons to focus array
+        focusArray.add(findViewById(R.id.openJobButton));
+        focusArray.add(findViewById(R.id.createNewJobButton));
+        focusArray.add(findViewById(R.id.renameJobButton));
+        focusArray.add(findViewById(R.id.deleteJobButton));
+
+    }//end of JobInfoMenuActivity::onCreate
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobInfoMenuActivity::onDestroy
+    //
+    // Automatically called when the activity is destroyed.
+    //
+    // All functions that must be done upon activity destruction should be
+    // called here.
+    //
+
+    @Override
+    protected void onDestroy() {
+
+        activitiesLaunched.getAndDecrement();
+
+        super.onDestroy();
+
+    }//end of JobInfoMenuActivity::onDestroy
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -114,24 +161,6 @@ public class JobInfoMenuActivity extends StandardActivity {
         }
 
     }//end of JobInfoMenuActivity::onActivityResult
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobInfoMenuActivity::performOnCreateActivitySpecificActions
-    //
-    // All actions that must be done upon instantiation should be done here.
-    //
-
-    @Override
-    protected void performOnCreateActivitySpecificActions() {
-
-        //add buttons to focus array
-        focusArray.add(findViewById(R.id.openJobButton));
-        focusArray.add(findViewById(R.id.createNewJobButton));
-        focusArray.add(findViewById(R.id.renameJobButton));
-        focusArray.add(findViewById(R.id.deleteJobButton));
-
-    }//end of JobInfoMenuActivity::performOnCreateActivitySpecificActions
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

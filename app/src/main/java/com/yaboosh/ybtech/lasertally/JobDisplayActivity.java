@@ -21,6 +21,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -79,6 +80,47 @@ public class JobDisplayActivity extends StandardActivity {
         messenger = new Messenger(new IncomingHandler(this));
 
     }//end of JobDisplayActivity::JobDisplayActivity (constructor)
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobDisplayActivity::onCreate
+    //
+    // Automatically called when the activity is created.
+    //
+    // All functions that must be done upon instantiation should be called here.
+    //
+
+    @Override
+    protected void onCreate(Bundle pSavedInstanceState) {
+
+        super.onCreate(pSavedInstanceState);
+
+        measureConnectButton = (Button)findViewById(R.id.measureConnectButton);
+        redoButton = (Button)findViewById(R.id.redoButton);
+
+        //set the job name
+        setJobName(jobsHandler.getJobName());
+
+        //Create a TallyDataHandler and give it its own MeasurementsTableHandler and a reference
+        //to jobsHandler
+        tallyDataHandler = new TallyDataHandler(this, sharedSettings, jobsHandler,
+                new MeasurementsTableHandler(
+                        sharedSettings,
+                        onClickListener,
+                        (TableLayout)findViewById(R.id.measurementsTable),
+                        findViewById(R.id.measurementsTableBottomBorderLine),
+                        (TableLayout)findViewById(R.id.totalsTable),
+                        (TextView)findViewById(R.id.totalOfAdjustedColumnTextView),
+                        (TextView)findViewById(R.id.totalOfTotalLengthColumnTextView)),
+                (TextView)findViewById(R.id.distanceLeftTextView),
+                (TextView)findViewById(R.id.numberOfPipesLeftTextView));
+        tallyDataHandler.init();
+
+        //Start the TallyDeviceService
+        serviceIntent = new Intent(this, TallyDeviceService.class);
+        startService(serviceIntent);
+
+    }//end of JobDisplayActivity::onCreate
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -208,43 +250,6 @@ public class JobDisplayActivity extends StandardActivity {
         } catch (Exception e) { service = null; }
 
     }//end of JobDisplayActivity::onPause
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobDisplayActivity::performOnCreateActivitySpecificActions
-    //
-    // All actions that must be done upon instantiation should be done here.
-    //
-
-    @Override
-    protected void performOnCreateActivitySpecificActions() {
-
-        measureConnectButton = (Button)findViewById(R.id.measureConnectButton);
-        redoButton = (Button)findViewById(R.id.redoButton);
-
-        //set the job name
-        setJobName(jobsHandler.getJobName());
-
-        //Create a TallyDataHandler and give it its own MeasurementsTableHandler and a reference
-        //to jobsHandler
-        tallyDataHandler = new TallyDataHandler(this, sharedSettings, jobsHandler,
-                new MeasurementsTableHandler(
-                        sharedSettings,
-                        onClickListener,
-                        (TableLayout)findViewById(R.id.measurementsTable),
-                        findViewById(R.id.measurementsTableBottomBorderLine),
-                        (TableLayout)findViewById(R.id.totalsTable),
-                        (TextView)findViewById(R.id.totalOfAdjustedColumnTextView),
-                        (TextView)findViewById(R.id.totalOfTotalLengthColumnTextView)),
-                (TextView)findViewById(R.id.distanceLeftTextView),
-                (TextView)findViewById(R.id.numberOfPipesLeftTextView));
-        tallyDataHandler.init();
-
-        //Start the TallyDeviceService
-        serviceIntent = new Intent(this, TallyDeviceService.class);
-        startService(serviceIntent);
-
-    }//end of JobDisplayActivity::performOnCreateActivitySpecificActions
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

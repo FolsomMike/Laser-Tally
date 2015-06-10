@@ -23,11 +23,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -35,6 +39,8 @@ import android.widget.TextView;
 //
 
 public class CreateJobActivity extends StandardActivity {
+
+    public static AtomicInteger activitiesLaunched = new AtomicInteger(0);
 
     private Handler handler = new Handler();
 
@@ -98,6 +104,65 @@ public class CreateJobActivity extends StandardActivity {
         LOG_TAG = "CreateJobActivity";
 
     }//end of CreateJobActivity::CreateJobActivity (constructor)
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // CreateJobActivity::onCreate
+    //
+    // Automatically called when the activity is created.
+    // All functions that must be done upon instantiation should be called here.
+    //
+
+    @Override
+    protected void onCreate(Bundle pSavedInstanceState) {
+
+        if (activitiesLaunched.incrementAndGet() > 1) { finish(); }
+
+        super.onCreate(pSavedInstanceState);
+
+        getViewsFromLayout();
+
+        addEditTextsToFocusArray();
+
+        enableOkButton(false);
+
+        putJobInfoIntoLayout();
+
+        //Add a listener to the job name edit text field to listen for changes
+        jobNameEditText.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable pE) {
+
+                handleEditTextJobTextChanged(pE.toString(), pE.length());
+
+            }
+
+            public void beforeTextChanged(CharSequence pS, int pStart, int pCount, int pAfter) {
+            }
+
+            public void onTextChanged(CharSequence pS, int pStart, int pBefore, int pCount) {
+            }
+        });
+
+    }//end of CreateJobActivity::onCreate
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // CreateJobActivity::onDestroy
+    //
+    // Automatically called when the activity is destroyed.
+    //
+    // All functions that must be done upon activity destruction should be
+    // called here.
+    //
+
+    @Override
+    protected void onDestroy() {
+
+        activitiesLaunched.getAndDecrement();
+
+        super.onDestroy();
+
+    }//end of CreateJobActivity::onDestroy
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -187,41 +252,6 @@ public class CreateJobActivity extends StandardActivity {
 
 
     }//end of CreateJobActivity::performActivitySpecificActionsForFocusChange
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // CreateJobActivity::performOnCreateActivitySpecificActions
-    //
-    // All actions that must be done upon instantiation should be done here.
-    //
-
-    @Override
-    protected void performOnCreateActivitySpecificActions() {
-
-        getViewsFromLayout();
-
-        addEditTextsToFocusArray();
-
-        enableOkButton(false);
-
-        putJobInfoIntoLayout();
-
-        //Add a listener to the job name edit text field to listen for changes
-        jobNameEditText.addTextChangedListener(new TextWatcher() {
-            public void afterTextChanged(Editable pE) {
-
-                handleEditTextJobTextChanged(pE.toString(), pE.length());
-
-            }
-
-            public void beforeTextChanged(CharSequence pS, int pStart, int pCount, int pAfter) {
-            }
-
-            public void onTextChanged(CharSequence pS, int pStart, int pBefore, int pCount) {
-            }
-        });
-
-    }//end of CreateJobActivity::performOnCreateActivitySpecificActions
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

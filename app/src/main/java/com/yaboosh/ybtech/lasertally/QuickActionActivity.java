@@ -24,7 +24,12 @@ package com.yaboosh.ybtech.lasertally;
 //-----------------------------------------------------------------------------
 
 import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -32,6 +37,8 @@ import android.view.View;
 //
 
 public class QuickActionActivity extends StandardActivity {
+
+    public static AtomicInteger activitiesLaunched = new AtomicInteger(0);
 
     //-----------------------------------------------------------------------------
     // QuickActionActivity::QuickActionActivity (constructor)
@@ -50,6 +57,47 @@ public class QuickActionActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // QuickActionActivity::onCreate
+    //
+    // Automatically called when the activity is created.
+    //
+    // All functions that must be done upon instantiation should be called here.
+    //
+
+    @Override
+    protected void onCreate(Bundle pSavedInstanceState) {
+
+        if (activitiesLaunched.incrementAndGet() > 1) { finish(); }
+
+        super.onCreate(pSavedInstanceState);
+
+        //add buttons to focus array
+        focusArray.add(findViewById(R.id.openJobButton));
+        focusArray.add(findViewById(R.id.createQuickJobButton));
+
+    }//end of QuickActionActivity::onCreate
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // QuickActionActivity::onDestroy
+    //
+    // Automatically called when the activity is destroyed.
+    //
+    // All functions that must be done upon activity destruction should be
+    // called here.
+    //
+
+    @Override
+    protected void onDestroy() {
+
+        activitiesLaunched.getAndDecrement();
+
+        super.onDestroy();
+
+    }//end of QuickActionActivity::onDestroy
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // QuickActionActivity::handleF3KeyPressed
     //
     // If a view is in focus, perform a click on that view.
@@ -62,23 +110,6 @@ public class QuickActionActivity extends StandardActivity {
         if (viewInFocus != null) { viewInFocus.performClick(); }
 
     }//end of QuickActionActivity::handleF3KeyPressed
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // QuickActionActivity::performOnCreateActivitySpecificActions
-    //
-    // All actions that must be done upon instantiation should be done here.
-    //
-
-    @Override
-    protected void performOnCreateActivitySpecificActions()
-    {
-
-        //add buttons to focus array
-        focusArray.add(findViewById(R.id.openJobButton));
-        focusArray.add(findViewById(R.id.createQuickJobButton));
-
-    }//end of QuickActionActivity::performOnCreateActivitySpecificActions
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

@@ -22,6 +22,7 @@ package com.yaboosh.ybtech.lasertally;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -33,6 +34,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -40,6 +43,8 @@ import java.lang.ref.WeakReference;
 //
 
 public class TallyDeviceConnectionStatusActivity extends StandardActivity {
+
+    public static AtomicInteger activitiesLaunched = new AtomicInteger(0);
 
     private TallyDeviceService.State state = TallyDeviceService.State.UNKNOWN;
     private final Messenger messenger;
@@ -65,6 +70,45 @@ public class TallyDeviceConnectionStatusActivity extends StandardActivity {
         messenger = new Messenger(new IncomingHandler(this));
 
     }//end of TallyDeviceConnectionStatusActivity::TallyDeviceConnectionStatusActivity (constructor)
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceConnectionStatusActivity::onCreate
+    //
+    // Automatically called when the activity is created.
+    //
+    // All functions that must be done upon instantiation should be called here.
+    //
+
+    @Override
+    protected void onCreate(Bundle pSavedInstanceState) {
+
+        if (activitiesLaunched.incrementAndGet() > 1) { finish(); }
+
+        super.onCreate(pSavedInstanceState);
+
+        serviceIntent = new Intent(this, TallyDeviceService.class);
+
+    }//end of TallyDeviceConnectionStatusActivity::onCreate
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceConnectionStatusActivity::onDestroy
+    //
+    // Automatically called when the activity is destroyed.
+    //
+    // All functions that must be done upon activity destruction should be
+    // called here.
+    //
+
+    @Override
+    protected void onDestroy() {
+
+        activitiesLaunched.getAndDecrement();
+
+        super.onDestroy();
+
+    }//end of TallyDeviceConnectionStatusActivity::onDestroy
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -104,22 +148,6 @@ public class TallyDeviceConnectionStatusActivity extends StandardActivity {
     public void onBackPressed() {
 
     }//end of TallyDeviceConnectionStatusActivity::onBackPressed
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // TallyDeviceConnectionStatusActivity::performOnCreateActivitySpecificActions
-    //
-    // All actions that must be done upon instantiation should be done here.
-    //
-
-    @Override
-    protected void performOnCreateActivitySpecificActions() {
-
-        //WIP HSS// -- add objects to focus array
-
-        serviceIntent = new Intent(this, TallyDeviceService.class);
-
-    }//end of TallyDeviceConnectionStatusActivity::performOnCreateActivitySpecificActions
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

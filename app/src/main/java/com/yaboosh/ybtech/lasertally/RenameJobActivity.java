@@ -28,12 +28,17 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 // class RenameJobActivity
 //
 
 public class RenameJobActivity extends StandardActivity {
+
+    public static AtomicInteger activitiesLaunched = new AtomicInteger(0);
 
     public static final String NEW_JOB_NAME_KEY =  "NEW_JOB_NAME_KEY";
 
@@ -58,28 +63,19 @@ public class RenameJobActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // RenameJobActivity::handleF3KeyPressed
+    // RenameJobActivity::onCreate
     //
-    // Perform a click on the ok button.
+    // Automatically called when the activity is created.
     //
-
-    @Override
-    protected void handleF3KeyPressed() {
-
-        Button okButton = (Button) findViewById(R.id.okButton);
-        if (okButton != null) { okButton.performClick(); }
-
-    }//end of RenameJobActivity::handleF3KeyPressed
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // RenameJobActivity::performOnCreateActivitySpecificActions
-    //
-    // All actions that must be done upon instantiation should be done here.
+    // All functions that must be done upon instantiation should be called here.
     //
 
     @Override
-    protected void performOnCreateActivitySpecificActions() {
+    protected void onCreate(Bundle pSavedInstanceState) {
+
+        if (activitiesLaunched.incrementAndGet() > 1) { finish(); }
+
+        super.onCreate(pSavedInstanceState);
 
         //assign pointers to Views
         editTextJobName = (EditText)findViewById(R.id.editTextJobName);
@@ -105,7 +101,41 @@ public class RenameJobActivity extends StandardActivity {
             }
         });
 
-    }//end of RenameJobActivity::performOnCreateActivitySpecificActions
+    }//end of RenameJobActivity::onCreate
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // RenameJobActivity::onDestroy
+    //
+    // Automatically called when the activity is destroyed.
+    //
+    // All functions that must be done upon activity destruction should be
+    // called here.
+    //
+
+    @Override
+    protected void onDestroy() {
+
+        activitiesLaunched.getAndDecrement();
+
+        super.onDestroy();
+
+    }//end of RenameJobActivity::onDestroy
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // RenameJobActivity::handleF3KeyPressed
+    //
+    // Perform a click on the ok button.
+    //
+
+    @Override
+    protected void handleF3KeyPressed() {
+
+        Button okButton = (Button) findViewById(R.id.okButton);
+        if (okButton != null) { okButton.performClick(); }
+
+    }//end of RenameJobActivity::handleF3KeyPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

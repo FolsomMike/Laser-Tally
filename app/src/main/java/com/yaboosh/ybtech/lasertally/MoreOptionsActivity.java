@@ -30,12 +30,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ScrollView;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 // class MoreOptionsActivity
 //
 
 public class MoreOptionsActivity extends StandardActivity {
+
+    public static AtomicInteger activitiesLaunched = new AtomicInteger(0);
 
     private Handler handler = new Handler();
 
@@ -68,6 +73,55 @@ public class MoreOptionsActivity extends StandardActivity {
         LOG_TAG = "MoreOptionsActivity";
 
     }//end of MoreOptionsActivity::MoreOptionsActivity (constructor)
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MoreOptionsActivity::onCreate
+    //
+    // Automatically called when the activity is created.
+    //
+    // All functions that must be done upon instantiation should be called here.
+    //
+
+    @Override
+    protected void onCreate(Bundle pSavedInstanceState) {
+
+        if (activitiesLaunched.incrementAndGet() > 1) { finish(); }
+
+        super.onCreate(pSavedInstanceState);
+
+        //add Views to focus array
+        focusArray.add(findViewById(R.id.switchUnitSystemButton));
+        focusArray.add(findViewById(R.id.editTextMinimumMeasurementAllowed));
+        focusArray.add(findViewById(R.id.editTextMaximumMeasurementAllowed));
+        focusArray.add(findViewById(R.id.calibrationValueEditText));
+
+        maximumMeasurementAllowedEditText
+                                = ((EditText)findViewById(R.id.editTextMaximumMeasurementAllowed));
+        minimumMeasurementAllowedEditText
+                                = ((EditText)findViewById(R.id.editTextMinimumMeasurementAllowed));
+        calibrationValueEditText = ((EditText)findViewById(R.id.calibrationValueEditText));
+
+    }//end of MoreOptionsActivity::onCreate
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MoreOptionsActivity::onDestroy
+    //
+    // Automatically called when the activity is destroyed.
+    //
+    // All functions that must be done upon activity destruction should be
+    // called here.
+    //
+
+    @Override
+    protected void onDestroy() {
+
+        activitiesLaunched.getAndDecrement();
+
+        super.onDestroy();
+
+    }//end of MoreOptionsActivity::onDestroy
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -130,28 +184,6 @@ public class MoreOptionsActivity extends StandardActivity {
         if (okButton != null && okButton.isEnabled()) { okButton.performClick(); }
 
     }//end of MoreOptionsActivity::handleF3KeyPressed
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // MoreOptionsActivity::performOnCreateActivitySpecificActions
-    //
-    // All actions that must be done upon instantiation should be done here.
-    //
-
-    @Override
-    protected void performOnCreateActivitySpecificActions() {
-
-        //add Views to focus array
-        focusArray.add(findViewById(R.id.switchUnitSystemButton));
-        focusArray.add(findViewById(R.id.editTextMinimumMeasurementAllowed));
-        focusArray.add(findViewById(R.id.editTextMaximumMeasurementAllowed));
-        focusArray.add(findViewById(R.id.calibrationValueEditText));
-
-        maximumMeasurementAllowedEditText = ((EditText)findViewById(R.id.editTextMaximumMeasurementAllowed));
-        minimumMeasurementAllowedEditText = ((EditText)findViewById(R.id.editTextMinimumMeasurementAllowed));
-        calibrationValueEditText = ((EditText)findViewById(R.id.calibrationValueEditText));
-
-    }//end of MoreOptionsActivity::performOnCreateActivitySpecificActions
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

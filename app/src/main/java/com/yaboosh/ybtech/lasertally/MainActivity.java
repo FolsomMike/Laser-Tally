@@ -25,6 +25,8 @@ import android.view.View;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -32,6 +34,8 @@ import java.util.ArrayList;
 //
 
 public class MainActivity extends StandardActivity {
+
+    public static AtomicInteger activitiesLaunched = new AtomicInteger(0);
 
     //-----------------------------------------------------------------------------
     // MainActivity::MainActivity (constructor)
@@ -48,6 +52,49 @@ public class MainActivity extends StandardActivity {
 
     }//end of MainActivity::MainActivity (constructor)
     //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::onCreate
+    //
+    // Automatically called when the activity is created.
+    //
+    // All functions that must be done upon instantiation should be called here.
+    //
+
+    @Override
+    protected void onCreate(Bundle pSavedInstanceState) {
+
+        if (activitiesLaunched.incrementAndGet() > 1) { finish(); }
+
+        super.onCreate(pSavedInstanceState);
+
+        //add buttons to focus array
+        focusArray.add(findViewById(R.id.createNewJobButton));
+        focusArray.add(findViewById(R.id.openJobButton));
+
+    }//end of MainActivity::onCreate
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::onDestroy
+    //
+    // Automatically called when the activity is destroyed.
+    //
+    // All functions that must be done upon activity destruction should be
+    // called here.
+    //
+
+    @Override
+    protected void onDestroy() {
+
+        activitiesLaunched.getAndDecrement();
+
+        super.onDestroy();
+
+    }//end of MainActivity::onDestroy
+    //-----------------------------------------------------------------------------
+
+
 
     //-----------------------------------------------------------------------------
     // MainActivity::handleEscapeKeyPressed
@@ -73,22 +120,6 @@ public class MainActivity extends StandardActivity {
         if (viewInFocus != null) { viewInFocus.performClick(); }
 
     }//end of MainActivity::handleF3KeyPressed
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // MainActivity::performOnCreateActivitySpecificActions
-    //
-    // All actions that must be done upon instantiation should be done here.
-    //
-
-    @Override
-    protected void performOnCreateActivitySpecificActions() {
-
-        //add buttons to focus array
-        focusArray.add(findViewById(R.id.createNewJobButton));
-        focusArray.add(findViewById(R.id.openJobButton));
-
-    }//end of MainActivity::performOnCreateActivitySpecificActions
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

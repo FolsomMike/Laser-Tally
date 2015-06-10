@@ -22,7 +22,11 @@ package com.yaboosh.ybtech.lasertally;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.View;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -30,6 +34,8 @@ import android.view.View;
 //
 
 public class MoreActivity extends StandardActivity {
+
+    public static AtomicInteger activitiesLaunched = new AtomicInteger(0);
 
     //-----------------------------------------------------------------------------
     // MoreActivity::MoreActivity (constructor)
@@ -48,6 +54,47 @@ public class MoreActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // MoreActivity::onCreate
+    //
+    // Automatically called when the activity is created.
+    //
+    // All functions that must be done upon instantiation should be called here.
+    //
+
+    @Override
+    protected void onCreate(Bundle pSavedInstanceState) {
+
+        if (activitiesLaunched.incrementAndGet() > 1) { finish(); }
+
+        super.onCreate(pSavedInstanceState);
+
+        //add buttons to focus array
+        focusArray.add(findViewById(R.id.printButton));
+        focusArray.add(findViewById(R.id.optionsButton));
+
+    }//end of MoreActivity::onCreate
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MoreActivity::onDestroy
+    //
+    // Automatically called when the activity is destroyed.
+    //
+    // All functions that must be done upon activity destruction should be
+    // called here.
+    //
+
+    @Override
+    protected void onDestroy() {
+
+        activitiesLaunched.getAndDecrement();
+
+        super.onDestroy();
+
+    }//end of MoreActivity::onDestroy
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // MoreActivity::handleF3KeyPressed
     //
     // If a view is in focus, perform a click on that view.
@@ -59,22 +106,6 @@ public class MoreActivity extends StandardActivity {
         if (viewInFocus != null) { viewInFocus.performClick(); }
 
     }//end of MoreActivity::handleF3KeyPressed
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // MoreActivity::performOnCreateActivitySpecificActions
-    //
-    // All actions that must be done upon instantiation should be done here.
-    //
-
-    @Override
-    protected void performOnCreateActivitySpecificActions() {
-
-        //add buttons to focus array
-        focusArray.add(findViewById(R.id.printButton));
-        focusArray.add(findViewById(R.id.optionsButton));
-
-    }//end of MoreActivity::performOnCreateActivitySpecificActions
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
