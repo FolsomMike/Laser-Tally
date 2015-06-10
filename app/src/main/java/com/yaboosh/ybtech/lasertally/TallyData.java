@@ -630,11 +630,11 @@ public abstract class TallyData {
     private void renumberAllPipeNumbersAfterRow(TableRow pR, String pPipe)
     {
 
-        double pipeNumber = Double.parseDouble(pPipe);
+        int pipeNumber = Integer.parseInt(pPipe);
         boolean firstRowReached = false;
 
         for (TableRow key : pipeNumbers.keySet()) {
-            if (firstRowReached) { pipeNumbers.put(key, format(++pipeNumber));  }
+            if (firstRowReached) { pipeNumbers.put(key, Integer.toString(++pipeNumber));  }
             if (key == pR) { firstRowReached = true; }
         }
 
