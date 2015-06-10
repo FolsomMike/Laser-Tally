@@ -310,6 +310,8 @@ public class StandardActivity extends Activity {
 
     private void handleArrowDownKeyPressed() {
 
+        if (focusArray.isEmpty()) { return; }
+
         int index = focusArray.indexOf(viewInFocus);
 
         //if the focus is already on the last view, return
@@ -333,6 +335,8 @@ public class StandardActivity extends Activity {
     //
 
     private void handleArrowUpKeyPressed() {
+
+        if (focusArray.isEmpty()) { return; }
 
         int index = focusArray.indexOf(viewInFocus);
 
