@@ -1,4 +1,4 @@
-<!-- MAIN LAYOUT -->
+<!-- MASTER LAYOUT -->
 <RelativeLayout
     android:id="@+id/main_content"
     android:layout_height="@dimen/dialog_height_standard"
@@ -50,91 +50,130 @@
     </LinearLayout>
     <!-- END OF TITLE BAR LAYOUT-->
 
-    <!-- STATUS LAYOUT -->
-    <LinearLayout
-        android:id="@+id/statusLayout"
-        android:layout_height="@dimen/atds_ml_sl_height"
+    <!-- MAIN LAYOUT -->
+    <RelativeLayout
+        android:layout_height="fill_parent"
         android:layout_width="fill_parent"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
         android:layout_below="@+id/titleBarLayout"
-        android:orientation="horizontal"
-        android:paddingBottom="@dimen/padding_none"
-        android:paddingLeft="@dimen/padding_normal"
-        android:paddingRight="@dimen/padding_normal"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/padding_xlarge"
+        android:paddingLeft="@dimen/padding_xlarge"
+        android:paddingRight="@dimen/padding_xlarge"
         android:paddingTop="@dimen/padding_none" >
 
-        <!-- STATUS LAYOUT horizontal center 1 -->
-            <!-- will only work if another view identical to
-                    to this one is used on the other side of
-                    whatever you are trying to center -->
-        <View
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="0dp" >
-        </View>
+        <!-- STATUS LAYOUT -->
+        <LinearLayout
+            android:id="@+id/statusLayout"
+            android:layout_height="@dimen/atds_ml_sl_height"
+            android:layout_width="fill_parent"
+            android:orientation="horizontal"
+            android:padding="@dimen/padding_none" >
 
-        <ProgressBar
-            android:id="@id/tallyDeviceScanProgressBar"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            style="@android:style/Widget.ProgressBar"
-            android:gravity="center" />
+            <!-- STATUS LAYOUT horizontal center 1 -->
+                <!-- will only work if another view identical to
+                        to this one is used on the other side of
+                        whatever you are trying to center -->
+            <View
+                android:layout_height="0dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:padding="@dimen/padding_none" >
+            </View>
 
-        <!-- STATUS LAYOUT horizontal spacer 1 -->
-        <View
-            android:id="@id/specialHorizontalSpacer"
-            android:layout_width="@dimen/spacer_horizontal_xslim"
-            android:layout_height="0dp" >
-        </View>
+            <ProgressBar
+                android:id="@id/tallyDeviceScanProgressBar"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:gravity="center"
+                android:padding="@dimen/padding_none"
+                style="@android:style/Widget.ProgressBar" />
 
-        <TextView
-            android:id="@id/tallyDeviceScanningText"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:textColor="#333333"
-            android:textSize="@dimen/text_size_xsmall"
-            android:gravity="center" />
+            <!-- STATUS LAYOUT horizontal spacer 1 -->
+            <View
+                android:id="@id/specialHorizontalSpacer"
+                android:layout_height="0dp"
+                android:layout_width="@dimen/spacer_horizontal_xslim"
+                android:padding="@dimen/padding_none" >
+            </View>
 
-        <!-- STATUS LAYOUT horizontal center 1 -->
-            <!-- will only work if another view identical to
-                    to this one is used on the other side of
-                    whatever you are trying to center -->
-        <View
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="0dp" >
-        </View>
+            <TextView
+                android:id="@+id/statusTextView"
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:gravity="center"
+                android:padding="@dimen/padding_none"
+                android:textColor="#333333"
+                android:textSize="@dimen/text_size_xsmall" />
 
-    </LinearLayout>
-    <!-- END OF STATUS LAYOUT -->
+            <!-- STATUS LAYOUT horizontal center 1 -->
+                <!-- will only work if another view identical to
+                        to this one is used on the other side of
+                        whatever you are trying to center -->
+            <View
+                android:layout_height="0dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:padding="@dimen/padding_none" >
+            </View>
 
-    <!-- JOBS LIST LAYOUT -->
-    <FrameLayout
-        android:id="@+id/jobsListLayout"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="#FFFFFF"
-        android:layout_below="@+id/statusLayout"
-        tools:context="com.yaboosh.ybtech.lasertally.DeviceListFragment"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools" >
+        </LinearLayout>
+        <!-- END OF STATUS LAYOUT -->
 
-        <ListView
-            android:id="@android:id/list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:dividerHeight="7px"
-            android:fadeScrollbars="false" />
+        <!-- DEVICES SCROLLVIEW -->
+        <com.yaboosh.ybtech.lasertally.FixedFocusScrollView
+            android:id="@+id/jobsScrollView"
+            android:layout_height="fill_parent"
+            android:layout_width="fill_parent"
+            android:background="@drawable/black_border"
+            android:fadeScrollbars="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:layout_below="@+id/statusLayout"
+            android:padding="1dp"
+            android:scrollbars="vertical" >
 
-        <TextView
-            android:id="@android:id/empty"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="@string/no_devices"
-            android:visibility="gone" />
+            <LinearLayout
+                android:layout_height="fill_parent"
+                android:layout_width="fill_parent"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="@dimen/padding_none" >
 
-    </FrameLayout>
-    <!-- END OF JOBS LIST LAYOUT -->
+                <TextView
+                    android:id="@+id/noDevicesTextView"
+                    android:layout_height="wrap_content"
+                    android:layout_width="fill_parent"
+                    android:background="@drawable/black_border"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:gravity="center"
+                    android:text="no devices found"
+                    android:textColor="#666666"
+                    android:textSize="@dimen/text_size_normal"
+                    android:visibility="gone" />
+
+                <LinearLayout
+                    android:id="@+id/deviceNamesLayout"
+                    android:layout_height="wrap_content"
+                    android:layout_width="fill_parent"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="@dimen/padding_none" >
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </com.yaboosh.ybtech.lasertally.FixedFocusScrollView>
+        <!-- END OF DEVICES SCROLLVIEW -->
+
+    </RelativeLayout>
+    <!-- END OF MAIN LAYOUT -->
 
 </RelativeLayout>
-<!-- END OF MAIN LAYOUT -->
+<!-- END OF MASTER LAYOUT -->
