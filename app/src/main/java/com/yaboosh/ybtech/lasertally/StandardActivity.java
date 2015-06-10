@@ -113,6 +113,7 @@ public class StandardActivity extends Activity {
         decorView.setSystemUiVisibility(uiOptions);
 
         sharedSettings.setContext(this);
+        jobsHandler.setSharedSettings(sharedSettings);
 
         performOnResumeActivitySpecificActions();
 
@@ -262,7 +263,6 @@ public class StandardActivity extends Activity {
 
         if (getIntent().hasExtra(Keys.JOBS_HANDLER_KEY)) {
             jobsHandler = getIntent().getExtras().getParcelable(Keys.JOBS_HANDLER_KEY);
-            jobsHandler.setSharedSettings(sharedSettings);
         }
         else {
             jobsHandler = new JobsHandler(sharedSettings);
@@ -485,12 +485,12 @@ public class StandardActivity extends Activity {
             focusView(viewInFocus);
         }
 
-        if (pSavedInstanceState.containsKey(Keys.JOBS_HANDLER_KEY)) {
-            jobsHandler = pSavedInstanceState.getParcelable(Keys.JOBS_HANDLER_KEY);
-        }
-
         if (pSavedInstanceState.containsKey(Keys.SHARED_SETTINGS_KEY)) {
             sharedSettings = pSavedInstanceState.getParcelable(Keys.SHARED_SETTINGS_KEY);
+        }
+
+        if (pSavedInstanceState.containsKey(Keys.JOBS_HANDLER_KEY)) {
+            jobsHandler = pSavedInstanceState.getParcelable(Keys.JOBS_HANDLER_KEY);
         }
 
     }//end of StandardActivity::restoreValuesFromSavedInstance
