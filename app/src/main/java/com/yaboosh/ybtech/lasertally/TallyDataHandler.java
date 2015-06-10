@@ -308,6 +308,10 @@ public class TallyDataHandler {
     {
 
         TableRow lastAddedRow = measurementsTableHandler.getLastAddedRow();
+        //the last added row is null if there
+        //are no rows in measurments table
+        if (lastAddedRow == null) { return; }
+
         imperialTallyData.removeData(lastAddedRow);
         metricTallyData.removeData(lastAddedRow);
 

@@ -347,8 +347,9 @@ public class MeasurementsTableHandler {
         //Set the last row added to what is now the last row in the table, if there
         //is one left
         if (rowAndPosition.size() > 1) {
-            lastAddedRow = (TableRow) measurementsTable.getChildAt(rowAndPosition.get(rowCount - 1));
+            lastAddedRow = (TableRow)measurementsTable.getChildAt(rowAndPosition.get(rowCount - 1));
         }
+        else { lastAddedRow = null; }
 
 
         // Remove the last row divider in the table, if there is one

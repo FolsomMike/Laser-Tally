@@ -583,7 +583,7 @@ public class JobDisplayActivity extends StandardActivity {
         setRedoButtonEnabled(true);
 
         //set the focus to the last row in the table
-        focusView(focusArray.get(focusArray.size()-1));
+        if (!focusArray.isEmpty()) { focusView(focusArray.get(focusArray.size()-1)); }
 
     }//end of JobDisplayActivity::handleNewDistanceValue
     //-----------------------------------------------------------------------------
@@ -617,7 +617,7 @@ public class JobDisplayActivity extends StandardActivity {
 
         tallyDataHandler.removeLastDataEntry();
 
-        focusView(focusArray.get(focusArray.size() - 1));
+        if (!focusArray.isEmpty()) { focusView(focusArray.get(focusArray.size() - 1)); }
 
     }//end of JobDisplayActivity::handleRedoButtonPressed
     //-----------------------------------------------------------------------------
