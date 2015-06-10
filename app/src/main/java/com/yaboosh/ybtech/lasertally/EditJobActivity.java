@@ -399,7 +399,7 @@ public class EditJobActivity extends StandardActivity {
     private void getJobInfoFromHandler() {
 
         companyName = jobsHandler.getCompanyName();
-        date = jobsHandler.getDate();
+        date = jobsHandler.getDate(false);
         diameter = jobsHandler.getDiameter();
         facility = jobsHandler.getFacility();
         grade = jobsHandler.getGrade();

@@ -92,7 +92,7 @@ public class TallyReportHTMLMaker {
     public void init()
     {
 
-        jobDate = jobsHandler.getDate();
+        jobDate = jobsHandler.getDate(false);
 
         //set values to imperial or metric
         if (sharedSettings.getUnitSystem().equals(Keys.IMPERIAL_MODE)) {

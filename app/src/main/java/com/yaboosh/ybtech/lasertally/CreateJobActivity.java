@@ -451,7 +451,7 @@ public class CreateJobActivity extends StandardActivity {
     private void getJobInfoFromHandler() {
 
         companyName = jobsHandler.getCompanyName();
-        date = jobsHandler.getDate();
+        date = jobsHandler.getDate(true);
         diameter = jobsHandler.getDiameter();
         facility = jobsHandler.getFacility();
         grade = jobsHandler.getGrade();

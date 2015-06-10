@@ -80,7 +80,10 @@ public class JobsHandler implements Parcelable {
     public void setCompanyName(String pCompanyName) { companyName = pCompanyName; }
 
     private String date = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
-    public String getDate() { return date; }
+    public String getDate(boolean pNewDate) {
+        if (pNewDate) { date = new SimpleDateFormat("MM/dd/yyyy").format(new Date()); }
+        return date;
+    }
     public void setDate(String pDate) { date = pDate; }
 
     private String diameter = "";
@@ -267,7 +270,7 @@ public class JobsHandler implements Parcelable {
     public void createQuickJob()
     {
 
-        jobName = date + " ~ " + DateFormat.getTimeInstance().format(new Date());
+        jobName = getDate(true) + " ~ " + DateFormat.getTimeInstance().format(new Date());
 
         setFilePaths(jobName);
 
