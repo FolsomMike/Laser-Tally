@@ -572,6 +572,8 @@ public class JobDisplayActivity extends StandardActivity {
 
     public void handleNewDistanceValue(String pDistanceValue) {
 
+        if (viewInFocus != null) { viewInFocus.clearFocus(); }
+
         tallyDataHandler.handleNewDistanceValue(Double.parseDouble(pDistanceValue));
 
         //enable the measureConnect and redo buttons
@@ -580,6 +582,7 @@ public class JobDisplayActivity extends StandardActivity {
         setMeasureConnectButtonEnabled(true);
         setRedoButtonEnabled(true);
 
+        //set the focus to the last row in the table
         focusView(focusArray.get(focusArray.size()-1));
 
     }//end of JobDisplayActivity::handleNewDistanceValue
@@ -614,7 +617,7 @@ public class JobDisplayActivity extends StandardActivity {
 
         tallyDataHandler.removeLastDataEntry();
 
-        focusView(focusArray.get(focusArray.size()-1));
+        focusView(focusArray.get(focusArray.size() - 1));
 
     }//end of JobDisplayActivity::handleRedoButtonPressed
     //-----------------------------------------------------------------------------
@@ -656,6 +659,7 @@ public class JobDisplayActivity extends StandardActivity {
 
         lastRowEdited = pR;
         focusView(lastRowEdited);
+        scrollMeasurementsTable();
         String pipeNum = tallyDataHandler.getPipeNumberOfRow(pR);
         String totalLength = tallyDataHandler.getTotalLengthValueOfRow(pR);
 
@@ -722,6 +726,32 @@ public class JobDisplayActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // JobDisplayActivity::scrollMeasurementsTable
+    //
+    // Scrolls the ScrollView containing the measurements table to either the view
+    // in focus or to the bottom, if no view is focused.
+    //
+
+    void scrollMeasurementsTable() {
+
+        final ScrollView sv = (ScrollView)findViewById(R.id.measurementsTableScrollView);
+
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (viewInFocus != null) {
+                    sv.scrollTo(0, viewInFocus.getBottom() - sv.getHeight() / 2);
+                }
+                else {
+                    sv.fullScroll(View.FOCUS_DOWN);
+                }
+            }
+        });
+
+    }//end of JobDisplayActivity::scrollMeasurementsTable
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // JobDisplayActivity::scrollToBottomOfMeasurementsTable
     //
     // Scrolls the ScrollView containing the measurements table all the way to the
@@ -734,9 +764,7 @@ public class JobDisplayActivity extends StandardActivity {
 
         handler.post(new Runnable() {
             @Override
-            public void run() {
-                sv.fullScroll(View.FOCUS_DOWN);
-            }
+            public void run() { sv.fullScroll(View.FOCUS_DOWN); }
         });
 
     }//end of JobDisplayActivity::scrollToBottomOfMeasurementsTable

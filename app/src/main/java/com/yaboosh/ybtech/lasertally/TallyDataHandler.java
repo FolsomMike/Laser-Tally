@@ -260,7 +260,7 @@ public class TallyDataHandler {
                 tallyData.getPipeNumbers(),
                 tallyData.getTotalLengthValues());
 
-        parentActivity.scrollToBottomOfMeasurementsTable();
+        parentActivity.scrollMeasurementsTable();
         parentActivity.putTableRowsIntoFocusArray();
 
         setAmountsLeft();
