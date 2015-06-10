@@ -386,7 +386,7 @@ public class StandardActivity extends Activity {
     // Launches the QuickAction activity.
     //
 
-    private void handleF1KeyPressed() {
+    protected void handleF1KeyPressed() {
 
         Intent intent = new Intent(this, QuickActionActivity.class);
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);

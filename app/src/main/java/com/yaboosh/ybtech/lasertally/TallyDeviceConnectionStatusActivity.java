@@ -74,9 +74,23 @@ public class TallyDeviceConnectionStatusActivity extends StandardActivity {
     // the escape key to exit the activity.
     //
 
+    @Override
     protected void handleEscapeKeyPressed() {
 
     }//end of TallyDeviceConnectionStatusActivity::handleEscapeKeyPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDeviceConnectionStatusActivity::handleF1KeyPressed
+    //
+    // This functions is overridden and left blank so that the user cannot use
+    // the F1 key inside the activity.
+    //
+
+    @Override
+    protected void handleF1KeyPressed() {
+
+    }//end of TallyDeviceConnectionStatusActivity::handleF1KeyPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
