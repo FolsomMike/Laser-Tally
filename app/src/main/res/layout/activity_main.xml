@@ -1,10 +1,12 @@
+<!-- MASTER LAYOUT -->
 <LinearLayout
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     android:background="#808080"
     android:baselineAligned="false"
-    android:focusable="false"
-    android:focusableInTouchMode="false"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:descendantFocusability="beforeDescendants"
     android:gravity="center"
     android:orientation="vertical"
     tools:context="com.yaboosh.lasertally.development.main.MainActivity"
@@ -45,3 +47,4 @@
             style="@style/whiteStyledButton" />
 
 </LinearLayout>
+<!-- END OF MASTER LAYOUT -->

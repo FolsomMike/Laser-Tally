@@ -1,14 +1,18 @@
-<!-- MAIN LAYOUT -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<!-- MASTER LAYOUT -->
+<LinearLayout
     android:id="@+id/main_content"
-    android:layout_width="@dimen/dialog_width_standard"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:layout_width="@dimen/dialog_width_standard"
     android:background="#CFCFCF"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:descendantFocusability="beforeDescendants"
+    android:gravity="center"
+    android:orientation="vertical"
     android:padding="@dimen/padding_4xlarge"
     tools:context="com.yaboosh.ybtech.lasertally.TallyDeviceConnectionStatusActivity"
-    android:gravity="center" >
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" >
 
     <!-- PROGRESS BAR CHECK MARK LAYOUT -->
     <LinearLayout
@@ -48,4 +52,4 @@
         android:text="" />
 
 </LinearLayout>
-<!-- END OF MAIN LAYOUT -->
+<!-- END OF MASTER LAYOUT -->

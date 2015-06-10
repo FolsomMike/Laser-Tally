@@ -1,12 +1,13 @@
-<!-- MAIN LAYOUT -->
+<!-- MASTER LAYOUT -->
 <RelativeLayout
     android:id="@+id/main_content"
     android:layout_height="fill_parent"
     android:layout_width="fill_parent"
     android:baselineAligned="false"
     android:background="#808080"
-    android:focusable="false"
-    android:focusableInTouchMode="false"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:descendantFocusability="beforeDescendants"
     android:orientation="vertical"
     android:padding="@dimen/padding_none"
     tools:context="com.yaboosh.lasertally.development.main.JobDisplayActivity"
@@ -423,4 +424,4 @@
     <!-- END OF LEFT AND RIGHT PANEL CONTAINER LAYOUT -->
 
 </RelativeLayout>
-<!-- END OF MAIN LAYOUT -->
+<!-- END OF MASTER LAYOUT -->

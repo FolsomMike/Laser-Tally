@@ -1,11 +1,12 @@
-<!-- MAIN LAYOUT -->
+<!-- MASTER LAYOUT -->
 <RelativeLayout
     android:id="@+id/main_content"
     android:layout_height="@dimen/dialog_height_standard"
     android:layout_width="@dimen/dialog_width_standard"
     android:background="#CFCFCF"
-    android:focusable="false"
-    android:focusableInTouchMode="false"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:descendantFocusability="beforeDescendants"
     android:padding="@dimen/padding_none"
     tools:context="com.yaboosh.ybtech.lasertally.MoreOptionsActivity"
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -341,4 +342,4 @@
     <!-- END OF FIXED OK CANCEL BUTTONS LAYOUT -->
 
 </RelativeLayout>
-<!-- END OF MAIN LAYOUT -->
+<!-- END OF MASTER LAYOUT -->
