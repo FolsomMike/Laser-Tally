@@ -262,6 +262,7 @@ public class StandardActivity extends Activity {
 
         if (getIntent().hasExtra(Keys.JOBS_HANDLER_KEY)) {
             jobsHandler = getIntent().getExtras().getParcelable(Keys.JOBS_HANDLER_KEY);
+            jobsHandler.setSharedSettings(sharedSettings);
         }
         else {
             jobsHandler = new JobsHandler(sharedSettings);

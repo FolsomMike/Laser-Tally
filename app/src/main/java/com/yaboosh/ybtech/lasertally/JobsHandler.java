@@ -60,6 +60,7 @@ public class JobsHandler implements Parcelable {
     public static Parcelable.Creator CREATOR;
 
     private SharedSettings sharedSettings;
+    public void setSharedSettings(SharedSettings pS) {sharedSettings = pS; }
 
     private String oldJobDirectoryPath = "";
     private String oldJobName = "";
@@ -250,7 +251,7 @@ public class JobsHandler implements Parcelable {
                 if (f.isDirectory() && pJobName.equals(f.getName())) { exists = true; }
             }
 
-        } catch (Exception e) {}
+        } catch (Exception e) { Log.e(LOG_TAG, "Line 253 :: " + e.getMessage()); }
 
         return exists;
 
@@ -518,6 +519,30 @@ public class JobsHandler implements Parcelable {
         wall = pParcel.readString();
 
     }// end of JobsHandler::readFromParcel
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobsHandler::renameJob
+    //
+    // Renames the job to the passed in string.
+    //
+
+    public void renameJob(String pJobName)
+    {
+
+        storeOldJobDirectoryAndName();
+
+        jobName = pJobName;
+
+        setFilePaths(jobName);
+
+        //false because we are not
+        //saving the job for the first
+        //time, we're renaming a job
+        //that has already been saved
+        saveJobInfoToFile(false);
+
+    }//end of JobsHandler::renameJob
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
