@@ -17,6 +17,7 @@ package com.yaboosh.ybtech.lasertally;
 
 //-----------------------------------------------------------------------------
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -272,12 +273,12 @@ public class JobDisplayActivity extends StandardActivity {
     {
 
         if (pRequestCode == Keys.ACTIVITY_RESULT_JOB_INFO) {
-                handleEditJobActivityResult(pData);
+                if (pResultCode == Activity.RESULT_OK) { handleEditJobActivityResult(pData); }
         }
         else if (pRequestCode == Keys.ACTIVITY_RESULT_MORE) {
 
             if (pResultCode == RESULT_OK) {
-                handleMoreActivityResultOk((SharedSettings)pData.getParcelableExtra(Keys.SHARED_SETTINGS_KEY));
+                handleMoreActivityResultOk((SharedSettings) pData.getParcelableExtra(Keys.SHARED_SETTINGS_KEY));
             }
             else if (pResultCode == RESULT_CANCELED) {
                 handleMoreActivityResultCancel();
