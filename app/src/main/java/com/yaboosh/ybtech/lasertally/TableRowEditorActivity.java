@@ -31,6 +31,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -46,6 +47,10 @@ public class TableRowEditorActivity extends StandardActivity {
     public static final String PIPE_NUMBER_KEY =  "PIPE_NUMBER_KEY";
     public static final String RENUMBER_ALL_CHECKBOX_KEY = "RENUMBER_ALL_CHECKBOX_KEY";
     public static final String TOTAL_LENGTH_KEY = "TOTAL_LENGTH_KEY";
+
+    private CheckBox    checkBoxRenumberAllBelow;
+    private EditText    editTextPipeNumber;
+    private EditText    editTextTotalLength;
 
     private String pipeNumber = "";
     private String totalLength = "";
@@ -91,7 +96,15 @@ public class TableRowEditorActivity extends StandardActivity {
     @Override
     protected void performOnCreateActivitySpecificActions() {
 
-        //WIP HSS// -- add objects to focus array
+        //assign pointers to Views
+        checkBoxRenumberAllBelow = (CheckBox)findViewById(R.id.checkBoxRenumberAllBelow);
+        editTextPipeNumber = (EditText)findViewById(R.id.editTextPipeNumber);
+        editTextTotalLength = (EditText)findViewById(R.id.editTextTotalLength);
+
+        //add objects to focus array
+        focusArray.add(editTextPipeNumber);
+        focusArray.add(checkBoxRenumberAllBelow);
+        focusArray.add(editTextTotalLength);
 
         setPipeNumberAndTotalLengthValues();
 
@@ -197,12 +210,9 @@ public class TableRowEditorActivity extends StandardActivity {
 
     private void getAndStoreInfoFromUserInput() {
 
-        TextView pPN = (TextView)findViewById(R.id.editTextPipeNumber);
-        pipeNumber = pPN.getText().toString();
-        TextView pTL = (TextView)findViewById(R.id.editTextTotalLength);
-        totalLength = pTL.getText().toString();
-        CheckBox checkBox = (CheckBox)findViewById(R.id.checkBoxRenumberAllBelow);
-        renumberAll = checkBox.isChecked();
+        pipeNumber = editTextPipeNumber.getText().toString();
+        totalLength = editTextTotalLength.getText().toString();
+        renumberAll = checkBoxRenumberAllBelow.isChecked();
 
     }//end of TableRowEditorActivity::getAndStoreInfoFromUserInput
     //-----------------------------------------------------------------------------
@@ -255,10 +265,8 @@ public class TableRowEditorActivity extends StandardActivity {
 
     private void setPipeNumberAndTotalLengthValues() {
 
-        TextView pPN = (TextView)findViewById(R.id.editTextPipeNumber);
-        pPN.setText(pipeNumber);
-        TextView pTL = (TextView)findViewById(R.id.editTextTotalLength);
-        pTL.setText(totalLength);
+        editTextPipeNumber.setText(pipeNumber);
+        editTextTotalLength.setText(totalLength);
 
     }//end of TableRowEditorActivity::setPipeNumberAndTotalLengthValues
     //-----------------------------------------------------------------------------
