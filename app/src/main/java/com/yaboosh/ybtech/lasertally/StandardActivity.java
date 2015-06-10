@@ -197,22 +197,6 @@ public class StandardActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // StandardActivity::changeActivitySpecificBackgroundsForFocus
-    //
-    // Used by children classes to change the backgrounds of views depending on
-    // the passed in view (focused view).
-    //
-    // We have to manually handle the changing of backgrounds because Android
-    // has issues the state options ("state_focused", etc.) has issues when
-    // it comes to focusing; it only works sometimes.
-    //
-
-    protected void changeActivitySpecificBackgroundsForFocus() {
-
-    }//end of StandardActivity::changeActivitySpecificBackgroundsForFocus
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
     // StandardActivity::createUiChangeListener
     //
     // Listens for visibility changes in the ui.
@@ -261,7 +245,7 @@ public class StandardActivity extends Activity {
 
         viewInFocus.requestFocus();
 
-        changeActivitySpecificBackgroundsForFocus();
+        performActivitySpecificActionsForFocusChange();
 
     }//end of StandardActivity::focusView
     //-----------------------------------------------------------------------------
@@ -415,6 +399,20 @@ public class StandardActivity extends Activity {
     protected void handleF3KeyPressed() {
 
     }//end of StandardActivity::handleF3KeyPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // StandardActivity::performActivitySpecificActionsForFocusChange
+    //
+    // Children activities can override this function to perform different actions
+    // depending on their individual requirements.
+    //
+    // Activity dependent -- children should override if necessary.
+    //
+
+    protected void performActivitySpecificActionsForFocusChange() {
+
+    }//end of StandardActivity::performActivitySpecificActionsForFocusChange
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

@@ -71,35 +71,21 @@ public class MoreOptionsActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MoreOptionsActivity::changeActivitySpecificBackgroundsForFocus
+    // MoreOptionsActivity::performActivitySpecificActionsForFocusChange
     //
-    // Changes the backgrounds of all the non-focused EditTexts in the focus array
-    // to the black_border drawable.
+    // Scrolls to the top of the scrollview if the view in focus is the first item
+    // in the array.
     //
-    // The focused EditText's background color is changed to the blue_border
-    // drawable.
+    // Scrolls to the bottom of the scrollview if the view in focus is the last
+    // item in the array.
     //
-    // Used by children classes to change the backgrounds of views depending on
-    // the passed in view (focused view).
-    //
-    // We have to manually handle the changing of backgrounds because Android
-    // has issues the state options ("state_focused", etc.) has issues when
-    // it comes to focusing; it only works sometimes.
+    // This is done because when the user is using the keyboard for navigation,
+    // the last and first views are are not fully brought into sight.
     //
 
     @Override
-    protected void changeActivitySpecificBackgroundsForFocus() {
+    protected void performActivitySpecificActionsForFocusChange() {
 
-        // Scrolls to the top of the scrollview if the
-        // view in focus is the first item in the array.
-        //
-        // Scrolls to the bottom of the scrollview if the
-        // view in focus is the last item in the array.
-        //
-        // This is done because when the user is using
-        // the keyboard for navigation, the last and
-        // first views are are not fully brought into
-        // sight.
         final ScrollView sv = (ScrollView)findViewById(R.id.optionsScrollView);
         sv.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -128,7 +114,7 @@ public class MoreOptionsActivity extends StandardActivity {
         }
 
 
-    }//end of MoreOptionsActivity::changeActivitySpecificBackgroundsForFocus
+    }//end of MoreOptionsActivity::performActivitySpecificActionsForFocusChange
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

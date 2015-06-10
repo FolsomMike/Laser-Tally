@@ -81,22 +81,22 @@ public class JobDisplayActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobDisplayActivity::changeActivitySpecificBackgroundsForFocus
+    // JobDisplayActivity::performActivitySpecificActionsForFocusChange
     //
     // Changes the background color of all the non-focused TableRows in the focus
     // array to measurementsTableColor. The focused TableRow's background
     // color is changed to selectedTableRowColor.
     //
-    // Used by children classes to change the backgrounds of views depending on
-    // the passed in view (focused view).
-    //
     // We have to manually handle the changing of backgrounds because Android
     // has issues the state options ("state_focused", etc.) has issues when
-    // it comes to focusing; it only works sometimes.
+    // it comes to focusing; it doesn't always work.
+    //
+    // Also scrolls to the bottom of the measurements table if the last row has
+    // been focused.
     //
 
     @Override
-    protected void changeActivitySpecificBackgroundsForFocus() {
+    protected void performActivitySpecificActionsForFocusChange() {
 
         for (View v : focusArray) {
             int c = getResources().getColor(R.color.measurementsTableColor);
@@ -115,7 +115,7 @@ public class JobDisplayActivity extends StandardActivity {
             scrollToBottomOfMeasurementsTable();
         }
 
-    }//end of JobDisplayActivity::changeActivitySpecificBackgroundsForFocus
+    }//end of JobDisplayActivity::performActivitySpecificActionsForFocusChange
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -741,8 +741,7 @@ public class JobDisplayActivity extends StandardActivity {
             public void run() {
                 if (viewInFocus != null) {
                     sv.scrollTo(0, viewInFocus.getBottom() - sv.getHeight() / 2);
-                }
-                else {
+                } else {
                     sv.fullScroll(View.FOCUS_DOWN);
                 }
             }

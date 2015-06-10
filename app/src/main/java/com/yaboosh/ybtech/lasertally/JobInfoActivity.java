@@ -120,7 +120,7 @@ public class JobInfoActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoActivity::changeActivitySpecificBackgroundsForFocus
+    // JobInfoActivity::performActivitySpecificActionsForFocusChange
     //
     // Changes the backgrounds of all the non-focused EditTexts in the focus array
     // to the black_border drawable.
@@ -128,16 +128,13 @@ public class JobInfoActivity extends StandardActivity {
     // The focused EditText's background color is changed to the blue_border
     // drawable.
     //
-    // Used by children classes to change the backgrounds of views depending on
-    // the passed in view (focused view).
-    //
     // We have to manually handle the changing of backgrounds because Android
     // has issues the state options ("state_focused", etc.) has issues when
-    // it comes to focusing; it only works sometimes.
+    // it comes to focusing; it doesn't always work.
     //
 
     @Override
-    protected void changeActivitySpecificBackgroundsForFocus() {
+    protected void performActivitySpecificActionsForFocusChange() {
 
         for (View v : focusArray) {
             Drawable d = getResources().getDrawable(R.drawable.black_border);
@@ -176,7 +173,7 @@ public class JobInfoActivity extends StandardActivity {
         }
 
 
-    }//end of JobInfoActivity::changeActivitySpecificBackgroundsForFocus
+    }//end of JobInfoActivity::performActivitySpecificActionsForFocusChange
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
