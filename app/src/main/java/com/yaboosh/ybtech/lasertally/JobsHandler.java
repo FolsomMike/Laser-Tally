@@ -47,7 +47,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Scanner;
 
 public class JobsHandler implements Parcelable {
@@ -76,7 +78,7 @@ public class JobsHandler implements Parcelable {
     public String getCompanyName() { return companyName; }
     public void setCompanyName(String pCompanyName) { companyName = pCompanyName; }
 
-    private String date = "";
+    private String date = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
     public String getDate() { return date; }
     public void setDate(String pDate) { date = pDate; }
 
