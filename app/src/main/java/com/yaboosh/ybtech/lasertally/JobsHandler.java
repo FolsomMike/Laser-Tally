@@ -258,6 +258,31 @@ public class JobsHandler implements Parcelable {
     //----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // JobsHandler::createQuickJob
+    //
+    // Creates and stores a job with a programmatically determined job name and
+    // the date the job was created. Everything else is left blank.
+    //
+
+    public void createQuickJob()
+    {
+
+        //WIP HSS// -- need to get date
+
+        String name = "";
+        int i = 1;
+        do { name = "job" + i++; }  while (checkIfJobNameAlreadyExists(name));
+
+        jobName = name;
+
+        setFilePaths(jobName);
+
+        saveJobInfoToFile(true);
+
+    }//end of JobsHandler::createQuickJob
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // JobsHandler::deleteCurrentJob
     //
     // Deletes the current job.

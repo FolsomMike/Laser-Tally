@@ -27,7 +27,7 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
 
-    <string name="title_activity_create_job">CreateJobActivity</string>
+    <string name="title_activity_quick_action_job">QuickActionActivity</string>
     <string name="title_activity_job_display">JobDisplayActivity</string>
     <string name="title_activity_job_info">JobInfoActivity</string>
     <string name="title_activity_job_menu_info">JobInfoMenuActivity</string>

@@ -24,6 +24,7 @@ package com.yaboosh.ybtech.lasertally;
 //
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -387,7 +388,9 @@ public class StandardActivity extends Activity {
 
     private void handleF1KeyPressed() {
 
-        //WIP HSS// -- Need to add code
+        Intent intent = new Intent(this, QuickActionActivity.class);
+        intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
+        startActivity(intent);
 
     }//end of StandardActivity::handleF1KeyPressed
     //-----------------------------------------------------------------------------

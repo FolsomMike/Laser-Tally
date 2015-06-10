@@ -23,6 +23,14 @@
         android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
 
         <activity
+            android:name=".QuickActionActivity"
+            android:label="@string/title_activity_tally_device_scan"
+            android:screenOrientation="reverseLandscape"
+            android:configChanges="keyboard|keyboardHidden"
+            android:theme="@style/activityDialog" >
+        </activity>
+
+        <activity
             android:name=".JobDisplayActivity"
             android:label="@string/title_activity_job_info"
             android:screenOrientation="reverseLandscape"
