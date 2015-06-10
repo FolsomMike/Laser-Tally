@@ -32,7 +32,7 @@
 
         <activity
             android:name=".JobDisplayActivity"
-            android:label="@string/title_activity_job_info"
+            android:label="@string/title_activity_job_display"
             android:screenOrientation="reverseLandscape"
             android:configChanges="keyboard|keyboardHidden" >
         </activity>
