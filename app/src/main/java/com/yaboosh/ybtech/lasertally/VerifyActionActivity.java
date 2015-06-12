@@ -118,7 +118,7 @@ public class VerifyActionActivity extends StandardActivity {
     protected void handleF3KeyPressed() {
 
         Button okButton = (Button)findViewById(R.id.okButton);
-        if (okButton != null && okButton.isEnabled()) { okButton.performClick(); }
+        if (okButton != null && okButton.isEnabled()) { performClickOnView(okButton); }
 
     }//end of VerifyActionActivity::handleF3KeyPressed
     //-----------------------------------------------------------------------------

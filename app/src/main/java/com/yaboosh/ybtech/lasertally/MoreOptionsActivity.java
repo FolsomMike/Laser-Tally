@@ -145,7 +145,9 @@ public class MoreOptionsActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MoreOptionsActivity::focusView
+    // MoreOptionsActivity::focusChanged
+    //
+    // Called when the focus changes from one view to another.
     //
     // Scrolls to the top of the scrollview if the view in focus is the first item
     // in the array.
@@ -158,9 +160,7 @@ public class MoreOptionsActivity extends StandardActivity {
     //
 
     @Override
-    protected void focusView(View pView) {
-
-        super.focusView(pView);
+    protected void focusChanged() {
 
         //WIP HSS// -- wtf is this?????
         final ScrollView sv = (ScrollView)findViewById(R.id.optionsScrollView);
@@ -190,7 +190,7 @@ public class MoreOptionsActivity extends StandardActivity {
         }
 
 
-    }//end of MoreOptionsActivity::focusView
+    }//end of MoreOptionsActivity::focusChanged
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -203,7 +203,7 @@ public class MoreOptionsActivity extends StandardActivity {
     protected void handleF3KeyPressed() {
 
         Button okButton = (Button) findViewById(R.id.okButton);
-        if (okButton != null && okButton.isEnabled()) { okButton.performClick(); }
+        if (okButton != null && okButton.isEnabled()) { performClickOnView(okButton); }
 
     }//end of MoreOptionsActivity::handleF3KeyPressed
     //-----------------------------------------------------------------------------

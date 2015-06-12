@@ -176,7 +176,7 @@ public class TallyDeviceScanActivity extends StandardActivity {
     @Override
     protected void handleF3KeyPressed() {
 
-        if (viewInFocus != null) { viewInFocus.performClick(); }
+        if (viewInFocus != null) { performClickOnView(viewInFocus); }
 
     }//end of TallyDeviceScanActivity::handleF3KeyPressed
     //-----------------------------------------------------------------------------

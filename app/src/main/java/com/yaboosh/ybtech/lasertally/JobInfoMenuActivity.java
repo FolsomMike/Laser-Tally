@@ -125,7 +125,7 @@ public class JobInfoMenuActivity extends StandardActivity {
     @Override
     protected void handleF3KeyPressed() {
 
-        if (viewInFocus != null) { viewInFocus.performClick(); }
+        if (viewInFocus != null) { performClickOnView(viewInFocus); }
 
     }//end of JobInfoMenuActivity::handleF3KeyPressed
     //-----------------------------------------------------------------------------

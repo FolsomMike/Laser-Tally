@@ -27,6 +27,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -166,40 +167,23 @@ public class EditJobActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // EditJobActivity::focusView
+    // EditJobActivity::focusChanged
     //
-    // Changes the backgrounds of all the non-focused EditTexts in the focus array
-    // to the black_border drawable.
+    // Called when the focus changes from one view to another.
     //
-    // The focused EditText's background color is changed to the blue_border
-    // drawable.
+    // Scrolls to the top of the scrollview if the view in focus is the first
+    // EditText.
     //
-    // We have to manually handle the changing of backgrounds because Android
-    // has issues the state options ("state_focused", etc.) has issues when
-    // it comes to focusing; it doesn't always work.
+    // Scrolls to the bottom of the scrollview if the view in focus is the last
+    // EditText.
+    //
+    // This is done because when the user is using the keyboard for navigation, the
+    // last and first EditTexts are are not fully brought into view.
     //
 
     @Override
-    protected void focusView(View pView) {
+    protected void focusChanged() {
 
-        super.focusView(pView);
-
-        for (View v : focusArray) {
-            Drawable d = getResources().getDrawable(R.drawable.black_border);
-            if (v == viewInFocus) { d = getResources().getDrawable(R.drawable.blue_border); }
-            v.setBackground(d);
-        }
-
-        // Scrolls to the top of the scrollview if the
-        // view in focus is the first EditText.
-        //
-        // Scrolls to the bottom of the scrollview if the
-        // view in focus is the last EditText.
-        //
-        // This is done because when the user is using
-        // the keyboard for navigation, the last and
-        // first EditTexts are are not fully brought into
-        // view.
         final ScrollView sv = (ScrollView)findViewById(R.id.jobInfoScrollView);
 
         int index = focusArray.indexOf(viewInFocus);
@@ -220,8 +204,7 @@ public class EditJobActivity extends StandardActivity {
             });
         }
 
-
-    }//end of EditJobActivity::focusView
+    }//end of EditJobActivity::focusChanged
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -248,7 +231,7 @@ public class EditJobActivity extends StandardActivity {
     @Override
     protected void handleF3KeyPressed() {
 
-        if (okButton != null && okButton.isEnabled()) { okButton.performClick(); }
+        if (okButton != null && okButton.isEnabled()) { performClickOnView(okButton); }
 
     }//end of EditJobActivity::handleF3KeyPressed
     //-----------------------------------------------------------------------------

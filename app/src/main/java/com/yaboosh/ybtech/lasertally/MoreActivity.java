@@ -103,7 +103,7 @@ public class MoreActivity extends StandardActivity {
     @Override
     protected void handleF3KeyPressed() {
 
-        if (viewInFocus != null) { viewInFocus.performClick(); }
+        if (viewInFocus != null) { performClickOnView(viewInFocus); }
 
     }//end of MoreActivity::handleF3KeyPressed
     //-----------------------------------------------------------------------------

@@ -25,11 +25,14 @@ package com.yaboosh.ybtech.lasertally;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -53,6 +56,7 @@ public class StandardActivity extends Activity {
     protected ArrayList<View> focusArray = new ArrayList<View>();
     protected int startingIndexOfFocusArray = 0;
     protected View viewInFocus;
+
 
     //-----------------------------------------------------------------------------
     // StandardActivity::onCreate
@@ -120,6 +124,28 @@ public class StandardActivity extends Activity {
     public void onBackPressed() {
 
     }//end of StandardActivity::onBackPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // StandardActivity::onConfigurationChange
+    //
+    // Automatically called when a configuration change occurs.
+    //
+    // NOTE: Will only be called for configuration changes that were declared
+    //          to be handled by this activity in the manifest.
+    //
+
+    @Override
+    public void onConfigurationChanged(Configuration pNewConfig) {
+
+        super.onConfigurationChanged(pNewConfig);
+
+        if (pNewConfig.keyboard == Configuration.HARDKEYBOARDHIDDEN_NO) {
+            //keyboard has been unplugged
+            if (viewInFocus instanceof Button) { clearFocus(); }
+        }
+
+    }//end of StandardActivity::onConfigurationChange
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -198,6 +224,26 @@ public class StandardActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // StandardActivity::clearFocus
+    //
+    // Clears the focus of the view in focus.
+    //
+
+    private void clearFocus() {
+
+        if (viewInFocus == null) { return; }
+
+        try {  viewInFocus.clearFocus(); }
+        catch (Exception e) { Log.e(LOG_TAG, "Line 478 :: " + e.getMessage()); }
+
+        viewInFocus = null;
+
+        focusChanged();
+
+    }//end of StandardActivity::clearFocus
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // StandardActivity::createUiChangeListener
     //
     // Listens for visibility changes in the ui.
@@ -233,6 +279,17 @@ public class StandardActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // StandardActivity::focusChanged
+    //
+    // Called when the focus changes from one view to another.
+    //
+
+    protected void focusChanged() {
+
+    }//end of StandardActivity::focusChanged
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // StandardActivity::focusView
     //
     // Sets the focus of the activity to the passed in view.
@@ -249,6 +306,8 @@ public class StandardActivity extends Activity {
             Log.e(LOG_TAG, "Line 249 :: " + e.getMessage());
             viewInFocus = null;
         }
+
+        focusChanged();
 
     }//end of StandardActivity::focusView
     //-----------------------------------------------------------------------------
@@ -402,6 +461,22 @@ public class StandardActivity extends Activity {
     protected void handleF3KeyPressed() {
 
     }//end of StandardActivity::handleF3KeyPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // StandardActivity::performClickOnView
+    //
+    // Performs a click on the passed in view.
+    //
+
+    protected void performClickOnView(View pView) {
+
+        if (pView == null) { return; }
+
+        try {  pView.performClick(); }
+        catch (Exception e) { Log.e(LOG_TAG, "Line 477 :: " + e.getMessage()); }
+
+    }//end of StandardActivity::performClickOnView
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

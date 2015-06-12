@@ -150,7 +150,9 @@ public class JobDisplayActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobDisplayActivity::focusView
+    // CreateJobActivity::focusChanged
+    //
+    // Called when the focus changes from one view to another.
     //
     // Changes the background color of all the non-focused TableRows in the focus
     // array to measurementsTableColor. The focused TableRow's background
@@ -165,9 +167,7 @@ public class JobDisplayActivity extends StandardActivity {
     //
 
     @Override
-    protected void focusView(View pView) {
-
-        super.focusView(pView);
+    protected void focusChanged() {
 
         for (View v : focusArray) {
             int c = getResources().getColor(R.color.measurementsTableColor);
@@ -186,7 +186,7 @@ public class JobDisplayActivity extends StandardActivity {
             scrollToBottomOfMeasurementsTable();
         }
 
-    }//end of JobDisplayActivity::focusView
+    }//end of CreateJobActivity::focusChanged
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -198,7 +198,7 @@ public class JobDisplayActivity extends StandardActivity {
     @Override
     protected void handleEscapeKeyPressed() {
 
-        redoButton.performClick();
+        performClickOnView(redoButton);
 
     }//end of JobDisplayActivity::handleEscapeKeyPressed
     //-----------------------------------------------------------------------------
@@ -212,7 +212,7 @@ public class JobDisplayActivity extends StandardActivity {
     @Override
     protected void handleF2KeyPressed() {
 
-        measureConnectButton.performClick();
+        performClickOnView(measureConnectButton);
 
     }//end of JobDisplayActivity::handleF2KeyPressed
     //-----------------------------------------------------------------------------
@@ -226,7 +226,7 @@ public class JobDisplayActivity extends StandardActivity {
     @Override
     protected void handleF3KeyPressed() {
 
-        viewInFocus.performClick();
+        performClickOnView(viewInFocus);
 
     }//end of JobDisplayActivity::handleF3KeyPressed
     //-----------------------------------------------------------------------------

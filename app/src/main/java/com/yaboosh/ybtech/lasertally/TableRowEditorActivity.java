@@ -124,7 +124,7 @@ public class TableRowEditorActivity extends StandardActivity {
     protected void handleF3KeyPressed() {
 
         Button okButton = (Button) findViewById(R.id.okButton);
-        if (okButton != null) { okButton.performClick(); }
+        if (okButton != null && okButton.isEnabled()) { performClickOnView(okButton); }
 
     }//end of TableRowEditorActivity::handleF3KeyPressed
     //-----------------------------------------------------------------------------

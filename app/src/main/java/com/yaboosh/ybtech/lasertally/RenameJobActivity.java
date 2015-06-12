@@ -133,7 +133,7 @@ public class RenameJobActivity extends StandardActivity {
     protected void handleF3KeyPressed() {
 
         Button okButton = (Button) findViewById(R.id.okButton);
-        if (okButton != null) { okButton.performClick(); }
+        if (okButton != null && okButton.isEnabled()) { performClickOnView(viewInFocus); }
 
     }//end of RenameJobActivity::handleF3KeyPressed
     //-----------------------------------------------------------------------------

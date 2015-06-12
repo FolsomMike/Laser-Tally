@@ -115,7 +115,7 @@ public class MainActivity extends StandardActivity {
     @Override
     protected void handleF3KeyPressed() {
 
-        if (viewInFocus != null) { viewInFocus.performClick(); }
+        if (viewInFocus != null) { performClickOnView(viewInFocus); }
 
     }//end of MainActivity::handleF3KeyPressed
     //-----------------------------------------------------------------------------
