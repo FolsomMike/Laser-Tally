@@ -120,17 +120,21 @@ public class TallyDeviceScanActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyDeviceScanActivity::handleF3KeyPressed
+    // TallyDeviceScanActivity::onResume
     //
-    // If a view is in focus, perform a click on that view.
+    // Automatically called upon activity resume.
+    //
+    // All functions that must be done upon activity resume should be called here.
     //
 
     @Override
-    protected void handleF3KeyPressed() {
+    protected void onResume() {
 
-        if (viewInFocus != null) { viewInFocus.performClick(); }
+        super.onResume();
 
-    }//end of TallyDeviceScanActivity::handleF3KeyPressed
+        bindService(serviceIntent, connection, BIND_AUTO_CREATE);
+
+    }//end of TallyDeviceScanActivity::onResume
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -143,8 +147,6 @@ public class TallyDeviceScanActivity extends StandardActivity {
 
     @Override
     protected void onPause() {
-
-        super.onPause();
 
         try { unbindService(connection); } catch (Exception e) {}
 
@@ -160,20 +162,23 @@ public class TallyDeviceScanActivity extends StandardActivity {
 
         } catch (Exception e) { service = null; }
 
+        super.onPause();
+
     }//end of TallyDeviceScanActivity::onPause
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyDeviceScanActivity::performOnResumeActivitySpecificActions
+    // TallyDeviceScanActivity::handleF3KeyPressed
     //
-    // All functions that must be done upon activity resume should be called here.
+    // If a view is in focus, perform a click on that view.
     //
 
-    protected void performOnResumeActivitySpecificActions() {
+    @Override
+    protected void handleF3KeyPressed() {
 
-        bindService(serviceIntent, connection, BIND_AUTO_CREATE);
+        if (viewInFocus != null) { viewInFocus.performClick(); }
 
-    }//end of TallyDeviceScanActivity::performOnResumeActivitySpecificActions
+    }//end of TallyDeviceScanActivity::handleF3KeyPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

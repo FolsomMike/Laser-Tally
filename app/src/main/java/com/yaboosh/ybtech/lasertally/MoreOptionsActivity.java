@@ -125,7 +125,27 @@ public class MoreOptionsActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MoreOptionsActivity::performActivitySpecificActionsForFocusChange
+    // MoreOptionsActivity::onResume
+    //
+    // Automatically called upon activity resume.
+    //
+    // All functions that must be done upon activity resume should be called here.
+    //
+
+    @Override
+    protected void onResume() {
+
+        super.onResume();
+
+        setSwitchUnitSystemButtonText();
+        setMaxAndMinEditTextFields();
+        setCalibrationValueEditTextField();
+
+    }//end of MoreOptionsActivity::onResume
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MoreOptionsActivity::focusView
     //
     // Scrolls to the top of the scrollview if the view in focus is the first item
     // in the array.
@@ -138,8 +158,11 @@ public class MoreOptionsActivity extends StandardActivity {
     //
 
     @Override
-    protected void performActivitySpecificActionsForFocusChange() {
+    protected void focusView(View pView) {
 
+        super.focusView(pView);
+
+        //WIP HSS// -- wtf is this?????
         final ScrollView sv = (ScrollView)findViewById(R.id.optionsScrollView);
         sv.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -157,8 +180,7 @@ public class MoreOptionsActivity extends StandardActivity {
                     sv.fullScroll(View.FOCUS_UP);
                 }
             });
-        }
-        else if (index == (focusArray.size()-1)) {
+        } else if (index == (focusArray.size() - 1)) {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -168,7 +190,7 @@ public class MoreOptionsActivity extends StandardActivity {
         }
 
 
-    }//end of MoreOptionsActivity::performActivitySpecificActionsForFocusChange
+    }//end of MoreOptionsActivity::focusView
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -187,57 +209,48 @@ public class MoreOptionsActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MoreOptionsActivity::performOnResumeActivitySpecificActions
+    // MoreOptionsActivity::onSaveInstanceState
     //
-    // All actions that must be done upon activity resume should be done here.
-    //
-
-    @Override
-    protected void performOnResumeActivitySpecificActions() {
-
-        setSwitchUnitSystemButtonText();
-        setMaxAndMinEditTextFields();
-        setCalibrationValueEditTextField();
-
-    }//end of MoreOptionsActivity::performOnResumeActivitySpecificActions
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // MoreOptionsActivity::restoreActivitySpecificValuesFromSavedInstance
-    //
-    // Restores values using the passed in saved instance.
+    // As the activity begins to stop, the system calls onSaveInstanceState()
+    // so the activity can save state information with a collection of key-value
+    // pairs. This functions is overridden so that additional state information can
+    // be saved.
     //
 
     @Override
-    protected void restoreActivitySpecificValuesFromSavedInstance(Bundle pSavedInstanceState) {
+    public void onSaveInstanceState(Bundle pSavedInstanceState) {
 
-        calValue = pSavedInstanceState.getString(CAL_VALUE_KEY);
-        maxAllowed = pSavedInstanceState.getString(MAX_ALLOWED_KEY);
-        minAllowed = pSavedInstanceState.getString(MIN_ALLOWED_KEY);
-        unitSystem = pSavedInstanceState.getString(UNIT_SYSTEM_KEY);
-
-    }//end of MoreOptionsActivity::restoreActivitySpecificValuesFromSavedInstance
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // MoreOptionsActivity::storeActivitySpecificValuesFromSavedInstance
-    //
-    // Stores activity specific values in the passed in saved instance.
-    //
-
-    @Override
-    protected void storeActivitySpecificValuesToSavedInstance(Bundle pSavedInstanceState) {
+        super.onSaveInstanceState(pSavedInstanceState);
 
         pSavedInstanceState.putString(CAL_VALUE_KEY, getCalibrationValue());
         pSavedInstanceState.putString(MAX_ALLOWED_KEY, getMaximumAllowed());
         pSavedInstanceState.putString(MIN_ALLOWED_KEY, getMinimumAllowed());
         pSavedInstanceState.putString(UNIT_SYSTEM_KEY, unitSystem);
 
-    }//end of MoreOptionsActivity::storeActivitySpecificValuesFromSavedInstance
+    }//end of MoreOptionsActivity::onSaveInstanceState
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MoreOptionsActivity::useActivitySpecificActivityStartUpValues
+    // MoreOptionsActivity::restoreValuesFromSavedInstance
+    //
+    // Restores values using the passed in saved instance.
+    //
+
+    @Override
+    protected void restoreValuesFromSavedInstance(Bundle pSavedInstanceState) {
+
+        super.restoreValuesFromSavedInstance(pSavedInstanceState);
+
+        calValue = pSavedInstanceState.getString(CAL_VALUE_KEY);
+        maxAllowed = pSavedInstanceState.getString(MAX_ALLOWED_KEY);
+        minAllowed = pSavedInstanceState.getString(MIN_ALLOWED_KEY);
+        unitSystem = pSavedInstanceState.getString(UNIT_SYSTEM_KEY);
+
+    }//end of MoreOptionsActivity::restoreValuesFromSavedInstance
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MoreOptionsActivity::useActivityStartUpValues
     //
     // Uses default values for variables.
     //
@@ -245,7 +258,9 @@ public class MoreOptionsActivity extends StandardActivity {
     //
 
     @Override
-    protected void useActivitySpecificActivityStartUpValues() {
+    protected void useActivityStartUpValues() {
+
+        super.useActivityStartUpValues();
 
         unitSystem = sharedSettings.getUnitSystem();
 
@@ -262,7 +277,7 @@ public class MoreOptionsActivity extends StandardActivity {
             minAllowed = sharedSettings.getMinimumMetricMeasurementAllowed();
         }
 
-    }//end of MoreOptionsActivity::useActivitySpecificActivityStartUpValues
+    }//end of MoreOptionsActivity::useActivityStartUpValues
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

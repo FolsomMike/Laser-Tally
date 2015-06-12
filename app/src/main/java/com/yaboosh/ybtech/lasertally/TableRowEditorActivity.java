@@ -130,28 +130,18 @@ public class TableRowEditorActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TableRowEditorActivity::restoreActivitySpecificValuesFromSavedInstance
+    // TableRowEditorActivity::onSaveInstanceState
     //
-    // Restores values using the passed in saved instance.
-    //
-
-    @Override
-    protected void restoreActivitySpecificValuesFromSavedInstance(Bundle pSavedInstanceState) {
-
-        pipeNumber = pSavedInstanceState.getString(PIPE_NUMBER_KEY);
-        totalLength = pSavedInstanceState.getString(TOTAL_LENGTH_KEY);
-
-    }//end of TableRowEditorActivity::restoreActivitySpecificValuesFromSavedInstance
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // TableRowEditorActivity::storeActivitySpecificValuesFromSavedInstance
-    //
-    // Stores activity specific values in the passed in saved instance.
+    // As the activity begins to stop, the system calls onSaveInstanceState()
+    // so the activity can save state information with a collection of key-value
+    // pairs. This functions is overridden so that additional state information can
+    // be saved.
     //
 
     @Override
-    protected void storeActivitySpecificValuesToSavedInstance(Bundle pSavedInstanceState) {
+    public void onSaveInstanceState(Bundle pSavedInstanceState) {
+
+        super.onSaveInstanceState(pSavedInstanceState);
 
         getAndStoreInfoFromUserInput();
 
@@ -159,11 +149,28 @@ public class TableRowEditorActivity extends StandardActivity {
         pSavedInstanceState.putString(PIPE_NUMBER_KEY, pipeNumber);
         pSavedInstanceState.putString(TOTAL_LENGTH_KEY, totalLength);
 
-    }//end of TableRowEditorActivity::storeActivitySpecificValuesFromSavedInstance
+    }//end of TableRowEditorActivity::onSaveInstanceState
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TableRowEditorActivity::useActivitySpecificActivityStartUpValues
+    // TableRowEditorActivity::restoreValuesFromSavedInstance
+    //
+    // Restores values using the passed in saved instance.
+    //
+
+    @Override
+    protected void restoreValuesFromSavedInstance(Bundle pSavedInstanceState) {
+
+        super.restoreValuesFromSavedInstance(pSavedInstanceState);
+
+        pipeNumber = pSavedInstanceState.getString(PIPE_NUMBER_KEY);
+        totalLength = pSavedInstanceState.getString(TOTAL_LENGTH_KEY);
+
+    }//end of TableRowEditorActivity::restoreValuesFromSavedInstance
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TableRowEditorActivity::useActivityStartUpValues
     //
     // Uses activity start up values for variables.
     //
@@ -171,7 +178,9 @@ public class TableRowEditorActivity extends StandardActivity {
     //
 
     @Override
-    protected void useActivitySpecificActivityStartUpValues() {
+    protected void useActivityStartUpValues() {
+
+        super.useActivityStartUpValues();
 
         //Get the pipe number and total length
         //sent to this activity from its parent
@@ -179,7 +188,7 @@ public class TableRowEditorActivity extends StandardActivity {
         pipeNumber = bundle.getString(PIPE_NUMBER_KEY);
         totalLength = bundle.getString(TOTAL_LENGTH_KEY);
 
-    }//end of TableRowEditorActivity::useActivitySpecificActivityStartUpValues
+    }//end of TableRowEditorActivity::useActivityStartUpValues
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

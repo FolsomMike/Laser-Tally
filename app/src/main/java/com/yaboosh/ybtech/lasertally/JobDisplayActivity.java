@@ -21,6 +21,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -124,7 +125,7 @@ public class JobDisplayActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobDisplayActivity::performActivitySpecificActionsForFocusChange
+    // JobDisplayActivity::focusView
     //
     // Changes the background color of all the non-focused TableRows in the focus
     // array to measurementsTableColor. The focused TableRow's background
@@ -139,7 +140,9 @@ public class JobDisplayActivity extends StandardActivity {
     //
 
     @Override
-    protected void performActivitySpecificActionsForFocusChange() {
+    protected void focusView(View pView) {
+
+        super.focusView(pView);
 
         for (View v : focusArray) {
             int c = getResources().getColor(R.color.measurementsTableColor);
@@ -158,7 +161,7 @@ public class JobDisplayActivity extends StandardActivity {
             scrollToBottomOfMeasurementsTable();
         }
 
-    }//end of JobDisplayActivity::performActivitySpecificActionsForFocusChange
+    }//end of JobDisplayActivity::focusView
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -222,6 +225,24 @@ public class JobDisplayActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // JobDisplayActivity::onResume
+    //
+    // Automatically called upon activity resume.
+    //
+    // All functions that must be done upon activity resume should be called here.
+    //
+
+    @Override
+    protected void onResume() {
+
+        super.onResume();
+
+        bindService(serviceIntent, connection, BIND_AUTO_CREATE);
+
+    }//end of JobDisplayActivity::onResume
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // JobDisplayActivity::onPause
     //
     // Automatically called when the activity is paused when it does not have
@@ -232,8 +253,6 @@ public class JobDisplayActivity extends StandardActivity {
 
     @Override
     protected void onPause() {
-
-        super.onPause();
 
         try { unbindService(connection); } catch (Exception e) {}
 
@@ -249,21 +268,9 @@ public class JobDisplayActivity extends StandardActivity {
 
         } catch (Exception e) { service = null; }
 
+        super.onPause();
+
     }//end of JobDisplayActivity::onPause
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobDisplayActivity::performOnResumeActivitySpecificActions
-    //
-    // All functions that must be done upon activity resume should be called here.
-    //
-
-    @Override
-    protected void performOnResumeActivitySpecificActions() {
-
-        bindService(serviceIntent, connection, BIND_AUTO_CREATE);
-
-    }//end of JobDisplayActivity::performOnResumeActivitySpecificActions
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

@@ -126,7 +126,25 @@ public class EditJobActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // CreateJobActivity::onDestroy
+    // EditJobActivity::onResume
+    //
+    // Automatically called upon activity resume.
+    //
+    // All functions that must be done upon activity resume should be called here.
+    //
+
+    @Override
+    protected void onResume() {
+
+        super.onResume();
+
+        putJobInfoIntoLayout();
+
+    }//end of EditJobActivity::onResume
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // EditJobActivity::onDestroy
     //
     // Automatically called when the activity is destroyed.
     //
@@ -144,7 +162,66 @@ public class EditJobActivity extends StandardActivity {
 
         super.onDestroy();
 
-    }//end of CreateJobActivity::onDestroy
+    }//end of EditJobActivity::onDestroy
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // EditJobActivity::focusView
+    //
+    // Changes the backgrounds of all the non-focused EditTexts in the focus array
+    // to the black_border drawable.
+    //
+    // The focused EditText's background color is changed to the blue_border
+    // drawable.
+    //
+    // We have to manually handle the changing of backgrounds because Android
+    // has issues the state options ("state_focused", etc.) has issues when
+    // it comes to focusing; it doesn't always work.
+    //
+
+    @Override
+    protected void focusView(View pView) {
+
+        super.focusView(pView);
+
+        for (View v : focusArray) {
+            Drawable d = getResources().getDrawable(R.drawable.black_border);
+            if (v == viewInFocus) { d = getResources().getDrawable(R.drawable.blue_border); }
+            v.setBackground(d);
+        }
+
+        // Scrolls to the top of the scrollview if the
+        // view in focus is the first EditText.
+        //
+        // Scrolls to the bottom of the scrollview if the
+        // view in focus is the last EditText.
+        //
+        // This is done because when the user is using
+        // the keyboard for navigation, the last and
+        // first EditTexts are are not fully brought into
+        // view.
+        final ScrollView sv = (ScrollView)findViewById(R.id.jobInfoScrollView);
+
+        int index = focusArray.indexOf(viewInFocus);
+        if (index == 0) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    sv.fullScroll(View.FOCUS_UP);
+                }
+            });
+        }
+        else if (index == (focusArray.size()-1)) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    sv.fullScroll(View.FOCUS_DOWN);
+                }
+            });
+        }
+
+
+    }//end of EditJobActivity::focusView
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -195,110 +272,18 @@ public class EditJobActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // EditJobActivity::performActivitySpecificActionsForFocusChange
+    // EditJobActivity::onSaveInstanceState
     //
-    // Changes the backgrounds of all the non-focused EditTexts in the focus array
-    // to the black_border drawable.
-    //
-    // The focused EditText's background color is changed to the blue_border
-    // drawable.
-    //
-    // We have to manually handle the changing of backgrounds because Android
-    // has issues the state options ("state_focused", etc.) has issues when
-    // it comes to focusing; it doesn't always work.
+    // As the activity begins to stop, the system calls onSaveInstanceState()
+    // so the activity can save state information with a collection of key-value
+    // pairs. This functions is overridden so that additional state information can
+    // be saved.
     //
 
     @Override
-    protected void performActivitySpecificActionsForFocusChange() {
+    public void onSaveInstanceState(Bundle pSavedInstanceState) {
 
-        for (View v : focusArray) {
-            Drawable d = getResources().getDrawable(R.drawable.black_border);
-            if (v == viewInFocus) { d = getResources().getDrawable(R.drawable.blue_border); }
-            v.setBackground(d);
-        }
-
-        // Scrolls to the top of the scrollview if the
-        // view in focus is the first EditText.
-        //
-        // Scrolls to the bottom of the scrollview if the
-        // view in focus is the last EditText.
-        //
-        // This is done because when the user is using
-        // the keyboard for navigation, the last and
-        // first EditTexts are are not fully brought into
-        // view.
-        final ScrollView sv = (ScrollView)findViewById(R.id.jobInfoScrollView);
-
-        int index = focusArray.indexOf(viewInFocus);
-        if (index == 0) {
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    sv.fullScroll(View.FOCUS_UP);
-                }
-            });
-        }
-        else if (index == (focusArray.size()-1)) {
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    sv.fullScroll(View.FOCUS_DOWN);
-                }
-            });
-        }
-
-
-    }//end of EditJobActivity::performActivitySpecificActionsForFocusChange
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // EditJobActivity::performOnResumeActivitySpecificActions
-    //
-    // All actions that must be done upon activity resume should be done here.
-    //
-
-    @Override
-    protected void performOnResumeActivitySpecificActions() {
-
-        putJobInfoIntoLayout();
-
-    }//end of EditJobActivity::performOnResumeActivitySpecificActions
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // EditJobActivity::restoreActivitySpecificValuesFromSavedInstance
-    //
-    // Restores values using the passed in saved instance.
-    //
-
-    @Override
-    protected void restoreActivitySpecificValuesFromSavedInstance(Bundle pSavedInstanceState) {
-
-        companyName = pSavedInstanceState.getString(COMPANY_NAME_KEY);
-        date = pSavedInstanceState.getString(DATE_KEY);
-        diameter = pSavedInstanceState.getString(DIAMETER_KEY);
-        facility = pSavedInstanceState.getString(FACILITY_KEY);
-        grade = pSavedInstanceState.getString(GRADE_KEY);
-        imperialAdjustment = pSavedInstanceState.getString(IMPERIAL_ADJUSTMENT_KEY);
-        imperialTallyGoal = pSavedInstanceState.getString(IMPERIAL_TALLY_GOAL_KEY);
-        metricAdjustment = pSavedInstanceState.getString(METRIC_ADJUSTMENT_KEY);
-        metricTallyGoal = pSavedInstanceState.getString(METRIC_TALLY_GOAL_KEY);
-        rack = pSavedInstanceState.getString(RACK_KEY);
-        range = pSavedInstanceState.getString(RANGE_KEY);
-        rig = pSavedInstanceState.getString(RIG_KEY);
-        wall = pSavedInstanceState.getString(WALL_KEY);
-
-    }//end of EditJobActivity::restoreActivitySpecificValuesFromSavedInstance
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // EditJobActivity::storeActivitySpecificValuesFromSavedInstance
-    //
-    // Stores activity specific values in the passed in saved instance.
-    //
-
-    @Override
-    protected void storeActivitySpecificValuesToSavedInstance(Bundle pSavedInstanceState) {
+        super.onSaveInstanceState(pSavedInstanceState);
 
         getAndStoreJobInfoFromUserInput();
 
@@ -317,11 +302,39 @@ public class EditJobActivity extends StandardActivity {
         pSavedInstanceState.putString(RIG_KEY, rig);
         pSavedInstanceState.putString(WALL_KEY, wall);
 
-    }//end of EditJobActivity::storeActivitySpecificValuesFromSavedInstance
+    }//end of EditJobActivity::onSaveInstanceState
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // EditJobActivity::useActivitySpecificActivityStartUpValues
+    // EditJobActivity::restoreValuesFromSavedInstance
+    //
+    // Restores values using the passed in saved instance.
+    //
+
+    @Override
+    protected void restoreValuesFromSavedInstance(Bundle pSavedInstanceState) {
+
+        super.restoreValuesFromSavedInstance(pSavedInstanceState);
+
+        companyName = pSavedInstanceState.getString(COMPANY_NAME_KEY);
+        date = pSavedInstanceState.getString(DATE_KEY);
+        diameter = pSavedInstanceState.getString(DIAMETER_KEY);
+        facility = pSavedInstanceState.getString(FACILITY_KEY);
+        grade = pSavedInstanceState.getString(GRADE_KEY);
+        imperialAdjustment = pSavedInstanceState.getString(IMPERIAL_ADJUSTMENT_KEY);
+        imperialTallyGoal = pSavedInstanceState.getString(IMPERIAL_TALLY_GOAL_KEY);
+        metricAdjustment = pSavedInstanceState.getString(METRIC_ADJUSTMENT_KEY);
+        metricTallyGoal = pSavedInstanceState.getString(METRIC_TALLY_GOAL_KEY);
+        rack = pSavedInstanceState.getString(RACK_KEY);
+        range = pSavedInstanceState.getString(RANGE_KEY);
+        rig = pSavedInstanceState.getString(RIG_KEY);
+        wall = pSavedInstanceState.getString(WALL_KEY);
+
+    }//end of EditJobActivity::restoreValuesFromSavedInstance
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // EditJobActivity::useActivityStartUpValues
     //
     // Uses activity start up values for variables.
     //
@@ -329,11 +342,13 @@ public class EditJobActivity extends StandardActivity {
     //
 
     @Override
-    protected void useActivitySpecificActivityStartUpValues() {
+    protected void useActivityStartUpValues() {
+
+        super.useActivityStartUpValues();
 
         getJobInfoFromHandler();
 
-    }//end of EditJobActivity::useActivitySpecificActivityStartUpValues
+    }//end of EditJobActivity::useActivityStartUpValues
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

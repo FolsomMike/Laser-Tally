@@ -166,39 +166,7 @@ public class CreateJobActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // CreateJobActivity::handleF3KeyPressed
-    //
-    // Perform a click on the ok button.
-    //
-
-    @Override
-    protected void handleF3KeyPressed() {
-
-        if (okButton != null && okButton.isEnabled()) { okButton.performClick(); }
-
-    }//end of CreateJobActivity::handleF3KeyPressed
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // CreateJobActivity::onActivityResult
-    //
-    // Listens for activity results and decides what actions to take depending on
-    // their request and result codes.
-    //
-
-    @Override
-    public void onActivityResult(int pRequestCode, int pResultCode, Intent pData)
-    {
-
-        if (pRequestCode == Keys.ACTIVITY_RESULT_JOB_INFO_MENU) {
-            if (pResultCode == RESULT_OK) { handleJobInfoMenuActivityResultOk(pData); }
-        }
-
-    }//end of CreateJobActivity::onActivityResult
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // CreateJobActivity::performActivitySpecificActionsForFocusChange
+    // CreateJobActivity::focusView
     //
     // Changes the backgrounds of all the non-focused EditTexts in the focus array
     // to the black_border drawable.
@@ -212,7 +180,9 @@ public class CreateJobActivity extends StandardActivity {
     //
 
     @Override
-    protected void performActivitySpecificActionsForFocusChange() {
+    protected void focusView(View pView) {
+
+        super.focusView(pView);
 
         for (View v : focusArray) {
             Drawable d = getResources().getDrawable(R.drawable.black_border);
@@ -251,44 +221,54 @@ public class CreateJobActivity extends StandardActivity {
         }
 
 
-    }//end of CreateJobActivity::performActivitySpecificActionsForFocusChange
+    }//end of CreateJobActivity::focusView
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // CreateJobActivity::restoreActivitySpecificValuesFromSavedInstance
+    // CreateJobActivity::handleF3KeyPressed
     //
-    // Restores values using the passed in saved instance.
-    //
-
-    @Override
-    protected void restoreActivitySpecificValuesFromSavedInstance(Bundle pSavedInstanceState) {
-
-        companyName = pSavedInstanceState.getString(COMPANY_NAME_KEY);
-        date = pSavedInstanceState.getString(DATE_KEY);
-        diameter = pSavedInstanceState.getString(DIAMETER_KEY);
-        facility = pSavedInstanceState.getString(FACILITY_KEY);
-        grade = pSavedInstanceState.getString(GRADE_KEY);
-        imperialAdjustment = pSavedInstanceState.getString(IMPERIAL_ADJUSTMENT_KEY);
-        imperialTallyGoal = pSavedInstanceState.getString(IMPERIAL_TALLY_GOAL_KEY);
-        jobName = pSavedInstanceState.getString(JOB_KEY);
-        metricAdjustment = pSavedInstanceState.getString(METRIC_ADJUSTMENT_KEY);
-        metricTallyGoal = pSavedInstanceState.getString(METRIC_TALLY_GOAL_KEY);
-        rack = pSavedInstanceState.getString(RACK_KEY);
-        range = pSavedInstanceState.getString(RANGE_KEY);
-        rig = pSavedInstanceState.getString(RIG_KEY);
-        wall = pSavedInstanceState.getString(WALL_KEY);
-
-    }//end of CreateJobActivity::restoreActivitySpecificValuesFromSavedInstance
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // CreateJobActivity::storeActivitySpecificValuesFromSavedInstance
-    //
-    // Stores activity specific values in the passed in saved instance.
+    // Perform a click on the ok button.
     //
 
     @Override
-    protected void storeActivitySpecificValuesToSavedInstance(Bundle pSavedInstanceState) {
+    protected void handleF3KeyPressed() {
+
+        if (okButton != null && okButton.isEnabled()) { okButton.performClick(); }
+
+    }//end of CreateJobActivity::handleF3KeyPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // CreateJobActivity::onActivityResult
+    //
+    // Listens for activity results and decides what actions to take depending on
+    // their request and result codes.
+    //
+
+    @Override
+    public void onActivityResult(int pRequestCode, int pResultCode, Intent pData)
+    {
+
+        if (pRequestCode == Keys.ACTIVITY_RESULT_JOB_INFO_MENU) {
+            if (pResultCode == RESULT_OK) { handleJobInfoMenuActivityResultOk(pData); }
+        }
+
+    }//end of CreateJobActivity::onActivityResult
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // CreateJobActivity::onSaveInstanceState
+    //
+    // As the activity begins to stop, the system calls onSaveInstanceState()
+    // so the activity can save state information with a collection of key-value
+    // pairs. This functions is overridden so that additional state information can
+    // be saved.
+    //
+
+    @Override
+    public void onSaveInstanceState(Bundle pSavedInstanceState) {
+
+        super.onSaveInstanceState(pSavedInstanceState);
 
         getAndStoreJobInfoFromUserInput();
 
@@ -308,7 +288,36 @@ public class CreateJobActivity extends StandardActivity {
         pSavedInstanceState.putString(RIG_KEY, rig);
         pSavedInstanceState.putString(WALL_KEY, wall);
 
-    }//end of CreateJobActivity::storeActivitySpecificValuesFromSavedInstance
+    }//end of CreateJobActivity::onSaveInstanceState
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // CreateJobActivity::restoreValuesFromSavedInstance
+    //
+    // Restores values using the passed in saved instance.
+    //
+
+    @Override
+    protected void restoreValuesFromSavedInstance(Bundle pSavedInstanceState) {
+
+        super.restoreValuesFromSavedInstance(pSavedInstanceState);
+
+        companyName = pSavedInstanceState.getString(COMPANY_NAME_KEY);
+        date = pSavedInstanceState.getString(DATE_KEY);
+        diameter = pSavedInstanceState.getString(DIAMETER_KEY);
+        facility = pSavedInstanceState.getString(FACILITY_KEY);
+        grade = pSavedInstanceState.getString(GRADE_KEY);
+        imperialAdjustment = pSavedInstanceState.getString(IMPERIAL_ADJUSTMENT_KEY);
+        imperialTallyGoal = pSavedInstanceState.getString(IMPERIAL_TALLY_GOAL_KEY);
+        jobName = pSavedInstanceState.getString(JOB_KEY);
+        metricAdjustment = pSavedInstanceState.getString(METRIC_ADJUSTMENT_KEY);
+        metricTallyGoal = pSavedInstanceState.getString(METRIC_TALLY_GOAL_KEY);
+        rack = pSavedInstanceState.getString(RACK_KEY);
+        range = pSavedInstanceState.getString(RANGE_KEY);
+        rig = pSavedInstanceState.getString(RIG_KEY);
+        wall = pSavedInstanceState.getString(WALL_KEY);
+
+    }//end of CreateJobActivity::restoreValuesFromSavedInstance
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -320,7 +329,9 @@ public class CreateJobActivity extends StandardActivity {
     //
 
     @Override
-    protected void useActivitySpecificActivityStartUpValues() {
+    protected void useActivityStartUpValues() {
+
+        super.useActivityStartUpValues();
 
         getJobInfoFromHandler();
 

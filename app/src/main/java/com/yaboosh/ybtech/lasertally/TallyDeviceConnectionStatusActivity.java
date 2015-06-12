@@ -112,6 +112,24 @@ public class TallyDeviceConnectionStatusActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // TallyDeviceConnectionStatusActivity::onResume
+    //
+    // Automatically called upon activity resume.
+    //
+    // All functions that must be done upon activity resume should be called here.
+    //
+
+    @Override
+    protected void onResume() {
+
+        super.onResume();
+
+        bindService(serviceIntent, connection, BIND_AUTO_CREATE);
+
+    }//end of TallyDeviceConnectionStatusActivity::onResume
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // TallyDeviceConnectionStatusActivity::handleEscapeKeyPressed
     //
     // This functions is overridden and left blank so that the user cannot use
@@ -151,20 +169,6 @@ public class TallyDeviceConnectionStatusActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyDeviceConnectionStatusActivity::performOnResumeActivitySpecificActions
-    //
-    // All actions that must be done upon activity resume should be done here.
-    //
-
-    @Override
-    protected void performOnResumeActivitySpecificActions() {
-
-        bindService(serviceIntent, connection, BIND_AUTO_CREATE);
-
-    }//end of TallyDeviceConnectionStatusActivity::performOnResumeActivitySpecificActions
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
     // TallyDeviceConnectionStatusActivity::onPause
     //
     // Automatically called when the activity is paused when it does not have
@@ -174,8 +178,6 @@ public class TallyDeviceConnectionStatusActivity extends StandardActivity {
 
     @Override
     protected void onPause() {
-
-        super.onPause();
 
         try { unbindService(connection); } catch (Exception e) {}
 
@@ -189,6 +191,8 @@ public class TallyDeviceConnectionStatusActivity extends StandardActivity {
             service.send(msg);
 
         } catch (Exception e) { service = null; }
+
+        super.onPause();
 
     }//end of TallyDeviceConnectionStatusActivity::onPause
     //-----------------------------------------------------------------------------

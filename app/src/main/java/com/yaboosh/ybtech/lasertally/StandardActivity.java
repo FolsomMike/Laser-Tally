@@ -79,14 +79,8 @@ public class StandardActivity extends Activity {
         createUiChangeListener();
 
         // Check whether we're recreating a previously destroyed instance
-        if (pSavedInstanceState != null) {
-            restoreValuesFromSavedInstance(pSavedInstanceState);
-            restoreActivitySpecificValuesFromSavedInstance(pSavedInstanceState);
-        }
-        else {
-            useActivityStartUpValues();
-            useActivitySpecificActivityStartUpValues();
-        }
+        if (pSavedInstanceState != null) { restoreValuesFromSavedInstance(pSavedInstanceState); }
+        else { useActivityStartUpValues(); }
 
     }//end of StandardActivity::onCreate
     //-----------------------------------------------------------------------------
@@ -94,8 +88,7 @@ public class StandardActivity extends Activity {
     //-----------------------------------------------------------------------------
     // StandardActivity::onResume
     //
-    // Automatically called when the activity is paused when it does not have
-    // user's focus but it still partially visible.
+    // Automatically called upon activity resume.
     //
     // All functions that must be done upon activity resume should be called here.
     //
@@ -112,8 +105,6 @@ public class StandardActivity extends Activity {
 
         sharedSettings.setContext(this);
         jobsHandler.setSharedSettings(sharedSettings);
-
-        performOnResumeActivitySpecificActions();
 
     }//end of StandardActivity::onResume
     //-----------------------------------------------------------------------------
@@ -187,8 +178,6 @@ public class StandardActivity extends Activity {
         pSavedInstanceState.putParcelable(Keys.JOBS_HANDLER_KEY, jobsHandler);
         pSavedInstanceState.putParcelable(Keys.SHARED_SETTINGS_KEY, sharedSettings);
 
-        storeActivitySpecificValuesToSavedInstance(pSavedInstanceState);
-
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(pSavedInstanceState);
 
@@ -247,8 +236,6 @@ public class StandardActivity extends Activity {
             Log.e(LOG_TAG, "Line 249 :: " + e.getMessage());
             viewInFocus = null;
         }
-
-        performActivitySpecificActionsForFocusChange();
 
     }//end of StandardActivity::focusView
     //-----------------------------------------------------------------------------
@@ -405,67 +392,13 @@ public class StandardActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // StandardActivity::performActivitySpecificActionsForFocusChange
-    //
-    // Children activities can override this function to perform different actions
-    // depending on their individual requirements.
-    //
-    // Activity dependent -- children should override if necessary.
-    //
-
-    protected void performActivitySpecificActionsForFocusChange() {
-
-    }//end of StandardActivity::performActivitySpecificActionsForFocusChange
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // StandardActivity::performOnResumeActivitySpecificActions
-    //
-    // Children activities can override this function to perform different actions
-    // depending on their individual requirements.
-    //
-    // Activity dependent -- children should override if necessary.
-    //
-
-    protected void performOnResumeActivitySpecificActions() {
-
-    }//end of StandardActivity::performOnResumeActivitySpecificActions
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // StandardActivity::storeActivitySpecificValuesFromSavedInstance
-    //
-    // Stores activity specific values in the passed in saved instance.
-    //
-    // Activity dependent -- children should override if necessary.
-    //
-
-    protected void storeActivitySpecificValuesToSavedInstance(Bundle pSavedInstanceState) {
-
-    }//end of StandardActivity::storeActivitySpecificValuesFromSavedInstance
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // StandardActivity::restoreActivitySpecificValuesFromSavedInstance
-    //
-    // Restores values using the passed in saved instance.
-    //
-    // Activity dependent -- children should override if necessary.
-    //
-
-    protected void restoreActivitySpecificValuesFromSavedInstance(Bundle pSavedInstanceState) {
-
-    }//end of StandardActivity::restoreActivitySpecificValuesFromSavedInstance
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
     // StandardActivity::restoreValuesFromSavedInstance
     //
     // Restores general values that are used by all activities using the passed
     // in saved instance.
     //
 
-    private void restoreValuesFromSavedInstance(Bundle pSavedInstanceState) {
+    protected void restoreValuesFromSavedInstance(Bundle pSavedInstanceState) {
 
         if (pSavedInstanceState.containsKey(VIEW_IN_FOCUS_ID_KEY)) {
             int id = pSavedInstanceState.getInt(VIEW_IN_FOCUS_ID_KEY);
@@ -485,26 +418,13 @@ public class StandardActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // StandardActivity::useActivitySpecificActivityStartUpValues
-    //
-    // Uses activity start up values for variables.
-    //
-    // Activity dependent -- children should override if necessary.
-    //
-
-    protected void useActivitySpecificActivityStartUpValues() {
-
-    }//end of StandardActivity::useActivitySpecificActivityStartUpValues
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
     // StandardActivity::useActivityStartUpValues
     //
     // Uses activity start up values for general variables that are used by all
     // activities using the passed in saved instance.
     //
 
-    private void useActivityStartUpValues() {
+    protected void useActivityStartUpValues() {
 
         getSharedSettingsFromIntentExtras();
         getJobInfoFromIntentExtras();

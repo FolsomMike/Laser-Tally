@@ -139,38 +139,45 @@ public class RenameJobActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // RenameJobActivity::restoreActivitySpecificValuesFromSavedInstance
+    // RenameJobActivity::onSaveInstanceState
     //
-    // Restores values using the passed in saved instance.
-    //
-
-    @Override
-    protected void restoreActivitySpecificValuesFromSavedInstance(Bundle pSavedInstanceState) {
-
-        jobName = pSavedInstanceState.getString(NEW_JOB_NAME_KEY);
-
-    }//end of RenameJobActivity::restoreActivitySpecificValuesFromSavedInstance
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // RenameJobActivity::storeActivitySpecificValuesFromSavedInstance
-    //
-    // Stores activity specific values in the passed in saved instance.
+    // As the activity begins to stop, the system calls onSaveInstanceState()
+    // so the activity can save state information with a collection of key-value
+    // pairs. This functions is overridden so that additional state information can
+    // be saved.
     //
 
     @Override
-    protected void storeActivitySpecificValuesToSavedInstance(Bundle pSavedInstanceState) {
+    public void onSaveInstanceState(Bundle pSavedInstanceState) {
+
+        super.onSaveInstanceState(pSavedInstanceState);
 
         jobName = editTextJobName.getText().toString();
 
         //store necessary data
         pSavedInstanceState.putString(NEW_JOB_NAME_KEY, jobName);
 
-    }//end of RenameJobActivity::storeActivitySpecificValuesFromSavedInstance
+    }//end of RenameJobActivity::onSaveInstanceState
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // RenameJobActivity::useActivitySpecificActivityStartUpValues
+    // RenameJobActivity::restoreValuesFromSavedInstance
+    //
+    // Restores values using the passed in saved instance.
+    //
+
+    @Override
+    protected void restoreValuesFromSavedInstance(Bundle pSavedInstanceState) {
+
+        super.restoreValuesFromSavedInstance(pSavedInstanceState);
+
+        jobName = pSavedInstanceState.getString(NEW_JOB_NAME_KEY);
+
+    }//end of RenameJobActivity::restoreValuesFromSavedInstance
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // RenameJobActivity::useActivityStartUpValues
     //
     // Uses activity start up values for variables.
     //
@@ -178,11 +185,13 @@ public class RenameJobActivity extends StandardActivity {
     //
 
     @Override
-    protected void useActivitySpecificActivityStartUpValues() {
+    protected void useActivityStartUpValues() {
+
+        super.useActivityStartUpValues();
 
         jobName = jobsHandler.getJobName();
 
-    }//end of RenameJobActivity::useActivitySpecificActivityStartUpValues
+    }//end of RenameJobActivity::useActivityStartUpValues
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

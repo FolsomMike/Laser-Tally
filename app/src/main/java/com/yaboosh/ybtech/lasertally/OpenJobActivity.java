@@ -105,6 +105,24 @@ public class OpenJobActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // OpenJobActivity::onResume
+    //
+    // Automatically called upon activity resume.
+    //
+    // All functions that must be done upon activity resume should be called here.
+    //
+
+    @Override
+    protected void onResume() {
+
+        super.onResume();
+
+        addJobsToListView(jobsHandler.getAllJobs());
+
+    }//end of OpenJobActivity::onResume
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // OpenJobActivity::handleF3KeyPressed
     //
     // If a view is in focus, perform a click on that view.
@@ -116,20 +134,6 @@ public class OpenJobActivity extends StandardActivity {
         if (viewInFocus != null) { viewInFocus.performClick(); }
 
     }//end of OpenJobActivity::handleF3KeyPressed
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // OpenJobActivity::performOnResumeActivitySpecificActions
-    //
-    // All actions that must be done upon activity resume should be done here.
-    //
-
-    @Override
-    protected void performOnResumeActivitySpecificActions() {
-
-        addJobsToListView(jobsHandler.getAllJobs());
-
-    }//end of OpenJobActivity::performOnResumeActivitySpecificActions
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
