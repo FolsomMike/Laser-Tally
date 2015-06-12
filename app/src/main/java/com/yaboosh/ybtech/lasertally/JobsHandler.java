@@ -272,6 +272,9 @@ public class JobsHandler implements Parcelable {
 
         jobName = getDate(true) + " ~ " + DateFormat.getTimeInstance().format(new Date());
 
+        jobName = jobName.replaceAll("/", "-");
+        jobName = jobName.replaceAll(":", ".");
+
         setFilePaths(jobName);
 
         saveJobInfoToFile(true);
