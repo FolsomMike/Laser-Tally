@@ -166,6 +166,8 @@ public class TallyDeviceConnectionStatusActivity extends StandardActivity {
     @Override
     protected void onPause() {
 
+        super.onPause();
+
         try { unbindService(connection); } catch (Exception e) {}
 
         if (service == null) { return; }
@@ -178,8 +180,6 @@ public class TallyDeviceConnectionStatusActivity extends StandardActivity {
             service.send(msg);
 
         } catch (Exception e) { service = null; }
-
-        super.onPause();
 
     }//end of TallyDeviceConnectionStatusActivity::onPause
     //-----------------------------------------------------------------------------

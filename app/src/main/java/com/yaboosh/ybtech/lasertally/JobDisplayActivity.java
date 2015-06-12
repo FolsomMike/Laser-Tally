@@ -239,6 +239,8 @@ public class JobDisplayActivity extends StandardActivity {
 
         bindService(serviceIntent, connection, BIND_AUTO_CREATE);
 
+        scrollMeasurementsTable();
+
     }//end of JobDisplayActivity::onResume
     //-----------------------------------------------------------------------------
 
@@ -254,6 +256,8 @@ public class JobDisplayActivity extends StandardActivity {
     @Override
     protected void onPause() {
 
+        super.onPause();
+
         try { unbindService(connection); } catch (Exception e) {}
 
         if (service == null) { return; }
@@ -267,8 +271,6 @@ public class JobDisplayActivity extends StandardActivity {
             service.send(msg);
 
         } catch (Exception e) { service = null; }
-
-        super.onPause();
 
     }//end of JobDisplayActivity::onPause
     //-----------------------------------------------------------------------------
