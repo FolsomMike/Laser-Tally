@@ -126,6 +126,8 @@ public class JobDisplayActivity extends StandardActivity {
         serviceIntent = new Intent(this, TallyDeviceService.class);
         startService(serviceIntent);
 
+        scrollToBottomOfMeasurementsTable();
+
     }//end of JobDisplayActivity::onCreate
     //-----------------------------------------------------------------------------
 
@@ -147,6 +149,26 @@ public class JobDisplayActivity extends StandardActivity {
         super.onDestroy();
 
     }//end of JobDisplayActivity::onDestroy
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobDisplayActivity::onResume
+    //
+    // Automatically called upon activity resume.
+    //
+    // All functions that must be done upon activity resume should be called here.
+    //
+
+    @Override
+    protected void onResume() {
+
+        super.onResume();
+
+        bindService(serviceIntent, connection, BIND_AUTO_CREATE);
+
+        scrollMeasurementsTable();
+
+    }//end of JobDisplayActivity::onResume
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -229,26 +251,6 @@ public class JobDisplayActivity extends StandardActivity {
         performClickOnView(viewInFocus);
 
     }//end of JobDisplayActivity::handleF3KeyPressed
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobDisplayActivity::onResume
-    //
-    // Automatically called upon activity resume.
-    //
-    // All functions that must be done upon activity resume should be called here.
-    //
-
-    @Override
-    protected void onResume() {
-
-        super.onResume();
-
-        bindService(serviceIntent, connection, BIND_AUTO_CREATE);
-
-        scrollMeasurementsTable();
-
-    }//end of JobDisplayActivity::onResume
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
