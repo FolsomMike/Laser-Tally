@@ -19,6 +19,8 @@ package com.yaboosh.ybtech.lasertally;
 // class TallyDataHandler
 //
 
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.widget.TableRow;
 import android.widget.TextView;
 
@@ -223,8 +225,14 @@ public class TallyDataHandler {
     {
 
         double temp = pValue + imperialTallyData.getCalibrationValue();
+
         //return if the value is not within range
-        if (!imperialTallyData.isValidLength(temp)) { return; }
+        if (!imperialTallyData.isValidLength(temp)) {
+            Tools.playBadSound(parentActivity);
+            return;
+        }
+
+        Tools.playGoodSound(parentActivity);
 
         addDataEntry(pValue);
 
