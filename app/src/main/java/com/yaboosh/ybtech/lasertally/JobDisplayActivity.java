@@ -592,7 +592,7 @@ public class JobDisplayActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
     // JobDisplayActivity::handleNoNewDistanceValueReceived
     //
-    // Enables the Measure and Redo buttons.
+    // Plays the bad sound and enables the Measure and Redo buttons.
     //
     // This function handles when a distance value is not received back from the
     // tally device after the measure command was sent to it. This is to
@@ -601,6 +601,8 @@ public class JobDisplayActivity extends StandardActivity {
     //
 
     private void handleNoNewDistanceValueReceived () {
+
+        Tools.playBadSound(this);
 
         setMeasureConnectButtonEnabled(true);
         setRedoButtonEnabled(true);
