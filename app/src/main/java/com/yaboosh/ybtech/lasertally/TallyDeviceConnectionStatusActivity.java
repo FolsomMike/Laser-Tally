@@ -156,19 +156,6 @@ public class TallyDeviceConnectionStatusActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyDeviceConnectionStatusActivity::onBackPressed
-    //
-    // This functions is overridden and left blank so that the user cannot use
-    // the back button to exit the activity.
-    //
-
-    @Override
-    public void onBackPressed() {
-
-    }//end of TallyDeviceConnectionStatusActivity::onBackPressed
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
     // TallyDeviceConnectionStatusActivity::onPause
     //
     // Automatically called when the activity is paused when it does not have

@@ -110,6 +110,19 @@ public class StandardActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // StandardActivity::onBackPressed
+    //
+    // This functions is overridden and left blank so that the user cannot use
+    // the back button to exit the activity.
+    //
+
+    @Override
+    public void onBackPressed() {
+
+    }//end of StandardActivity::onBackPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // StandardActivity::dispatchKeyEvent
     //
     // Overrides actions for certain key events. If we don't want to override
