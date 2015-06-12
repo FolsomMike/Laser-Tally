@@ -159,6 +159,7 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:background="@drawable/edit_text_background"
+                    android:digits="abcdefghijklmnopqrstuvwxyz0123456789.-~"
                     android:focusable="true"
                     android:focusableInTouchMode="true"
                     android:imeOptions="flagNoExtractUi"
