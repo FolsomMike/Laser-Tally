@@ -22,7 +22,7 @@
         android:background="#1A1A1A"
         android:focusable="false"
         android:focusableInTouchMode="false"
-        android:gravity="center"
+        android:gravity="bottom"
         android:layout_alignParentTop="true"
         android:orientation="horizontal"
         android:paddingBottom="@dimen/padding_xxsmall"
@@ -40,13 +40,15 @@
             android:text="Job: "
             android:textSize="@dimen/text_size_xxlarge"/>
 
-        <TextView
+        <com.yaboosh.ybtech.lasertally.TextFitTextView
             android:id="@id/jobNameTextView"
             android:layout_height="wrap_content"
             android:layout_width="@dimen/ajd_ttbl_title_text_view_width"
             android:focusable="false"
             android:focusableInTouchMode="false"
+            android:maxLines="1"
             android:padding="@dimen/padding_none"
+            android:singleLine="true"
             android:textColor="#FFFFFF"
             android:text=""
             android:textSize="@dimen/text_size_xxlarge"/>

@@ -185,7 +185,7 @@
                     android:layout_width="fill_parent"
                     android:focusable="false"
                     android:focusableInTouchMode="false"
-                    android:gravity="center"
+                    android:gravity="bottom"
                     android:orientation="horizontal"
                     android:padding="@dimen/padding_none" >
 
@@ -196,6 +196,7 @@
                         android:focusable="false"
                         android:focusableInTouchMode="false"
                         android:gravity="end"
+                        android:padding="@dimen/padding_none"
                         android:text="Job:"
                         android:textColor="#000000"
                         android:textSize="@dimen/text_size_xlarge" />
@@ -209,7 +210,7 @@
                         android:padding="@dimen/padding_none" >
                     </View>
 
-                    <TextView
+                    <com.yaboosh.ybtech.lasertally.TextFitTextView
                         android:id="@+id/textViewJobName"
                         android:layout_height="wrap_content"
                         android:layout_width="0dp"
@@ -217,6 +218,9 @@
                         android:focusable="false"
                         android:focusableInTouchMode="false"
                         android:gravity="start"
+                        android:maxLines="1"
+                        android:padding="@dimen/padding_none"
+                        android:singleLine="true"
                         android:textColor="#000000"
                         android:textSize="@dimen/text_size_xlarge" />
 
