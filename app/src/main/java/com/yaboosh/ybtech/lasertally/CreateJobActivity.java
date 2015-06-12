@@ -416,6 +416,7 @@ public class CreateJobActivity extends StandardActivity {
                                 range, rig, wall, true);
 
         Intent intent = new Intent(this, JobDisplayActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.putExtra(Keys.JOBS_HANDLER_KEY, jobsHandler);
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
         startActivity(intent);
