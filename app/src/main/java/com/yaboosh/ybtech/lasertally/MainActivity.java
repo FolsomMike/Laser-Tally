@@ -94,8 +94,6 @@ public class MainActivity extends StandardActivity {
     }//end of MainActivity::onDestroy
     //-----------------------------------------------------------------------------
 
-
-
     //-----------------------------------------------------------------------------
     // MainActivity::handleEscapeKeyPressed
     //

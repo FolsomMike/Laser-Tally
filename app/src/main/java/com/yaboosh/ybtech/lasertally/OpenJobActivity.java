@@ -36,21 +36,6 @@ public class OpenJobActivity extends StandardActivity {
 
     public static AtomicInteger activitiesLaunched = new AtomicInteger(0);
 
-    private String companyName;
-    private String date;
-    private String diameter;
-    private String facility;
-    private String grade;
-    private String imperialAdjustment;
-    private String imperialTallyGoal;
-    private String job;
-    private String metricAdjustment;
-    private String metricTallyGoal;
-    private String rack;
-    private String range;
-    private String rig;
-    private String wall;
-
     //-----------------------------------------------------------------------------
     // OpenJobActivity::OpenJobActivity (constructor)
     //

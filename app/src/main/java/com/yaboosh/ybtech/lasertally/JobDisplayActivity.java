@@ -37,6 +37,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
+import java.util.concurrent.atomic.AtomicInteger;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -44,6 +45,8 @@ import java.lang.ref.WeakReference;
 //
 
 public class JobDisplayActivity extends StandardActivity {
+
+    public static AtomicInteger activitiesLaunched = new AtomicInteger(0);
 
     private Handler handler = new Handler();
 
@@ -94,6 +97,8 @@ public class JobDisplayActivity extends StandardActivity {
     @Override
     protected void onCreate(Bundle pSavedInstanceState) {
 
+        if (activitiesLaunched.incrementAndGet() > 1) { finish(); }
+
         super.onCreate(pSavedInstanceState);
 
         measureConnectButton = (Button)findViewById(R.id.measureConnectButton);
@@ -122,6 +127,26 @@ public class JobDisplayActivity extends StandardActivity {
         startService(serviceIntent);
 
     }//end of JobDisplayActivity::onCreate
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobDisplayActivity::onDestroy
+    //
+    // Automatically called when the activity is destroyed.
+    // All functions that must be done upon destruction should be called here.
+    //
+
+    @Override
+    protected void onDestroy()
+    {
+
+        activitiesLaunched.getAndDecrement();
+
+        stopService(serviceIntent);
+
+        super.onDestroy();
+
+    }//end of JobDisplayActivity::onDestroy
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -204,24 +229,6 @@ public class JobDisplayActivity extends StandardActivity {
         viewInFocus.performClick();
 
     }//end of JobDisplayActivity::handleF3KeyPressed
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobDisplayActivity::onDestroy
-    //
-    // Automatically called when the activity is destroyed.
-    // All functions that must be done upon destruction should be called here.
-    //
-
-    @Override
-    protected void onDestroy()
-    {
-
-        stopService(serviceIntent);
-
-        super.onDestroy();
-
-    }//end of JobDisplayActivity::onDestroy
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
