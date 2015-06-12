@@ -258,8 +258,6 @@ public class TallyDeviceService extends Service {
     //
     // Enables the Measure and Redo buttons.
     //
-    // //hss wip// should send message to user saying taking a measurement failed
-    //
 
     public void handleNoDistanceValueReceived() {
 
