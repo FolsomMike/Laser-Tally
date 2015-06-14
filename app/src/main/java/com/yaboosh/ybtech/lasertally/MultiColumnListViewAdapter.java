@@ -38,6 +38,7 @@ package com.yaboosh.ybtech.lasertally;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,13 +54,15 @@ import java.util.HashMap;
 // class MultiColumnListViewAdapter
 //
 
-public class MultiColumnListViewAdapter extends ArrayAdapter<String>{
+public class MultiColumnListViewAdapter extends ArrayAdapter<String> {
+
+    public static String LOG_TAG = "MultiColumnListViewAdapter";
 
     LayoutInflater inflater;
     private int layout;
 
     private int selectedPos = -1;
-    private View selected = null;
+    private View selectedView = null;
 
     int numberOfColumns = 0;
     ArrayList<Integer> columnIds;
@@ -160,13 +163,15 @@ public class MultiColumnListViewAdapter extends ArrayAdapter<String>{
         if (pSelected) {
             selectedPos = pPos;
             pView.setBackgroundColor(Color.parseColor("#0099FF"));
-            if (selected != null) { selected.setBackgroundColor(Color.parseColor("#FFFFFF")); }
-            selected = pView;
+            if (selectedView != null) {
+                selectedView.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            }
+            selectedView = pView;
         }
         else {
             pView.setBackgroundColor(Color.parseColor("#FFFFFF"));
             if (selectedPos == pPos) { selectedPos = -1; }
-            if (selected == pView) { selected = null; }
+            if (selectedView == pView) { selectedView = null; }
         }
 
         notifyDataSetChanged();
