@@ -41,6 +41,7 @@
     <dimen name="spacer_horizontal_normal">30dp</dimen>
     <dimen name="spacer_horizontal_xxwide">60dp</dimen>
 
+    <dimen name="spacer_vertical_xxshort">5dp</dimen>
     <dimen name="spacer_vertical_xshort">10dp</dimen>
     <dimen name="spacer_vertical_short">20dp</dimen>
     <dimen name="spacer_vertical_normal">30dp</dimen>

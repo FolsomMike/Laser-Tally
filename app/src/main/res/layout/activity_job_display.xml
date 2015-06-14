@@ -8,7 +8,6 @@
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:descendantFocusability="beforeDescendants"
-    android:orientation="vertical"
     android:padding="@dimen/padding_none"
     tools:context="com.yaboosh.lasertally.development.main.JobDisplayActivity"
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -231,7 +230,7 @@
         </View>
 
         <!-- RIGHT PANEL LAYOUT (measurements table) -->
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/rightPanelLayout"
             android:layout_height="fill_parent"
             android:layout_width="fill_parent"
@@ -239,187 +238,162 @@
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:layout_toEndOf="@+id/leftAndRightPanelContainerLayoutHorizontalSpacer1"
-            android:orientation="vertical"
             android:padding="@dimen/padding_none" >
 
             <!-- TABLE HEADER LAYOUT (measurements table) -->
-            <TableLayout
-                android:id = "@+id/pipeMeasurementsHeaderTable"
-                android:layout_width="fill_parent"
+            <LinearLayout
+                android:id="@+id/headerTable"
                 android:layout_height="wrap_content"
+                android:layout_width="fill_parent"
+                android:background="#000000"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
-                android:padding="@dimen/padding_none"
-                android:background="#000000">
-                <TableRow>
-                    <View
-                        android:focusable="false"
-                        android:focusableInTouchMode="false"
-                        style="@style/tableSideBorderLine" />
+                android:layout_alignParentTop="true"
+                android:padding="@dimen/padding_none" >
 
-                    <TextView
-                        android:id="@+id/pipeNumberRow"
-                        android:text="Pipe #"
-                        style="@style/headerTableColumn" />
-
-                    <View
-                        android:focusable="false"
-                        android:focusableInTouchMode="false"
-                        style="@style/headerTableColumnDivider" />
-
-                    <TextView
-                        android:id="@+id/threadOnRow"
-                        android:focusable="false"
-                        android:focusableInTouchMode="false"
-                        android:text="Total Length"
-                        style="@style/headerTableColumn" />
-
-                    <View
-                        android:focusable="false"
-                        android:focusableInTouchMode="false"
-                        style="@style/headerTableColumnDivider" />
-
-                    <TextView
-                        android:id="@+id/threadOffRow"
-                        android:focusable="false"
-                        android:focusableInTouchMode="false"
-                        android:text="Adjusted"
-                        style="@style/headerTableColumn" />
-
-                    <View
-                        android:focusable="false"
-                        android:focusableInTouchMode="false"
-                        style="@style/tableSideBorderLine" />
-                </TableRow>
-            </TableLayout>
-            <!-- TABLE HEADER LAYOUT (measurements table) -->
-
-            <!-- MEASUREMENTS AND TOTALS TABLES CONTAINER LAYOUT -->
-            <RelativeLayout
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:focusable="false"
-                android:focusableInTouchMode="false" >
-
-                <!-- MEASUREMENTS TABLE LAYOUT -->
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                <View
                     android:focusable="false"
                     android:focusableInTouchMode="false"
-                    android:paddingBottom="@dimen/padding_4xlarge" >
+                    style="@style/tableSideBorderLine" />
 
-                    <com.yaboosh.ybtech.lasertally.FixedFocusScrollView
-                        android:id="@id/measurementsTableScrollView"
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
-                        android:fadeScrollbars="false"
+                <TextView
+                    android:id="@+id/pipeNumberRow"
+                    android:text="Pipe #"
+                    style="@style/headerTableColumn" />
+
+                <View
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    style="@style/tableColumnDivider" />
+
+                <TextView
+                    android:id="@+id/threadOnRow"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:text="Total Length"
+                    style="@style/headerTableColumn" />
+
+                <View
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    style="@style/tableColumnDivider" />
+
+                <TextView
+                    android:id="@+id/threadOffRow"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:text="Adjusted"
+                    style="@style/headerTableColumn" />
+
+                <View
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    style="@style/tableSideBorderLine" />
+
+            </LinearLayout>
+            <!-- END OF TABLE HEADER LAYOUT (measurements table) -->
+
+            <LinearLayout
+                android:id="@+id/tallyDataLayout"
+                android:layout_height="fill_parent"
+                android:layout_width="fill_parent"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:layout_above="@+id/totalsTable"
+                android:layout_below="@+id/headerTable" >
+
+                <ListView
+                    android:id="@+id/tallyDataListView"
+                    android:layout_height="wrap_content"
+                    android:layout_width="fill_parent"
+                    android:divider="#000000"
+                    android:dividerHeight="1dp"
+                    android:fadeScrollbars="false"
+                    android:listSelector="#000FFF" >
+                </ListView>
+
+            </LinearLayout>
+
+            <!-- TOTALS TABLE LAYOUT -->
+            <LinearLayout
+                android:id="@+id/totalsTable"
+                android:layout_height="wrap_content"
+                android:layout_width="fill_parent"
+                android:background="#000000"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:orientation="vertical"
+                android:padding="@dimen/padding_none"
+                android:layout_alignParentBottom="true" >
+
+                <View
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    style="@style/tableTopBorderLineThick" />
+
+                <LinearLayout
+                    android:layout_height="wrap_content"
+                    android:layout_width="fill_parent"
+                    android:orientation="horizontal">
+
+                    <View
                         android:focusable="false"
                         android:focusableInTouchMode="false"
-                        android:scrollbars="vertical" >
+                        style="@style/tableSideBorderLine" />
 
-                        <TableLayout
-                            android:id = "@+id/measurementsTable"
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@color/measurementsTableColor"
-                            android:focusable="false"
-                            android:focusableInTouchMode="false"
-                            android:padding="@dimen/padding_none" >
+                    <TextView
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:gravity="start"
+                        android:paddingLeft="@dimen/padding_large"
+                        android:paddingRight="@dimen/padding_large"
+                        android:text="Total"
+                        style="@style/headerTableColumn" />
 
-                            <View
-                                android:id="@id/measurementsTableBottomBorderLine"
-                                android:focusable="false"
-                                android:focusableInTouchMode="false"
-                                android:visibility="gone"
-                                style="@style/tableBottomBorderLine" />
+                    <View
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        style="@style/tableColumnDivider" />
 
-                        </TableLayout>
+                    <TextView
+                        android:id="@id/totalOfTotalLengthColumnTextView"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:gravity="start"
+                        android:paddingLeft="@dimen/padding_large"
+                        android:paddingRight="@dimen/padding_large"
+                        style="@style/headerTableColumn" />
 
-                    </com.yaboosh.ybtech.lasertally.FixedFocusScrollView>
+                    <View
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        style="@style/tableColumnDivider" />
+
+                    <TextView
+                        android:id="@id/totalOfAdjustedColumnTextView"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:gravity="start"
+                        android:paddingLeft="@dimen/padding_large"
+                        android:paddingRight="@dimen/padding_large"
+                        style="@style/headerTableColumn" />
+
+                    <View
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        style="@style/tableSideBorderLine" />
 
                 </LinearLayout>
-                <!-- END OF MEASUREMENTS TABLE LAYOUT -->
 
-                <!-- TOTALS TABLE LAYOUT -->
-                <TableLayout
-                    android:id="@id/totalsTable"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:background="#000000"
+                <View
                     android:focusable="false"
                     android:focusableInTouchMode="false"
-                    android:layout_alignParentBottom="true"
-                    android:padding="@dimen/padding_none" >
+                    style="@style/tableBottomBorderLineThick" />
 
-                    <View
-                        android:focusable="false"
-                        android:focusableInTouchMode="false"
-                        style="@style/tableTopBorderLineThick" />
+            </LinearLayout>
+            <!-- END OF TOTALS TABLE LAYOUT -->
 
-                    <TableRow>
-
-                        <View
-                            android:focusable="false"
-                            android:focusableInTouchMode="false"
-                            style="@style/tableSideBorderLine" />
-
-                        <TextView
-                            android:focusable="false"
-                            android:focusableInTouchMode="false"
-                            android:gravity="start"
-                            android:paddingLeft="@dimen/padding_large"
-                            android:paddingRight="@dimen/padding_large"
-                            android:text="Total"
-                            style="@style/headerTableColumn" />
-
-                        <View
-                            android:focusable="false"
-                            android:focusableInTouchMode="false"
-                            style="@style/headerTableColumnDivider" />
-
-                        <TextView
-                            android:id="@id/totalOfTotalLengthColumnTextView"
-                            android:focusable="false"
-                            android:focusableInTouchMode="false"
-                            android:gravity="start"
-                            android:paddingLeft="@dimen/padding_large"
-                            android:paddingRight="@dimen/padding_large"
-                            style="@style/headerTableColumn" />
-
-                        <View
-                            android:focusable="false"
-                            android:focusableInTouchMode="false"
-                            style="@style/headerTableColumnDivider" />
-
-                        <TextView
-                            android:id="@id/totalOfAdjustedColumnTextView"
-                            android:focusable="false"
-                            android:focusableInTouchMode="false"
-                            android:gravity="start"
-                            android:paddingLeft="@dimen/padding_large"
-                            android:paddingRight="@dimen/padding_large"
-                            style="@style/headerTableColumn" />
-
-                        <View
-                            android:focusable="false"
-                            android:focusableInTouchMode="false"
-                            style="@style/tableSideBorderLine" />
-
-                    </TableRow>
-
-                    <View
-                        android:focusable="false"
-                        android:focusableInTouchMode="false"
-                        style="@style/tableBottomBorderLineThick" />
-
-                </TableLayout>
-                <!-- END OF TOTALS TABLE LAYOUT -->
-
-            </RelativeLayout>
-            <!-- END OF MEASUREMENTS AND TOTALS TABLES CONTAINER LAYOUT -->
-
-        </LinearLayout>
+        </RelativeLayout>
         <!-- END OF RIGHT PANEL LAYOUT (measurements table) -->
 
     </RelativeLayout>

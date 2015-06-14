@@ -21,6 +21,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,7 +31,9 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -67,7 +70,7 @@ public class JobDisplayActivity extends StandardActivity {
     private String jobName = "";
     // End of Job Info Variables
 
-    private TableRow lastRowEdited;
+    private int lastClickedRowPos;
 
     //-----------------------------------------------------------------------------
     // JobDisplayActivity::JobDisplayActivity (constructor)
@@ -104,22 +107,30 @@ public class JobDisplayActivity extends StandardActivity {
         measureConnectButton = (Button)findViewById(R.id.measureConnectButton);
         redoButton = (Button)findViewById(R.id.redoButton);
 
+        //add a footer to the Tally Data ListView
+        View foot = this.getLayoutInflater().inflate(R.layout.layout_list_view_footer, null, false);
+        ((ListView)findViewById(R.id.tallyDataListView)).addFooterView(foot);
+
+        //initialize list view and add an onClickListener
+        //ListView tallyDataListView = (ListView) findViewById(R.id.tallyDataListView);
+        /*tallyDataListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> pParent, final View pView, int pPos, long pId)
+            {
+
+                handleTableRowPressed(pPos, pView);
+
+            }
+
+        });*/
+
         //set the job name
         setJobName(jobsHandler.getJobName());
 
         //Create a TallyDataHandler and give it its own MeasurementsTableHandler and a reference
         //to jobsHandler
-        tallyDataHandler = new TallyDataHandler(this, sharedSettings, jobsHandler,
-                new MeasurementsTableHandler(
-                        sharedSettings,
-                        onClickListener,
-                        (TableLayout)findViewById(R.id.measurementsTable),
-                        findViewById(R.id.measurementsTableBottomBorderLine),
-                        (TableLayout)findViewById(R.id.totalsTable),
-                        (TextView)findViewById(R.id.totalOfAdjustedColumnTextView),
-                        (TextView)findViewById(R.id.totalOfTotalLengthColumnTextView)),
-                (TextView)findViewById(R.id.distanceLeftTextView),
-                (TextView)findViewById(R.id.numberOfPipesLeftTextView));
+        tallyDataHandler = new TallyDataHandler(this, sharedSettings, jobsHandler);
         tallyDataHandler.init();
 
         //Start the TallyDeviceService
@@ -392,10 +403,6 @@ public class JobDisplayActivity extends StandardActivity {
                     handleMeasureConnectButtonPressed();
                     break;
 
-                case R.id.measurementsTableRow:
-                    handleTableRowPressed((TableRow)pV);
-                    break;
-
                 case R.id.redoButton:
                     handleRedoButtonPressed();
                     break;
@@ -635,9 +642,11 @@ public class JobDisplayActivity extends StandardActivity {
     //
 
     private void handleTableRowEditorActivityResultOk(String pPipeNum, String pTotalLength,
-                                                    boolean pRenumberAll) {
+                                                      boolean pRenumberAll)
+    {
 
-        tallyDataHandler.changeValuesOfExistingRow(lastRowEdited, pPipeNum, pTotalLength, pRenumberAll);
+        tallyDataHandler.changeValuesAtIndex(lastClickedRowPos, pPipeNum, pTotalLength,
+                                                pRenumberAll);
 
     }//end of JobDisplayActivity::handleTableRowEditorActivityResultOk
     //-----------------------------------------------------------------------------
@@ -660,13 +669,13 @@ public class JobDisplayActivity extends StandardActivity {
     // values to the EditPipeRowActivity to be displayed to and edited by the user.
     //
 
-    public void handleTableRowPressed(TableRow pR) {
+    public void handleTableRowPressed(int pIndex, View pView) {
 
-        lastRowEdited = pR;
-        focusView(lastRowEdited);
+        lastClickedRowPos = pIndex;
+        focusView(pView);
         scrollMeasurementsTable();
-        String pipeNum = tallyDataHandler.getPipeNumberOfRow(pR);
-        String totalLength = tallyDataHandler.getTotalLengthValueOfRow(pR);
+        String pipeNum = tallyDataHandler.getPipeNumberAtIndex(pIndex);
+        String totalLength = tallyDataHandler.getTotalLengthAtIndex(pIndex);
 
         Intent intent = new Intent(this, TableRowEditorActivity.class);
         intent.putExtra(TableRowEditorActivity.PIPE_NUMBER_KEY, pipeNum);
@@ -687,17 +696,17 @@ public class JobDisplayActivity extends StandardActivity {
 
         focusArray.clear();
 
-        TableLayout table = (TableLayout)findViewById(R.id.measurementsTable);
+        //WIP HSS// -- SHOULD PUT LISTVIEW CHILDREN INTO FOCUS ARRAY
 
         // For each child in the table, check to see if it is
         // a TableRow. TableRows are added to the focus array.
-        for (int i=0; i<table.getChildCount(); i++) {
+        /*for (int i=0; i<table.getChildCount(); i++) {
 
             View child = table.getChildAt(i);
 
             if (child.getId() == R.id.measurementsTableRow) { focusArray.add(child); }
 
-        }
+        }*/
 
         //start the focus array at the bottom of the table
         startingIndexOfFocusArray = focusArray.size()-1;
@@ -738,7 +747,8 @@ public class JobDisplayActivity extends StandardActivity {
 
     void scrollMeasurementsTable() {
 
-        final ScrollView sv = (ScrollView)findViewById(R.id.measurementsTableScrollView);
+        //WIP HSS// -- should scroll listview
+        /*final ScrollView sv = (ScrollView)findViewById(R.id.measurementsTableScrollView);
 
         handler.post(new Runnable() {
             @Override
@@ -749,7 +759,7 @@ public class JobDisplayActivity extends StandardActivity {
                     sv.fullScroll(View.FOCUS_DOWN);
                 }
             }
-        });
+        });*/
 
     }//end of JobDisplayActivity::scrollMeasurementsTable
     //-----------------------------------------------------------------------------
@@ -763,12 +773,13 @@ public class JobDisplayActivity extends StandardActivity {
 
     void scrollToBottomOfMeasurementsTable() {
 
-        final ScrollView sv = (ScrollView)findViewById(R.id.measurementsTableScrollView);
+        //WIP HSS// -- should scroll listview
+        /*final ScrollView sv = (ScrollView)findViewById(R.id.measurementsTableScrollView);
 
         handler.post(new Runnable() {
             @Override
             public void run() { sv.fullScroll(View.FOCUS_DOWN); }
-        });
+        });*/
 
     }//end of JobDisplayActivity::scrollToBottomOfMeasurementsTable
     //-----------------------------------------------------------------------------
