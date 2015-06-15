@@ -18,45 +18,52 @@ package com.yaboosh.ybtech.lasertally;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.support.annotation.IntegerRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ListViewAdapter extends ArrayAdapter<String>{
 
     LayoutInflater inflater;
+    private int layout;
+
     private int selectedPos = -1;
     private View selected = null;
-    private final ArrayList<String> adjustedValues;
-    private final ArrayList<String> pipeNumbers;
-    private final ArrayList<String> totalLengthValues;
 
-    ArrayList<HashMap<String, String>> list = new ArrayList<HashMap<String, String>>();
+    int numberOfColumns = 0;
+    ArrayList<Integer> columnIds;
+    ArrayList<String> columnKeys;
+    ArrayList<HashMap<String, String>> list;
 
-    static class ViewHolder {
-        TextView col1;
-        TextView col2;
-        TextView col3;
-    }
+    //holder to cache views
+    static class ViewHolder { HashMap<String, TextView> columns = new HashMap<String, TextView>(); }
 
-    public ListViewAdapter(Activity pContext, ArrayList<String> pPipeNumbers,
-                           ArrayList<String> pTotalLengthValues, ArrayList<String> pAdjustedValues)
+    public ListViewAdapter(Activity pActivity, int pLayout, int pColumns,
+                            ArrayList<Integer> pColumnIds,  ArrayList<String> pColumnKeys,
+                            ArrayList<HashMap<String, String>> pList)
     {
 
-        super(pContext, R.layout.layout_list_view_row, pAdjustedValues);
+        super(pActivity, pLayout);
 
-        adjustedValues = pAdjustedValues;
-        pipeNumbers = pPipeNumbers;
-        totalLengthValues = pTotalLengthValues;
+        layout = pLayout;
+        numberOfColumns = pColumns;
+        columnIds = pColumnIds;
+        columnKeys = pColumnKeys;
+        list = pList;
 
-        inflater = pContext.getLayoutInflater();
+        inflater = pActivity.getLayoutInflater();
 
     }
+
+    @Override
+    public int getCount() { return list.size(); }
 
     @Override
     public View getView(int pPosition, View pView, ViewGroup pParent)
@@ -66,13 +73,16 @@ public class ListViewAdapter extends ArrayAdapter<String>{
         ViewHolder holder;
 
         if (view == null) {
-            view = inflater.inflate(R.layout.layout_list_view_row, pParent, false);
+
+            view = inflater.inflate(layout, pParent, false);
 
             //cache views into the holder
             holder = new ViewHolder();
-            holder.col1 = (TextView)view.findViewById(R.id.COLUMN_PIPE_NUMBER);
-            holder.col2 = (TextView)view.findViewById(R.id.COLUMN_TOTAL_LENGTH);
-            holder.col3 = (TextView)view.findViewById(R.id.COLUMN_ADJUSTED);
+
+            for (int i=0; i<numberOfColumns; i++) {
+                TextView v = (TextView)view.findViewById(columnIds.get(i));
+                holder.columns.put(columnKeys.get(i), v);
+            }
 
             view.setTag(holder);
 
@@ -84,9 +94,10 @@ public class ListViewAdapter extends ArrayAdapter<String>{
         else { view.setBackgroundColor(Color.parseColor("#FFFFFF")); }
 
         //set the text of the columns
-        holder.col1.setText(pipeNumbers.get(pPosition));
-        holder.col2.setText(totalLengthValues.get(pPosition));
-        holder.col3.setText(adjustedValues.get(pPosition));
+        for (int i=0; i<numberOfColumns; i++) {
+            holder.columns.get(columnKeys.get(i))
+                                            .setText(list.get(pPosition).get(columnKeys.get(i)));
+        }
 
         return view;
 

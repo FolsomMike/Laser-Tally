@@ -58,22 +58,6 @@ public abstract class TallyData {
     double tallyGoal;
     double adjustmentValue = 0;
 
-    //These lists are used to store the data originally read from file.
-    //They are needed because the other lists need a TableRow to insert
-    //data, but the Activity cannot be accessed while the file is being
-    //accessed; a table row cannot be created to store the data in the
-    //normally used maps.
-    //WIP HSS// -- these may not actually be needed anymore (: YAY!!!!
-    private ArrayList<String> pipeNumbersFromFile = new ArrayList<String>();
-    public ArrayList<String> getPipeNumbersFromFile() { return pipeNumbersFromFile; }
-
-    private ArrayList<String> adjustedValuesFromFile = new ArrayList<String>();
-    public ArrayList<String> getAdjustedValuesFromFile() { return adjustedValuesFromFile; }
-
-    private ArrayList<String> totalLengthValuesFromFile = new ArrayList<String>();
-    public ArrayList<String> getTotalLengthValuesFromFile() { return totalLengthValuesFromFile; }
-
-
     private String adjustedValuesTotal;
     public String getAdjustedValuesTotal() { return adjustedValuesTotal; }
 
@@ -521,9 +505,9 @@ public abstract class TallyData {
         //Skip over this file line if it is a comment
         if (pLine.startsWith("#")) { return; }
 
-        pipeNumbersFromFile.add(getPipeNumberFromFileLine(pLine));
-        totalLengthValuesFromFile.add(getTotalLengthValueFromFileLine(pLine));
-        adjustedValuesFromFile.add(getAdjustedValueFromFileLine(pLine));
+        pipeNumbers.add(getPipeNumberFromFileLine(pLine));
+        totalLengthValues.add(getTotalLengthValueFromFileLine(pLine));
+        adjustedValues.add(getAdjustedValueFromFileLine(pLine));
 
     }//end of TallyData::handleFileLine
     //-----------------------------------------------------------------------------

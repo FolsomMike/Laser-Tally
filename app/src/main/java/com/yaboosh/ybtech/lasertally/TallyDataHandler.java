@@ -49,9 +49,12 @@ public class TallyDataHandler {
     private TallyData imperialTallyData;
     private TallyData metricTallyData;
 
+    //Variables used for the tally data ListView
     ListViewAdapter adapter;
-
-    View selectedView = null;
+    ArrayList<HashMap<String, String>> tallyDataList = new ArrayList<HashMap<String, String>>();
+    private final String firstColumnKey = "firstColumnKey";
+    private final String secondColumnKey = "secondColumnKey";
+    private final String thirdColumnKey = "thirdColumnKey";
 
     //-----------------------------------------------------------------------------
     // TallyDataHandler::TallyDataHandler (constructor)
@@ -83,9 +86,16 @@ public class TallyDataHandler {
 
         setUnitSystem(sharedSettings.getUnitSystem());
 
-        adapter = new ListViewAdapter(parentActivity, tallyData.getPipeNumbers(),
-                                        tallyData.getTotalLengthValues(),
-                                        tallyData.getAdjustedValues());
+        ArrayList<Integer> ids = new ArrayList<Integer>();
+        ids.add(R.id.COLUMN_PIPE_NUMBER);
+        ids.add(R.id.COLUMN_TOTAL_LENGTH);
+        ids.add(R.id.COLUMN_ADJUSTED);
+        ArrayList<String> keys = new ArrayList<String>();
+        keys.add(firstColumnKey);
+        keys.add(secondColumnKey);
+        keys.add(thirdColumnKey);
+        adapter = new ListViewAdapter(parentActivity, R.layout.layout_list_view_row, 3, ids, keys,
+                                        tallyDataList);
 
         final ListView l = (ListView)parentActivity.findViewById(R.id.tallyDataListView);
         l.setAdapter(adapter);
@@ -97,7 +107,7 @@ public class TallyDataHandler {
             }
         });
 
-        readDataFromLists();
+        displayTallyData();
 
     }//end of TallyDataHandler::init
     //-----------------------------------------------------------------------------
@@ -119,29 +129,6 @@ public class TallyDataHandler {
         //any conversions necessary will also be done there
         imperialTallyData.addData(pTotal);
         metricTallyData.addData(pTotal);
-
-        displayTallyData();
-
-    }//end of TallyDataHandler::addDataEntry
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // TallyDataHandler::addDataEntry
-    //
-    // Adds the passed in data to the appropriate lists and the measurements table.
-    //
-    // This version of the function is used when reading the data from the lists
-    // that were used to store the data read from the tally data files.
-    //
-
-    private void addDataEntry(String pPipeNumber, String pImperialAdjustedLength,
-                                String pImperialTotalLength, String pMetricAdjustedLength,
-                                String pMetricTotalLength)
-    {
-
-        //store the data
-        imperialTallyData.addData(pPipeNumber, pImperialAdjustedLength, pImperialTotalLength);
-        metricTallyData.addData(pPipeNumber, pMetricAdjustedLength, pMetricTotalLength);
 
         displayTallyData();
 
@@ -185,6 +172,8 @@ public class TallyDataHandler {
 
     private void displayTallyData()
     {
+
+        readDataFromLists();
 
         adapter.notifyDataSetChanged();
 
@@ -296,25 +285,22 @@ public class TallyDataHandler {
     //-----------------------------------------------------------------------------
     // TallyDataHandler::readDataFromLists
     //
-    // Reads the tally data from the lists that were used to store the data read
-    // from file and stores the data appropriately.
+    // Reads the tally data from their lists and puts them into the list used with
+    // the ListView.
     //
 
     private void readDataFromLists()
     {
 
-        ArrayList<String> pipeNumbers = tallyData.getPipeNumbersFromFile();
-        ArrayList<String> imperialAdjustedValues = imperialTallyData.getAdjustedValuesFromFile();
-        ArrayList<String> imperialTotalLengthValues = imperialTallyData.getTotalLengthValuesFromFile();
-        ArrayList<String> metricAdjustedValues = metricTallyData.getAdjustedValuesFromFile();
-        ArrayList<String> metricTotalLengthValues = metricTallyData.getTotalLengthValuesFromFile();
+        tallyDataList.clear();
 
+        for (int i=0; i<tallyData.getPipeNumbers().size(); i++) {
 
-        for (int i=0; i<pipeNumbers.size(); i++) {
-
-            addDataEntry(pipeNumbers.get(i), imperialAdjustedValues.get(i),
-                            imperialTotalLengthValues.get(i), metricAdjustedValues.get(i),
-                            metricTotalLengthValues.get(i));
+            HashMap<String, String> map = new HashMap<String, String>();
+            map.put(firstColumnKey, tallyData.getPipeNumber(i));
+            map.put(secondColumnKey, tallyData.getTotalLengthValue(i));
+            map.put(thirdColumnKey, tallyData.getAdjustedValue(i));
+            tallyDataList.add(map);
 
         }
 
