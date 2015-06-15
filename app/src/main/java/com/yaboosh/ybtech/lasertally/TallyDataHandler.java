@@ -94,9 +94,9 @@ public class TallyDataHandler {
 
         adapter = new MultiColumnListViewAdapter(parentActivity, R.layout.layout_list_view_row, 3,
                                                     ids, tallyDataList);
-
         final ListView l = (ListView)parentActivity.findViewById(R.id.tallyDataListView);
         l.setAdapter(adapter);
+        adapter.restoreSelection();
 
         l.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

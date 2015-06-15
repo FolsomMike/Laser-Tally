@@ -61,12 +61,17 @@ public class MultiColumnListViewAdapter extends ArrayAdapter<String> {
     LayoutInflater inflater;
     private int layout;
 
-    private int selectedPos = -1;
-    private View selectedView = null;
+    private static int selectedPos = -1;
+    private static View selectedView = null;
+
 
     int numberOfColumns = 0;
     ArrayList<Integer> columnIds;
     ArrayList<HashMap<Integer, String>> list;
+
+    //DEBUG HSS//
+    private Activity a;
+    private ArrayList<View> test = new ArrayList<View>();
 
     //holder to cache views
     static class ViewHolder { SparseArray<TextView> columns = new SparseArray<TextView>(); }
@@ -82,6 +87,7 @@ public class MultiColumnListViewAdapter extends ArrayAdapter<String> {
 
         super(pActivity, pLayout);
 
+        a = pActivity;
         layout = pLayout;
         numberOfColumns = pColumns;
         columnIds = pColumnIds;
@@ -90,6 +96,21 @@ public class MultiColumnListViewAdapter extends ArrayAdapter<String> {
         inflater = pActivity.getLayoutInflater();
 
     }//end of MultiColumnListViewAdapter::MultiColumnListViewAdapter(constructor)
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MultiColumnListViewAdapter::restoreSelection
+    //
+    // If there a ListView row was selected, it is reselected.
+    //
+    // This can be used to ensure that
+    //
+
+    public void restoreSelection() {
+
+        setSelection(selectedPos, selectedView, true);
+
+    }//end of MultiColumnListViewAdapter::restoreSelection
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -144,9 +165,25 @@ public class MultiColumnListViewAdapter extends ArrayAdapter<String> {
                                             .setText(list.get(pPosition).get(columnIds.get(i)));
         }
 
+        test.add(view);
+
         return view;
 
     }//end of MultiColumnListViewAdapter::getView
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MultiColumnListViewAdapter::clearSelectedValues
+    //
+    // Clears the selected values by setting back them to their default values.
+    //
+
+    public static void clearSelectedValues() {
+
+        selectedPos = -1;
+        selectedView = null;
+
+    }//end of MultiColumnListViewAdapter::clearSelected
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -158,7 +195,7 @@ public class MultiColumnListViewAdapter extends ArrayAdapter<String> {
 
     public void setSelection(int pPos, View pView, boolean pSelected) {
 
-        if (pView == null) { return; }
+        if (pPos == -1 || pView == null) { return; }
 
         if (pSelected) {
             selectedPos = pPos;

@@ -391,6 +391,8 @@ public class CreateJobActivity extends StandardActivity {
 
     private void exitActivityByOk() {
 
+        MultiColumnListViewAdapter.clearSelectedValues();
+
         getAndStoreJobInfoFromUserInput();
 
         jobsHandler.saveJob(companyName, date, diameter, facility, grade, imperialAdjustment,
