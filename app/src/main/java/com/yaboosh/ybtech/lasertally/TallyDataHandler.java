@@ -20,11 +20,8 @@ package com.yaboosh.ybtech.lasertally;
 //
 
 import android.graphics.Color;
-import android.util.Log;
 import android.view.View;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -50,11 +47,11 @@ public class TallyDataHandler {
     private TallyData metricTallyData;
 
     //Variables used for the tally data ListView
-    ListViewAdapter adapter;
-    ArrayList<HashMap<String, String>> tallyDataList = new ArrayList<HashMap<String, String>>();
-    private final String firstColumnKey = "firstColumnKey";
-    private final String secondColumnKey = "secondColumnKey";
-    private final String thirdColumnKey = "thirdColumnKey";
+    MultiColumnListViewAdapter adapter;
+    ArrayList<HashMap<Integer, String>> tallyDataList = new ArrayList<HashMap<Integer, String>>();
+    private int pipeNumberColumnId;
+    private int totalLengthColumnId;
+    private int adjustedColumnId;
 
     //-----------------------------------------------------------------------------
     // TallyDataHandler::TallyDataHandler (constructor)
@@ -86,16 +83,17 @@ public class TallyDataHandler {
 
         setUnitSystem(sharedSettings.getUnitSystem());
 
+        pipeNumberColumnId = R.id.COLUMN_PIPE_NUMBER;
+        totalLengthColumnId = R.id.COLUMN_TOTAL_LENGTH;
+        adjustedColumnId = R.id.COLUMN_ADJUSTED;
+
         ArrayList<Integer> ids = new ArrayList<Integer>();
-        ids.add(R.id.COLUMN_PIPE_NUMBER);
-        ids.add(R.id.COLUMN_TOTAL_LENGTH);
-        ids.add(R.id.COLUMN_ADJUSTED);
-        ArrayList<String> keys = new ArrayList<String>();
-        keys.add(firstColumnKey);
-        keys.add(secondColumnKey);
-        keys.add(thirdColumnKey);
-        adapter = new ListViewAdapter(parentActivity, R.layout.layout_list_view_row, 3, ids, keys,
-                                        tallyDataList);
+        ids.add(pipeNumberColumnId);
+        ids.add(totalLengthColumnId);
+        ids.add(adjustedColumnId);
+
+        adapter = new MultiColumnListViewAdapter(parentActivity, R.layout.layout_list_view_row, 3,
+                                                    ids, tallyDataList);
 
         final ListView l = (ListView)parentActivity.findViewById(R.id.tallyDataListView);
         l.setAdapter(adapter);
@@ -296,10 +294,10 @@ public class TallyDataHandler {
 
         for (int i=0; i<tallyData.getPipeNumbers().size(); i++) {
 
-            HashMap<String, String> map = new HashMap<String, String>();
-            map.put(firstColumnKey, tallyData.getPipeNumber(i));
-            map.put(secondColumnKey, tallyData.getTotalLengthValue(i));
-            map.put(thirdColumnKey, tallyData.getAdjustedValue(i));
+            HashMap<Integer, String> map = new HashMap<Integer, String>();
+            map.put(pipeNumberColumnId, tallyData.getPipeNumber(i));
+            map.put(totalLengthColumnId, tallyData.getTotalLengthValue(i));
+            map.put(adjustedColumnId, tallyData.getAdjustedValue(i));
             tallyDataList.add(map);
 
         }
