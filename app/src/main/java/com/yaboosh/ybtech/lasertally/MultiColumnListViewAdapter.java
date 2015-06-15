@@ -67,11 +67,7 @@ public class MultiColumnListViewAdapter extends ArrayAdapter<String> {
 
     int numberOfColumns = 0;
     ArrayList<Integer> columnIds;
-    ArrayList<HashMap<Integer, String>> list;
-
-    //DEBUG HSS//
-    private Activity a;
-    private ArrayList<View> test = new ArrayList<View>();
+    ArrayList<SparseArray<String>> list;
 
     //holder to cache views
     static class ViewHolder { SparseArray<TextView> columns = new SparseArray<TextView>(); }
@@ -82,12 +78,11 @@ public class MultiColumnListViewAdapter extends ArrayAdapter<String> {
 
     public MultiColumnListViewAdapter(Activity pActivity, int pLayout, int pColumns,
                                       ArrayList<Integer> pColumnIds,
-                                      ArrayList<HashMap<Integer, String>> pList)
+                                      ArrayList<SparseArray<String>> pList)
     {
 
         super(pActivity, pLayout);
 
-        a = pActivity;
         layout = pLayout;
         numberOfColumns = pColumns;
         columnIds = pColumnIds;
@@ -164,8 +159,6 @@ public class MultiColumnListViewAdapter extends ArrayAdapter<String> {
             holder.columns.get(columnIds.get(i))
                                             .setText(list.get(pPosition).get(columnIds.get(i)));
         }
-
-        test.add(view);
 
         return view;
 

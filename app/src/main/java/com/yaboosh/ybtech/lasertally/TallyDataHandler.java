@@ -20,6 +20,7 @@ package com.yaboosh.ybtech.lasertally;
 //
 
 import android.graphics.Color;
+import android.util.SparseArray;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -48,7 +49,7 @@ public class TallyDataHandler {
 
     //Variables used for the tally data ListView
     MultiColumnListViewAdapter adapter;
-    ArrayList<HashMap<Integer, String>> tallyDataList = new ArrayList<HashMap<Integer, String>>();
+    ArrayList<SparseArray<String>> tallyDataList = new ArrayList<SparseArray<String>>();
     private int pipeNumberColumnId;
     private int totalLengthColumnId;
     private int adjustedColumnId;
@@ -87,6 +88,7 @@ public class TallyDataHandler {
         totalLengthColumnId = R.id.COLUMN_TOTAL_LENGTH;
         adjustedColumnId = R.id.COLUMN_ADJUSTED;
 
+        //initialize the adapter and assign it to the ListView
         ArrayList<Integer> ids = new ArrayList<Integer>();
         ids.add(pipeNumberColumnId);
         ids.add(totalLengthColumnId);
@@ -94,14 +96,18 @@ public class TallyDataHandler {
 
         adapter = new MultiColumnListViewAdapter(parentActivity, R.layout.layout_list_view_row, 3,
                                                     ids, tallyDataList);
+
         final ListView l = (ListView)parentActivity.findViewById(R.id.tallyDataListView);
         l.setAdapter(adapter);
+
         adapter.restoreSelection();
 
+        //end of initialize the adapter and assign it to the ListView
+
+        //assign a click listener to the ListView
         l.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                adapter.setSelection(position, view, true);
-
+            adapter.setSelection(position, view, true);
             }
         });
 
@@ -294,7 +300,7 @@ public class TallyDataHandler {
 
         for (int i=0; i<tallyData.getPipeNumbers().size(); i++) {
 
-            HashMap<Integer, String> map = new HashMap<Integer, String>();
+            SparseArray<String> map = new SparseArray<String>();
             map.put(pipeNumberColumnId, tallyData.getPipeNumber(i));
             map.put(totalLengthColumnId, tallyData.getTotalLengthValue(i));
             map.put(adjustedColumnId, tallyData.getAdjustedValue(i));
