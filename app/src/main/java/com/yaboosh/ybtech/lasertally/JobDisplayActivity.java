@@ -183,6 +183,37 @@ public class JobDisplayActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // JobDisplayActivity::onPause
+    //
+    // Automatically called when the activity is paused when it does not have
+    // user's focus but it still partially visible.
+    //
+    // All functions that must be done upon activity pause should be called here.
+    //
+
+    @Override
+    protected void onPause() {
+
+        super.onPause();
+
+        try { unbindService(connection); } catch (Exception e) {}
+
+        if (service == null) { return; }
+
+        try {
+
+            Message msg = Message.obtain(null,
+                    TallyDeviceService.MSG_UNREGISTER_JOB_DISPLAY_ACTIVITY);
+            if (msg == null) { return; }
+            msg.replyTo = messenger;
+            service.send(msg);
+
+        } catch (Exception e) { service = null; }
+
+    }//end of JobDisplayActivity::onPause
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // CreateJobActivity::focusChanged
     //
     // Called when the focus changes from one view to another.
@@ -262,37 +293,6 @@ public class JobDisplayActivity extends StandardActivity {
         performClickOnView(viewInFocus);
 
     }//end of JobDisplayActivity::handleF3KeyPressed
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobDisplayActivity::onPause
-    //
-    // Automatically called when the activity is paused when it does not have
-    // user's focus but it still partially visible.
-    //
-    // All functions that must be done upon activity pause should be called here.
-    //
-
-    @Override
-    protected void onPause() {
-
-        super.onPause();
-
-        try { unbindService(connection); } catch (Exception e) {}
-
-        if (service == null) { return; }
-
-        try {
-
-            Message msg = Message.obtain(null,
-                    TallyDeviceService.MSG_UNREGISTER_JOB_DISPLAY_ACTIVITY);
-            if (msg == null) { return; }
-            msg.replyTo = messenger;
-            service.send(msg);
-
-        } catch (Exception e) { service = null; }
-
-    }//end of JobDisplayActivity::onPause
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
