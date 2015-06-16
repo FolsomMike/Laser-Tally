@@ -61,16 +61,18 @@ public class MultiColumnListViewAdapter extends ArrayAdapter<String> {
     LayoutInflater inflater;
     private int layout;
 
-    private static int selectedPos = -1;
-    private static View selectedView = null;
-
+    public static class SelectedValues {
+        int selectedPos = -1;
+        View selectedView = null;
+        ArrayList<View> selectableViews = new ArrayList<View>();
+    }
 
     int numberOfColumns = 0;
     ArrayList<Integer> columnIds;
     ArrayList<SparseArray<String>> list;
 
     //holder to cache views
-    static class ViewHolder { SparseArray<TextView> columns = new SparseArray<TextView>(); }
+    private static class ViewHolder { SparseArray<TextView> columns = new SparseArray<TextView>(); }
 
     //-----------------------------------------------------------------------------
     // MultiColumnListViewAdapter::MultiColumnListViewAdapter (constructor)
