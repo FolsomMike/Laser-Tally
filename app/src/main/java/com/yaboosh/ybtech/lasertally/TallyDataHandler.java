@@ -341,6 +341,8 @@ public class TallyDataHandler {
 
         displayTallyData();
 
+        selectLastRowInTallyDataListView();
+
     }//end of TallyDataHandler::removeLastDataEntry
     //-----------------------------------------------------------------------------
 
@@ -358,7 +360,7 @@ public class TallyDataHandler {
         final int count = tallyDataListView.getCount() - 2;
         jumpToPositionInTallyDataListView(count);
         int numVis = tallyDataListView.getLastVisiblePosition()
-                                                    - tallyDataListView.getFirstVisiblePosition();
+                                                    - tallyDataListView.getFirstVisiblePosition()-1;
         selectListViewRow(count, tallyDataListView.getChildAt(numVis));
 
     }//end of TallyDataHandler::selectLastRowInTallyDataListView
