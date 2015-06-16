@@ -19,6 +19,7 @@ package com.yaboosh.ybtech.lasertally;
 // class TallyDataHandler
 //
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.util.Log;
 import android.util.SparseArray;
@@ -48,8 +49,9 @@ public class TallyDataHandler {
     private TallyData metricTallyData;
 
     //Variables used for the tally data ListView
-    ListView tallyDataListView;
-    MultiColumnListViewAdapter adapter;
+    private ListView tallyDataListView;
+    private MultiColumnListViewAdapter adapter;
+    private int lastSelectedRowPos = -1;
     ArrayList<SparseArray<String>> tallyDataList = new ArrayList<SparseArray<String>>();
     private int pipeNumberColumnId;
     private int totalLengthColumnId;
@@ -110,7 +112,7 @@ public class TallyDataHandler {
         //assign a click listener to the ListView
         tallyDataListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> pParent, View pView, int pPos, long pId) {
-                selectListViewRow(pPos, pView);
+                handleListViewRowClicked(pPos, pView);
             }
         });
 
@@ -224,6 +226,31 @@ public class TallyDataHandler {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // TallyDataHandler::handleListViewRowClicked
+    //
+    // Launches the TableRowEditorActivity, sending it the data associated with
+    // the clicked View, and jumps to bring the clicked View into the user's view.
+    //
+
+    private void handleListViewRowClicked(int pPos, View pView)
+    {
+
+        lastSelectedRowPos = pPos;
+
+        selectListViewRow(pPos, pView);
+
+        String pipeNum = getPipeNumberAtIndex(pPos);
+        String totalLength = getTotalLengthAtIndex(pPos);
+
+        Intent intent = new Intent(parentActivity, TableRowEditorActivity.class);
+        intent.putExtra(TableRowEditorActivity.PIPE_NUMBER_KEY, pipeNum);
+        intent.putExtra(TableRowEditorActivity.TOTAL_LENGTH_KEY, totalLength);
+        parentActivity.startActivityForResult(intent, Keys.ACTIVITY_RESULT_TABLE_ROW_EDITOR);
+
+    }//end of TallyDataHandler::handleListViewRowClicked
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // TallyDataHandler::handleJobInfoChanged
     //
     // Uses the passed in distance value to calculate the values needed to add a
@@ -279,6 +306,22 @@ public class TallyDataHandler {
         displayTallyData();
 
     }//end of TallyDataHandler::handleSharedSettingsChanged
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDataHandler:handleTableRowEditorActivityResultOk
+    //
+    // Sets the pipe number and total length of the last edited row to the passed
+    // in values.
+    //
+
+    public void handleTableRowEditorActivityResultOk(String pPipeNum, String pTotalLength,
+                                                      boolean pRenumberAll)
+    {
+
+        changeValuesAtIndex(lastSelectedRowPos, pPipeNum, pTotalLength, pRenumberAll);
+
+    }//end of TallyDataHandler::handleTableRowEditorActivityResultOk
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

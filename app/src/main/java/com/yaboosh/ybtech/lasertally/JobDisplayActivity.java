@@ -111,6 +111,7 @@ public class JobDisplayActivity extends StandardActivity {
         View foot = this.getLayoutInflater().inflate(R.layout.layout_list_view_footer, null, false);
         ((ListView)findViewById(R.id.tallyDataListView)).addFooterView(foot);
 
+        //DEBUG HSS//
         //initialize list view and add an onClickListener
         //ListView tallyDataListView = (ListView) findViewById(R.id.tallyDataListView);
         /*tallyDataListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -124,6 +125,7 @@ public class JobDisplayActivity extends StandardActivity {
             }
 
         });*/
+        //DEBUG HSS//
 
         //set the job name
         setJobName(jobsHandler.getJobName());
@@ -136,8 +138,6 @@ public class JobDisplayActivity extends StandardActivity {
         //Start the TallyDeviceService
         serviceIntent = new Intent(this, TallyDeviceService.class);
         startService(serviceIntent);
-
-        scrollToBottomOfMeasurementsTable();
 
     }//end of JobDisplayActivity::onCreate
     //-----------------------------------------------------------------------------
@@ -247,7 +247,7 @@ public class JobDisplayActivity extends StandardActivity {
         //which makes it difficult to distinguish the
         //last row between any other rows
         if (focusArray.indexOf(viewInFocus) == startingIndexOfFocusArray) {
-            scrollToBottomOfMeasurementsTable();
+            //DEBUG HSS//scrollToBottomOfMeasurementsTable();
         }
 
     }//end of CreateJobActivity::focusChanged
@@ -322,7 +322,7 @@ public class JobDisplayActivity extends StandardActivity {
         else if (pRequestCode == Keys.ACTIVITY_RESULT_TABLE_ROW_EDITOR) {
 
             if (pResultCode == RESULT_OK) {
-                handleTableRowEditorActivityResultOk(
+                tallyDataHandler.handleTableRowEditorActivityResultOk(
                         pData.getStringExtra(TableRowEditorActivity.PIPE_NUMBER_KEY),
                         pData.getStringExtra(TableRowEditorActivity.TOTAL_LENGTH_KEY),
                         pData.getBooleanExtra(TableRowEditorActivity.RENUMBER_ALL_CHECKBOX_KEY, false));
@@ -635,23 +635,6 @@ public class JobDisplayActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobDisplayActivity::handleTableRowEditorActivityResultOk
-    //
-    // Sets the pipe number and total length of the last edited row to the passed
-    // in values.
-    //
-
-    private void handleTableRowEditorActivityResultOk(String pPipeNum, String pTotalLength,
-                                                      boolean pRenumberAll)
-    {
-
-        tallyDataHandler.changeValuesAtIndex(lastClickedRowPos, pPipeNum, pTotalLength,
-                                                pRenumberAll);
-
-    }//end of JobDisplayActivity::handleTableRowEditorActivityResultOk
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
     // JobDisplayActivity::handleTableRowEditorActivityResultCancel
     //
     // Currently does nothing.
@@ -674,13 +657,8 @@ public class JobDisplayActivity extends StandardActivity {
         lastClickedRowPos = pIndex;
         focusView(pView);
         scrollMeasurementsTable();
-        String pipeNum = tallyDataHandler.getPipeNumberAtIndex(pIndex);
-        String totalLength = tallyDataHandler.getTotalLengthAtIndex(pIndex);
 
-        Intent intent = new Intent(this, TableRowEditorActivity.class);
-        intent.putExtra(TableRowEditorActivity.PIPE_NUMBER_KEY, pipeNum);
-        intent.putExtra(TableRowEditorActivity.TOTAL_LENGTH_KEY, totalLength);
-        startActivityForResult(intent, Keys.ACTIVITY_RESULT_TABLE_ROW_EDITOR);
+        //DEBUG HSS// -- REMOVE THIS FUNCTION
 
     }//end of JobDisplayActivity::handleTableRowPressed
     //-----------------------------------------------------------------------------
@@ -762,26 +740,6 @@ public class JobDisplayActivity extends StandardActivity {
         });*/
 
     }//end of JobDisplayActivity::scrollMeasurementsTable
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobDisplayActivity::scrollToBottomOfMeasurementsTable
-    //
-    // Scrolls the ScrollView containing the measurements table all the way to the
-    // bottom.
-    //
-
-    void scrollToBottomOfMeasurementsTable() {
-
-        //WIP HSS// -- should scroll listview
-        /*final ScrollView sv = (ScrollView)findViewById(R.id.measurementsTableScrollView);
-
-        handler.post(new Runnable() {
-            @Override
-            public void run() { sv.fullScroll(View.FOCUS_DOWN); }
-        });*/
-
-    }//end of JobDisplayActivity::scrollToBottomOfMeasurementsTable
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

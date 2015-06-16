@@ -163,7 +163,7 @@ public abstract class TallyData {
     //-----------------------------------------------------------------------------
     // TallyData::addData
     //
-    // Calculates and stores a new data entry.
+    // Calculates and stores a new data entry at the passed in index.
     //
     // Used when the user manually edits a row.
     //
@@ -189,7 +189,7 @@ public abstract class TallyData {
         if (pRenumber) { renumberAllPipeNumbersAfterIndex(pIndex, pipe); }
 
         //store the data
-        storeData(pipe, adjusted, total);
+        replaceData(pIndex, pipe, adjusted, total);
 
     }//end of TallyData::addData
     //-----------------------------------------------------------------------------
@@ -628,8 +628,8 @@ public abstract class TallyData {
         int pipeNumber = Integer.parseInt(pPipe);
         boolean pastIndex = false;
 
-        for (int i=0; i<pipeNumbers.size()-1; i++) {
-            if (pastIndex) { pipeNumbers.add(Integer.toString(++pipeNumber));  }
+        for (int i=0; i<pipeNumbers.size(); i++) {
+            if (pastIndex) { pipeNumbers.set(i, Integer.toString(++pipeNumber));  }
             if (i == pIndex) { pastIndex = true; }
         }
 
@@ -667,9 +667,29 @@ public abstract class TallyData {
     public void removeLastDataEntry()
     {
 
-        removeData(pipeNumbers.size()-1);
+        removeData(pipeNumbers.size() - 1);
 
     }//end of TallyData::removeLastDataEntry
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyData::replaceData
+    //
+    // Replaces the tally data at the passed index in each of the lists with the
+    // passed in data.
+    //
+
+    private void replaceData(int pIndex, String pPipe, String pAdjusted, String pTotal)
+    {
+
+        pipeNumbers.set(pIndex, pPipe);
+        adjustedValues.set(pIndex, pAdjusted);
+        totalLengthValues.set(pIndex, pTotal);
+
+        calculateTotals();
+        saveDataToFile();
+
+    }//end of TallyData::replaceData
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -844,9 +864,8 @@ public abstract class TallyData {
     // file.
     //
 
-    public void storeData(String pPipe, String pAdjusted, String pTotal)
+    private void storeData(String pPipe, String pAdjusted, String pTotal)
     {
-
 
         pipeNumbers.add(pPipe);
         adjustedValues.add(pAdjusted);
