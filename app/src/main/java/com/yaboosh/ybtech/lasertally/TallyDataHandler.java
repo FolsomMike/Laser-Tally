@@ -20,6 +20,7 @@ package com.yaboosh.ybtech.lasertally;
 //
 
 import android.graphics.Color;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.AdapterView;
@@ -106,8 +107,8 @@ public class TallyDataHandler {
 
         //assign a click listener to the ListView
         l.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            adapter.setSelection(position, view, true);
+            public void onItemClick(AdapterView<?> pParent, View pView, int pPos, long pId) {
+                selectListViewItem(pPos, pView);
             }
         });
 
@@ -327,6 +328,32 @@ public class TallyDataHandler {
         displayTallyData();
 
     }//end of TallyDataHandler::removeLastDataEntry
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDataHandler::selectListViewItem
+    //
+    // Selects the passed in ListView item and scrolls the ListView to bring it
+    // into view.
+    //
+
+    private void selectListViewItem(int pPos, View pView)
+    {
+
+        adapter.setSelection(pPos, pView, true);
+
+        final int selectedPos = pPos;
+        final ListView l = (ListView)parentActivity.findViewById(R.id.tallyDataListView);
+        l.post(new Runnable() {
+            @Override
+            public void run() {
+                double numVis = l.getLastVisiblePosition() - l.getFirstVisiblePosition();
+                int adjust = (int)Math.ceil((numVis-1)/2);
+                l.setSelection(selectedPos - adjust);
+            }
+        });
+
+    }//end of TallyDataHandler::selectListViewItem
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
