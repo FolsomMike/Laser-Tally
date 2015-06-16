@@ -361,7 +361,7 @@ public class StandardActivity extends Activity {
     // Moves the focuses to the next view in the focus array.
     //
 
-    private void handleArrowDownKeyPressed() {
+    protected void handleArrowDownKeyPressed() {
 
         if (focusArray.isEmpty()) { return; }
 
@@ -387,7 +387,7 @@ public class StandardActivity extends Activity {
     // Moves the focuses to the previous view in the focus array.
     //
 
-    private void handleArrowUpKeyPressed() {
+    protected void handleArrowUpKeyPressed() {
 
         if (focusArray.isEmpty()) { return; }
 

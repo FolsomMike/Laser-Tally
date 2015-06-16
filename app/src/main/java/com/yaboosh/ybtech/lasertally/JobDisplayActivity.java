@@ -51,9 +51,8 @@ public class JobDisplayActivity extends StandardActivity {
 
     public static AtomicInteger activitiesLaunched = new AtomicInteger(0);
 
-    private Handler handler = new Handler();
-
-    TallyDataHandler tallyDataHandler;
+    private TallyDataHandler tallyDataHandler;
+    private MultiColumnListView listView;
 
     Button measureConnectButton;
     Button redoButton;
@@ -104,6 +103,7 @@ public class JobDisplayActivity extends StandardActivity {
 
         super.onCreate(pSavedInstanceState);
 
+        listView = (MultiColumnListView)findViewById(R.id.tallyDataListView);
         measureConnectButton = (Button)findViewById(R.id.measureConnectButton);
         redoButton = (Button)findViewById(R.id.redoButton);
 
@@ -111,28 +111,11 @@ public class JobDisplayActivity extends StandardActivity {
         View foot = this.getLayoutInflater().inflate(R.layout.layout_list_view_footer, null, false);
         ((ListView)findViewById(R.id.tallyDataListView)).addFooterView(foot);
 
-        //DEBUG HSS//
-        //initialize list view and add an onClickListener
-        //ListView tallyDataListView = (ListView) findViewById(R.id.tallyDataListView);
-        /*tallyDataListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> pParent, final View pView, int pPos, long pId)
-            {
-
-                handleTableRowPressed(pPos, pView);
-
-            }
-
-        });*/
-        //DEBUG HSS//
-
         //set the job name
         setJobName(jobsHandler.getJobName());
 
-        //Create a TallyDataHandler and give it its own MeasurementsTableHandler and a reference
-        //to jobsHandler
-        tallyDataHandler = new TallyDataHandler(this, sharedSettings, jobsHandler);
+        //initialize the tally data handler
+        tallyDataHandler = new TallyDataHandler(this, sharedSettings, jobsHandler, listView);
         tallyDataHandler.init();
 
         //Start the TallyDeviceService
@@ -177,8 +160,6 @@ public class JobDisplayActivity extends StandardActivity {
 
         bindService(serviceIntent, connection, BIND_AUTO_CREATE);
 
-        scrollMeasurementsTable();
-
     }//end of JobDisplayActivity::onResume
     //-----------------------------------------------------------------------------
 
@@ -214,43 +195,29 @@ public class JobDisplayActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // CreateJobActivity::focusChanged
+    // StandardActivity::handleArrowDownKeyPressed
     //
-    // Called when the focus changes from one view to another.
-    //
-    // Changes the background color of all the non-focused TableRows in the focus
-    // array to measurementsTableColor. The focused TableRow's background
-    // color is changed to selectedTableRowColor.
-    //
-    // We have to manually handle the changing of backgrounds because Android
-    // has issues the state options ("state_focused", etc.) has issues when
-    // it comes to focusing; it doesn't always work.
-    //
-    // Also scrolls to the bottom of the measurements table if the last row has
-    // been focused.
+    // Selects the next row in the tally data list view.
     //
 
-    @Override
-    protected void focusChanged() {
+    protected void handleArrowDownKeyPressed() {
 
-        for (View v : focusArray) {
-            int c = getResources().getColor(R.color.measurementsTableColor);
-            if (v == viewInFocus) { c = getResources().getColor(R.color.selectedTableRowColor); }
-            v.setBackgroundColor(c);
-        }
+        listView.selectNextRow();
 
-        //scroll to the bottom of the table if the
-        //view in focus is the last row.
-        //This is done because when the user is using
-        //only the keyboard, navigating to the last row
-        //doesn't make the bottom border line visible
-        //which makes it difficult to distinguish the
-        //last row between any other rows
-        if (focusArray.indexOf(viewInFocus) == startingIndexOfFocusArray) {
-            //DEBUG HSS//scrollToBottomOfMeasurementsTable();
-        }
+    }//end of StandardActivity::handleArrowDownKeyPressed
+    //-----------------------------------------------------------------------------
 
-    }//end of CreateJobActivity::focusChanged
+    //-----------------------------------------------------------------------------
+    // StandardActivity::handleArrowUpKeyPressed
+    //
+    // Selects the previous row in the tally data list view.
+    //
+
+    protected void handleArrowUpKeyPressed() {
+
+        listView.selectPreviousRow();
+
+    }//end of StandardActivity::handleArrowUpKeyPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -290,7 +257,7 @@ public class JobDisplayActivity extends StandardActivity {
     @Override
     protected void handleF3KeyPressed() {
 
-        performClickOnView(viewInFocus);
+        listView.clickSelectedRow();
 
     }//end of JobDisplayActivity::handleF3KeyPressed
     //-----------------------------------------------------------------------------
@@ -646,53 +613,6 @@ public class JobDisplayActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobDisplayActivity::handleTableRowPressed
-    //
-    // Gets the values in the Pipe # and Adjusted columns and sends the
-    // values to the EditPipeRowActivity to be displayed to and edited by the user.
-    //
-
-    public void handleTableRowPressed(int pIndex, View pView) {
-
-        lastClickedRowPos = pIndex;
-        focusView(pView);
-        scrollMeasurementsTable();
-
-        //DEBUG HSS// -- REMOVE THIS FUNCTION
-
-    }//end of JobDisplayActivity::handleTableRowPressed
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobDisplayActivity::putTableRowsIntoFocusArray
-    //
-    // Retrieves all of the TableRows inside of the measurements table and puts
-    // them into the focus array, bottom to top.
-    //
-
-    void putTableRowsIntoFocusArray() {
-
-        focusArray.clear();
-
-        //WIP HSS// -- SHOULD PUT LISTVIEW CHILDREN INTO FOCUS ARRAY
-
-        // For each child in the table, check to see if it is
-        // a TableRow. TableRows are added to the focus array.
-        /*for (int i=0; i<table.getChildCount(); i++) {
-
-            View child = table.getChildAt(i);
-
-            if (child.getId() == R.id.measurementsTableRow) { focusArray.add(child); }
-
-        }*/
-
-        //start the focus array at the bottom of the table
-        startingIndexOfFocusArray = focusArray.size()-1;
-
-    }//end of JobDisplayActivity::putTableRowsIntoFocusArray
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
     // JobDisplayActivity::registerWithService
     //
     // Sends a message to the TallyDeviceService to register.
@@ -717,32 +637,6 @@ public class JobDisplayActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobDisplayActivity::scrollMeasurementsTable
-    //
-    // Scrolls the ScrollView containing the measurements table to either the view
-    // in focus or to the bottom, if no view is focused.
-    //
-
-    void scrollMeasurementsTable() {
-
-        //WIP HSS// -- should scroll listview
-        /*final ScrollView sv = (ScrollView)findViewById(R.id.measurementsTableScrollView);
-
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (viewInFocus != null) {
-                    sv.scrollTo(0, viewInFocus.getBottom() - sv.getHeight() / 2);
-                } else {
-                    sv.fullScroll(View.FOCUS_DOWN);
-                }
-            }
-        });*/
-
-    }//end of JobDisplayActivity::scrollMeasurementsTable
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
     // JobDisplayActivity::sendMeasureCommandToTallyDevice
     //
     // Sends a message to the tally device service to send the measuring command
@@ -762,8 +656,6 @@ public class JobDisplayActivity extends StandardActivity {
         //measuring process
         setMeasureConnectButtonEnabled(false);
         setRedoButtonEnabled(false);
-
-        putTableRowsIntoFocusArray();
 
     }//end of JobDisplayActivity::sendMeasureCommandToTallyDevice
     //-----------------------------------------------------------------------------

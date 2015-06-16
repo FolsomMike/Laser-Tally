@@ -16,16 +16,22 @@ package com.yaboosh.ybtech.lasertally;
 //-----------------------------------------------------------------------------
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
+import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -40,28 +46,40 @@ public class MultiColumnListView extends ListView {
     int layout;
     int numberOfColumns;
     ArrayList<Integer> columnIds;
-    ArrayList<SparseArray<String>> list;
+    ArrayList<SparseArray<String>> list = null;
 
     private MultiColumnAdapter adapter;
 
     //Values for row selection
+    public static final int SCROLL_MODE_NONE = 0;
+    public static final int SCROLL_MODE_JUMP = 1;
+    public static final int SCROLL_MODE_SMOOTH = 2;
+    private final int normalRowColor = Color.parseColor("#FFFFFF");
+    private final int selectedRowColor = Color.parseColor("#0099FF");
     private static int selectedPos = -1;
     private static View selectedView = null;
-    private static int selectedVisiblePosition = -1;
+    private static ArrayList<View> recycledViews = new ArrayList<View>();
 
     //holder to cache views used with the adapter
     private static class ViewHolder { SparseArray<TextView> columns = new SparseArray<TextView>(); }
 
     //-----------------------------------------------------------------------------
-    // MultiColumnListView::MultiColumnListView (constructor)
+    // MultiColumnListView::MultiColumnListView (constructors)
     //
 
-    public MultiColumnListView(Activity pActivity)
-    {
+    public MultiColumnListView(Context context) {
+        super(context);
+    }
 
-        super(pActivity);
+    public MultiColumnListView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
 
-    }//end of MultiColumnListView::MultiColumnListView(constructor)
+    public MultiColumnListView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+    }
+
+    //end of MultiColumnListView::MultiColumnListView(constructors)
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -71,19 +89,18 @@ public class MultiColumnListView extends ListView {
     //
 
     public void init(Activity pActivity, int pLayout, int pNumberOfColumns,
-                              ArrayList<Integer> pColumnIds, ArrayList<SparseArray<String>> pList)
+                      ArrayList<Integer> pColumnIds)
     {
 
         activity = pActivity;
         layout = pLayout;
         numberOfColumns = pNumberOfColumns;
         columnIds = pColumnIds;
-        list = pList;
 
         adapter = new MultiColumnAdapter();
         setAdapter(adapter);
 
-        selectRow();
+        restoreSelection();
 
     }//end of MultiColumnListView::init
     //-----------------------------------------------------------------------------
@@ -91,63 +108,273 @@ public class MultiColumnListView extends ListView {
     //-----------------------------------------------------------------------------
     // MultiColumnListView::clearSelectionValues
     //
-    // Clears the selection values by setting back them to their default values.
+    // Clears values pertaining to row selection by setting back them to their
+    // default values.
+    //
+    // Intended for use when a new job is opened or created -- when the new job
+    // is displayed, there will be no views selected.
     //
 
-    public static void clearSelectionValues() {
+    public static void clearSelectionValues()
+    {
 
         selectedPos = -1;
         selectedView = null;
+        recycledViews.clear();
 
     }//end of MultiColumnListView::clearSelectionValues
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // MultiColumnAdapter::clickSelectedRow
+    //
+    // Brings the selected row into sight and performs a click on it.
+    //
+
+    public void clickSelectedRow()
+    {
+
+        if (selectedView == null || selectedPos == -1) { return; }
+
+        //center the currently selected row (if there is one)
+        int numAbove = (int)Math.floor((getLastVisiblePosition()-getFirstVisiblePosition())/2);
+        if (selectedPos > -1) { jumpToRow(selectedPos - numAbove); }
+
+        //click on the selected row now
+        //that it's in sight
+        selectedView.performClick();
+
+    }//end of MultiColumnAdapter::clickSelectedRow
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MultiColumnListView::handleRowClicked
+    //
+    // Selects the row associated with the passed in data.
+    //
+    // Should be called from an onclicklistener each time the user clicks on a
+    // ListView item/row.
+    //
+
+    public void handleRowClicked(int pPos, View pView)
+    {
+
+        selectRow(pPos, pView, SCROLL_MODE_JUMP);
+
+    }//end of MultiColumnListView::handleRowClicked
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MultiColumnAdapter::highlightRow
+    //
+    // Highlights or unhighlights the passed in view, depending on the passed in
+    // boolean.
+    //
+
+    private void highlightRow(View pView, boolean pSelected)
+    {
+
+        if (pView == null) { return; }
+
+        if (pSelected) { pView.setBackgroundColor(selectedRowColor); }
+        else { pView.setBackgroundColor(normalRowColor); }
+
+    }//end of MultiColumnAdapter::highlightRow
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MultiColumnAdapter::jumpToRow
+    //
+    // Brings the row at the passed in position into sight at the top of the
+    // ListView by "jumping".
+    //
+
+    private void jumpToRow(final int pPos)
+    {
+
+        post(new Runnable() { @Override public void run() { setSelection(pPos); } });
+
+    }//end of MultiColumnAdapter::jumpToRow
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MultiColumnAdapter::restoreSelection
+    //
+    // If a ListView row was previously selected, it is reselected and brought into
+    // view by "jumping". If a row was not previously selected, the ListView jumps
+    // down to display the last row.
+    //
+
+    public void restoreSelection()
+    {
+
+        if (selectedPos == -1 || selectedView == null) { return; }
+        
+        selectRow(selectedPos, selectedView, SCROLL_MODE_JUMP);
+
+    }//end of MultiColumnAdapter::restoreSelection
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MultiColumnAdapter::scrollToRow
+    //
+    // Brings the row at the passed in position into sight at the top of the
+    // ListView by scrolling.
+    //
+
+    private void scrollToRow(final int pPos)
+    {
+
+        post(new Runnable() { @Override public void run() { smoothScrollToPosition(pPos); } });
+
+    }//end of MultiColumnAdapter::jumpToRow
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MultiColumnAdapter::selectLastRow
+    //
+    // Selects and highlights the last row in the ListView.
+    //
+
+    public void selectLastRow()
+    {
+
+        int lastRowIndex = getCount() - getFooterViewsCount() - 1;
+
+        //return if the last row is already selected
+        if (selectedPos >= lastRowIndex) { return; }
+
+        //jump to the bottom of the ListView
+        jumpToRow(lastRowIndex);
+
+        int numVis = getLastVisiblePosition() - getFirstVisiblePosition() - getFooterViewsCount();
+        selectRow(lastRowIndex, recycledViews.get(numVis), SCROLL_MODE_NONE);
+
+    }//end of MultiColumnAdapter::selectLastRow
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // MultiColumnListView::selectNextRow
     //
-    // //WIP HSS//
+    // Selects and highlights the next row in the ListView.
+    //
+    // To highlight the next row, the currently selected row is brought into sight
+    // and unhighlighted. Then, the next row is highlighted and scrolled to be
+    // centered.
+    //
+    // If a row is not currently selected, the last one in the ListView is selected.
     //
 
-    public void selectNextRow() {
+    public void selectNextRow()
+    {
 
-        zzz
-        setSelectionFromTop(pPos, getHeight()/2);
+        if (selectedView == null || selectedPos == -1) { selectLastRow(); return; }
 
+        //return if the last row is selected
+        if (selectedPos >= getCount()-getFooterViewsCount()-1) { return; }
 
-        adapter.setSelection();
+        //center the currently selected row (if there is one)
+        int numAbove = (int)Math.floor((getLastVisiblePosition()-getFirstVisiblePosition())/2);
+        if (selectedPos > -1) { jumpToRow(selectedPos - numAbove); }
+
+        int newRecycledViewIndex = recycledViews.indexOf(selectedView)+1;
+        if (newRecycledViewIndex == recycledViews.size()) { newRecycledViewIndex = 0; }
+        selectRow(selectedPos+1, recycledViews.get(recycledViews.indexOf(selectedView)+1),
+                    SCROLL_MODE_JUMP);
 
     }//end of MultiColumnListView::selectNextRow
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // MultiColumnListView::selectPreviousRow
+    //
+    // Selects and highlights the previous row in the ListView.
+    //
+    // To highlight the previous row, the currently selected row is brought into
+    // sight and unhighlighted. Then, the previous row is highlighted and scrolled
+    // to be centered.
+    //
+    // If a row is not currently selected, the last one in the ListView is selected.
+    //
+
+    public void selectPreviousRow()
+    {
+
+        if (selectedView == null || selectedPos == -1) { selectLastRow(); return; }
+
+        //return if the first row is selected
+        if (selectedPos == 0) { return; }
+
+        //center the currently selected row (if there is one)
+        int numAbove = (int)Math.floor((getLastVisiblePosition()-getFirstVisiblePosition())/2);
+        if (selectedPos > -1) { jumpToRow(selectedPos - numAbove); }
+
+        int newRecycledViewIndex = recycledViews.indexOf(selectedView)-1;
+        if (newRecycledViewIndex < 0) { newRecycledViewIndex = recycledViews.size()-1; }
+        selectRow(selectedPos-1, recycledViews.get(newRecycledViewIndex), SCROLL_MODE_JUMP);
+
+    }//end of MultiColumnListView::selectPreviousRow
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // MultiColumnListView::selectRow
     //
-    // Highlights and centers the row at the passed in position without scrolling.
+    // Highlights and centers the row at the passed in position.
+    //
+    // If the passed in boolean is true, then the new selected row is scrolled
+    // smoothly into sight; if false, the new selected row is considered to
+    // already be in sight (no scrolling necessary).
     //
 
-    public void selectRow(int pPos) {
+    public void selectRow(int pPos, View pV, int pScrollMode)
+    {
 
-        setSelectionFromTop(pPos, getHeight()/2);
+        //unhighlight the currently selected row (if there is one)
+        if (selectedView != null) { highlightRow(selectedView, false); }
 
+        //set selected values to the passed in values
+        selectedView = pV;
+        selectedPos = pPos;
 
-        adapter.setSelection();
+        //highlight the new selected row
+        highlightRow(selectedView, true);
+
+        //center the new selected row
+        int numAbove = (int)Math.floor((getLastVisiblePosition()-getFirstVisiblePosition())/2);
+        int pos = selectedPos - numAbove;
+        switch (pScrollMode) {
+
+            case SCROLL_MODE_NONE:
+                break;
+
+            case SCROLL_MODE_JUMP:
+                jumpToRow(pos);
+                break;
+
+            case SCROLL_MODE_SMOOTH:
+                scrollToRow(pos);
+
+        }
+
+        adapter.notifyDataSetChanged();
 
     }//end of MultiColumnListView::selectRow
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MultiColumnListView::selectRowSmoothly
+    // MultiColumnListView::setList
     //
-    // Highlights and centers the row at the passed in position by scrolling.
+    // Sets the display list to the new passed in list and notifies the adapter.
     //
 
-    public void selectRowSmoothly(int pPos) {
+    public void setList(ArrayList<SparseArray<String>> pList)
+    {
 
-        smoothScrollToPositionFromTop(pPos, getHeight()/2);
+        list = pList;
 
-        getVisi
+        adapter.notifyDataSetChanged();
 
-    }//end of MultiColumnListView::selectRowSmoothly
+    }//end of MultiColumnListView::setList
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -176,28 +403,16 @@ public class MultiColumnListView extends ListView {
         //-----------------------------------------------------------------------------
 
         //-----------------------------------------------------------------------------
-        // MultiColumnAdapter::restoreSelection
-        //
-        // If there a ListView row was selected, it is reselected.
-        //
-        // This can be used to ensure that
-        //
-
-        public void restoreSelection() {
-
-            setSelection(selectedPos, selectedView, true);
-
-        }//end of MultiColumnAdapter::restoreSelection
-        //-----------------------------------------------------------------------------
-
-        //-----------------------------------------------------------------------------
         // MultiColumnAdapter::getCount
         //
 
         @Override
-        public int getCount() {
+        public int getCount()
+        {
 
-            return list.size();
+            int count = 0;
+            if (list != null) { count = list.size(); }
+            return count;
 
         }//end of MultiColumnAdapter::getCount
         //-----------------------------------------------------------------------------
@@ -233,8 +448,8 @@ public class MultiColumnListView extends ListView {
             else { holder = (ViewHolder)view.getTag(); }
 
             //set the background color of the row depending on whether it's highlighted or not
-            if (pPosition == selectedPos) { view.setBackgroundColor(Color.parseColor("#0099FF")); }
-            else { view.setBackgroundColor(Color.parseColor("#FFFFFF")); }
+            if (pPosition == selectedPos) { view.setBackgroundColor(selectedRowColor); }
+            else { view.setBackgroundColor(normalRowColor); }
 
             //set the text of the columns
             for (int i=0; i<numberOfColumns; i++) {
@@ -242,39 +457,10 @@ public class MultiColumnListView extends ListView {
                                                 .setText(list.get(pPosition).get(columnIds.get(i)));
             }
 
+            recycledViews.add(view);
             return view;
 
         }//end of MultiColumnAdapter::getView
-        //-----------------------------------------------------------------------------
-
-        //-----------------------------------------------------------------------------
-        // MultiColumnAdapter::setSelection
-        //
-        // Selects or deselects the passed in view at the passed in position,
-        // depending on the passed in boolean.
-        //
-
-        public void setSelection(int pPos, View pView, boolean pSelected) {
-
-            if (pPos == -1 || pView == null) { return; }
-
-            if (pSelected) {
-                selectedPos = pPos;
-                pView.setBackgroundColor(Color.parseColor("#0099FF"));
-                if (selectedView != null) {
-                    selectedView.setBackgroundColor(Color.parseColor("#FFFFFF"));
-                }
-                selectedView = pView;
-            }
-            else {
-                pView.setBackgroundColor(Color.parseColor("#FFFFFF"));
-                if (selectedPos == pPos) { selectedPos = -1; }
-                if (selectedView == pView) { selectedView = null; }
-            }
-
-            notifyDataSetChanged();
-
-        }//end of MultiColumnAdapter::setSelection
         //-----------------------------------------------------------------------------
 
     }//end of class MultiColumnAdapter

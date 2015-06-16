@@ -25,7 +25,6 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -49,25 +48,24 @@ public class TallyDataHandler {
     private TallyData metricTallyData;
 
     //Variables used for the tally data ListView
-    private ListView tallyDataListView;
-    private MultiColumnListViewAdapter adapter;
-    private int lastSelectedRowPos = -1;
-    ArrayList<SparseArray<String>> tallyDataList = new ArrayList<SparseArray<String>>();
+    private MultiColumnListView listView;
     private int pipeNumberColumnId;
     private int totalLengthColumnId;
     private int adjustedColumnId;
+    private int editedRowPos;
 
     //-----------------------------------------------------------------------------
     // TallyDataHandler::TallyDataHandler (constructor)
     //
 
     public TallyDataHandler(JobDisplayActivity pParentActivity, SharedSettings pSet,
-                                JobsHandler pJobsHandler)
+                                JobsHandler pJobsHandler, MultiColumnListView pListView)
     {
 
         parentActivity = pParentActivity;
         sharedSettings = pSet;
         jobsHandler = pJobsHandler;
+        listView = pListView;
 
     }//end of TallyDataHandler::TallyDataHandler (constructor)
     //-----------------------------------------------------------------------------
@@ -87,37 +85,30 @@ public class TallyDataHandler {
 
         setUnitSystem(sharedSettings.getUnitSystem());
 
+        //WIP HSS// -- TEST TO SEE IF THESE CAN BE INITIALIZED OUTSIDE OF THIS FUNCTION
         pipeNumberColumnId = R.id.COLUMN_PIPE_NUMBER;
         totalLengthColumnId = R.id.COLUMN_TOTAL_LENGTH;
         adjustedColumnId = R.id.COLUMN_ADJUSTED;
 
-        tallyDataListView = (ListView)parentActivity.findViewById(R.id.tallyDataListView);
-
-        //initialize the adapter and assign it to the ListView
+        //load a list with ids to be used for each column
         ArrayList<Integer> ids = new ArrayList<Integer>();
         ids.add(pipeNumberColumnId);
         ids.add(totalLengthColumnId);
         ids.add(adjustedColumnId);
-
-        adapter = new MultiColumnListViewAdapter(parentActivity, R.layout.layout_list_view_row, 3,
-                                                    ids, tallyDataList);
-        tallyDataListView.setAdapter(adapter);
-        //restore the last selected ListView
-        //row, if there is one
-        adapter.restoreSelection();
-        //end of initialize the adapter and assign it to the ListView
-
-        displayTallyData();
+        listView = (MultiColumnListView) parentActivity.findViewById(R.id.tallyDataListView);
+        listView.init(parentActivity, R.layout.layout_list_view_row, 3, ids);
 
         //assign a click listener to the ListView
-        tallyDataListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
             public void onItemClick(AdapterView<?> pParent, View pView, int pPos, long pId) {
                 handleListViewRowClicked(pPos, pView);
             }
         });
 
-        //jump to bottom of listview
-        jumpToPositionInTallyDataListView(tallyDataListView.getCount() - 1);
+        displayTallyData();
+
+        listView.restoreSelection();
 
     }//end of TallyDataHandler::init
     //-----------------------------------------------------------------------------
@@ -142,7 +133,7 @@ public class TallyDataHandler {
 
         displayTallyData();
 
-        selectLastRowInTallyDataListView();
+        listView.selectLastRow();
 
     }//end of TallyDataHandler::addDataEntry
     //-----------------------------------------------------------------------------
@@ -187,8 +178,6 @@ public class TallyDataHandler {
 
         readDataFromLists();
 
-        adapter.notifyDataSetChanged();
-
         //parentActivity.scrollMeasurementsTable();
         //DEBUG HSS//parentActivity.putTableRowsIntoFocusArray();
 
@@ -228,20 +217,22 @@ public class TallyDataHandler {
     //-----------------------------------------------------------------------------
     // TallyDataHandler::handleListViewRowClicked
     //
-    // Launches the TableRowEditorActivity, sending it the data associated with
-    // the clicked View, and jumps to bring the clicked View into the user's view.
+    // Calls a handler function for the ListView, and launches an activity to
+    // edit the data associated with the clicked row.
     //
 
     private void handleListViewRowClicked(int pPos, View pView)
     {
 
-        lastSelectedRowPos = pPos;
+        editedRowPos = pPos;
 
-        selectListViewRow(pPos, pView);
+        listView.handleRowClicked(pPos, pView);
 
+        //extract data from the clicked row
         String pipeNum = getPipeNumberAtIndex(pPos);
         String totalLength = getTotalLengthAtIndex(pPos);
 
+        //start an activity to edit the data in the row
         Intent intent = new Intent(parentActivity, TableRowEditorActivity.class);
         intent.putExtra(TableRowEditorActivity.PIPE_NUMBER_KEY, pipeNum);
         intent.putExtra(TableRowEditorActivity.TOTAL_LENGTH_KEY, totalLength);
@@ -319,42 +310,22 @@ public class TallyDataHandler {
                                                       boolean pRenumberAll)
     {
 
-        changeValuesAtIndex(lastSelectedRowPos, pPipeNum, pTotalLength, pRenumberAll);
+        changeValuesAtIndex(editedRowPos, pPipeNum, pTotalLength, pRenumberAll);
 
     }//end of TallyDataHandler::handleTableRowEditorActivityResultOk
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyDataHandler::jumpToPositionInTallyDataListView
-    //
-    // Tells the tally data ListView to scroll (jump) to the passed in position,
-    // displaying it at the top of the ListView.
-    //
-
-    private void jumpToPositionInTallyDataListView(int pPos)
-    {
-
-        final int pos = pPos;
-
-        tallyDataListView.post(new Runnable() {
-            @Override
-            public void run() { tallyDataListView.setSelection(pos); }
-        });
-
-    }//end of TallyDataHandler::jumpToPositionInTallyDataListView
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
     // TallyDataHandler::readDataFromLists
     //
-    // Reads the tally data from their lists and puts them into the list used with
-    // the ListView.
+    // Reads the tally data from the lists and sends it to the list view to be
+    // displayed.
     //
 
     private void readDataFromLists()
     {
 
-        tallyDataList.clear();
+        ArrayList<SparseArray<String>> list = new ArrayList<SparseArray<String>>();
 
         for (int i=0; i<tallyData.getPipeNumbers().size(); i++) {
 
@@ -362,9 +333,10 @@ public class TallyDataHandler {
             map.put(pipeNumberColumnId, tallyData.getPipeNumber(i));
             map.put(totalLengthColumnId, tallyData.getTotalLengthValue(i));
             map.put(adjustedColumnId, tallyData.getAdjustedValue(i));
-            tallyDataList.add(map);
-
+            list.add(map);
         }
+
+        listView.setList(list);
 
     }//end of TallyDataHandler::readDataFromLists
     //-----------------------------------------------------------------------------
@@ -384,50 +356,9 @@ public class TallyDataHandler {
 
         displayTallyData();
 
-        selectLastRowInTallyDataListView();
+        listView.selectLastRow();
 
     }//end of TallyDataHandler::removeLastDataEntry
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // TallyDataHandler::selectLastRowInTallyDataListView
-    //
-    // Selects the last row in the tally data ListView and then brings it into
-    // view.
-    //
-
-    private void selectLastRowInTallyDataListView()
-    {
-
-        //subtract two because the footer is counted
-        final int count = tallyDataListView.getCount() - 2;
-        jumpToPositionInTallyDataListView(count);
-        int numVis = tallyDataListView.getLastVisiblePosition()
-                                                    - tallyDataListView.getFirstVisiblePosition()-1;
-        selectListViewRow(count, tallyDataListView.getChildAt(numVis));
-
-    }//end of TallyDataHandler::selectLastRowInTallyDataListView
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // TallyDataHandler::selectListViewRow
-    //
-    // Selects the passed in ListView row and scrolls the ListView to bring it
-    // into view.
-    //
-
-    private void selectListViewRow(int pPos, View pView)
-    {
-
-        adapter.setSelection(pPos, pView, true);
-
-        //bring the selected row to the center of the ListView
-        double numVis = tallyDataListView.getLastVisiblePosition()
-                                                    - tallyDataListView.getFirstVisiblePosition();
-        int adjust = (int)Math.ceil((numVis-1)/2);
-        jumpToPositionInTallyDataListView(pPos - adjust);
-
-    }//end of TallyDataHandler::selectListViewRow
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
