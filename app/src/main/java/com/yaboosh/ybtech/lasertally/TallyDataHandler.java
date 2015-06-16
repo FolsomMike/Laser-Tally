@@ -28,7 +28,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class TallyDataHandler {
 
@@ -49,6 +48,7 @@ public class TallyDataHandler {
     private TallyData metricTallyData;
 
     //Variables used for the tally data ListView
+    ListView tallyDataListView;
     MultiColumnListViewAdapter adapter;
     ArrayList<SparseArray<String>> tallyDataList = new ArrayList<SparseArray<String>>();
     private int pipeNumberColumnId;
@@ -89,6 +89,8 @@ public class TallyDataHandler {
         totalLengthColumnId = R.id.COLUMN_TOTAL_LENGTH;
         adjustedColumnId = R.id.COLUMN_ADJUSTED;
 
+        tallyDataListView = (ListView)parentActivity.findViewById(R.id.tallyDataListView);
+
         //initialize the adapter and assign it to the ListView
         ArrayList<Integer> ids = new ArrayList<Integer>();
         ids.add(pipeNumberColumnId);
@@ -97,22 +99,23 @@ public class TallyDataHandler {
 
         adapter = new MultiColumnListViewAdapter(parentActivity, R.layout.layout_list_view_row, 3,
                                                     ids, tallyDataList);
-
-        final ListView l = (ListView)parentActivity.findViewById(R.id.tallyDataListView);
-        l.setAdapter(adapter);
-
+        tallyDataListView.setAdapter(adapter);
+        //restore the last selected ListView
+        //row, if there is one
         adapter.restoreSelection();
-
         //end of initialize the adapter and assign it to the ListView
 
+        displayTallyData();
+
         //assign a click listener to the ListView
-        l.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        tallyDataListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> pParent, View pView, int pPos, long pId) {
-                selectListViewItem(pPos, pView);
+                selectListViewRow(pPos, pView);
             }
         });
 
-        displayTallyData();
+        //jump to bottom of listview
+        jumpToPositionInTallyDataListView(tallyDataListView.getCount() - 1);
 
     }//end of TallyDataHandler::init
     //-----------------------------------------------------------------------------
@@ -136,6 +139,8 @@ public class TallyDataHandler {
         metricTallyData.addData(pTotal);
 
         displayTallyData();
+
+        selectLastRowInTallyDataListView();
 
     }//end of TallyDataHandler::addDataEntry
     //-----------------------------------------------------------------------------
@@ -184,17 +189,6 @@ public class TallyDataHandler {
 
         //parentActivity.scrollMeasurementsTable();
         //DEBUG HSS//parentActivity.putTableRowsIntoFocusArray();
-
-        //WIP HSS// -- SHOULD BE IN ITS OWN FUNCTION
-        //scroll to bottom of listview
-        final ListView l = (ListView)parentActivity.findViewById(R.id.tallyDataListView);
-        l.post(new Runnable() {
-            @Override
-            public void run() {
-                // Select the last row so it will scroll into view...
-                l.smoothScrollToPosition(l.getCount() - 1);
-            }
-        });
 
         setAndCheckTotals();
 
@@ -288,6 +282,26 @@ public class TallyDataHandler {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // TallyDataHandler::jumpToPositionInTallyDataListView
+    //
+    // Tells the tally data ListView to scroll (jump) to the passed in position,
+    // displaying it at the top of the ListView.
+    //
+
+    private void jumpToPositionInTallyDataListView(int pPos)
+    {
+
+        final int pos = pPos;
+
+        tallyDataListView.post(new Runnable() {
+            @Override
+            public void run() { tallyDataListView.setSelection(pos); }
+        });
+
+    }//end of TallyDataHandler::jumpToPositionInTallyDataListView
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // TallyDataHandler::readDataFromLists
     //
     // Reads the tally data from their lists and puts them into the list used with
@@ -331,29 +345,44 @@ public class TallyDataHandler {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyDataHandler::selectListViewItem
+    // TallyDataHandler::selectLastRowInTallyDataListView
     //
-    // Selects the passed in ListView item and scrolls the ListView to bring it
+    // Selects the last row in the tally data ListView and then brings it into
+    // view.
+    //
+
+    private void selectLastRowInTallyDataListView()
+    {
+
+        //subtract two because the footer is counted
+        final int count = tallyDataListView.getCount() - 2;
+        jumpToPositionInTallyDataListView(count);
+        int numVis = tallyDataListView.getLastVisiblePosition()
+                                                    - tallyDataListView.getFirstVisiblePosition();
+        selectListViewRow(count, tallyDataListView.getChildAt(numVis));
+
+    }//end of TallyDataHandler::selectLastRowInTallyDataListView
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDataHandler::selectListViewRow
+    //
+    // Selects the passed in ListView row and scrolls the ListView to bring it
     // into view.
     //
 
-    private void selectListViewItem(int pPos, View pView)
+    private void selectListViewRow(int pPos, View pView)
     {
 
         adapter.setSelection(pPos, pView, true);
 
-        final int selectedPos = pPos;
-        final ListView l = (ListView)parentActivity.findViewById(R.id.tallyDataListView);
-        l.post(new Runnable() {
-            @Override
-            public void run() {
-                double numVis = l.getLastVisiblePosition() - l.getFirstVisiblePosition();
-                int adjust = (int)Math.ceil((numVis-1)/2);
-                l.setSelection(selectedPos - adjust);
-            }
-        });
+        //bring the selected row to the center of the ListView
+        double numVis = tallyDataListView.getLastVisiblePosition()
+                                                    - tallyDataListView.getFirstVisiblePosition();
+        int adjust = (int)Math.ceil((numVis-1)/2);
+        jumpToPositionInTallyDataListView(pPos - adjust);
 
-    }//end of TallyDataHandler::selectListViewItem
+    }//end of TallyDataHandler::selectListViewRow
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
