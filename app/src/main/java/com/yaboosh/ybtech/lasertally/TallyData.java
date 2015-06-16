@@ -366,7 +366,7 @@ public abstract class TallyData {
 
         String fileText = "# Pipe Number, Total Length, Adjusted";
 
-        for (int i=0; i<pipeNumbers.size()-1; i++) {
+        for (int i=0; i<pipeNumbers.size(); i++) {
 
             String pipeNumber = pipeNumbers.get(i);
             String totalLength = totalLengthValues.get(i);
