@@ -250,8 +250,9 @@ public class MultiColumnListView extends ListView {
 
         int lastRowIndex = list.size()-1;
 
-        //return if the last row is already selected
-        if (selectedPos == lastRowIndex) { return; }
+        //return if the last row is already
+        //selected or if there are no rows
+        if (selectedPos == lastRowIndex || list.isEmpty()) { return; }
 
         //jump to the bottom of the ListView
         jumpToRow(lastRowIndex);
