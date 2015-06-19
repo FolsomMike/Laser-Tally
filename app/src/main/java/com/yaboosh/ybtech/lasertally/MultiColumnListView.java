@@ -110,7 +110,7 @@ public class MultiColumnListView extends ListView {
         post(new Runnable() {
             @Override
             public void run() {
-                setSelectionFromTop(pPos, getHeight()/2 - positionToViewMap.get(pPos).getHeight()/2);
+                setSelectionFromTop(pPos, getHeight() / 2 - positionToViewMap.get(pPos).getHeight() / 2);
             }
         });
 
@@ -296,8 +296,12 @@ public class MultiColumnListView extends ListView {
         //jump to the bottom of the ListView
         jumpToRow(lastRowIndex);
 
-        //select the last row
-        selectRow(lastRowIndex, false);
+        //if the last row is not visible, this means that it
+        //currently does not have a View assigned to it and
+        //we must wait to select it until after the adapter
+        //assigns it one
+        if (!checkIfRowIsVisible(lastRowIndex)) { newSelectedRowPosition = lastRowIndex;}
+        else { selectRow(lastRowIndex, false); }
 
     }//end of MultiColumnAdapter::selectLastRow
     //-----------------------------------------------------------------------------
