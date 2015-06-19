@@ -146,7 +146,7 @@ public class MultiColumnListView extends ListView {
     public void clickSelectedRow()
     {
 
-        if (selectedView == null || selectedPos == -1) { return; }
+        if (selectedView == null || selectedPos == -1 || list.isEmpty()) { return; }
 
         //center the currently selected row (if there is one)
         if (selectedPos > -1) { centerRow(selectedPos); }
