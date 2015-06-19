@@ -391,7 +391,7 @@ public class CreateJobActivity extends StandardActivity {
 
     private void exitActivityByOk() {
 
-        MultiColumnListViewAdapter.clearSelectedValues();
+        MultiColumnListView.clearSelectionValues();
 
         getAndStoreJobInfoFromUserInput();
 

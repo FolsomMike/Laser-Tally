@@ -302,15 +302,14 @@
                 android:layout_above="@+id/totalsTable"
                 android:layout_below="@+id/headerTable" >
 
-                <ListView
+                <com.yaboosh.ybtech.lasertally.MultiColumnListView
                     android:id="@+id/tallyDataListView"
                     android:layout_height="fill_parent"
                     android:layout_width="fill_parent"
                     android:divider="#000000"
                     android:dividerHeight="1dp"
-                    android:fadeScrollbars="false"
-                    android:listSelector="#000FFF" >
-                </ListView>
+                    android:fadeScrollbars="false">
+                </com.yaboosh.ybtech.lasertally.MultiColumnListView>
 
             </LinearLayout>
 

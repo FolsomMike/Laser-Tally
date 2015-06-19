@@ -207,7 +207,7 @@ public class OpenJobActivity extends StandardActivity {
 
     private void handleJobSelected(String pJobName) {
 
-        MultiColumnListViewAdapter.clearSelectedValues();
+        MultiColumnListView.clearSelectionValues();
 
         Intent intent = new Intent(this, JobDisplayActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
