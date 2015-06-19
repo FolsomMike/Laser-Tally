@@ -19,7 +19,6 @@ import android.print.PrintDocumentAdapter;
 import android.print.PrintManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.TableLayout;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -35,10 +34,10 @@ public class TallyReportHTMLPrintoutMaker extends TallyReportHTMLMaker {
     // TallyReportHTMLPrintoutMaker::TallyReportHTMLPrintoutMaker (constructor)
     //
 
-    public TallyReportHTMLPrintoutMaker(SharedSettings pSharedSettings, JobInfo pJobInfo)
+    public TallyReportHTMLPrintoutMaker(SharedSettings pSharedSettings, JobsHandler pJobsHandler)
     {
 
-        super(pSharedSettings, pJobInfo);
+        super(pSharedSettings, pJobsHandler);
 
     }// end of TallyReportHTMLPrintoutMaker::TallyReportHTMLPrintoutMaker (constructor)
     //-----------------------------------------------------------------------------

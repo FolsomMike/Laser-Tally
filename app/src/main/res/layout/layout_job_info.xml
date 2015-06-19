@@ -1,0 +1,658 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- JOB INFO LAYOUT vertical spacer 2 -->
+    <View
+        android:layout_height="@dimen/spacer_vertical_short"
+        android:layout_width="1dp"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:padding="@dimen/padding_none" >
+    </View>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="@dimen/padding_none" >
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="end"
+            android:text="Date:"
+            android:textColor="#000000"
+            android:textSize="@dimen/text_size_xlarge" />
+
+        <!-- JOB INFO LAYOUT horizontal spacer 2 -->
+        <View
+            android:layout_height="1dp"
+            android:layout_width="@dimen/spacer_horizontal_xslim"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:padding="@dimen/padding_none" >
+        </View>
+
+        <EditText
+            android:id="@id/editTextDate"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/edit_text_background"
+            android:digits="0123456789,./"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:imeOptions="flagNoExtractUi"
+            android:inputType="number"
+            android:lines="1"
+            android:maxLength="30"
+            android:maxLines="1"
+            android:padding="@dimen/padding_normal"
+            android:singleLine="true"
+            android:textColor="#000000"
+            android:textSize="@dimen/text_size_large" >
+        </EditText>
+
+    </LinearLayout>
+
+    <!-- JOB INFO LAYOUT vertical spacer 3 -->
+    <View
+        android:layout_height="@dimen/spacer_vertical_short"
+        android:layout_width="1dp"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:padding="@dimen/padding_none" >
+    </View>
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="@dimen/padding_none" >
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="end"
+            android:text="Tally Goal:"
+            android:textColor="#000000"
+            android:textSize="@dimen/text_size_xlarge" />
+
+        <!-- JOB INFO LAYOUT horizontal spacer 3 -->
+        <View
+            android:layout_height="1dp"
+            android:layout_width="@dimen/spacer_horizontal_xslim"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:padding="@dimen/padding_none" >
+        </View>
+
+        <EditText
+            android:id="@id/editTextTallyGoal"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/edit_text_background"
+            android:digits="0123456789,."
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:imeOptions="flagNoExtractUi"
+            android:inputType="number"
+            android:lines="1"
+            android:maxLength="30"
+            android:maxLines="1"
+            android:padding="@dimen/padding_normal"
+            android:singleLine="true"
+            android:textColor="#000000"
+            android:textSize="@dimen/text_size_large" >
+        </EditText>
+
+    </LinearLayout>
+
+    <!-- JOB INFO LAYOUT vertical spacer 4 -->
+    <View
+        android:layout_height="@dimen/spacer_vertical_short"
+        android:layout_width="1dp"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:padding="@dimen/padding_none" >
+    </View>
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="@dimen/padding_none" >
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="end"
+            android:text="Company Name:"
+            android:textColor="#000000"
+            android:textSize="@dimen/text_size_xlarge" />
+
+        <!-- JOB INFO LAYOUT horizontal spacer 4 -->
+        <View
+            android:layout_height="1dp"
+            android:layout_width="@dimen/spacer_horizontal_xslim"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:padding="@dimen/padding_none" >
+        </View>
+
+        <EditText
+            android:id="@id/editTextCompanyName"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/edit_text_background"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:imeOptions="flagNoExtractUi"
+            android:lines="1"
+            android:maxLength="30"
+            android:maxLines="1"
+            android:padding="@dimen/padding_normal"
+            android:singleLine="true"
+            android:textColor="#000000"
+            android:textSize="@dimen/text_size_large" >
+        </EditText>
+
+    </LinearLayout>
+
+    <!-- JOB INFO LAYOUT vertical spacer 5 -->
+    <View
+        android:layout_height="@dimen/spacer_vertical_short"
+        android:layout_width="1dp"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:padding="@dimen/padding_none" >
+    </View>
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="@dimen/padding_none" >
+
+        <LinearLayout
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="end"
+            android:orientation="horizontal"
+            android:padding="@dimen/padding_none" >
+
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:gravity="center_horizontal"
+                android:text="Adjustment:"
+                android:textColor="#000000"
+                android:textSize="@dimen/text_size_xlarge" />
+
+        </LinearLayout>
+
+        <!-- JOB INFO LAYOUT horizontal spacer 5 -->
+        <View
+            android:layout_height="1dp"
+            android:layout_width="@dimen/spacer_horizontal_xslim"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:padding="@dimen/padding_none" >
+        </View>
+
+        <EditText
+            android:id="@id/editTextProtectorMakeupAdjustment"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/edit_text_background"
+            android:digits="0123456789,."
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:imeOptions="flagNoExtractUi"
+            android:inputType="number"
+            android:lines="1"
+            android:maxLength="5"
+            android:maxLines="1"
+            android:padding="@dimen/padding_normal"
+            android:singleLine="true"
+            android:textColor="#000000"
+            android:textSize="@dimen/text_size_large" >
+        </EditText>
+
+    </LinearLayout>
+
+    <!-- JOB INFO LAYOUT vertical spacer 6 -->
+    <View
+        android:layout_height="@dimen/spacer_vertical_short"
+        android:layout_width="1dp"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:padding="@dimen/padding_none" >
+    </View>
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="@dimen/padding_none" >
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="end"
+            android:text="Diameter:"
+            android:textColor="#000000"
+            android:textSize="@dimen/text_size_xlarge"  />
+
+        <!-- JOB INFO LAYOUT horizontal spacer 6 -->
+        <View
+            android:layout_height="1dp"
+            android:layout_width="@dimen/spacer_horizontal_xslim"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:padding="@dimen/padding_none" >
+        </View>
+
+        <EditText
+            android:id="@id/editTextDiameter"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/edit_text_background"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:imeOptions="flagNoExtractUi"
+            android:lines="1"
+            android:maxLength="15"
+            android:maxLines="1"
+            android:padding="@dimen/padding_normal"
+            android:singleLine="true"
+            android:textColor="#000000"
+            android:textSize="@dimen/text_size_large" >
+        </EditText>
+
+    </LinearLayout>
+
+    <!-- JOB INFO LAYOUT vertical spacer 7 -->
+    <View
+        android:layout_height="@dimen/spacer_vertical_short"
+        android:layout_width="1dp"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:padding="@dimen/padding_none" >
+    </View>
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="@dimen/padding_none" >
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="end"
+            android:text="Wall:"
+            android:textColor="#000000"
+            android:textSize="@dimen/text_size_xlarge" />
+
+        <!-- JOB INFO LAYOUT horizontal spacer 7 -->
+        <View
+            android:layout_height="1dp"
+            android:layout_width="@dimen/spacer_horizontal_xslim"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:padding="@dimen/padding_none" >
+        </View>
+
+        <EditText
+            android:id="@id/editTextWall"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/edit_text_background"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:imeOptions="flagNoExtractUi"
+            android:lines="1"
+            android:maxLength="7"
+            android:maxLines="1"
+            android:padding="@dimen/padding_normal"
+            android:singleLine="true"
+            android:textColor="#000000"
+            android:textSize="@dimen/text_size_large" >
+        </EditText>
+
+    </LinearLayout>
+
+    <!-- JOB INFO LAYOUT vertical spacer 8 -->
+    <View
+        android:layout_height="@dimen/spacer_vertical_short"
+        android:layout_width="1dp"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:padding="@dimen/padding_none" >
+    </View>
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="@dimen/padding_none" >
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="end"
+            android:text="Grade:"
+            android:textColor="#000000"
+            android:textSize="@dimen/text_size_xlarge" />
+
+        <!-- JOB INFO LAYOUT horizontal spacer 8 -->
+        <View
+            android:layout_height="1dp"
+            android:layout_width="@dimen/spacer_horizontal_xslim"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:padding="@dimen/padding_none" >
+        </View>
+
+        <EditText
+            android:id="@id/editTextGrade"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/edit_text_background"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:imeOptions="flagNoExtractUi"
+            android:lines="1"
+            android:maxLength="7"
+            android:maxLines="1"
+            android:padding="@dimen/padding_normal"
+            android:singleLine="true"
+            android:textColor="#000000"
+            android:textSize="@dimen/text_size_large" >
+        </EditText>
+
+    </LinearLayout>
+
+    <!-- JOB INFO LAYOUT vertical spacer 9 -->
+    <View
+        android:layout_height="@dimen/spacer_vertical_short"
+        android:layout_width="1dp"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:padding="@dimen/padding_none" >
+    </View>
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="@dimen/padding_none" >
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="end"
+            android:text="Range:"
+            android:textColor="#000000"
+            android:textSize="@dimen/text_size_xlarge" />
+
+        <!-- JOB INFO LAYOUT horizontal spacer 9 -->
+        <View
+            android:layout_height="1dp"
+            android:layout_width="@dimen/spacer_horizontal_xslim"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:padding="@dimen/padding_none" >
+        </View>
+
+        <EditText
+            android:id="@id/editTextRange"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/edit_text_background"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:imeOptions="flagNoExtractUi"
+            android:lines="1"
+            android:maxLength="3"
+            android:maxLines="1"
+            android:padding="@dimen/padding_normal"
+            android:singleLine="true"
+            android:textColor="#000000"
+            android:textSize="@dimen/text_size_large" >
+        </EditText>
+
+    </LinearLayout>
+
+    <!-- JOB INFO LAYOUT vertical spacer 10 -->
+    <View
+        android:layout_height="@dimen/spacer_vertical_short"
+        android:layout_width="1dp"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:padding="@dimen/padding_none" >
+    </View>
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="@dimen/padding_none" >
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="end"
+            android:text="Facility:"
+            android:textColor="#000000"
+            android:textSize="@dimen/text_size_xlarge" />
+
+        <!-- JOB INFO LAYOUT horizontal spacer 10 -->
+        <View
+            android:layout_height="1dp"
+            android:layout_width="@dimen/spacer_horizontal_xslim"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:padding="@dimen/padding_none" >
+        </View>
+
+        <EditText
+            android:id="@id/editTextFacility"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/edit_text_background"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:imeOptions="flagNoExtractUi"
+            android:lines="1"
+            android:maxLength="30"
+            android:maxLines="1"
+            android:padding="@dimen/padding_normal"
+            android:singleLine="true"
+            android:textColor="#000000"
+            android:textSize="@dimen/text_size_large" >
+        </EditText>
+
+    </LinearLayout>
+
+    <!-- JOB INFO LAYOUT vertical spacer 11 -->
+    <View
+        android:layout_height="@dimen/spacer_vertical_short"
+        android:layout_width="1dp"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:padding="@dimen/padding_none" >
+    </View>
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="@dimen/padding_none" >
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="end"
+            android:text="Rack:"
+            android:textColor="#000000"
+            android:textSize="@dimen/text_size_xlarge" />
+
+        <!-- JOB INFO LAYOUT horizontal spacer 11 -->
+        <View
+            android:layout_height="1dp"
+            android:layout_width="@dimen/spacer_horizontal_xslim"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:padding="@dimen/padding_none" >
+        </View>
+
+        <EditText
+            android:id="@id/editTextRack"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/edit_text_background"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:imeOptions="flagNoExtractUi"
+            android:lines="1"
+            android:maxLength="20"
+            android:maxLines="1"
+            android:padding="@dimen/padding_normal"
+            android:singleLine="true"
+            android:textColor="#000000"
+            android:textSize="@dimen/text_size_large" >
+        </EditText>
+
+    </LinearLayout>
+
+    <!-- JOB INFO LAYOUT vertical spacer 12 -->
+    <View
+        android:layout_height="@dimen/spacer_vertical_short"
+        android:layout_width="1dp"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:padding="@dimen/padding_none" >
+    </View>
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="@dimen/padding_none" >
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="end"
+            android:text="Rig:"
+            android:textColor="#000000"
+            android:textSize="@dimen/text_size_xlarge" />
+
+        <!-- JOB INFO LAYOUT horizontal spacer 12 -->
+        <View
+            android:layout_height="1dp"
+            android:layout_width="@dimen/spacer_horizontal_xslim"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:padding="@dimen/padding_none" >
+        </View>
+
+        <EditText
+            android:id="@id/editTextRig"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/edit_text_background"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:imeOptions="flagNoExtractUi"
+            android:lines="1"
+            android:maxLength="30"
+            android:maxLines="1"
+            android:padding="@dimen/padding_normal"
+            android:singleLine="true"
+            android:textColor="#000000"
+            android:textSize="@dimen/text_size_large">
+        </EditText>
+
+    </LinearLayout>
+
+</merge>

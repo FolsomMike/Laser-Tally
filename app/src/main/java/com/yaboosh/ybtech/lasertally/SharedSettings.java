@@ -56,8 +56,6 @@ public class SharedSettings implements Parcelable {
 
     private static final String LOG_TAG = "SharedSettings";
 
-    public static Parcelable.Creator CREATOR;
-
     String fileFormat = "UTF-8";
     String nL = System.lineSeparator();
 
@@ -170,8 +168,6 @@ public class SharedSettings implements Parcelable {
     //
 
     public void init() {
-
-        initializeCreatorVariable();
 
         preparesDataStoragePath("Tally Zap");
 
@@ -671,18 +667,16 @@ public class SharedSettings implements Parcelable {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // SharedSettings::initializeCreatorVariable
+    // SharedSettings::CREATOR
     //
-    // Initializes the CREATOR variable, overriding class functions as necessary.
+    // Not really a function.
     //
     // "The Parcelable.Creator interface must be implemented and provided as a
     // public CREATOR field that generates instances of your Parcelable class
     // from a Parcel." This function does just that.
     //
 
-    private void initializeCreatorVariable() {
-
-        CREATOR = new Parcelable.Creator() {
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
 
             //Create a new instance of the SharedSettings class,
             //instantiating it from the given Parcel
@@ -698,7 +692,7 @@ public class SharedSettings implements Parcelable {
             }
         };
 
-    }//end of SharedSettings::initializeCreatorVariable
+    //end of SharedSettings::CREATOR
     //-----------------------------------------------------------------------------
 
 }//end of class SharedSettings

@@ -62,66 +62,55 @@
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">#FFFFFF</item>
-        <item name="android:textSize">35sp</item>
+        <item name="android:textSize">@dimen/text_size_large</item>
         <item name="android:gravity">center_horizontal</item>
-    </style>
-
-    <!-- Header Table Column Divider - simple line used as a divider -->
-    <style name="headerTableColumnDivider">
-        <item name="android:layout_width">0.75dp</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:background">@color/headerTableColumnDividerColor</item>
     </style>
 
     <!-- Used for the the columns in the table for the pipe measurements -->
     <style name="tableColumn">
-        <item name="android:layout_weight">1</item>
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingLeft">10dp</item>
+        <item name="android:padding">@dimen/padding_normal</item>
         <item name="android:textColor">#000000</item>
-        <item name="android:textSize">30sp</item>
-        <item name="android:gravity">left</item>
+        <item name="android:textSize">@dimen/text_size_xlarge</item>
     </style>
 
     <!-- Table Column Divider - simple line used as a divider -->
     <style name="tableColumnDivider">
-        <item name="android:layout_width">3dp</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:background">@color/tableColumnDividerColor</item>
+        <item name="android:layout_width">0.75dp</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:background">@color/headerTableColumnDividerColor</item>
     </style>
 
     <!-- Table Side Border Line - simple line used as a left or right table border -->
     <style name="tableSideBorderLine">
         <item name="android:layout_width">2.5dp</item>
-        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_height">fill_parent</item>
         <item name="android:background">@color/tableSideBorderLineColor</item>
     </style>
 
     <!-- Table Bottom Border Line - simple line used as a bottom border -->
     <style name="tableBottomBorderLine">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">1.5dp</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">2.5dp</item>
         <item name="android:background">@color/tableBottomBorderLineColor</item>
     </style>
 
     <!-- Table Top Border Line - simple line used as a top border -->
     <style name="tableTopBorderLine">
-        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">1.5dp</item>
         <item name="android:background">@color/tableBottomBorderLineColor</item>
     </style>
 
     <!-- Table Bottom Border Line Thick - simple thick line used as a bottom border -->
     <style name="tableBottomBorderLineThick">
-        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">3.0dp</item>
         <item name="android:background">@color/tableBottomBorderLineColor</item>
     </style>
 
     <!-- Table Top Border Line Thick - simple thick line used as a top border -->
     <style name="tableTopBorderLineThick">
-        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">3.0dp</item>
         <item name="android:background">@color/tableBottomBorderLineColor</item>
     </style>

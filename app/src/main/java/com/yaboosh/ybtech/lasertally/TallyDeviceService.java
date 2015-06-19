@@ -258,8 +258,6 @@ public class TallyDeviceService extends Service {
     //
     // Enables the Measure and Redo buttons.
     //
-    // //hss wip// should send message to user saying taking a measurement failed
-    //
 
     public void handleNoDistanceValueReceived() {
 
@@ -365,10 +363,11 @@ public class TallyDeviceService extends Service {
 
     public void handleTallyDeviceFound(String pDeviceName) {
 
+        if (deviceNames.contains(pDeviceName)) { return; }
         deviceNames.add(pDeviceName);
         Message msg = Message.obtain(null, MSG_TALLY_DEVICE_NAME);
         if (msg == null) { return; }
-        msg.obj = deviceNames;
+        msg.obj = pDeviceName;
         sendMessageToMessengerClient(msg);
 
     }//end of TallyDeviceService::handleTallyDeviceFound

@@ -14,7 +14,6 @@
 package com.yaboosh.ybtech.lasertally;
 
 import android.util.Log;
-import android.widget.TableLayout;
 
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
@@ -35,10 +34,10 @@ public class TallyReportHTMLFileMaker extends TallyReportHTMLMaker {
     // TallyReportHTMLFileMaker::TallyReportHTMLFileMaker (constructor)
     //
 
-    public TallyReportHTMLFileMaker(SharedSettings pSharedSettings, JobInfo pJobInfo)
+    public TallyReportHTMLFileMaker(SharedSettings pSharedSettings, JobsHandler pJobsHandler)
     {
 
-        super(pSharedSettings, pJobInfo);
+        super(pSharedSettings, pJobsHandler);
 
     }// end of TallyReportHTMLFileMaker::TallyReportHTMLFileMaker (constructor)
     //-----------------------------------------------------------------------------
@@ -76,7 +75,7 @@ public class TallyReportHTMLFileMaker extends TallyReportHTMLMaker {
         try{
 
             fileOutputStream = new FileOutputStream(
-                       sharedSettings.getReportsFolderPath() + jobInfo.getJobName() + " ~ Tally Report.html");
+                       sharedSettings.getReportsFolderPath() + jobsHandler.getJobName() + " ~ Tally Report.html");
             outputStreamWriter = new OutputStreamWriter(fileOutputStream, "UTF-8");
             out = new BufferedWriter(outputStreamWriter);
 

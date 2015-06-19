@@ -1,35 +1,50 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:baselineAligned="false"
-    android:layout_width="match_parent"
+<!-- MASTER LAYOUT -->
+<LinearLayout
     android:layout_height="match_parent"
-    android:gravity="center"
+    android:layout_width="match_parent"
     android:background="#808080"
-    tools:context="com.yaboosh.lasertally.development.main.MainActivity" >
+    android:baselineAligned="false"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:descendantFocusability="beforeDescendants"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context="com.yaboosh.lasertally.development.main.MainActivity"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" >
 
         <Button
-            android:background="@drawable/white_styled_button"
-            android:layout_width="wrap_content"
+            android:id="@+id/createNewJobButton"
             android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:background="@drawable/white_styled_button_dark_gray_border"
+            android:focusable="true"
+            android:focusableInTouchMode="false"
+            android:onClick="handleCreateNewJobButtonPressed"
             android:text="create new job"
-            android:textSize="30sp"
-            style="@style/whiteStyledButton"
-            android:onClick="handleCreateNewJobButtonPressed" />
+            android:textSize="@dimen/text_size_normal"
+            style="@style/whiteStyledButton" />
 
         <!-- vertical spacer -->
         <View
+            android:layout_height="50dp"
             android:layout_width="0dp"
-            android:layout_height="50dp" >
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:padding="@dimen/padding_none" >
         </View>
 
         <Button
-            android:background="@drawable/white_styled_button"
-            android:layout_width="wrap_content"
+            android:id="@+id/openJobButton"
             android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:background="@drawable/white_styled_button_dark_gray_border"
+            android:focusable="true"
+            android:focusableInTouchMode="false"
+            android:onClick="handleOpenAnExistingJobButtonPressed"
             android:text="open existing job"
-            android:textSize="30sp"
-            style="@style/whiteStyledButton"
-            android:onClick="handleOpenAnExistingJobButtonPressed" />
+            android:textSize="@dimen/text_size_normal"
+            style="@style/whiteStyledButton" />
 
 </LinearLayout>
+<!-- END OF MASTER LAYOUT -->

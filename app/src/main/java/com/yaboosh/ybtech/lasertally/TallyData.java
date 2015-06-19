@@ -22,27 +22,23 @@ package com.yaboosh.ybtech.lasertally;
 //
 
 import android.util.Log;
-import android.widget.TableRow;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public abstract class TallyData {
 
     public static String LOG_TAG;
 
-    JobInfo jobInfo;
+    JobsHandler jobsHandler;
     SharedSettings sharedSettings;
 
     DecimalFormat decFormat;
@@ -62,28 +58,13 @@ public abstract class TallyData {
     double tallyGoal;
     double adjustmentValue = 0;
 
-    //These lists are used to store the data originally read from file.
-    //They are needed because the other lists need a TableRow to insert
-    //data, but the Activity cannot be accessed while the file is being
-    //accessed; a table row cannot be created to store the data in the
-    //normally used maps.
-    private ArrayList<String> pipeNumbersFromFile = new ArrayList<String>();
-    public ArrayList<String> getPipeNumbersFromFile() { return pipeNumbersFromFile; }
-
-    private ArrayList<String> adjustedValuesFromFile = new ArrayList<String>();
-    public ArrayList<String> getAdjustedValuesFromFile() { return adjustedValuesFromFile; }
-
-    private ArrayList<String> totalLengthValuesFromFile = new ArrayList<String>();
-    public ArrayList<String> getTotalLengthValuesFromFile() { return totalLengthValuesFromFile; }
-
-
     private String adjustedValuesTotal;
     public String getAdjustedValuesTotal() { return adjustedValuesTotal; }
 
     private String totalLengthValuesTotal;
     public String getTotalLengthValuesTotal() { return totalLengthValuesTotal; }
 
-    private Map<TableRow, String> adjustedValues = new LinkedHashMap<TableRow, String>();
+    /*//DEBUG HSS//private Map<TableRow, String> adjustedValues = new LinkedHashMap<TableRow, String>();
     private void putAdjustedValue(TableRow pR, String pVal) { adjustedValues.put(pR, pVal); }
     public Map getAdjustedValues() { return adjustedValues; }
     public String getAdjustedValueOfRow(TableRow pR) { return adjustedValues.get(pR); }
@@ -96,7 +77,19 @@ public abstract class TallyData {
     private Map<TableRow, String> totalLengthValues = new LinkedHashMap<TableRow, String>();
     private void putTotalLengthValue(TableRow pR, String pVal) { totalLengthValues.put(pR, pVal); }
     public Map getTotalLengthValues() { return totalLengthValues; }
-    public String getTotalLengthValueOfRow(TableRow pR) { return totalLengthValues.get(pR); }
+    public String getTotalLengthValueOfRow(TableRow pR) { return totalLengthValues.get(pR); }*///DEBUG HSS//
+
+    private ArrayList<String> adjustedValues = new ArrayList<String>();
+    public ArrayList<String> getAdjustedValues() { return adjustedValues; }
+    public String getAdjustedValue(int pPos) { return adjustedValues.get(pPos); }
+
+    private ArrayList<String> pipeNumbers = new ArrayList<String>();
+    public ArrayList<String> getPipeNumbers() { return pipeNumbers; }
+    public String getPipeNumber(int pPos) { return pipeNumbers.get(pPos); }
+
+    private ArrayList<String> totalLengthValues = new ArrayList<String>();
+    public ArrayList<String> getTotalLengthValues() { return totalLengthValues; }
+    public String getTotalLengthValue(int pPos) { return totalLengthValues.get(pPos); }
 
 
     //abstract classes to be overridden by subclasses
@@ -107,11 +100,11 @@ public abstract class TallyData {
     // TallyData::TallyData (constructor)
     //
 
-    public TallyData(SharedSettings pSet, JobInfo pJobInfo)
+    public TallyData(SharedSettings pSet, JobsHandler pJobsHandler)
     {
 
         sharedSettings = pSet;
-        jobInfo = pJobInfo;
+        jobsHandler = pJobsHandler;
 
     }//end of TallyData::TallyData(constructor)
     //-----------------------------------------------------------------------------
@@ -144,7 +137,7 @@ public abstract class TallyData {
     // programmatically.
     //
 
-    public void addData(TableRow pR, double pTotalLength)
+    public void addData(double pTotalLength)
     {
 
         double dTotal = pTotalLength;
@@ -162,7 +155,7 @@ public abstract class TallyData {
         String total = format(dTotal);
 
         //store the data
-        storeData(pR, pipe, adjusted, total);
+        storeData(pipe, adjusted, total);
 
     }//end of TallyData::addData
     //-----------------------------------------------------------------------------
@@ -170,9 +163,9 @@ public abstract class TallyData {
     //-----------------------------------------------------------------------------
     // TallyData::addData
     //
-    // Calculates and stores a new data entry.
+    // Calculates and stores a new data entry at the passed in index.
     //
-    // Used when the user manually sets row data.
+    // Used when the user manually edits a row.
     //
     // If necessary, the passed in lengths are converted to a different unit system.
     //
@@ -182,7 +175,7 @@ public abstract class TallyData {
     // The adjusted value is not manually set; it is determined  programmatically.
     //
 
-    public void addData(TableRow pR, int pPipeNum, double pTotalLength, boolean pRenumber)
+    public void addData(int pIndex, int pPipeNum, double pTotalLength, boolean pRenumber)
     {
 
         double dTotal = convert(pTotalLength);
@@ -193,10 +186,10 @@ public abstract class TallyData {
 
         //check to see if all of the pipe numbers after the passed in
         //row should be renumbered
-        if (pRenumber) { renumberAllPipeNumbersAfterRow(pR, pipe); }
+        if (pRenumber) { renumberAllPipeNumbersAfterIndex(pIndex, pipe); }
 
         //store the data
-        storeData(pR, pipe, adjusted, total);
+        replaceData(pIndex, pipe, adjusted, total);
 
     }//end of TallyData::addData
     //-----------------------------------------------------------------------------
@@ -209,11 +202,11 @@ public abstract class TallyData {
     // Used when adding data that has already been calculated.
     //
 
-    public void addData(TableRow pR, String pPipeNum, String pAdjustedLength, String pTotalLength)
+    public void addData(String pPipeNum, String pAdjustedLength, String pTotalLength)
     {
 
         //store the data
-        storeData(pR, pPipeNum, pAdjustedLength, pTotalLength);
+        storeData(pPipeNum, pAdjustedLength, pTotalLength);
 
     }//end of TallyData::addData
     //-----------------------------------------------------------------------------
@@ -230,11 +223,14 @@ public abstract class TallyData {
         //For each of the total length values, subtract the adjustment value
         //and store the result
 
-        for (Map.Entry<TableRow, String> entry : totalLengthValues.entrySet()) {
+        for (String val : totalLengthValues) {
 
-            double total = Double.parseDouble(totalLengthValues.get(entry.getKey()));
+            double total = 0;
 
-            adjustedValues.put(entry.getKey(), format(total - adjustmentValue));
+            try {  total = Double.parseDouble(val); }
+            catch (Exception e) { Log.e(LOG_TAG, "Line 249 :: " + e.getMessage()); }
+
+            adjustedValues.add(format(total - adjustmentValue));
 
         }
 
@@ -265,17 +261,13 @@ public abstract class TallyData {
 
         //calculate the total of the adjusted values
         double adjustedTotal = 0;
-        for (String value : adjustedValues.values()) {
-            adjustedTotal += Double.parseDouble(value);
-        }
+        for (String value : adjustedValues) { adjustedTotal += Double.parseDouble(value); }
 
         adjustedValuesTotal = format(adjustedTotal);
 
         //calculate the total of the total length values
         double totalLengthTotal = 0;
-        for (String value : totalLengthValues.values()) {
-            totalLengthTotal += Double.parseDouble(value);
-        }
+        for (String value : totalLengthValues) { totalLengthTotal += Double.parseDouble(value); }
 
         totalLengthValuesTotal = format(totalLengthTotal);
 
@@ -354,7 +346,7 @@ public abstract class TallyData {
         if (pipeNumbers.isEmpty()) { return pipeNumber; }
 
         //Iterate through the pipe numbers until the last one is reached
-        for (String value : pipeNumbers.values()) { pipeNumber = (Integer.parseInt(value)) + 1; }
+        for (String value : pipeNumbers) { pipeNumber = (Integer.parseInt(value)) + 1; }
 
         return pipeNumber;
 
@@ -374,11 +366,11 @@ public abstract class TallyData {
 
         String fileText = "# Pipe Number, Total Length, Adjusted";
 
-        for (Map.Entry<TableRow, String> entry : pipeNumbers.entrySet()) {
+        for (int i=0; i<pipeNumbers.size(); i++) {
 
-            String pipeNumber = pipeNumbers.get(entry.getKey());
-            String totalLength = totalLengthValues.get(entry.getKey());
-            String adjusted = adjustedValues.get(entry.getKey());
+            String pipeNumber = pipeNumbers.get(i);
+            String totalLength = totalLengthValues.get(i);
+            String adjusted = adjustedValues.get(i);
 
             String line = nL + pipeNumber + "," + totalLength + "," + adjusted;
 
@@ -513,9 +505,9 @@ public abstract class TallyData {
         //Skip over this file line if it is a comment
         if (pLine.startsWith("#")) { return; }
 
-        pipeNumbersFromFile.add(getPipeNumberFromFileLine(pLine));
-        totalLengthValuesFromFile.add(getTotalLengthValueFromFileLine(pLine));
-        adjustedValuesFromFile.add(getAdjustedValueFromFileLine(pLine));
+        pipeNumbers.add(getPipeNumberFromFileLine(pLine));
+        totalLengthValues.add(getTotalLengthValueFromFileLine(pLine));
+        adjustedValues.add(getAdjustedValueFromFileLine(pLine));
 
     }//end of TallyData::handleFileLine
     //-----------------------------------------------------------------------------
@@ -620,46 +612,84 @@ public abstract class TallyData {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TallyData::renumberAllPipeNumbersAfterRow
+    // TallyData::renumberAllPipeNumbersAfterIndex
     //
-    // Renumbers all of the pipe numbers after the passed in row.
+    // Renumbers all of the pipe numbers after the passed in index.
     //
-    // The first TableRow that will be changed is the one after the passed in row.
+    // The first pipe number that will be changed is the one after the passed in
+    // index.
+    //
     // The first pipe number is set to the passed in pipe number plus one.
     //
 
-    private void renumberAllPipeNumbersAfterRow(TableRow pR, String pPipe)
+    private void renumberAllPipeNumbersAfterIndex(int pIndex, String pPipe)
     {
 
-        double pipeNumber = Double.parseDouble(pPipe);
-        boolean firstRowReached = false;
+        int pipeNumber = Integer.parseInt(pPipe);
+        boolean pastIndex = false;
 
-        for (TableRow key : pipeNumbers.keySet()) {
-            if (firstRowReached) { pipeNumbers.put(key, format(++pipeNumber));  }
-            if (key == pR) { firstRowReached = true; }
+        for (int i=0; i<pipeNumbers.size(); i++) {
+            if (pastIndex) { pipeNumbers.set(i, Integer.toString(++pipeNumber));  }
+            if (i == pIndex) { pastIndex = true; }
         }
 
-    }//end of TallyData::renumberAllPipeNumbersAfterRow
+    }//end of TallyData::renumberAllPipeNumbersAfterIndex
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
     // TallyData::removeData
     //
-    // Removes all of the data linked to passed in TableRow from the Maps.
+    // Removes the data associated with the passed in index from all of the lists.
     //
 
-    public void removeData(TableRow pR)
+    private void removeData(int pIndex)
     {
 
-        pipeNumbers.remove(pR);
-        adjustedValues.remove(pR);
-        totalLengthValues.remove(pR);
+        if (pipeNumbers.isEmpty()) { return; }
+
+        pipeNumbers.remove(pIndex);
+        adjustedValues.remove(pIndex);
+        totalLengthValues.remove(pIndex);
 
         calculateTotals();
 
         saveDataToFile();
 
     }//end of TallyData::removeData
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyData::removeLastDataEntry
+    //
+    // Removes the most recent data entry from all of the lists.
+    //
+
+    public void removeLastDataEntry()
+    {
+
+        removeData(pipeNumbers.size() - 1);
+
+    }//end of TallyData::removeLastDataEntry
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyData::replaceData
+    //
+    // Replaces the tally data at the passed index in each of the lists with the
+    // passed in data.
+    //
+
+    private void replaceData(int pIndex, String pPipe, String pAdjusted, String pTotal)
+    {
+
+        pipeNumbers.set(pIndex, pPipe);
+        adjustedValues.set(pIndex, pAdjusted);
+        totalLengthValues.set(pIndex, pTotal);
+
+        calculateTotals();
+        saveDataToFile();
+
+    }//end of TallyData::replaceData
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -745,10 +775,10 @@ public abstract class TallyData {
     // TallyData::setJobInfo
     //
 
-    public void setJobInfo(JobInfo pJobInfo)
+    public void setJobInfo(JobsHandler pJobsHandler)
     {
 
-        jobInfo = pJobInfo;
+        jobsHandler = pJobsHandler;
         setJobInfoVariables();
         calculateAdjustedValues();
         calculateTotals();
@@ -834,12 +864,12 @@ public abstract class TallyData {
     // file.
     //
 
-    public void storeData(TableRow pR, String pPipe, String pAdjusted, String pTotal)
+    private void storeData(String pPipe, String pAdjusted, String pTotal)
     {
 
-        putPipeNumber(pR, pPipe);
-        putAdjustedValue(pR, pAdjusted);
-        putTotalLengthValue(pR, pTotal);
+        pipeNumbers.add(pPipe);
+        adjustedValues.add(pAdjusted);
+        totalLengthValues.add(pTotal);
 
         calculateTotals();
         saveDataToFile();

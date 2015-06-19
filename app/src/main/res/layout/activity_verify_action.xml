@@ -1,127 +1,147 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<!-- MASTER LAYOUT -->
+<RelativeLayout
     android:id="@+id/main_content"
-    android:layout_width="575dp"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:layout_width="@dimen/dialog_width_standard"
     android:background="#CFCFCF"
-    android:paddingBottom="0dp"
-    android:paddingLeft="0dp"
-    android:paddingRight="0dp"
-    android:paddingTop="0dp"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:descendantFocusability="beforeDescendants"
+    android:padding="@dimen/padding_none"
     tools:context="com.yaboosh.ybtech.lasertally.VerifyActionActivity"
-    android:gravity="center" >
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" >
 
+    <!-- TITLE BAR LAYOUT-->
     <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="70dp"
-        android:paddingBottom="0dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="0dp"
-        android:background="#1A1A1A" >
-
-        <LinearLayout
-            android:background="#1A1A1A"
-            android:gravity="center"
-            android:layout_width="fill_parent"
-            android:layout_height="70dp"
-            android:orientation="horizontal"
-            android:paddingBottom="0dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:paddingTop="0dp" >
-
-            <TextView
-                android:gravity="center"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:padding="0dp"
-                android:textColor="#B2B2B2"
-                android:text="Are you sure?"
-                android:textSize="40sp" />
-
-            <!-- horizontal spacer -->
-            <View
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="1dp" >
-            </View>
-
-            <Button
-                android:id="@id/tableRowEditorRedXButton"
-                android:background="@drawable/close_x_button"
-                android:gravity="center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="handleRedXButtonPressed"/>
-
-        </LinearLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
+        android:id="@+id/titleBarLayout"
         android:layout_height="wrap_content"
-        android:paddingBottom="30dp"
-        android:paddingLeft="30dp"
-        android:paddingRight="30dp"
-        android:paddingTop="30dp"
-        android:gravity="start" >
+        android:layout_width="fill_parent"
+        android:background="#1A1A1A"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:gravity="center"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/title_bar_layout_padding_bottom"
+        android:paddingLeft="@dimen/title_bar_layout_padding_left"
+        android:paddingRight="@dimen/title_bar_layout_padding_right"
+        android:paddingTop="@dimen/title_bar_layout_padding_top" >
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="center"
+            android:padding="0dp"
+            android:textColor="#B2B2B2"
+            android:text="Are you sure?"
+            android:textSize="@dimen/title_bar_layout_title_text_size" />
+
+        <!-- TITLE BAR LAYOUT horizontal spacer 1 -->
+        <View
+            android:layout_height="1dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:padding="@dimen/padding_none" >
+        </View>
+
+        <Button
+            android:id="@id/tableRowEditorRedXButton"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:background="@drawable/close_x_button"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="center"
+            android:onClick="handleRedXButtonPressed"/>
+
+    </LinearLayout>
+    <!-- END OF TITLE BAR LAYOUT-->
+
+    <!-- VERIFY ACTION TEXT LAYOUT -->
+    <LinearLayout
+        android:id="@+id/verifyActionTextLayout"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:gravity="start"
+        android:layout_below="@+id/titleBarLayout"
+        android:orientation="horizontal"
+        android:padding="@dimen/padding_xxxlarge" >
 
         <TextView
             android:id="@id/verifyActionTextView"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
             android:textColor="#000000"
-            android:textSize="30sp"/>
+            android:textSize="@dimen/text_size_normal" />
 
     </LinearLayout>
+    <!-- END OF VERIFY ACTION TEXT LAYOUT -->
 
+    <!-- OK CANCEL BUTTONS LAYOUT -->
     <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="10dp"
-        android:paddingLeft="0dp"
-        android:paddingRight="0dp"
-        android:paddingTop="3dp"
-        android:gravity="center" >
+        android:layout_width="fill_parent"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:gravity="center"
+        android:layout_below="@+id/verifyActionTextLayout"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/padding_xlarge"
+        android:paddingLeft="@dimen/padding_none"
+        android:paddingRight="@dimen/padding_none"
+        android:paddingTop="@dimen/padding_xsmall" >
 
         <Button
-            android:background="@drawable/white_styled_button_dark_gray_border"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingBottom="10dp"
-            android:paddingLeft="30dp"
-            android:paddingRight="30dp"
-            android:paddingTop="10dp"
+            android:layout_width="wrap_content"
+            android:background="@drawable/white_styled_button_dark_gray_border"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:onClick="handleCancelButtonPressed"
+            android:paddingBottom="@dimen/padding_normal"
+            android:paddingLeft="@dimen/padding_xxxlarge"
+            android:paddingRight="@dimen/padding_xxxlarge"
+            android:paddingTop="@dimen/padding_normal"
             android:text="cancel"
-            android:textSize="30sp"
-            style="@style/whiteStyledButton"
-            android:onClick="handleCancelButtonPressed" />
+            android:textSize="@dimen/text_size_normal"
+            style="@style/whiteStyledButton" />
 
-        <!-- horizontal spacer -->
+        <!-- OK CANCEL BUTTONS LAYOUT horizontal spacer 1 -->
         <View
-            android:layout_width="60dp"
-            android:layout_height="1dp" >
+            android:layout_height="1dp"
+            android:layout_width="@dimen/spacer_horizontal_xxwide"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:padding="@dimen/padding_none" >
         </View>
 
         <Button
             android:id="@id/okButton"
-            android:background="@drawable/white_styled_button_dark_gray_border"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingBottom="10dp"
-            android:paddingLeft="30dp"
-            android:paddingRight="30dp"
-            android:paddingTop="10dp"
+            android:layout_width="wrap_content"
+            android:background="@drawable/white_styled_button_dark_gray_border"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:onClick="handleOkButtonPressed"
+            android:paddingBottom="@dimen/padding_normal"
+            android:paddingLeft="@dimen/padding_xxxlarge"
+            android:paddingRight="@dimen/padding_xxxlarge"
+            android:paddingTop="@dimen/padding_normal"
             android:text="I'm sure"
-            android:textSize="30sp"
-            style="@style/whiteStyledButton"
-            android:onClick="handleOkButtonPressed" />
+            android:textSize="@dimen/text_size_normal"
+            style="@style/whiteStyledButton" />
 
     </LinearLayout>
+    <!-- END OF OK CANCEL BUTTONS LAYOUT -->
 
-</LinearLayout>
+</RelativeLayout>
+<!-- END OF MASTER LAYOUT -->

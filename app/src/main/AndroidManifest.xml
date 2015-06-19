@@ -2,6 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.yaboosh.ybtech.lasertally" >
 
+    <supports-screens
+        android:normalScreens="true"
+        android:largeScreens="true"
+        android:anyDensity="true" />
+
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE" />
@@ -15,32 +20,44 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+        android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
 
         <activity
-            android:name=".JobDisplayActivity"
-            android:screenOrientation="landscape"
-            android:label="@string/title_activity_job_info" >
-        </activity>
-
-        <activity
-            android:name=".JobInfoActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_job_info"
+            android:name=".CreateJobActivity"
+            android:label="@string/title_activity_create_job"
+            android:screenOrientation="reverseLandscape"
+            android:configChanges="keyboard|keyboardHidden"
             android:theme="@style/activityDialog" >
         </activity>
 
         <activity
+            android:name=".EditJobActivity"
+            android:label="@string/title_activity_edit_job"
+            android:screenOrientation="reverseLandscape"
+            android:configChanges="keyboard|keyboardHidden"
+            android:theme="@style/activityDialog" >
+        </activity>
+
+        <activity
+            android:name=".JobDisplayActivity"
+            android:label="@string/title_activity_job_display"
+            android:screenOrientation="reverseLandscape"
+            android:configChanges="keyboard|keyboardHidden" >
+        </activity>
+
+        <activity
             android:name=".JobInfoMenuActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_job_menu_info"
+            android:screenOrientation="reverseLandscape"
+            android:configChanges="keyboard|keyboardHidden"
             android:theme="@style/activityDialog" >
         </activity>
 
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:screenOrientation="landscape" >
+            android:screenOrientation="reverseLandscape"
+            android:configChanges="keyboard|keyboardHidden" >
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -52,51 +69,74 @@
 
         <activity
             android:name=".MoreActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_more"
+            android:screenOrientation="reverseLandscape"
+            android:configChanges="keyboard|keyboardHidden"
             android:theme="@style/activityDialog" >
         </activity>
 
         <activity
             android:name=".MoreOptionsActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_more_options"
+            android:screenOrientation="reverseLandscape"
+            android:configChanges="keyboard|keyboardHidden"
             android:theme="@style/activityDialog" >
         </activity>
 
         <activity
             android:name=".OpenJobActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_open_job"
+            android:screenOrientation="reverseLandscape"
+            android:configChanges="keyboard|keyboardHidden"
             android:theme="@style/activityDialog" >
         </activity>
 
         <activity
-            android:name=".TallyDeviceConnectionStatusMessageActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:name=".QuickActionActivity"
+            android:label="@string/title_activity_quick_action_job"
+            android:screenOrientation="reverseLandscape"
+            android:configChanges="keyboard|keyboardHidden"
+            android:theme="@style/activityDialog" >
+        </activity>
+
+        <activity
+            android:name=".RenameJobActivity"
+            android:label="@string/title_activity_rename_job"
+            android:screenOrientation="reverseLandscape"
+            android:configChanges="keyboard|keyboardHidden"
+            android:theme="@style/activityDialog" >
+        </activity>
+
+        <activity
+            android:name=".TallyDeviceConnectionStatusActivity"
             android:label="@string/title_activity_tally_device_connection_status_message"
+            android:screenOrientation="reverseLandscape"
+            android:configChanges="keyboard|keyboardHidden"
             android:theme="@style/activityDialog" >
         </activity>
 
         <activity
             android:name=".TallyDeviceScanActivity"
             android:parentActivityName=".MainActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_tally_device_scan"
+            android:screenOrientation="reverseLandscape"
+            android:configChanges="keyboard|keyboardHidden"
             android:theme="@style/activityDialog" >
         </activity>
 
         <activity
             android:name=".TableRowEditorActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_table_row_editor"
+            android:screenOrientation="reverseLandscape"
+            android:configChanges="keyboard|keyboardHidden"
             android:theme="@style/activityDialog" >
         </activity>
 
         <activity
             android:name=".VerifyActionActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_verify_action"
+            android:screenOrientation="reverseLandscape"
+            android:configChanges="keyboard|keyboardHidden"
             android:theme="@style/activityDialog" >
         </activity>
 

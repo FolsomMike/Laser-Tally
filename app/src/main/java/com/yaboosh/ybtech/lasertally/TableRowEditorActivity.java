@@ -18,51 +18,49 @@ package com.yaboosh.ybtech.lasertally;
 //-----------------------------------------------------------------------------
 
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
-import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.widget.EditText;
 
-import java.lang.ref.WeakReference;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 // class TableRowEditorActivity
 //
 
-public class TableRowEditorActivity extends Activity {
+public class TableRowEditorActivity extends StandardActivity {
 
-    public static final String TAG = "TableRowEditorActivity";
-
-    private View decorView;
-    private int uiOptions;
-
-    private SharedSettings sharedSettings;
+    public static AtomicInteger activitiesLaunched = new AtomicInteger(0);
 
     public static final String PIPE_NUMBER_KEY =  "PIPE_NUMBER_KEY";
     public static final String RENUMBER_ALL_CHECKBOX_KEY = "RENUMBER_ALL_CHECKBOX_KEY";
     public static final String TOTAL_LENGTH_KEY = "TOTAL_LENGTH_KEY";
 
+    private CheckBox    checkBoxRenumberAllBelow;
+    private EditText    editTextPipeNumber;
+    private EditText    editTextTotalLength;
+
     private String pipeNumber = "";
     private String totalLength = "";
+    private boolean renumberAll = false;
 
     //-----------------------------------------------------------------------------
     // TableRowEditorActivity::TableRowEditorActivity (constructor)
     //
+    // Constructor to be used for initial creation.
+    //
 
-    public TableRowEditorActivity() {
+    public TableRowEditorActivity()
+    {
 
-        super();
+        layoutResID = R.layout.activity_table_row_editor;
+
+        LOG_TAG = "TableRowEditorActivity";
 
     }//end of TableRowEditorActivity::TableRowEditorActivity (constructor)
     //-----------------------------------------------------------------------------
@@ -71,39 +69,26 @@ public class TableRowEditorActivity extends Activity {
     // TableRowEditorActivity::onCreate
     //
     // Automatically called when the activity is created.
-    // All functions that must be done upon creation should be called here.
+    //
+    // All functions that must be done upon instantiation should be called here.
     //
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle pSavedInstanceState) {
 
-        super.onCreate(savedInstanceState);
+        if (activitiesLaunched.incrementAndGet() > 1) { finish(); }
 
-        Log.d(TAG, "Inside of TableRowEditorActivity onCreate");
+        super.onCreate(pSavedInstanceState);
 
-        setContentView(R.layout.activity_table_row_editor);
+        //assign pointers to Views
+        checkBoxRenumberAllBelow = (CheckBox)findViewById(R.id.checkBoxRenumberAllBelow);
+        editTextPipeNumber = (EditText)findViewById(R.id.editTextPipeNumber);
+        editTextTotalLength = (EditText)findViewById(R.id.editTextTotalLength);
 
-        this.setFinishOnTouchOutside(false);
-
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        decorView = getWindow().getDecorView();
-
-        uiOptions = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
-
-        createUiChangeListener();
-
-        //Get the pipe number and total length
-        //sent to this activity from its parent
-        Bundle bundle = getIntent().getExtras();
-        sharedSettings = bundle.getParcelable(Keys.SHARED_SETTINGS_KEY);
-        pipeNumber = bundle.getString(PIPE_NUMBER_KEY);
-        totalLength = bundle.getString(TOTAL_LENGTH_KEY);
+        //add objects to focus array
+        focusArray.add(editTextPipeNumber);
+        focusArray.add(checkBoxRenumberAllBelow);
+        focusArray.add(editTextTotalLength);
 
         setPipeNumberAndTotalLengthValues();
 
@@ -114,14 +99,15 @@ public class TableRowEditorActivity extends Activity {
     // TableRowEditorActivity::onDestroy
     //
     // Automatically called when the activity is destroyed.
-    // All functions that must be done upon destruction should be called here.
+    //
+    // All functions that must be done upon activity destruction should be
+    // called here.
     //
 
     @Override
-    protected void onDestroy()
-    {
+    protected void onDestroy() {
 
-        Log.d(TAG, "Inside of TableRowEditorActivity onDestroy");
+        activitiesLaunched.getAndDecrement();
 
         super.onDestroy();
 
@@ -129,71 +115,80 @@ public class TableRowEditorActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TableRowEditorActivity::onResume
+    // TableRowEditorActivity::handleF3KeyPressed
     //
-    // Automatically called when the activity is paused when it does not have
-    // user's focus but it still partially visible.
-    // All functions that must be done upon instantiation should be called here.
+    // Perform a click on the ok button.
     //
 
     @Override
-    protected void onResume() {
+    protected void handleF3KeyPressed() {
 
-        super.onResume();
+        Button okButton = (Button) findViewById(R.id.okButton);
+        if (okButton != null && okButton.isEnabled()) { performClickOnView(okButton); }
 
-        Log.d(TAG, "Inside of TableRowEditorActivity onResume");
-
-        decorView.setSystemUiVisibility(uiOptions);
-
-        sharedSettings.setContext(this);
-
-    }//end of TableRowEditorActivity::onResume
+    }//end of TableRowEditorActivity::handleF3KeyPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TableRowEditorActivity::onPause
+    // TableRowEditorActivity::onSaveInstanceState
     //
-    // Automatically called when the activity is paused when it does not have
-    // user's focus but it still partially visible.
-    // All functions that must be done upon instantiation should be called here.
+    // As the activity begins to stop, the system calls onSaveInstanceState()
+    // so the activity can save state information with a collection of key-value
+    // pairs. This functions is overridden so that additional state information can
+    // be saved.
     //
 
     @Override
-    protected void onPause() {
+    public void onSaveInstanceState(Bundle pSavedInstanceState) {
 
-        super.onPause();
+        super.onSaveInstanceState(pSavedInstanceState);
 
-        Log.d(TAG, "Inside of TableRowEditorActivity onPause");
+        getAndStoreInfoFromUserInput();
 
-    }//end of TableRowEditorActivity::onPause
+        //store necessary data
+        pSavedInstanceState.putString(PIPE_NUMBER_KEY, pipeNumber);
+        pSavedInstanceState.putString(TOTAL_LENGTH_KEY, totalLength);
+
+    }//end of TableRowEditorActivity::onSaveInstanceState
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // TableRowEditorActivity::createUiChangeListener
+    // TableRowEditorActivity::restoreValuesFromSavedInstance
     //
-    // Listens for visibility changes in the ui.
-    //
-    // If the system bars are visible, the system visibility is set to the uiOptions.
-    //
+    // Restores values using the passed in saved instance.
     //
 
-    private void createUiChangeListener() {
+    @Override
+    protected void restoreValuesFromSavedInstance(Bundle pSavedInstanceState) {
 
-        decorView.setOnSystemUiVisibilityChangeListener (
-                new View.OnSystemUiVisibilityChangeListener() {
+        super.restoreValuesFromSavedInstance(pSavedInstanceState);
 
-                    @Override
-                    public void onSystemUiVisibilityChange(int pVisibility) {
+        pipeNumber = pSavedInstanceState.getString(PIPE_NUMBER_KEY);
+        totalLength = pSavedInstanceState.getString(TOTAL_LENGTH_KEY);
 
-                        if ((pVisibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
-                            decorView.setSystemUiVisibility(uiOptions);
-                        }
+    }//end of TableRowEditorActivity::restoreValuesFromSavedInstance
+    //-----------------------------------------------------------------------------
 
-                    }
+    //-----------------------------------------------------------------------------
+    // TableRowEditorActivity::useActivityStartUpValues
+    //
+    // Uses activity start up values for variables.
+    //
+    // Activity dependent.
+    //
 
-                });
+    @Override
+    protected void useActivityStartUpValues() {
 
-    }//end of TableRowEditor::createUiChangeListener
+        super.useActivityStartUpValues();
+
+        //Get the pipe number and total length
+        //sent to this activity from its parent
+        Bundle bundle = getIntent().getExtras();
+        pipeNumber = bundle.getString(PIPE_NUMBER_KEY);
+        totalLength = bundle.getString(TOTAL_LENGTH_KEY);
+
+    }//end of TableRowEditorActivity::useActivityStartUpValues
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -222,12 +217,7 @@ public class TableRowEditorActivity extends Activity {
 
     private void exitActivityByOk() {
 
-        TextView pPN = (TextView)findViewById(R.id.editTextPipeNumber);
-        pipeNumber = pPN.getText().toString();
-        TextView pTL = (TextView)findViewById(R.id.editTextTotalLength);
-        totalLength = pTL.getText().toString();
-        CheckBox cBRAB = (CheckBox)findViewById(R.id.checkBoxRenumberAllBelow);
-        boolean renumberAll = cBRAB.isChecked();
+        getAndStoreInfoFromUserInput();
 
         Intent resultIntent = new Intent();
         resultIntent.putExtra(PIPE_NUMBER_KEY, pipeNumber);
@@ -237,6 +227,21 @@ public class TableRowEditorActivity extends Activity {
         finish();
 
     }//end of TableRowEditorActivity::exitActivityByOk
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TableRowEditorActivity::getAndStoreInfoFromUserInput
+    //
+    // Gets and stores all of the values entered by the user.
+    //
+
+    private void getAndStoreInfoFromUserInput() {
+
+        pipeNumber = editTextPipeNumber.getText().toString();
+        totalLength = editTextTotalLength.getText().toString();
+        renumberAll = checkBoxRenumberAllBelow.isChecked();
+
+    }//end of TableRowEditorActivity::getAndStoreInfoFromUserInput
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -287,10 +292,8 @@ public class TableRowEditorActivity extends Activity {
 
     private void setPipeNumberAndTotalLengthValues() {
 
-        TextView pPN = (TextView)findViewById(R.id.editTextPipeNumber);
-        pPN.setText(pipeNumber);
-        TextView pTL = (TextView)findViewById(R.id.editTextTotalLength);
-        pTL.setText(totalLength);
+        editTextPipeNumber.setText(pipeNumber);
+        editTextTotalLength.setText(totalLength);
 
     }//end of TableRowEditorActivity::setPipeNumberAndTotalLengthValues
     //-----------------------------------------------------------------------------

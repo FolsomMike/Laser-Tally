@@ -18,35 +18,37 @@ package com.yaboosh.ybtech.lasertally;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 // class MainActivity
 //
 
-public class MainActivity extends Activity {
+public class MainActivity extends StandardActivity {
 
-    public static final String TAG = "MainActivity";
-
-    private View decorView;
-    private int uiOptions;
-
-    private SharedSettings sharedSettings;
-
-    private ArrayList<String> jobNames = new ArrayList<String>();
+    public static AtomicInteger activitiesLaunched = new AtomicInteger(0);
 
     //-----------------------------------------------------------------------------
     // MainActivity::MainActivity (constructor)
     //
+    // Constructor to be used for initial creation.
+    //
 
-    public MainActivity() {
+    public MainActivity()
+    {
 
-        super();
+        layoutResID = R.layout.activity_main;
+
+        LOG_TAG = "MainActivity";
 
     }//end of MainActivity::MainActivity (constructor)
     //-----------------------------------------------------------------------------
@@ -55,41 +57,20 @@ public class MainActivity extends Activity {
     // MainActivity::onCreate
     //
     // Automatically called when the activity is created.
+    //
     // All functions that must be done upon instantiation should be called here.
     //
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle pSavedInstanceState) {
 
-        super.onCreate(savedInstanceState);
+        if (activitiesLaunched.incrementAndGet() > 1) { finish(); }
 
-        Log.d(TAG, "Inside of MainActivity onCreate");
+        super.onCreate(pSavedInstanceState);
 
-        setContentView(R.layout.activity_main);
-
-        decorView = getWindow().getDecorView();
-
-        uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-
-        createUiChangeListener();
-
-        //If the sharedSettings object is included
-        //in the bundle, set the sharedSettings
-        //object to the one in the bundle
-        //If it's not, initialize the sharedSettings
-        //object
-        if (getIntent().hasExtra(Keys.SHARED_SETTINGS_KEY)) {
-            sharedSettings = getIntent().getExtras().getParcelable(Keys.SHARED_SETTINGS_KEY);
-        }
-        else {
-            sharedSettings = new SharedSettings(this);
-            sharedSettings.init();
-        }
+        //add buttons to focus array
+        focusArray.add(findViewById(R.id.createNewJobButton));
+        focusArray.add(findViewById(R.id.openJobButton));
 
     }//end of MainActivity::onCreate
     //-----------------------------------------------------------------------------
@@ -98,14 +79,15 @@ public class MainActivity extends Activity {
     // MainActivity::onDestroy
     //
     // Automatically called when the activity is destroyed.
-    // All functions that must be done upon destruction should be called here.
+    //
+    // All functions that must be done upon activity destruction should be
+    // called here.
     //
 
     @Override
-    protected void onDestroy()
-    {
+    protected void onDestroy() {
 
-        Log.d(TAG, "Inside of MainActivity onDestroy");
+        activitiesLaunched.getAndDecrement();
 
         super.onDestroy();
 
@@ -113,86 +95,43 @@ public class MainActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MainActivity::onResume
+    // MainActivity::handleEscapeKeyPressed
     //
-    // Automatically called when the activity is paused when it does not have
-    // user's focus but it still partially visible.
-    // All functions that must be done upon instantiation should be called here.
+    // This functions is overridden and left blank so that the user cannot use
+    // the escape key to exit the activity.
+    //
+
+    protected void handleEscapeKeyPressed() {
+
+    }//end of MainActivity::handleEscapeKeyPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MainActivity::handleF3KeyPressed
+    //
+    // If a view is in focus, perform a click on that view.
     //
 
     @Override
-    protected void onResume() {
+    protected void handleF3KeyPressed() {
 
-        super.onResume();
+        if (viewInFocus != null) { performClickOnView(viewInFocus); }
 
-        Log.d(TAG, "Inside of MainActivity onResume");
-
-        decorView.setSystemUiVisibility(uiOptions);
-
-        sharedSettings.setContext(this);
-
-    }//end of MainActivity::onResume
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // MainActivity::onPause
-    //
-    // Automatically called when the activity is paused when it does not have
-    // user's focus but it still partially visible.
-    // All functions that must be done upon instantiation should be called here.
-    //
-
-    @Override
-    protected void onPause() {
-
-        super.onPause();
-
-        Log.d(TAG, "Inside of MainActivity onPause");
-
-    }//end of MainActivity::onPause
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // MainActivity::createUiChangeListener
-    //
-    // Listens for visibility changes in the ui.
-    //
-    // If the system bars are visible, the system visibility is set to the uiOptions.
-    //
-    //
-
-    private void createUiChangeListener() {
-
-        decorView.setOnSystemUiVisibilityChangeListener (
-                new View.OnSystemUiVisibilityChangeListener() {
-
-                    @Override
-                    public void onSystemUiVisibilityChange(int pVisibility) {
-
-                        if ((pVisibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
-                            decorView.setSystemUiVisibility(uiOptions);
-                        }
-
-                    }
-
-                });
-
-    }//end of MainActivity::createUiChangeListener
+    }//end of MainActivity::handleF3KeyPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
     // MainActivity::handleCreateNewJobButtonPressed
     //
-    // Starts an activity for Job Info.
+    // Starts CreateJobActivity.
+    //
     // Should be called from the "Create new job." button onClick().
     //
 
     public void handleCreateNewJobButtonPressed(View pView) {
 
-        Intent intent = new Intent(this, JobInfoActivity.class);
+        Intent intent = new Intent(this, CreateJobActivity.class);
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
-        intent.putExtra(Keys.EDIT_JOB_INFO_ACTIVITY_MODE_KEY,
-                                            JobInfoActivity.EditJobInfoActivityMode.CREATE_JOB);
         startActivity(intent);
 
     }//end of MainActivity::handleCreateNewJobButtonPressed

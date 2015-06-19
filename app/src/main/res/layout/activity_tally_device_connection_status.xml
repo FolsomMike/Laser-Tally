@@ -1,0 +1,55 @@
+<!-- MASTER LAYOUT -->
+<LinearLayout
+    android:id="@+id/main_content"
+    android:layout_height="wrap_content"
+    android:layout_width="@dimen/dialog_width_standard"
+    android:background="#CFCFCF"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:descendantFocusability="beforeDescendants"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="@dimen/padding_4xlarge"
+    tools:context="com.yaboosh.ybtech.lasertally.TallyDeviceConnectionStatusActivity"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" >
+
+    <!-- PROGRESS BAR CHECK MARK LAYOUT -->
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/padding_none"
+        android:gravity="center" >
+
+        <ProgressBar
+            android:id="@id/tallyDeviceConnectionStatusMessageProgressBar"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            style="@android:style/Widget.ProgressBar.Large"
+            android:gravity="center"
+            android:visibility="gone" />
+
+        <View
+            android:id="@id/tallyDeviceConnectionStatusMessageGreenCheckMark"
+            android:background="@drawable/green_check_mark"
+            android:layout_width="@dimen/atdcsm_ml_pbcml_check_mark_width"
+            android:layout_height="@dimen/atdcsm_ml_pbcml_check_mark_height"
+            android:visibility="gone">
+        </View>
+
+    </LinearLayout>
+    <!-- END OF PROGRESS BAR CHECK MARK LAYOUT -->
+
+    <TextView
+        android:id="@id/tallyDeviceConnectionStatusMessageTextView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="@dimen/padding_none"
+        android:textSize="@dimen/text_size_xlarge"
+        android:textColor="#000000"
+        android:text="" />
+
+</LinearLayout>
+<!-- END OF MASTER LAYOUT -->

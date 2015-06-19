@@ -21,6 +21,8 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -29,32 +31,28 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
+import java.util.concurrent.atomic.AtomicInteger;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 // class JobDisplayActivity
 //
 
-public class JobDisplayActivity extends Activity {
+public class JobDisplayActivity extends StandardActivity {
 
-    public static final String TAG = "JobDisplayActivity";
+    public static AtomicInteger activitiesLaunched = new AtomicInteger(0);
 
-    private View decorView;
-    private int uiOptions;
-
-    private SharedSettings sharedSettings;
-    private JobInfo jobInfo;
-
-    private Handler handler = new Handler();
-
-    TallyDataHandler tallyDataHandler;
+    private TallyDataHandler tallyDataHandler;
+    private MultiColumnListView listView;
 
     Button measureConnectButton;
     Button redoButton;
@@ -66,23 +64,24 @@ public class JobDisplayActivity extends Activity {
 
     final String connectButtonText = "connect";
     final String measureButtonText = "measure";
-    final String noValueString = "No Value";
 
     // Job Info Variables
-    private float adjustmentValue = 0;
     private String jobName = "";
-    private float tallyGoal;
     // End of Job Info Variables
 
-    private TableRow lastRowEdited;
+    private int lastClickedRowPos;
 
     //-----------------------------------------------------------------------------
     // JobDisplayActivity::JobDisplayActivity (constructor)
     //
+    // Constructor to be used for initial creation.
+    //
 
-    public JobDisplayActivity() {
+    public JobDisplayActivity()
+    {
+        LOG_TAG = "JobDisplayActivity";
 
-        super();
+        layoutResID = R.layout.activity_job_display;
 
         messenger = new Messenger(new IncomingHandler(this));
 
@@ -93,69 +92,30 @@ public class JobDisplayActivity extends Activity {
     // JobDisplayActivity::onCreate
     //
     // Automatically called when the activity is created.
+    //
     // All functions that must be done upon instantiation should be called here.
     //
 
     @Override
     protected void onCreate(Bundle pSavedInstanceState) {
 
+        if (activitiesLaunched.incrementAndGet() > 1) { finish(); }
+
         super.onCreate(pSavedInstanceState);
 
-        setContentView(R.layout.activity_job_display);
-
-        decorView = getWindow().getDecorView();
-
-        uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-
-        createUiChangeListener();
-
+        listView = (MultiColumnListView)findViewById(R.id.tallyDataListView);
         measureConnectButton = (Button)findViewById(R.id.measureConnectButton);
         redoButton = (Button)findViewById(R.id.redoButton);
 
-        // Check whether we're recreating a previously destroyed instance
-        if (pSavedInstanceState != null) {
-            // Restore values from saved state
-
-            jobInfo = pSavedInstanceState.getParcelable(Keys.JOB_INFO_KEY);
-            sharedSettings = pSavedInstanceState.getParcelable(Keys.SHARED_SETTINGS_KEY);
-
-        } else {
-            //initialize members with default values for a new instance
-
-            //Get the extras from the intent
-            Bundle bundle = getIntent().getExtras();
-
-            sharedSettings = bundle.getParcelable(Keys.SHARED_SETTINGS_KEY);
-            sharedSettings.setContext(this);
-
-            //if job info is included, then get it from the bundle
-            if (bundle.getBoolean(Keys.JOB_INFO_INCLUDED_KEY, false)) {
-                jobInfo = bundle.getParcelable(Keys.JOB_INFO_KEY);
-            }
-
-        }
+        //add a footer to the Tally Data ListView
+        View foot = getLayoutInflater().inflate(R.layout.layout_list_view_footer, listView, false);
+        listView.addFooterView(foot);
 
         //set the job name
-        setJobName(jobInfo.getJobName());
+        setJobName(jobsHandler.getJobName());
 
-        //Create a TallyDataHandler and give it its own MeasurementsTableHandler and a reference
-        //to jobInfo
-        tallyDataHandler = new TallyDataHandler(sharedSettings, jobInfo,
-                new MeasurementsTableHandler(
-                        sharedSettings,
-                        onClickListener,
-                        (TableLayout)findViewById(R.id.measurementsTable),
-                        findViewById(R.id.measurementsTableBottomBorderLine),
-                        (TableLayout)findViewById(R.id.totalsTable),
-                        (TextView)findViewById(R.id.totalOfAdjustedColumnTextView),
-                        (TextView)findViewById(R.id.totalOfTotalLengthColumnTextView)),
-                (TextView)findViewById(R.id.distanceLeftTextView),
-                (TextView)findViewById(R.id.numberOfPipesLeftTextView));
+        //initialize the tally data handler
+        tallyDataHandler = new TallyDataHandler(this, sharedSettings, jobsHandler, listView);
         tallyDataHandler.init();
 
         //Start the TallyDeviceService
@@ -176,6 +136,8 @@ public class JobDisplayActivity extends Activity {
     protected void onDestroy()
     {
 
+        activitiesLaunched.getAndDecrement();
+
         stopService(serviceIntent);
 
         super.onDestroy();
@@ -186,9 +148,9 @@ public class JobDisplayActivity extends Activity {
     //-----------------------------------------------------------------------------
     // JobDisplayActivity::onResume
     //
-    // Automatically called when the activity is paused when it does not have
-    // user's focus but it still partially visible.
-    // All functions that must be done upon instantiation should be called here.
+    // Automatically called upon activity resume.
+    //
+    // All functions that must be done upon activity resume should be called here.
     //
 
     @Override
@@ -196,11 +158,7 @@ public class JobDisplayActivity extends Activity {
 
         super.onResume();
 
-        decorView.setSystemUiVisibility(uiOptions);
-
         bindService(serviceIntent, connection, BIND_AUTO_CREATE);
-
-        sharedSettings.setContext(this);
 
     }//end of JobDisplayActivity::onResume
     //-----------------------------------------------------------------------------
@@ -210,7 +168,8 @@ public class JobDisplayActivity extends Activity {
     //
     // Automatically called when the activity is paused when it does not have
     // user's focus but it still partially visible.
-    // All functions that must be done upon instantiation should be called here.
+    //
+    // All functions that must be done upon activity pause should be called here.
     //
 
     @Override
@@ -225,7 +184,7 @@ public class JobDisplayActivity extends Activity {
         try {
 
             Message msg = Message.obtain(null,
-                                            TallyDeviceService.MSG_UNREGISTER_JOB_DISPLAY_ACTIVITY);
+                    TallyDeviceService.MSG_UNREGISTER_JOB_DISPLAY_ACTIVITY);
             if (msg == null) { return; }
             msg.replyTo = messenger;
             service.send(msg);
@@ -236,25 +195,73 @@ public class JobDisplayActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobDisplayActivity::onSaveInstanceState
+    // StandardActivity::handleArrowDownKeyPressed
     //
-    // As the activity begins to stop, the system calls onSaveInstanceState()
-    // so the activity can save state information with a collection of key-value
-    // pairs. This functions is overridden so that additional state information can
-    // be saved.
+    // Selects the next row in the tally data list view.
     //
 
     @Override
-    public void onSaveInstanceState(Bundle pSavedInstanceState) {
+    protected void handleArrowDownKeyPressed() {
 
-        //store necessary data
-        pSavedInstanceState.putParcelable(Keys.JOB_INFO_KEY, jobInfo);
-        pSavedInstanceState.putParcelable(Keys.SHARED_SETTINGS_KEY, sharedSettings);
+        listView.selectNextRow();
 
-        // Always call the superclass so it can save the view hierarchy state
-        super.onSaveInstanceState(pSavedInstanceState);
+    }//end of StandardActivity::handleArrowDownKeyPressed
+    //-----------------------------------------------------------------------------
 
-    }//end of JobDisplayActivity::onSaveInstanceState
+    //-----------------------------------------------------------------------------
+    // StandardActivity::handleArrowUpKeyPressed
+    //
+    // Selects the previous row in the tally data list view.
+    //
+
+    @Override
+    protected void handleArrowUpKeyPressed() {
+
+        listView.selectPreviousRow();
+
+    }//end of StandardActivity::handleArrowUpKeyPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobDisplayActivity::handleEscapeKeyPressed
+    //
+    // Performs a click on the redo button.
+    //
+
+    @Override
+    protected void handleEscapeKeyPressed() {
+
+        performClickOnView(redoButton);
+
+    }//end of JobDisplayActivity::handleEscapeKeyPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobDisplayActivity::handleF2KeyPressed
+    //
+    // Performs a click on the measure/connect button.
+    //
+
+    @Override
+    protected void handleF2KeyPressed() {
+
+        performClickOnView(measureConnectButton);
+
+    }//end of JobDisplayActivity::handleF2KeyPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobDisplayActivity::handleF3KeyPressed
+    //
+    // Performs a click on the selected ListView row.
+    //
+
+    @Override
+    protected void handleF3KeyPressed() {
+
+        listView.clickSelectedRow();
+
+    }//end of JobDisplayActivity::handleF3KeyPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -269,19 +276,12 @@ public class JobDisplayActivity extends Activity {
     {
 
         if (pRequestCode == Keys.ACTIVITY_RESULT_JOB_INFO) {
-
-            if (pResultCode == RESULT_OK) {
-                handleJobInfoActivityResultOk((JobInfo)pData.getParcelableExtra(Keys.JOB_INFO_KEY));
-            }
-            else if (pResultCode == RESULT_CANCELED) {
-                handleJobInfoActivityResultCancel();
-            }
-
+                if (pResultCode == Activity.RESULT_OK) { handleEditJobActivityResult(pData); }
         }
         else if (pRequestCode == Keys.ACTIVITY_RESULT_MORE) {
 
             if (pResultCode == RESULT_OK) {
-                handleMoreActivityResultOk((SharedSettings)pData.getParcelableExtra(Keys.SHARED_SETTINGS_KEY));
+                handleMoreActivityResultOk((SharedSettings) pData.getParcelableExtra(Keys.SHARED_SETTINGS_KEY));
             }
             else if (pResultCode == RESULT_CANCELED) {
                 handleMoreActivityResultCancel();
@@ -291,7 +291,7 @@ public class JobDisplayActivity extends Activity {
         else if (pRequestCode == Keys.ACTIVITY_RESULT_TABLE_ROW_EDITOR) {
 
             if (pResultCode == RESULT_OK) {
-                handleTableRowEditorActivityResultOk(
+                tallyDataHandler.handleTableRowEditorActivityResultOk(
                         pData.getStringExtra(TableRowEditorActivity.PIPE_NUMBER_KEY),
                         pData.getStringExtra(TableRowEditorActivity.TOTAL_LENGTH_KEY),
                         pData.getBooleanExtra(TableRowEditorActivity.RENUMBER_ALL_CHECKBOX_KEY, false));
@@ -372,10 +372,6 @@ public class JobDisplayActivity extends Activity {
                     handleMeasureConnectButtonPressed();
                     break;
 
-                case R.id.measurementsTableRow:
-                    handleTableRowPressed((TableRow)pV);
-                    break;
-
                 case R.id.redoButton:
                     handleRedoButtonPressed();
                     break;
@@ -388,34 +384,6 @@ public class JobDisplayActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobDisplayActivity::createUiChangeListener
-    //
-    // Listens for visibility changes in the ui.
-    //
-    // If the system bars are visible, the system visibility is set to the uiOptions.
-    //
-    //
-
-    private void createUiChangeListener() {
-
-        decorView.setOnSystemUiVisibilityChangeListener (
-                new View.OnSystemUiVisibilityChangeListener() {
-
-                    @Override
-                    public void onSystemUiVisibilityChange(int pVisibility) {
-
-                        if ((pVisibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
-                            decorView.setSystemUiVisibility(uiOptions);
-                        }
-
-                    }
-
-                });
-
-    }//end of JobDisplayActivity::createUiChangeListener
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
     // JobDisplayActivity::handleConnectedState
     //
     // Sets the measureConnectButton to its "measuring" look and text and sets
@@ -424,8 +392,7 @@ public class JobDisplayActivity extends Activity {
 
     public void handleConnectedState() {
 
-        measureConnectButton.setBackground(getResources().getDrawable
-                (R.drawable.blue_styled_button));
+        measureConnectButton.setBackground(getResources().getDrawable(R.drawable.blue_styled_button));
         measureConnectButton.setText(measureButtonText);
         measureConnectButton.setOnClickListener(onClickListener);
         measureConnectButton.setVisibility(View.VISIBLE);
@@ -481,49 +448,35 @@ public class JobDisplayActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobDisplayActivity::handleJobInfoActivityResultOk
+    // JobDisplayActivity::handleEditJobActivityResult
     //
-    // Uses the passed in JobInfo to set the job name, adjustment value, and
-    // tally goal.
-    //
-
-    private void handleJobInfoActivityResultOk(JobInfo pJobInfo) {
-
-        jobInfo = pJobInfo;
-        tallyDataHandler.setJobInfo(jobInfo);
-
-        setJobName(jobInfo.getJobName());
-
-    }//end of JobDisplayActivity::handleJobInfoActivityResultOk
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobDisplayActivity::handleJobInfoActivityResultCancel
-    //
-    // Currently does nothing.
+    // Extracts the JobsHandler from the passed in intent and uses the passed it
+    // to set the job name, adjustment value, and tally goal.
     //
 
-    private void handleJobInfoActivityResultCancel() {
+    private void handleEditJobActivityResult(Intent pData) {
 
-        //Currently does nothing
+        jobsHandler = pData.getParcelableExtra(Keys.JOBS_HANDLER_KEY);
+        tallyDataHandler.setJobInfo(jobsHandler);
 
-    }//end of JobDisplayActivity::handleJobInfoActivityResultCancel
+        setJobName(jobsHandler.getJobName());
+
+    }//end of JobDisplayActivity::handleEditJobActivityResult
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
     // JobDisplayActivity::handleJobInfoButtonPressed
     //
-    // Starts an activity for Job Info.
-    // Should be called from the "Job Info" button onClick().
+    // Starts the EditJobActivity.
+    //
+    // Should be called from the job info button onClick().
     //
 
     public void handleJobInfoButtonPressed(View pView) {
 
-        Intent intent = new Intent(this, JobInfoActivity.class);
+        Intent intent = new Intent(this, EditJobActivity.class);
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
-        intent.putExtra(Keys.JOB_NAME_KEY, jobName);
-        intent.putExtra(Keys.EDIT_JOB_INFO_ACTIVITY_MODE_KEY,
-                                        JobInfoActivity.EditJobInfoActivityMode.EDIT_JOB_INFO);
+        intent.putExtra(Keys.JOBS_HANDLER_KEY, jobsHandler);
         startActivityForResult(intent, Keys.ACTIVITY_RESULT_JOB_INFO);
 
     }//end of JobDisplayActivity::handleJobInfoButtonPressed
@@ -557,7 +510,7 @@ public class JobDisplayActivity extends Activity {
 
         Intent intent = new Intent(this, MoreActivity.class);
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
-        intent.putExtra(Keys.JOB_INFO_KEY, jobInfo);
+        intent.putExtra(Keys.JOBS_HANDLER_KEY, jobsHandler);
         startActivityForResult(intent, Keys.ACTIVITY_RESULT_MORE);
 
     }//end of JobDisplayActivity::handleMoreButtonPressed
@@ -598,9 +551,9 @@ public class JobDisplayActivity extends Activity {
 
     public void handleNewDistanceValue(String pDistanceValue) {
 
-        tallyDataHandler.handleNewDistanceValue(Double.parseDouble(pDistanceValue));
+        if (viewInFocus != null) { viewInFocus.clearFocus(); }
 
-        scrollToBottomOfMeasurementsTable();
+        tallyDataHandler.handleNewDistanceValue(Double.parseDouble(pDistanceValue));
 
         //enable the measureConnect and redo buttons
         //so that the user can use them now that the
@@ -608,13 +561,16 @@ public class JobDisplayActivity extends Activity {
         setMeasureConnectButtonEnabled(true);
         setRedoButtonEnabled(true);
 
+        //set the focus to the last row in the table
+        if (!focusArray.isEmpty()) { focusView(focusArray.get(focusArray.size()-1)); }
+
     }//end of JobDisplayActivity::handleNewDistanceValue
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
     // JobDisplayActivity::handleNoNewDistanceValueReceived
     //
-    // Enables the Measure and Redo buttons.
+    // Plays the bad sound and enables the Measure and Redo buttons.
     //
     // This function handles when a distance value is not received back from the
     // tally device after the measure command was sent to it. This is to
@@ -623,6 +579,8 @@ public class JobDisplayActivity extends Activity {
     //
 
     private void handleNoNewDistanceValueReceived () {
+
+        Tools.playBadSound(this);
 
         setMeasureConnectButtonEnabled(true);
         setRedoButtonEnabled(true);
@@ -640,64 +598,18 @@ public class JobDisplayActivity extends Activity {
 
         tallyDataHandler.removeLastDataEntry();
 
-        scrollToBottomOfMeasurementsTable();
-
     }//end of JobDisplayActivity::handleRedoButtonPressed
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobDisplayActivity::handleTableRowEditorActivityResultOk
-    //
-    // Sets the pipe number and total length of the last edited row to the passed
-    // in values.
-    // Also sets the background color of the last edited row back to its original
-    // color.
-    //
-
-    private void handleTableRowEditorActivityResultOk(String pPipeNum, String pTotalLength,
-                                                    boolean pRenumberAll) {
-
-        lastRowEdited.setBackgroundColor(getResources().getColor(R.color.measurementsTableColor));
-
-        tallyDataHandler.changeValuesOfExistingRow(lastRowEdited, pPipeNum, pTotalLength, pRenumberAll);
-
-    }//end of JobDisplayActivity::handleTableRowEditorActivityResultOk
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
     // JobDisplayActivity::handleTableRowEditorActivityResultCancel
     //
-    // Sets the background color of the last edited row back to its original color.
+    // Currently does nothing.
     //
 
     private void handleTableRowEditorActivityResultCancel() {
 
-        lastRowEdited.setBackgroundColor(getResources().getColor(R.color.measurementsTableColor));
-
     }//end of JobDisplayActivity::handleTableRowEditorActivityResultCancel
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobDisplayActivity::handleTableRowPressed
-    //
-    // Gets the values in the Pipe # and Adjusted columns and sends the
-    // values to the EditPipeRowActivity to be displayed to and edited by the user.
-    //
-
-    public void handleTableRowPressed(TableRow pR) {
-
-        lastRowEdited = pR;
-        pR.setBackgroundColor(getResources().getColor(R.color.selectedTableRowColor));
-        String pipeNum = tallyDataHandler.getPipeNumberOfRow(pR);
-        String totalLength = tallyDataHandler.getTotalLengthValueOfRow(pR);
-
-        Intent intent = new Intent(this, TableRowEditorActivity.class);
-        intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
-        intent.putExtra(TableRowEditorActivity.PIPE_NUMBER_KEY, pipeNum);
-        intent.putExtra(TableRowEditorActivity.TOTAL_LENGTH_KEY, totalLength);
-        startActivityForResult(intent, Keys.ACTIVITY_RESULT_TABLE_ROW_EDITOR);
-
-    }//end of JobDisplayActivity::handleTableRowPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -707,9 +619,6 @@ public class JobDisplayActivity extends Activity {
     //
 
     private void registerWithService() {
-
-        //debug hss//
-        Log.d(TAG, "register with service");
 
         try {
 
@@ -722,27 +631,6 @@ public class JobDisplayActivity extends Activity {
         } catch (Exception e) { service = null; }
 
     }//end of JobDisplayActivity::registerWithService
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobDisplayActivity::scrollToBottomOfMeasurementsTable
-    //
-    // Scrolls the ScrollView containing the measurements table all the way to the
-    // bottom.
-    //
-
-    private void scrollToBottomOfMeasurementsTable() {
-
-        final ScrollView sv = (ScrollView)findViewById(R.id.measurementsTableScrollView);
-
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                sv.fullScroll(View.FOCUS_DOWN);
-            }
-        });
-
-    }//end of JobDisplayActivity::scrollToBottomOfMeasurementsTable
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -853,9 +741,6 @@ public class JobDisplayActivity extends Activity {
 
         state = pNewState;
 
-        //debug hss//
-        Log.d(TAG, "State changed: " + state);
-
         if (state == TallyDeviceService.State.CONNECTED) { handleConnectedState(); }
         else if (state == TallyDeviceService.State.DISCONNECTED) { handleDisconnectedState(); }
         else if (state == TallyDeviceService.State.IDLE) { handleIdleState(); }
@@ -900,7 +785,7 @@ public class JobDisplayActivity extends Activity {
             JobDisplayActivity tempActivity = activity.get();
             if (tempActivity != null) {
 
-                Log.d(TAG, "message received: " + pMsg.what);
+                Log.d(LOG_TAG, "message received: " + pMsg.what);
 
                 switch (pMsg.what) {
 

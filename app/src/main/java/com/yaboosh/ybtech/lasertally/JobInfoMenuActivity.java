@@ -30,29 +30,30 @@ import android.view.View;
 import android.view.WindowManager;
 
 import java.io.File;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 // class JobInfoMenuActivity
 //
 
-public class JobInfoMenuActivity extends Activity {
+public class JobInfoMenuActivity extends StandardActivity {
 
-    public static final String TAG = "JobInfoMenuActivity";
-
-    private View decorView;
-    private int uiOptions;
-
-    private SharedSettings sharedSettings;
-    private String jobName;
+    public static AtomicInteger activitiesLaunched = new AtomicInteger(0);
 
     //-----------------------------------------------------------------------------
     // JobInfoMenuActivity::JobInfoMenuActivity (constructor)
     //
+    // Constructor to be used for initial creation.
+    //
 
-    public JobInfoMenuActivity() {
+    public JobInfoMenuActivity()
+    {
 
-        super();
+        layoutResID = R.layout.activity_job_info_menu;
+
+        LOG_TAG = "JobInfoMenuActivity";
 
     }//end of JobInfoMenuActivity::JobInfoMenuActivity (constructor)
     //-----------------------------------------------------------------------------
@@ -61,36 +62,22 @@ public class JobInfoMenuActivity extends Activity {
     // JobInfoMenuActivity::onCreate
     //
     // Automatically called when the activity is created.
-    // All functions that must be done upon creation should be called here.
+    //
+    // All functions that must be done upon instantiation should be called here.
     //
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle pSavedInstanceState) {
 
-        super.onCreate(savedInstanceState);
+        if (activitiesLaunched.incrementAndGet() > 1) { finish(); }
 
-        Log.d(TAG, "Inside of onCreate :: " + TAG);
+        super.onCreate(pSavedInstanceState);
 
-        setContentView(R.layout.activity_job_info_menu);
-
-        this.setFinishOnTouchOutside(false);
-
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        decorView = getWindow().getDecorView();
-
-        uiOptions = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
-
-        createUiChangeListener();
-
-        Bundle bundle = getIntent().getExtras();
-        sharedSettings = bundle.getParcelable(Keys.SHARED_SETTINGS_KEY);
-        jobName = bundle.getString(Keys.JOB_NAME_KEY);
+        //add buttons to focus array
+        focusArray.add(findViewById(R.id.openJobButton));
+        focusArray.add(findViewById(R.id.createNewJobButton));
+        focusArray.add(findViewById(R.id.renameJobButton));
+        focusArray.add(findViewById(R.id.deleteJobButton));
 
     }//end of JobInfoMenuActivity::onCreate
     //-----------------------------------------------------------------------------
@@ -99,14 +86,15 @@ public class JobInfoMenuActivity extends Activity {
     // JobInfoMenuActivity::onDestroy
     //
     // Automatically called when the activity is destroyed.
-    // All functions that must be done upon destruction should be called here.
+    //
+    // All functions that must be done upon activity destruction should be
+    // called here.
     //
 
     @Override
-    protected void onDestroy()
-    {
+    protected void onDestroy() {
 
-        Log.d(TAG, "Inside of onDestroy :: " + TAG);
+        activitiesLaunched.getAndDecrement();
 
         super.onDestroy();
 
@@ -114,50 +102,39 @@ public class JobInfoMenuActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoMenuActivity::onResume
+    // JobInfoMenuActivity::handleEscapeKeyPressed
     //
-    // Automatically called when the activity is paused when it does not have
-    // user's focus but it still partially visible.
-    // All functions that must be done upon instantiation should be called here.
-    //
-
-    @Override
-    protected void onResume() {
-
-        super.onResume();
-
-        Log.d(TAG, "Inside of onResume :: " + TAG);
-
-        decorView.setSystemUiVisibility(uiOptions);
-
-        sharedSettings.setContext(this);
-
-    }//end of JobInfoMenuActivity::onResume
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobInfoMenuActivity::onPause
-    //
-    // Automatically called when the activity is paused when it does not have
-    // user's focus but it still partially visible.
-    // All functions that must be done upon instantiation should be called here.
+    // This function is overridden so that pressing the Escape key will have the
+    // same effect as pressing the red X button.
     //
 
     @Override
-    protected void onPause() {
+    protected void handleEscapeKeyPressed() {
 
-        super.onPause();
+        handleRedXButtonPressed(null);
 
-        Log.d(TAG, "Inside of onPause :: " + TAG);
+    }//end of JobInfoMenuActivity::handleEscapeKeyPressed
+    //-----------------------------------------------------------------------------
 
-    }//end of JobInfoMenuActivity::onPause
+    //-----------------------------------------------------------------------------
+    // JobInfoMenuActivity::handleF3KeyPressed
+    //
+    // If a view is in focus, perform a click on that view.
+    //
+
+    @Override
+    protected void handleF3KeyPressed() {
+
+        if (viewInFocus != null) { performClickOnView(viewInFocus); }
+
+    }//end of JobInfoMenuActivity::handleF3KeyPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
     // JobInfoMenuActivity::onActivityResult
     //
     // Listens for activity results and decides what actions to take depending on
-    // their request codes and requests' result codes.
+    // their request and result codes.
     //
 
     @Override
@@ -175,6 +152,10 @@ public class JobInfoMenuActivity extends Activity {
 
         }
 
+        else if (pRequestCode == Keys.ACTIVITY_RESULT_RENAME_JOB) {
+            handleRenameJobActivityResult(pData);
+        }
+
         else {
             super.onActivityResult(pRequestCode, pResultCode, pData);
         }
@@ -183,79 +164,35 @@ public class JobInfoMenuActivity extends Activity {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobInfoMenuActivity::createUiChangeListener
+    // JobInfoMenuActivity::handleRenameThisJobButtonPressed
     //
-    // Listens for visibility changes in the ui.
+    // Launches the RenameJobActivity.
     //
-    // If the system bars are visible, the system visibility is set to the uiOptions.
-    //
-    //
-
-    private void createUiChangeListener() {
-
-        decorView.setOnSystemUiVisibilityChangeListener (
-                new View.OnSystemUiVisibilityChangeListener() {
-
-                    @Override
-                    public void onSystemUiVisibilityChange(int pVisibility) {
-
-                        if ((pVisibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
-                            decorView.setSystemUiVisibility(uiOptions);
-                        }
-
-                    }
-
-                });
-
-    }//end of JobInfoMenuActivity::createUiChangeListener
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobInfoMenuActivity::deleteJob
-    //
-    // Deletes the passed in job by deleting its directory.
+    // Should be called from the rename job button onClick().
     //
 
-    private void deleteJob(String pJobName) {
+    public void handleRenameThisJobButtonPressed(View pView) {
 
-        try {
-
-            Tools.deleteDirectory(new File(sharedSettings.getJobsFolderPath() + File.separator + pJobName));
-
-        } catch (Exception e) {}
-
-    }//end of JobInfoMenuActivity::deleteJob
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // JobInfoMenuActivity::handleCloseThisJobButtonPressed
-    //
-    // Starts the MainActivity.
-    // Should be called from the "Close this job." button onClick().
-    //
-
-    public void handleCloseThisJobButtonPressed(View pView) {
-
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, RenameJobActivity.class);
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
-        startActivity(intent);
+        intent.putExtra(Keys.JOBS_HANDLER_KEY, jobsHandler);
+        startActivityForResult(intent, Keys.ACTIVITY_RESULT_RENAME_JOB);
 
-    }//end of JobInfoMenuActivity::handleCloseThisJobButtonPressed
+    }//end of JobInfoMenuActivity::handleRenameThisJobButtonPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
     // JobInfoMenuActivity::handleCreateANewJobButtonPressed
     //
-    // Starts the editJobInfoActivity in the CREATE_JOB mode.
-    // Should be called from the "Create a new job." button onClick().
+    // Launches CreateJobActivity.
+    //
+    // Should be called from the create a new job button onClick().
     //
 
     public void handleCreateANewJobButtonPressed(View pView) {
 
-        Intent intent = new Intent(this, JobInfoActivity.class);
+        Intent intent = new Intent(this, CreateJobActivity.class);
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
-        intent.putExtra(Keys.EDIT_JOB_INFO_ACTIVITY_MODE_KEY,
-                                            JobInfoActivity.EditJobInfoActivityMode.CREATE_JOB);
         startActivity(intent);
 
     }//end of JobInfoMenuActivity::handleCreateANewJobButtonPressed
@@ -271,9 +208,9 @@ public class JobInfoMenuActivity extends Activity {
     public void handleDeleteThisJobButtonPressed(View pView) {
 
         Intent intent = new Intent(this, VerifyActionActivity.class);
-        intent.putExtra(VerifyActionActivity.TEXT_VIEW_TEXT,
-                            "Are you sure that you want to delete " + "the job \""
-                                            + jobName + "\"?  This cannot be undone.");
+        intent.putExtra(VerifyActionActivity.TEXT_VIEW_TEXT_KEY,
+                            "Are you sure that you want to delete the job " +
+                                "\"" + jobsHandler.getJobName() + "\"?  This cannot be undone.");
         startActivityForResult(intent, Keys.ACTIVITY_RESULT_VERIFY_ACTION);
 
     }//end of JobInfoMenuActivity::handleDeleteThisJobButtonPressed
@@ -298,14 +235,30 @@ public class JobInfoMenuActivity extends Activity {
     //-----------------------------------------------------------------------------
     // JobInfoMenuActivity::handleRedXButtonPressed
     //
-    // Exits the activity by calling exitActivityByCancel().
+    // Exits the activity.
     //
 
     public void handleRedXButtonPressed(View pView) {
 
+        Intent intent = new Intent();
+        intent.putExtra(Keys.JOBS_HANDLER_KEY, jobsHandler);
+        setResult(Activity.RESULT_OK, intent);
         finish();
 
     }//end of JobInfoMenuActivity::handleRedXButtonPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobInfoMenuActivity::handleRenameJobActivityResult
+    //
+    // Extracts the JobsHandler object from the passed in intent.
+    //
+
+    public void handleRenameJobActivityResult(Intent pData) {
+
+        jobsHandler = pData.getParcelableExtra(Keys.JOBS_HANDLER_KEY);
+
+    }//end of JobInfoMenuActivity::handleRenameJobActivityResult
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -327,9 +280,10 @@ public class JobInfoMenuActivity extends Activity {
 
     public void handleVerifyActionResultOk() {
 
-        deleteJob(jobName);
+        jobsHandler.deleteCurrentJob();
 
         Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
         startActivity(intent);
 

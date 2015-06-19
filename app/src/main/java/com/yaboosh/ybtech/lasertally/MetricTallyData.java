@@ -28,10 +28,10 @@ public class MetricTallyData extends TallyData {
     // MetricTallyData::MetricTallyData (constructor)
     //
 
-    public MetricTallyData(SharedSettings pSet, JobInfo pJobInfo)
+    public MetricTallyData(SharedSettings pSet, JobsHandler pJobsHandler)
     {
 
-        super(pSet, pJobInfo);
+        super(pSet, pJobsHandler);
 
         LOG_TAG = "MetricTallyData";
 
@@ -47,21 +47,21 @@ public class MetricTallyData extends TallyData {
     //-----------------------------------------------------------------------------
     // MetricTallyData::setJobInfoVariables
     //
-    // Sets variables to values stored in JobInfo.
+    // Sets variables to values stored in JobsHandler.
     //
-    // Should be called every time JobInfo changes.
+    // Should be called every time JobsHandler changes.
     //
 
     void setJobInfoVariables()
     {
 
-        filePath = jobInfo.getCurrentJobDirectoryPath() + File.separator
-                                                        + jobInfo.getJobName()
+        filePath = jobsHandler.getCurrentJobDirectoryPath() + File.separator
+                                                        + jobsHandler.getJobName()
                                                         + " ~ TallyData ~ Metric.csv";
 
-        setAdjustmentValue(jobInfo.getMetricAdjustment());
+        setAdjustmentValue(jobsHandler.getMetricAdjustment());
 
-        setTallyGoal(jobInfo.getMetricTallyGoal());
+        setTallyGoal(jobsHandler.getMetricTallyGoal());
 
     }//end of MetricTallyData::setJobInfoVariables
     //-----------------------------------------------------------------------------
