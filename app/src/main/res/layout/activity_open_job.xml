@@ -106,9 +106,8 @@
 
             <TextView
                 android:id="@id/noJobsTextView"
-                android:layout_height="wrap_content"
+                android:layout_height="fill_parent"
                 android:layout_width="fill_parent"
-                android:background="@drawable/black_border"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
                 android:gravity="center"
