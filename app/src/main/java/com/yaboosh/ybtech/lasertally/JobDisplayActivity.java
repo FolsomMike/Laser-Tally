@@ -108,8 +108,8 @@ public class JobDisplayActivity extends StandardActivity {
         redoButton = (Button)findViewById(R.id.redoButton);
 
         //add a footer to the Tally Data ListView
-        View foot = this.getLayoutInflater().inflate(R.layout.layout_list_view_footer, null, false);
-        ((ListView)findViewById(R.id.tallyDataListView)).addFooterView(foot);
+        View foot = getLayoutInflater().inflate(R.layout.layout_list_view_footer, listView, false);
+        listView.addFooterView(foot);
 
         //set the job name
         setJobName(jobsHandler.getJobName());
@@ -200,6 +200,7 @@ public class JobDisplayActivity extends StandardActivity {
     // Selects the next row in the tally data list view.
     //
 
+    @Override
     protected void handleArrowDownKeyPressed() {
 
         listView.selectNextRow();
@@ -213,6 +214,7 @@ public class JobDisplayActivity extends StandardActivity {
     // Selects the previous row in the tally data list view.
     //
 
+    @Override
     protected void handleArrowUpKeyPressed() {
 
         listView.selectPreviousRow();
@@ -251,7 +253,7 @@ public class JobDisplayActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
     // JobDisplayActivity::handleF3KeyPressed
     //
-    // Performs a click on the focused table row.
+    // Performs a click on the selected ListView row.
     //
 
     @Override
@@ -596,8 +598,6 @@ public class JobDisplayActivity extends StandardActivity {
 
         tallyDataHandler.removeLastDataEntry();
 
-        if (!focusArray.isEmpty()) { focusView(focusArray.get(focusArray.size() - 1)); }
-
     }//end of JobDisplayActivity::handleRedoButtonPressed
     //-----------------------------------------------------------------------------
 
@@ -619,9 +619,6 @@ public class JobDisplayActivity extends StandardActivity {
     //
 
     private void registerWithService() {
-
-        //DEBUG HSS//
-        Log.d(LOG_TAG, "register with service");
 
         try {
 
@@ -743,9 +740,6 @@ public class JobDisplayActivity extends StandardActivity {
     private void stateChanged(TallyDeviceService.State pNewState) {
 
         state = pNewState;
-
-        //debug hss//
-        Log.d(LOG_TAG, "State changed: " + state);
 
         if (state == TallyDeviceService.State.CONNECTED) { handleConnectedState(); }
         else if (state == TallyDeviceService.State.DISCONNECTED) { handleDisconnectedState(); }

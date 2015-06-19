@@ -27,6 +27,7 @@ import android.util.SparseArray;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -354,17 +355,6 @@ public class TallyDataHandler {
         displayTallyData();
 
         listView.post(new Runnable() { @Override public void run() { listView.selectLastRow(); } });
-
-        //DEBUG HSS//
-
-        /*(new Handler()).postDelayed(new Runnable () {
-
-            @Override
-            public void run() {
-                listView.selectLastRow();
-            }
-
-        }, 1000);*/
 
     }//end of TallyDataHandler::removeLastDataEntry
     //-----------------------------------------------------------------------------
