@@ -21,6 +21,7 @@ package com.yaboosh.ybtech.lasertally;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Handler;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
@@ -95,14 +96,13 @@ public class TallyDataHandler {
         ids.add(pipeNumberColumnId);
         ids.add(totalLengthColumnId);
         ids.add(adjustedColumnId);
-        listView = (MultiColumnListView) parentActivity.findViewById(R.id.tallyDataListView);
         listView.init(parentActivity, R.layout.layout_list_view_row, 3, ids);
 
         //assign a click listener to the ListView
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> pParent, View pView, int pPos, long pId) {
-                handleListViewRowClicked(pPos, pView);
+                handleListViewRowClicked(pPos);
             }
         });
 
@@ -133,7 +133,7 @@ public class TallyDataHandler {
 
         displayTallyData();
 
-        listView.selectLastRow();
+        listView.post(new Runnable() { @Override public void run() { listView.selectLastRow(); } });
 
     }//end of TallyDataHandler::addDataEntry
     //-----------------------------------------------------------------------------
@@ -178,9 +178,6 @@ public class TallyDataHandler {
 
         readDataFromLists();
 
-        //parentActivity.scrollMeasurementsTable();
-        //DEBUG HSS//parentActivity.putTableRowsIntoFocusArray();
-
         setAndCheckTotals();
 
     }//end of TallyDataHandler::displayTallyData
@@ -221,12 +218,12 @@ public class TallyDataHandler {
     // edit the data associated with the clicked row.
     //
 
-    private void handleListViewRowClicked(int pPos, View pView)
+    private void handleListViewRowClicked(int pPos)
     {
 
         editedRowPos = pPos;
 
-        listView.handleRowClicked(pPos, pView);
+        listView.handleRowClicked(pPos);
 
         //extract data from the clicked row
         String pipeNum = getPipeNumberAtIndex(pPos);
@@ -356,7 +353,18 @@ public class TallyDataHandler {
 
         displayTallyData();
 
-        listView.selectLastRow();
+        listView.post(new Runnable() { @Override public void run() { listView.selectLastRow(); } });
+
+        //DEBUG HSS//
+
+        /*(new Handler()).postDelayed(new Runnable () {
+
+            @Override
+            public void run() {
+                listView.selectLastRow();
+            }
+
+        }, 1000);*/
 
     }//end of TallyDataHandler::removeLastDataEntry
     //-----------------------------------------------------------------------------

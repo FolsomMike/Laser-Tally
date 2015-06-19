@@ -308,8 +308,7 @@
                     android:layout_width="fill_parent"
                     android:divider="#000000"
                     android:dividerHeight="1dp"
-                    android:fadeScrollbars="false"
-                    android:stackFromBottom="true">
+                    android:fadeScrollbars="false">
                 </com.yaboosh.ybtech.lasertally.MultiColumnListView>
 
             </LinearLayout>
