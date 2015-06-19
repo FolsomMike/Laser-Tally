@@ -121,6 +121,8 @@ public class QuickActionActivity extends StandardActivity {
     public void handleCreateQuickJobButtonPressed(View pView)
     {
 
+        MultiColumnListView.clearSelectionValues();
+
         jobsHandler.createQuickJob();
         Intent intent = new Intent(this, JobDisplayActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -139,6 +141,8 @@ public class QuickActionActivity extends StandardActivity {
 
     public void handleOpenJobButtonPressed(View pView)
     {
+
+        MultiColumnListView.clearSelectionValues();
 
         Intent intent = new Intent(this, OpenJobActivity.class);
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
