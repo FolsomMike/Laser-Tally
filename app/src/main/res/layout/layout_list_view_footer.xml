@@ -2,7 +2,7 @@
 
 <LinearLayout
     android:layout_height="wrap_content"
-    android:layout_width="wrap_content"
+    android:layout_width="fill_parent"
     android:focusable="false"
     android:focusableInTouchMode="false"
     android:orientation="vertical"
@@ -17,7 +17,7 @@
 
     <!-- vertical spacer 1 -->
     <View
-        android:layout_width="1dp"
+        android:layout_width="fill_parent"
         android:layout_height="@dimen/spacer_vertical_xxshort"
         android:focusable="false"
         android:focusableInTouchMode="false"
