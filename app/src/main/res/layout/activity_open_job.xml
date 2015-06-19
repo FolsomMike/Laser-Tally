@@ -83,46 +83,41 @@
             android:textColor="#666666"
             android:textSize="@dimen/text_size_small" />
 
-        <!-- JOBS SCROLLVIEW -->
-        <com.yaboosh.ybtech.lasertally.FixedFocusScrollView
-            android:id="@+id/jobsScrollView"
+        <LinearLayout
+            android:id="@+id/tallyDataLayout"
             android:layout_height="fill_parent"
             android:layout_width="fill_parent"
             android:background="@drawable/black_border"
-            android:fadeScrollbars="false"
             android:focusable="false"
             android:focusableInTouchMode="false"
-            android:layout_below="@+id/selectJobTextView"
-            android:padding="1dp"
-            android:scrollbars="vertical" >
+            android:layout_above="@+id/totalsTable"
+            android:layout_below="@+id/headerTable"
+            android:orientation="vertical"
+            android:padding="1dp" >
 
-            <LinearLayout
-                android:id="@+id/jobNamesLayout"
+            <com.yaboosh.ybtech.lasertally.MultiColumnListView
+                android:id="@+id/tallyDataListView"
+                android:layout_height="fill_parent"
+                android:layout_width="fill_parent"
+                android:divider="#000000"
+                android:dividerHeight="1dp"
+                android:fadeScrollbars="false">
+            </com.yaboosh.ybtech.lasertally.MultiColumnListView>
+
+            <TextView
+                android:id="@id/noJobsTextView"
                 android:layout_height="wrap_content"
                 android:layout_width="fill_parent"
+                android:background="@drawable/black_border"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
                 android:gravity="center"
-                android:orientation="vertical"
-                android:padding="@dimen/padding_none" >
+                android:text="no jobs found"
+                android:textColor="#666666"
+                android:textSize="@dimen/text_size_normal"
+                android:visibility="gone" />
 
-                <TextView
-                    android:id="@id/noJobsTextView"
-                    android:layout_height="wrap_content"
-                    android:layout_width="fill_parent"
-                    android:background="@drawable/black_border"
-                    android:focusable="false"
-                    android:focusableInTouchMode="false"
-                    android:gravity="center"
-                    android:text="no jobs found"
-                    android:textColor="#666666"
-                    android:textSize="@dimen/text_size_normal"
-                    android:visibility="gone" />
-
-            </LinearLayout>
-
-        </com.yaboosh.ybtech.lasertally.FixedFocusScrollView>
-        <!-- END OF JOBS SCROLLVIEW -->
+        </LinearLayout>
 
     </RelativeLayout>
     <!-- END OF JOBS LIST LAYOUT -->
