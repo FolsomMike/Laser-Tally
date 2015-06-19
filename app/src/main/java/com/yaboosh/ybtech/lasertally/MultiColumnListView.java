@@ -24,16 +24,11 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -60,7 +55,7 @@ public class MultiColumnListView extends ListView {
     private final int normalRowColor = Color.parseColor("#FFFFFF");
     private final int selectedRowColor = Color.parseColor("#0099FF");
     private static int selectedPos = -1;
-    private static View selectedView = null;
+    private View selectedView = null;
 
     //holder to cache views used with the adapter
     private static class ViewHolder { SparseArray<TextView> columns = new SparseArray<TextView>(); }
@@ -117,7 +112,7 @@ public class MultiColumnListView extends ListView {
         post(new Runnable() {
             @Override
             public void run() {
-                setSelectionFromTop(pPos, getHeight() / 2);
+                setSelectionFromTop(pPos, getHeight()/2-positionToViewMap.get(pPos).getHeight()/2);
             }
         });
 
@@ -138,7 +133,6 @@ public class MultiColumnListView extends ListView {
     {
 
         selectedPos = -1;
-        selectedView = null;
 
     }//end of MultiColumnListView::clearSelectionValues
     //-----------------------------------------------------------------------------
@@ -155,12 +149,10 @@ public class MultiColumnListView extends ListView {
         if (selectedView == null || selectedPos == -1) { return; }
 
         //center the currently selected row (if there is one)
-        int numAbove = (int)Math.floor((getLastVisiblePosition()-getFirstVisiblePosition())/2);
-        if (selectedPos > -1) { jumpToRow(selectedPos - numAbove); }
+        if (selectedPos > -1) { centerRow(selectedPos); }
 
-        //click on the selected row now
-        //that it's in sight
-        selectedView.performClick();
+        //perform a click on the selected view
+        performItemClick(selectedView, selectedPos, selectedView.getId());
 
     }//end of MultiColumnAdapter::clickSelectedRow
     //-----------------------------------------------------------------------------
@@ -288,7 +280,7 @@ public class MultiColumnListView extends ListView {
         if (selectedView == null || selectedPos == -1) { selectLastRow(); return; }
 
         //return if the last row is selected
-        if (selectedPos >= list.size()) { return; }
+        if (selectedPos == list.size()-1) { return; }
 
         //center the currently selected row (if there is one)
         if (selectedPos > -1) { centerRow(selectedPos); }
@@ -425,9 +417,6 @@ public class MultiColumnListView extends ListView {
             if (view == null) {
 
                 view = inflater.inflate(layout, pParent, false);
-
-                //DEBUG HSS//
-                Log.d(LOG_TAG, "getView() -- view WAS null");
 
                 //cache views into the holder
                 holder = new ViewHolder();
