@@ -21,13 +21,10 @@ package com.yaboosh.ybtech.lasertally;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.Handler;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -97,7 +94,8 @@ public class TallyDataHandler {
         ids.add(pipeNumberColumnId);
         ids.add(totalLengthColumnId);
         ids.add(adjustedColumnId);
-        listView.init(parentActivity, R.layout.layout_list_view_row, 3, ids);
+        listView.init(parentActivity, R.layout.layout_tally_data_list_view_row, 3, ids);
+        listView.setSelectionStartingPosition(MultiColumnListView.STARTING_POSITION_LAST_ROW);
 
         //assign a click listener to the ListView
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

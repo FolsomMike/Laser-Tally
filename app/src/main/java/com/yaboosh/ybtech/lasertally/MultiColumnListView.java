@@ -49,6 +49,9 @@ public class MultiColumnListView extends ListView {
     private MultiColumnAdapter adapter;
 
     //Values for row selection
+    public static final int STARTING_POSITION_FIRST_ROW = 0;
+    public static final int STARTING_POSITION_LAST_ROW = 1;
+    private int startingPosition = STARTING_POSITION_FIRST_ROW;
     SparseArray<View> positionToViewMap = new SparseArray<View>();
     private final int normalRowColor = Color.parseColor("#FFFFFF");
     private final int selectedRowColor = Color.parseColor("#0099FF");
@@ -279,6 +282,34 @@ public class MultiColumnListView extends ListView {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // MultiColumnAdapter::selectFirstRow
+    //
+    // Selects and highlights the first row in the ListView.
+    //
+
+    public void selectFirstRow()
+    {
+
+        int firstRowIndex = 0;
+
+        //return if the last row is already
+        //selected or if there are no rows
+        if (selectedPos == firstRowIndex || list.isEmpty()) { return; }
+
+        //jump to the bottom of the ListView
+        jumpToRow(firstRowIndex);
+
+        //if the first row is not visible, this means that it
+        //currently does not have a View assigned to it and
+        //we must wait to select it until after the adapter
+        //assigns it one
+        if (!checkIfRowIsVisible(firstRowIndex)) { newSelectedRowPosition = firstRowIndex;}
+        else { selectRow(firstRowIndex, false); }
+
+    }//end of MultiColumnAdapter::selectFirstRow
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // MultiColumnAdapter::selectLastRow
     //
     // Selects and highlights the last row in the ListView.
@@ -318,10 +349,9 @@ public class MultiColumnListView extends ListView {
     // If a row is not currently selected, the last one in the ListView is selected.
     //
 
-    public void selectNextRow()
-    {
+    public void selectNextRow() {
 
-        if (selectedPos == -1) { selectLastRow(); return; }
+        if (selectedPos == -1) { selectStartingRow(); return; }
 
         //return if the last row is selected
         if (selectedPos == list.size()-1) { return; }
@@ -359,10 +389,9 @@ public class MultiColumnListView extends ListView {
     // If a row is not currently selected, the last one in the ListView is selected.
     //
 
-    public void selectPreviousRow()
-    {
+    public void selectPreviousRow() {
 
-        if (selectedPos == -1) { selectLastRow(); return; }
+        if (selectedPos == -1) { selectStartingRow(); return; }
 
         //return if the first row is selected
         if (selectedPos == 0) { return; }
@@ -415,6 +444,21 @@ public class MultiColumnListView extends ListView {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // MultiColumnListView::selectStartingRow
+    //
+    // Selects either the first or last row, depending on the starting position.
+    //
+
+    private void selectStartingRow()
+    {
+
+        if (startingPosition == STARTING_POSITION_FIRST_ROW) { selectFirstRow(); }
+        else if (startingPosition == STARTING_POSITION_LAST_ROW) { selectLastRow(); }
+
+    }//end of MultiColumnListView::selectStartingRow
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // MultiColumnListView::setList
     //
     // Sets the display list to the new passed in list and notifies the adapter.
@@ -428,6 +472,20 @@ public class MultiColumnListView extends ListView {
         adapter.notifyDataSetChanged();
 
     }//end of MultiColumnListView::setList
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MultiColumnAdapter::setSelectionStartingPosition
+    //
+    // Sets the selection starting position to the passed in value.
+    //
+
+    public void setSelectionStartingPosition(final int pPos)
+    {
+
+        startingPosition = pPos;
+
+    }//end of MultiColumnAdapter::setSelectionStartingPosition
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
