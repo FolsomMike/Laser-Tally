@@ -65,12 +65,6 @@ public class JobDisplayActivity extends StandardActivity {
     final String connectButtonText = "connect";
     final String measureButtonText = "measure";
 
-    // Job Info Variables
-    private String jobName = "";
-    // End of Job Info Variables
-
-    private int lastClickedRowPos;
-
     //-----------------------------------------------------------------------------
     // JobDisplayActivity::JobDisplayActivity (constructor)
     //
@@ -197,7 +191,7 @@ public class JobDisplayActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
     // StandardActivity::handleArrowDownKeyPressed
     //
-    // Selects the next row in the tally data list view.
+    // Selects the next row in the list view.
     //
 
     @Override
@@ -211,7 +205,7 @@ public class JobDisplayActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
     // StandardActivity::handleArrowUpKeyPressed
     //
-    // Selects the previous row in the tally data list view.
+    // Selects the previous row in the list view.
     //
 
     @Override
@@ -670,9 +664,7 @@ public class JobDisplayActivity extends StandardActivity {
 
         if (pNewJobName.equals(jobTitleTextView.getText().toString())) { return; }
 
-        jobName = pNewJobName;
-
-        jobTitleTextView.setText(jobName);
+        jobTitleTextView.setText(pNewJobName);
 
     }//end of JobDisplayActivity::setJobName
     //-----------------------------------------------------------------------------
