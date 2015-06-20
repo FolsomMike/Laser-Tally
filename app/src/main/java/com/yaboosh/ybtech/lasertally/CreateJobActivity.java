@@ -391,8 +391,6 @@ public class CreateJobActivity extends StandardActivity {
 
     private void exitActivityByOk() {
 
-        MultiColumnListView.clearSelectionValues();
-
         getAndStoreJobInfoFromUserInput();
 
         jobsHandler.saveJob(companyName, date, diameter, facility, grade, imperialAdjustment,
@@ -421,8 +419,8 @@ public class CreateJobActivity extends StandardActivity {
 
         jobName = pJobName;
 
-        Boolean enableOkButton = false;
-        Boolean jobExistsBool = false;
+        boolean enableOkButton = false;
+        boolean jobExistsBool = false;
 
         // Check to see if the job name already exists
         if (jobsHandler.checkIfJobNameAlreadyExists(jobName)) { jobExistsBool = true; }

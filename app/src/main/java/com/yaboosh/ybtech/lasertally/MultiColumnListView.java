@@ -55,7 +55,9 @@ public class MultiColumnListView extends ListView {
     SparseArray<View> positionToViewMap = new SparseArray<View>();
     private final int normalRowColor = Color.parseColor("#FFFFFF");
     private final int selectedRowColor = Color.parseColor("#0099FF");
-    private static int selectedPos = -1;
+    public static final String SELECTION_POS_KEY = "SELECTION_POS_KEY";
+    private int selectedPos = -1;
+    public int getSelectedPosition() { return  selectedPos; }
     private int newSelectedRowPosition = -1;
 
     //holder to cache views used with the adapter
@@ -136,24 +138,6 @@ public class MultiColumnListView extends ListView {
         return false;
 
     }//end of MultiColumnAdapter::checkIfRowIsVisible
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // MultiColumnListView::clearSelectionValues
-    //
-    // Clears values pertaining to row selection by setting back them to their
-    // default values.
-    //
-    // Intended for use when a new job is opened or created -- when the new job
-    // is displayed, there will be no views selected.
-    //
-
-    public static void clearSelectionValues()
-    {
-
-        selectedPos = -1;
-
-    }//end of MultiColumnListView::clearSelectionValues
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -245,20 +229,18 @@ public class MultiColumnListView extends ListView {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MultiColumnAdapter::restoreSelection
+    // MultiColumnListView::jumpToStartingRow
     //
-    // If a ListView row was previously selected, it is reselected and brought into
-    // view by "jumping". If a row was not previously selected, the ListView jumps
-    // down to display the last row.
+    // Jumps to either the first or last row, depending on the starting position.
     //
 
-    public void restoreSelection()
+    public void jumpToStartingRow()
     {
 
-        if (selectedPos == -1) { jumpToRow(list.size()); }
-        else { selectRow(selectedPos, true); }
+        if (startingPosition == STARTING_POSITION_FIRST_ROW) { jumpToRow(0);; }
+        else if (startingPosition == STARTING_POSITION_LAST_ROW) { jumpToRow(list.size());; }
 
-    }//end of MultiColumnAdapter::restoreSelection
+    }//end of MultiColumnListView::jumpToStartingRow
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

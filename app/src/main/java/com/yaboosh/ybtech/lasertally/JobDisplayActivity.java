@@ -65,6 +65,8 @@ public class JobDisplayActivity extends StandardActivity {
     final String connectButtonText = "connect";
     final String measureButtonText = "measure";
 
+    private int initialSelectedPosition = -1;
+
     //-----------------------------------------------------------------------------
     // JobDisplayActivity::JobDisplayActivity (constructor)
     //
@@ -111,6 +113,8 @@ public class JobDisplayActivity extends StandardActivity {
         //initialize the tally data handler
         tallyDataHandler = new TallyDataHandler(this, sharedSettings, jobsHandler, listView);
         tallyDataHandler.init();
+        if (initialSelectedPosition == -1) { listView.jumpToStartingRow(); }
+        else { listView.selectRow(initialSelectedPosition, true); }
 
         //Start the TallyDeviceService
         serviceIntent = new Intent(this, TallyDeviceService.class);
@@ -310,6 +314,43 @@ public class JobDisplayActivity extends StandardActivity {
         }
 
     }//end of JobDisplayActivity::onActivityResult
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobDisplayActivity::onSaveInstanceState
+    //
+    // As the activity begins to stop, the system calls onSaveInstanceState()
+    // so the activity can save state information with a collection of key-value
+    // pairs. This functions is overridden so that additional state information can
+    // be saved.
+    //
+
+    @Override
+    public void onSaveInstanceState(Bundle pSavedInstanceState) {
+
+        super.onSaveInstanceState(pSavedInstanceState);
+
+        //store necessary data
+        pSavedInstanceState.putInt(MultiColumnListView.SELECTION_POS_KEY,
+                                    listView.getSelectedPosition());
+
+    }//end of JobDisplayActivity::onSaveInstanceState
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobDisplayActivity::restoreValuesFromSavedInstance
+    //
+    // Restores values using the passed in saved instance.
+    //
+
+    @Override
+    protected void restoreValuesFromSavedInstance(Bundle pSavedInstanceState) {
+
+        super.restoreValuesFromSavedInstance(pSavedInstanceState);
+
+        initialSelectedPosition = pSavedInstanceState.getInt(MultiColumnListView.SELECTION_POS_KEY);
+
+    }//end of JobDisplayActivity::restoreValuesFromSavedInstance
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

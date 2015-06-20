@@ -107,8 +107,6 @@ public class TallyDataHandler {
 
         displayTallyData();
 
-        listView.restoreSelection();
-
     }//end of TallyDataHandler::init
     //-----------------------------------------------------------------------------
 

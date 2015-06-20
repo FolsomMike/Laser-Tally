@@ -212,7 +212,7 @@ public class OpenJobActivity extends StandardActivity {
 
     private void handleJobSelected(int pPos) {
 
-        MultiColumnListView.clearSelectionValues();
+        listView.handleRowClicked(pPos);
 
         Intent intent = new Intent(this, JobDisplayActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -220,6 +220,8 @@ public class OpenJobActivity extends StandardActivity {
         jobsHandler.loadJobFromFile(jobNames.get(pPos));
         intent.putExtra(Keys.JOBS_HANDLER_KEY, jobsHandler);
         startActivity(intent);
+
+        //debug hss//MultiColumnListView.clearSelectionValues();
 
     }//end of OpenJobActivity::handleJobSelected
     //-----------------------------------------------------------------------------
