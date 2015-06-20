@@ -75,10 +75,6 @@ public class OpenJobActivity extends StandardActivity {
 
         listView = (MultiColumnListView)findViewById(R.id.tallyDataListView);
 
-        //add a footer to the Tally Data ListView
-        View foot = getLayoutInflater().inflate(R.layout.layout_list_view_footer, listView, false);
-        listView.addFooterView(foot);
-
         //load a list with ids to be used for each column
         ArrayList<Integer> ids = new ArrayList<Integer>();
         ids.add(R.id.COLUMN_1);
