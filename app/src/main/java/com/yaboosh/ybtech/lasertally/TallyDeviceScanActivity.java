@@ -486,6 +486,7 @@ public class TallyDeviceScanActivity extends StandardActivity {
 
         focusArray.clear();
         deviceNames.clear();
+        ((LinearLayout)findViewById(R.id.deviceNamesLayout)).removeAllViews();
         setScanning(true);
 
         Message msg = Message.obtain(null, TallyDeviceService.MSG_START_SCAN_FOR_TALLY_DEVICES);
