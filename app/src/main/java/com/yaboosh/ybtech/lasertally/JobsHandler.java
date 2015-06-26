@@ -51,7 +51,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Scanner;
 
 public class JobsHandler implements Parcelable {
 
@@ -290,7 +289,8 @@ public class JobsHandler implements Parcelable {
 
     public void deleteCurrentJob() {
 
-        try { Tools.deleteDirectory(new File(currentJobDirectoryPath)); } catch (Exception e) {}
+        try { Tools.deleteDirectory(new File(currentJobDirectoryPath)); }
+        catch (Exception e) { Log.e(LOG_TAG, "Line 294 :: " + e.getMessage()); }
 
     }//end of JobsHandler::deleteCurrentJob
     //-----------------------------------------------------------------------------
@@ -360,7 +360,7 @@ public class JobsHandler implements Parcelable {
             File[] files = jobsDir.listFiles();
             for (File f : files) { if (f.isDirectory()) { jobs.add(f.getName()); } }
 
-        } catch (Exception e) { Log.e(LOG_TAG, e.toString()); }
+        } catch (Exception e) { Log.e(LOG_TAG, "Line 364 :: " + e.getMessage()); }
 
         return jobs;
 
@@ -418,17 +418,17 @@ public class JobsHandler implements Parcelable {
             while ((line = in.readLine()) != null){ fileLines.add(line); }
 
         }
-        catch (FileNotFoundException e){ Log.e(LOG_TAG, "Line 284 :: " + e.getMessage()); }
-        catch(IOException e){ Log.e(LOG_TAG, "Line 285 :: " + e.getMessage()); }
+        catch (FileNotFoundException e){ Log.e(LOG_TAG, "Line 422 :: " + e.getMessage()); }
+        catch(IOException e){ Log.e(LOG_TAG, "Line 423 :: " + e.getMessage()); }
         finally{
             try { if (in != null) { in.close(); } }
-            catch (IOException e) { Log.e(LOG_TAG, "Line 288 :: " + e.getMessage()); }
+            catch (IOException e) { Log.e(LOG_TAG, "Line 426 :: " + e.getMessage()); }
 
             try { if (inputStreamReader != null) { inputStreamReader.close(); } }
-            catch (IOException e) { Log.e(LOG_TAG, "Line 291 :: " + e.getMessage()); }
+            catch (IOException e) { Log.e(LOG_TAG, "Line 429 :: " + e.getMessage()); }
 
             try { if (fileInputStream != null) { fileInputStream.close(); } }
-            catch (IOException e) { Log.e(LOG_TAG, "Line 294 :: " + e.getMessage()); }
+            catch (IOException e) { Log.e(LOG_TAG, "Line 432 :: " + e.getMessage()); }
         }
 
         // If there were no lines in the file,
@@ -566,18 +566,16 @@ public class JobsHandler implements Parcelable {
             out.flush();
 
         }
-        catch(IOException e){
-            Log.e(LOG_TAG, "Line 426 :: " + e.getMessage());
-        }
+        catch(IOException e){ Log.e(LOG_TAG, "Line 570 :: " + e.getMessage()); }
         finally{
             try{ if (out != null) {out.close();} }
-            catch(IOException e){ Log.e(LOG_TAG, "Line 430 :: " + e.getMessage());}
+            catch(IOException e){ Log.e(LOG_TAG, "Line 573 :: " + e.getMessage());}
 
             try{ if (outputStreamWriter != null) {outputStreamWriter.close();} }
-            catch(IOException e){ Log.e(LOG_TAG, "Line 433 :: " + e.getMessage());}
+            catch(IOException e){ Log.e(LOG_TAG, "Line 576 :: " + e.getMessage());}
 
             try{ if (fileOutputStream != null) {fileOutputStream.close();} }
-            catch(IOException e){ Log.e(LOG_TAG, "Line 436 :: " + e.getMessage()); }
+            catch(IOException e){ Log.e(LOG_TAG, "Line 579 :: " + e.getMessage()); }
         }
 
     }// end of JobsHandler::saveJobInfoToFile

@@ -21,12 +21,9 @@ import android.os.Bundle;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 //-----------------------------------------------------------------------------
@@ -216,8 +213,6 @@ public class OpenJobActivity extends StandardActivity {
         jobsHandler.loadJobFromFile(jobNames.get(pPos));
         intent.putExtra(Keys.JOBS_HANDLER_KEY, jobsHandler);
         startActivity(intent);
-
-        //debug hss//MultiColumnListView.clearSelectionValues();
 
     }//end of OpenJobActivity::handleJobSelected
     //-----------------------------------------------------------------------------

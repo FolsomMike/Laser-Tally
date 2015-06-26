@@ -48,9 +48,9 @@ public class TallyDataHandler {
 
     //Variables used for the tally data ListView
     private MultiColumnListView listView;
-    private int pipeNumberColumnId;
-    private int totalLengthColumnId;
-    private int adjustedColumnId;
+    private int pipeNumberColumnId = R.id.COLUMN_PIPE_NUMBER;
+    private int totalLengthColumnId = R.id.COLUMN_TOTAL_LENGTH;
+    private int adjustedColumnId = R.id.COLUMN_ADJUSTED;
     private int editedRowPos;
 
     //-----------------------------------------------------------------------------
@@ -83,11 +83,6 @@ public class TallyDataHandler {
         metricTallyData.init();
 
         setUnitSystem(sharedSettings.getUnitSystem());
-
-        //WIP HSS// -- TEST TO SEE IF THESE CAN BE INITIALIZED OUTSIDE OF THIS FUNCTION
-        pipeNumberColumnId = R.id.COLUMN_PIPE_NUMBER;
-        totalLengthColumnId = R.id.COLUMN_TOTAL_LENGTH;
-        adjustedColumnId = R.id.COLUMN_ADJUSTED;
 
         //load a list with ids to be used for each column
         ArrayList<Integer> ids = new ArrayList<Integer>();
@@ -266,12 +261,9 @@ public class TallyDataHandler {
         double temp = pValue + imperialTallyData.getCalibrationValue();
 
         //return if the value is not within range
-        if (!imperialTallyData.isValidLength(temp)) {
-            //DEBUG HSS//Tools.playBadSound(parentActivity);
-            return;
-        }
+        if (!imperialTallyData.isValidLength(temp)) { Tools.playBadSound(parentActivity); return; }
 
-        //DEBUG HSS//Tools.playGoodSound(parentActivity);
+        Tools.playGoodSound(parentActivity);
 
         addDataEntry(pValue);
 

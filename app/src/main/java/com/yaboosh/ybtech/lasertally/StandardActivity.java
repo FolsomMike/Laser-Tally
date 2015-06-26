@@ -27,12 +27,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -70,9 +71,6 @@ public class StandardActivity extends Activity {
 
         super.onCreate(pSavedInstanceState);
 
-        //DEBUG HSS
-        Log.d(LOG_TAG, "Inside of onCreate");
-
         setContentView(layoutResID);
 
         setFinishOnTouchOutside(false);
@@ -101,9 +99,6 @@ public class StandardActivity extends Activity {
     protected void onResume() {
 
         super.onResume();
-
-        //DEBUG HSS
-        Log.d(LOG_TAG, "Inside of onResume");
 
         decorView.setSystemUiVisibility(uiOptions);
 
@@ -161,7 +156,7 @@ public class StandardActivity extends Activity {
     //
 
     @Override
-    public boolean dispatchKeyEvent(KeyEvent pEvent) {
+    public boolean dispatchKeyEvent(@NonNull KeyEvent pEvent) {
 
         boolean actionUpEvent = false;
         if (pEvent.getAction() == KeyEvent.ACTION_UP) { actionUpEvent = true; }
@@ -208,7 +203,9 @@ public class StandardActivity extends Activity {
     //
 
     @Override
-    public void onSaveInstanceState(Bundle pSavedInstanceState) {
+    public void onSaveInstanceState(@Nullable Bundle pSavedInstanceState) {
+
+        if (pSavedInstanceState == null) { return; }
 
         //store general values that is used by most (hopefully all) activities
         if (viewInFocus != null) {
@@ -234,7 +231,7 @@ public class StandardActivity extends Activity {
         if (viewInFocus == null) { return; }
 
         try {  viewInFocus.clearFocus(); }
-        catch (Exception e) { Log.e(LOG_TAG, "Line 478 :: " + e.getMessage()); }
+        catch (Exception e) { Log.e(LOG_TAG, "Line 230 :: " + e.getMessage()); }
 
         viewInFocus = null;
 
@@ -303,7 +300,7 @@ public class StandardActivity extends Activity {
 
         try { viewInFocus.requestFocus(); }
         catch (Exception e) {
-            Log.e(LOG_TAG, "Line 249 :: " + e.getMessage());
+            Log.e(LOG_TAG, "Line 299 :: " + e.getMessage());
             viewInFocus = null;
         }
 
@@ -474,7 +471,7 @@ public class StandardActivity extends Activity {
         if (pView == null) { return; }
 
         try {  pView.performClick(); }
-        catch (Exception e) { Log.e(LOG_TAG, "Line 477 :: " + e.getMessage()); }
+        catch (Exception e) { Log.e(LOG_TAG, "Line 470 :: " + e.getMessage()); }
 
     }//end of StandardActivity::performClickOnView
     //-----------------------------------------------------------------------------

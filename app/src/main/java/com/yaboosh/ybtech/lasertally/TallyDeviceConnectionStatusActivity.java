@@ -27,6 +27,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -165,7 +166,8 @@ public class TallyDeviceConnectionStatusActivity extends StandardActivity {
 
         super.onPause();
 
-        try { unbindService(connection); } catch (Exception e) {}
+        try { unbindService(connection); }
+        catch (Exception e) { Log.e(LOG_TAG, "Line 170 :: " + e.getMessage()); }
 
         if (service == null) { return; }
 
@@ -176,7 +178,11 @@ public class TallyDeviceConnectionStatusActivity extends StandardActivity {
             msg.replyTo = messenger;
             service.send(msg);
 
-        } catch (Exception e) { service = null; }
+        }
+        catch (Exception e) {
+            Log.e(LOG_TAG, "Line 183 :: " + e.getMessage());
+            service = null;
+        }
 
     }//end of TallyDeviceConnectionStatusActivity::onPause
     //-----------------------------------------------------------------------------
@@ -301,7 +307,10 @@ public class TallyDeviceConnectionStatusActivity extends StandardActivity {
             msg.replyTo = messenger;
             service.send(msg);
 
-        } catch (Exception e) { service = null; }
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Line 306 :: " + e.getMessage());
+            service = null;
+        }
 
     }//end of TallyDeviceConnectionStatusActivity::registerWithService
     //-----------------------------------------------------------------------------

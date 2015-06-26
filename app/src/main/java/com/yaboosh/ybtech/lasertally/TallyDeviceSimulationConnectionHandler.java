@@ -22,11 +22,7 @@ package com.yaboosh.ybtech.lasertally;
 // class TallyDeviceSimulationConnectionHandler
 //
 
-import android.bluetooth.BluetoothDevice;
-import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
-import android.util.Log;
 
 import java.text.DecimalFormat;
 import java.util.Random;
@@ -35,9 +31,8 @@ import java.util.TimerTask;
 
 public class TallyDeviceSimulationConnectionHandler extends TallyDeviceConnectionHandler {
 
-    private String TAG = "TallyDeviceSimulationConnectionHandler";
+    private String LOG_TAG = "TallyDeviceSimulationConnectionHandler";
 
-    private Handler timerHandler = new Handler();
     private TallyDeviceService parentService;
 
     private DecimalFormat tallyFormat = new DecimalFormat("#.##");
@@ -96,21 +91,6 @@ public class TallyDeviceSimulationConnectionHandler extends TallyDeviceConnectio
         return connectedTallyDeviceName;
 
     }//end of TallyDeviceSimulationConnectionHandler::getConnectedTallyDeviceName
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // TallyDeviceSimulationConnectionHandler::handleActivityResult
-    //
-    // Simulation has no need to process activities results, so this function is
-    // just returned.
-    //
-
-    @Override
-    public void handleActivityResult(int pRequestCode, int pResultCode, Intent pData) {
-
-        return;
-
-    }//end of TallyDeviceSimulationConnectionHandler::handleActivityResult
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -202,9 +182,6 @@ public class TallyDeviceSimulationConnectionHandler extends TallyDeviceConnectio
         Random r = new Random();
         float varianceValue = r.nextInt(12 + 1) + 12;
         float distanceValue = 40 + varianceValue;
-
-        //debug hss//
-        Log.d(TAG, "value: " + distanceValue);
 
         return tallyFormat.format(distanceValue);
 

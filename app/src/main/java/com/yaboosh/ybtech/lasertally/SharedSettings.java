@@ -423,9 +423,7 @@ public class SharedSettings implements Parcelable {
             out.flush();
 
         }
-        catch(IOException e){
-            Log.e(LOG_TAG, "Line 340 :: " + e.getMessage());
-        }
+        catch(IOException e){ Log.e(LOG_TAG, "Line 340 :: " + e.getMessage()); }
         finally{
             try{ if (out != null) {out.close();} }
             catch(IOException e){ Log.e(LOG_TAG, "Line 386 :: " + e.getMessage());}

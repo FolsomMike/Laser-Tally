@@ -517,7 +517,7 @@ public class TallyDeviceService extends Service {
         if (messengerClient == null) { success = false; return success; }
         try { messengerClient.send(pMsg); }
         catch (Exception e) {
-            Log.e(LOG_TAG, "Line 576 :: " + e.getMessage());
+            Log.e(LOG_TAG, "Line 520 :: " + e.getMessage());
             success = false;
         }
 

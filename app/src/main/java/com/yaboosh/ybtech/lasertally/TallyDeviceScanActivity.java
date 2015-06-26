@@ -148,7 +148,7 @@ public class TallyDeviceScanActivity extends StandardActivity {
         super.onPause();
 
         try { unbindService(connection); }
-        catch (Exception e) { Log.e(LOG_TAG, "Line 159 :: " + e.getMessage()); }
+        catch (Exception e) { Log.e(LOG_TAG, "Line 151 :: " + e.getMessage()); }
 
         if (service == null) { return; }
 

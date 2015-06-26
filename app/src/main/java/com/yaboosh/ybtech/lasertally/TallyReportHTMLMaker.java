@@ -14,6 +14,8 @@
 
 package com.yaboosh.ybtech.lasertally;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -378,9 +380,10 @@ public class TallyReportHTMLMaker {
             }
 
         }
-        catch(Exception e){}
+        catch(Exception e){ Log.e(LOG_TAG, "Line 381 :: " + e.getMessage()); }
         finally{
-            try { if (fileReader != null) { fileReader.close(); } } catch (Exception e) { }
+            try { if (fileReader != null) { fileReader.close(); } }
+            catch (Exception e) { Log.e(LOG_TAG, "Line 386 :: " + e.getMessage()); }
         }
 
     }//end of TallyReportHTMLMaker::loadTallyDataFromFile

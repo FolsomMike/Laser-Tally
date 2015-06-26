@@ -5,7 +5,8 @@
  *
  * Purpose:
  *
- * //WIP HSS//
+ * This class extends ListView by adding functions that allow developers to
+ * use this as a ListView with multiple columns.
  *
  */
 
@@ -237,8 +238,8 @@ public class MultiColumnListView extends ListView {
     public void jumpToStartingRow()
     {
 
-        if (startingPosition == STARTING_POSITION_FIRST_ROW) { jumpToRow(0);; }
-        else if (startingPosition == STARTING_POSITION_LAST_ROW) { jumpToRow(list.size());; }
+        if (startingPosition == STARTING_POSITION_FIRST_ROW) { jumpToRow(0); }
+        else if (startingPosition == STARTING_POSITION_LAST_ROW) { jumpToRow(list.size()); }
 
     }//end of MultiColumnListView::jumpToStartingRow
     //-----------------------------------------------------------------------------
