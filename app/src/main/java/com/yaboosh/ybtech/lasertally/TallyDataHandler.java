@@ -172,6 +172,8 @@ public class TallyDataHandler {
 
         setAndCheckTotals();
 
+        setAmountsLeft();
+
     }//end of TallyDataHandler::displayTallyData
     //-----------------------------------------------------------------------------
 
@@ -345,6 +347,21 @@ public class TallyDataHandler {
         listView.post(new Runnable() { @Override public void run() { listView.selectLastRow(); } });
 
     }//end of TallyDataHandler::removeLastDataEntry
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDataHandler::setAmountsLeft
+    //
+    // Sets the distance left and the number of pipes left.
+    //
+    private void setAmountsLeft() {
+
+        TextView t = (TextView)parentActivity.findViewById(R.id.distanceLeftTextView);
+        t.setText(tallyData.getDistanceLeft());
+        t = (TextView)parentActivity.findViewById(R.id.numberOfPipesLeftTextView);
+        t.setText(tallyData.getNumberOfPipesLeft());
+
+    }//end of TallyDataHandler::setAmountsLeft
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
