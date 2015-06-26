@@ -64,21 +64,6 @@ public abstract class TallyData {
     private String totalLengthValuesTotal;
     public String getTotalLengthValuesTotal() { return totalLengthValuesTotal; }
 
-    /*//DEBUG HSS//private Map<TableRow, String> adjustedValues = new LinkedHashMap<TableRow, String>();
-    private void putAdjustedValue(TableRow pR, String pVal) { adjustedValues.put(pR, pVal); }
-    public Map getAdjustedValues() { return adjustedValues; }
-    public String getAdjustedValueOfRow(TableRow pR) { return adjustedValues.get(pR); }
-
-    private Map<TableRow, String> pipeNumbers = new LinkedHashMap<TableRow, String>();
-    private void putPipeNumber(TableRow pR, String pVal) { pipeNumbers.put(pR, pVal); }
-    public Map getPipeNumbers() { return pipeNumbers; }
-    public String getPipeNumberOfRow(TableRow pR) { return pipeNumbers.get(pR); }
-
-    private Map<TableRow, String> totalLengthValues = new LinkedHashMap<TableRow, String>();
-    private void putTotalLengthValue(TableRow pR, String pVal) { totalLengthValues.put(pR, pVal); }
-    public Map getTotalLengthValues() { return totalLengthValues; }
-    public String getTotalLengthValueOfRow(TableRow pR) { return totalLengthValues.get(pR); }*///DEBUG HSS//
-
     private ArrayList<String> adjustedValues = new ArrayList<String>();
     public ArrayList<String> getAdjustedValues() { return adjustedValues; }
     public String getAdjustedValue(int pPos) { return adjustedValues.get(pPos); }
@@ -228,7 +213,7 @@ public abstract class TallyData {
             double total = 0;
 
             try {  total = Double.parseDouble(val); }
-            catch (Exception e) { Log.e(LOG_TAG, "Line 249 :: " + e.getMessage()); }
+            catch (Exception e) { Log.e(LOG_TAG, "Line 216 :: " + e.getMessage()); }
 
             adjustedValues.add(format(total - adjustmentValue));
 
@@ -595,17 +580,17 @@ public abstract class TallyData {
             String line;
             while ((line = in.readLine()) != null){ handleFileLine(line); }
         }
-        catch (FileNotFoundException e){ Log.e(LOG_TAG, "Line 300 :: " + e.getMessage()); }
-        catch(IOException e){ Log.e(LOG_TAG, "Line 301 :: " + e.getMessage()); }
+        catch (FileNotFoundException e){ Log.e(LOG_TAG, "Line 583 :: " + e.getMessage()); }
+        catch(IOException e){ Log.e(LOG_TAG, "Line 584 :: " + e.getMessage()); }
         finally{
             try { if (in != null) { in.close(); } }
-            catch (IOException e) { Log.e(LOG_TAG, "Line 158 :: " + e.getMessage()); }
+            catch (IOException e) { Log.e(LOG_TAG, "Line 587 :: " + e.getMessage()); }
 
             try { if (inputStreamReader != null) { inputStreamReader.close(); } }
-            catch (IOException e) { Log.e(LOG_TAG, "Line 161 :: " + e.getMessage()); }
+            catch (IOException e) { Log.e(LOG_TAG, "Line 590 :: " + e.getMessage()); }
 
             try { if (fileInputStream != null) { fileInputStream.close(); } }
-            catch (IOException e) { Log.e(LOG_TAG, "Line 164 :: " + e.getMessage()); }
+            catch (IOException e) { Log.e(LOG_TAG, "Line 593 :: " + e.getMessage()); }
         }
 
     }//end of TallyData::loadDataFromFile
@@ -717,18 +702,16 @@ public abstract class TallyData {
             out.flush();
 
         }
-        catch(IOException e){
-            Log.e(LOG_TAG, "Line 340 :: " + e.getMessage());
-        }
+        catch(IOException e){ Log.e(LOG_TAG, "Line 705 :: " + e.getMessage()); }
         finally{
             try{ if (out != null) {out.close();} }
-            catch(IOException e){ Log.e(LOG_TAG, "Line 344 :: " + e.getMessage());}
+            catch(IOException e){ Log.e(LOG_TAG, "Line 708 :: " + e.getMessage());}
 
             try{ if (outputStreamWriter != null) {outputStreamWriter.close();} }
-            catch(IOException e){ Log.e(LOG_TAG, "Line 347 :: " + e.getMessage());}
+            catch(IOException e){ Log.e(LOG_TAG, "Line 711 :: " + e.getMessage());}
 
             try{ if (fileOutputStream != null) {fileOutputStream.close();} }
-            catch(IOException e){ Log.e(LOG_TAG, "Line 350 :: " + e.getMessage()); }
+            catch(IOException e){ Log.e(LOG_TAG, "Line 714 :: " + e.getMessage()); }
         }
 
     }//end of TallyData::saveDataToFile

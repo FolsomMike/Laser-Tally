@@ -5,7 +5,8 @@
  *
  * Purpose:
  *
- * //WIP HSS//
+ * This class extends ListView by adding functions that allow developers to
+ * use this as a ListView with multiple columns.
  *
  */
 
@@ -27,6 +28,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -48,14 +50,16 @@ public class MultiColumnListView extends ListView {
     private MultiColumnAdapter adapter;
 
     //Values for row selection
+    public static final int STARTING_POSITION_FIRST_ROW = 0;
+    public static final int STARTING_POSITION_LAST_ROW = 1;
+    private int startingPosition = STARTING_POSITION_FIRST_ROW;
     SparseArray<View> positionToViewMap = new SparseArray<View>();
-    public static final int SCROLL_MODE_NONE = 0;
-    public static final int SCROLL_MODE_JUMP = 1;
-    public static final int SCROLL_MODE_SMOOTH = 2;
     private final int normalRowColor = Color.parseColor("#FFFFFF");
     private final int selectedRowColor = Color.parseColor("#0099FF");
-    private static int selectedPos = -1;
-    private View selectedView = null;
+    public static final String SELECTION_POS_KEY = "SELECTION_POS_KEY";
+    private int selectedPos = -1;
+    public int getSelectedPosition() { return  selectedPos; }
+    private int newSelectedRowPosition = -1;
 
     //holder to cache views used with the adapter
     private static class ViewHolder { SparseArray<TextView> columns = new SparseArray<TextView>(); }
@@ -112,7 +116,7 @@ public class MultiColumnListView extends ListView {
         post(new Runnable() {
             @Override
             public void run() {
-                setSelectionFromTop(pPos, getHeight()/2-positionToViewMap.get(pPos).getHeight()/2);
+                setSelectionFromTop(pPos, getHeight() / 2 - positionToViewMap.get(pPos).getHeight() / 2);
             }
         });
 
@@ -120,21 +124,21 @@ public class MultiColumnListView extends ListView {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MultiColumnListView::clearSelectionValues
+    // MultiColumnAdapter::checkIfRowIsVisible
     //
-    // Clears values pertaining to row selection by setting back them to their
-    // default values.
+    // Checks to see the row at the passed in position is visible.
     //
-    // Intended for use when a new job is opened or created -- when the new job
-    // is displayed, there will be no views selected.
+    // Returns true if visible; false if not.
     //
 
-    public static void clearSelectionValues()
+    private boolean checkIfRowIsVisible(final int pPos)
     {
 
-        selectedPos = -1;
+        if (pPos >= getFirstVisiblePosition() && pPos <= getLastVisiblePosition()) { return true; }
 
-    }//end of MultiColumnListView::clearSelectionValues
+        return false;
+
+    }//end of MultiColumnAdapter::checkIfRowIsVisible
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -146,12 +150,13 @@ public class MultiColumnListView extends ListView {
     public void clickSelectedRow()
     {
 
-        if (selectedView == null || selectedPos == -1 || list.isEmpty()) { return; }
+        if (selectedPos == -1 || list.isEmpty()) { return; }
 
         //center the currently selected row (if there is one)
         if (selectedPos > -1) { centerRow(selectedPos); }
 
         //perform a click on the selected view
+        View selectedView = positionToViewMap.get(selectedPos);
         performItemClick(selectedView, selectedPos, selectedView.getId());
 
     }//end of MultiColumnAdapter::clickSelectedRow
@@ -169,7 +174,7 @@ public class MultiColumnListView extends ListView {
     public void handleRowClicked(int pPos)
     {
 
-        selectRow(pPos);
+        selectRow(pPos, true);
 
     }//end of MultiColumnListView::handleRowClicked
     //-----------------------------------------------------------------------------
@@ -208,20 +213,35 @@ public class MultiColumnListView extends ListView {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // MultiColumnAdapter::restoreSelection
+    // MultiColumnAdapter::jumpToRow
     //
-    // If a ListView row was previously selected, it is reselected and brought into
-    // view by "jumping". If a row was not previously selected, the ListView jumps
-    // down to display the last row.
+    // Scrolls the ListView by "jumping" so that the row at the passed in position
+    // is pPosFromTop from the top of the ListView display window.
     //
 
-    public void restoreSelection()
+    private void jumpToRow(final int pPos, final int pPosFromTop)
     {
 
-        if (selectedPos == -1) { jumpToRow(list.size()); }
-        else { selectRow(selectedPos); }
+        post(new Runnable() {
+            @Override public void run() { setSelectionFromTop(pPos, pPosFromTop); }
+        });
 
-    }//end of MultiColumnAdapter::restoreSelection
+    }//end of MultiColumnAdapter::jumpToRow
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MultiColumnListView::jumpToStartingRow
+    //
+    // Jumps to either the first or last row, depending on the starting position.
+    //
+
+    public void jumpToStartingRow()
+    {
+
+        if (startingPosition == STARTING_POSITION_FIRST_ROW) { jumpToRow(0); }
+        else if (startingPosition == STARTING_POSITION_LAST_ROW) { jumpToRow(list.size()); }
+
+    }//end of MultiColumnListView::jumpToStartingRow
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -234,9 +254,42 @@ public class MultiColumnListView extends ListView {
     private void scrollToRow(final int pPos)
     {
 
-        post(new Runnable() { @Override public void run() { smoothScrollToPosition(pPos); } });
+        post(new Runnable() {
+            @Override
+            public void run() {
+                smoothScrollToPosition(pPos);
+            }
+        });
 
     }//end of MultiColumnAdapter::scrollToRow
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MultiColumnAdapter::selectFirstRow
+    //
+    // Selects and highlights the first row in the ListView.
+    //
+
+    public void selectFirstRow()
+    {
+
+        int firstRowIndex = 0;
+
+        //return if the last row is already
+        //selected or if there are no rows
+        if (selectedPos == firstRowIndex || list.isEmpty()) { return; }
+
+        //jump to the bottom of the ListView
+        jumpToRow(firstRowIndex);
+
+        //if the first row is not visible, this means that it
+        //currently does not have a View assigned to it and
+        //we must wait to select it until after the adapter
+        //assigns it one
+        if (!checkIfRowIsVisible(firstRowIndex)) { newSelectedRowPosition = firstRowIndex;}
+        else { selectRow(firstRowIndex, false); }
+
+    }//end of MultiColumnAdapter::selectFirstRow
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -257,8 +310,12 @@ public class MultiColumnListView extends ListView {
         //jump to the bottom of the ListView
         jumpToRow(lastRowIndex);
 
-        //select the last row
-        selectRow(lastRowIndex);
+        //if the last row is not visible, this means that it
+        //currently does not have a View assigned to it and
+        //we must wait to select it until after the adapter
+        //assigns it one
+        if (!checkIfRowIsVisible(lastRowIndex)) { newSelectedRowPosition = lastRowIndex;}
+        else { selectRow(lastRowIndex, false); }
 
     }//end of MultiColumnAdapter::selectLastRow
     //-----------------------------------------------------------------------------
@@ -275,18 +332,30 @@ public class MultiColumnListView extends ListView {
     // If a row is not currently selected, the last one in the ListView is selected.
     //
 
-    public void selectNextRow()
-    {
+    public void selectNextRow() {
 
-        if (selectedView == null || selectedPos == -1) { selectLastRow(); return; }
+        if (selectedPos == -1) { selectStartingRow(); return; }
 
         //return if the last row is selected
         if (selectedPos == list.size()-1) { return; }
 
-        //center the currently selected row (if there is one)
-        if (selectedPos > -1) { centerRow(selectedPos); }
+        //center the currently selected row if it's not visible
+        if (!checkIfRowIsVisible(selectedPos)) { centerRow(selectedPos); }
 
-        selectRow(selectedPos + 1);
+        int newSelectedPos = selectedPos+1;
+
+        //if the next row is not completely visible, bring it into sight
+        View selectedView = positionToViewMap.get(selectedPos);
+        if (selectedView.getBottom()+selectedView.getHeight() > getHeight()) {
+            jumpToRow(newSelectedPos, getHeight() - selectedView.getHeight());
+        }
+
+        //if the row that is to be selected is not visible, this
+        //means that it currently does not have a View assigned
+        //to it and we must wait to select it until after the
+        //adapter assigns it one
+        if (!checkIfRowIsVisible(newSelectedPos)) { newSelectedRowPosition = newSelectedPos; }
+        else { selectRow(newSelectedPos, false); }
 
     }//end of MultiColumnListView::selectNextRow
     //-----------------------------------------------------------------------------
@@ -303,18 +372,30 @@ public class MultiColumnListView extends ListView {
     // If a row is not currently selected, the last one in the ListView is selected.
     //
 
-    public void selectPreviousRow()
-    {
+    public void selectPreviousRow() {
 
-        if (selectedView == null || selectedPos == -1) { selectLastRow(); return; }
+        if (selectedPos == -1) { selectStartingRow(); return; }
 
         //return if the first row is selected
         if (selectedPos == 0) { return; }
 
-        //center the currently selected row (if there is one)
-        if (selectedPos > -1) { centerRow(selectedPos); }
+        //center the currently selected row if it's not visible
+        if (!checkIfRowIsVisible(selectedPos)) { centerRow(selectedPos); }
 
-        selectRow(selectedPos - 1);
+        int newSelectedPos = selectedPos-1;
+
+        //if the previous row is not visible, bring it into sight
+        View selectedView = positionToViewMap.get(selectedPos);
+        if (selectedView.getTop()-selectedView.getHeight() < 0) { jumpToRow(newSelectedPos); }
+
+        //if the row that is to be selected is not visible, this
+        //means that it currently does not have a View assigned
+        //to it and we must wait to select it until after the
+        //adapter assigns it one
+        if (!checkIfRowIsVisible(newSelectedPos)) { newSelectedRowPosition = newSelectedPos; }
+        else { selectRow(newSelectedPos, false); }
+
+
 
     }//end of MultiColumnListView::selectPreviousRow
     //-----------------------------------------------------------------------------
@@ -325,25 +406,39 @@ public class MultiColumnListView extends ListView {
     // Centers and highlights the row at the passed in position.
     //
 
-    public void selectRow(int pPos)
+    public void selectRow(int pPos, boolean center)
     {
 
         //unhighlight the currently selected row (if there is one)
-        if (selectedView != null) { highlightRow(selectedPos, false); }
+        if (selectedPos != -1) { highlightRow(selectedPos, false); }
 
         //set selected values to the passed in values
         selectedPos = pPos;
-        selectedView = positionToViewMap.get(selectedPos);
 
         //highlight the new selected row
         highlightRow(selectedPos, true);
 
-        //center the new selected row
-        centerRow(selectedPos);
+        //if specified, center the new selected row
+        if (center) { centerRow(selectedPos); }
 
         adapter.notifyDataSetChanged();
 
     }//end of MultiColumnListView::selectRow
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MultiColumnListView::selectStartingRow
+    //
+    // Selects either the first or last row, depending on the starting position.
+    //
+
+    private void selectStartingRow()
+    {
+
+        if (startingPosition == STARTING_POSITION_FIRST_ROW) { selectFirstRow(); }
+        else if (startingPosition == STARTING_POSITION_LAST_ROW) { selectLastRow(); }
+
+    }//end of MultiColumnListView::selectStartingRow
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -360,6 +455,20 @@ public class MultiColumnListView extends ListView {
         adapter.notifyDataSetChanged();
 
     }//end of MultiColumnListView::setList
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // MultiColumnAdapter::setSelectionStartingPosition
+    //
+    // Sets the selection starting position to the passed in value.
+    //
+
+    public void setSelectionStartingPosition(final int pPos)
+    {
+
+        startingPosition = pPos;
+
+    }//end of MultiColumnAdapter::setSelectionStartingPosition
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -444,6 +553,11 @@ public class MultiColumnListView extends ListView {
 
             //link this view to the position it was used for
             positionToViewMap.put(pPosition, view);
+
+            if (pPosition == newSelectedRowPosition) {
+                selectRow(newSelectedRowPosition, false);
+                newSelectedRowPosition = -1;
+            }
 
             return view;
 

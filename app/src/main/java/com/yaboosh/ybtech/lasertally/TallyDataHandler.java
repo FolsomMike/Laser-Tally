@@ -21,13 +21,10 @@ package com.yaboosh.ybtech.lasertally;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.Handler;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -51,9 +48,9 @@ public class TallyDataHandler {
 
     //Variables used for the tally data ListView
     private MultiColumnListView listView;
-    private int pipeNumberColumnId;
-    private int totalLengthColumnId;
-    private int adjustedColumnId;
+    private int pipeNumberColumnId = R.id.COLUMN_PIPE_NUMBER;
+    private int totalLengthColumnId = R.id.COLUMN_TOTAL_LENGTH;
+    private int adjustedColumnId = R.id.COLUMN_ADJUSTED;
     private int editedRowPos;
 
     //-----------------------------------------------------------------------------
@@ -87,17 +84,13 @@ public class TallyDataHandler {
 
         setUnitSystem(sharedSettings.getUnitSystem());
 
-        //WIP HSS// -- TEST TO SEE IF THESE CAN BE INITIALIZED OUTSIDE OF THIS FUNCTION
-        pipeNumberColumnId = R.id.COLUMN_PIPE_NUMBER;
-        totalLengthColumnId = R.id.COLUMN_TOTAL_LENGTH;
-        adjustedColumnId = R.id.COLUMN_ADJUSTED;
-
         //load a list with ids to be used for each column
         ArrayList<Integer> ids = new ArrayList<Integer>();
         ids.add(pipeNumberColumnId);
         ids.add(totalLengthColumnId);
         ids.add(adjustedColumnId);
-        listView.init(parentActivity, R.layout.layout_list_view_row, 3, ids);
+        listView.init(parentActivity, R.layout.layout_tally_data_list_view_row, 3, ids);
+        listView.setSelectionStartingPosition(MultiColumnListView.STARTING_POSITION_LAST_ROW);
 
         //assign a click listener to the ListView
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -108,8 +101,6 @@ public class TallyDataHandler {
         });
 
         displayTallyData();
-
-        listView.restoreSelection();
 
     }//end of TallyDataHandler::init
     //-----------------------------------------------------------------------------
@@ -180,6 +171,8 @@ public class TallyDataHandler {
         readDataFromLists();
 
         setAndCheckTotals();
+
+        setAmountsLeft();
 
     }//end of TallyDataHandler::displayTallyData
     //-----------------------------------------------------------------------------
@@ -270,12 +263,9 @@ public class TallyDataHandler {
         double temp = pValue + imperialTallyData.getCalibrationValue();
 
         //return if the value is not within range
-        if (!imperialTallyData.isValidLength(temp)) {
-            //DEBUG HSS//Tools.playBadSound(parentActivity);
-            return;
-        }
+        if (!imperialTallyData.isValidLength(temp)) { Tools.playBadSound(parentActivity); return; }
 
-        //DEBUG HSS//Tools.playGoodSound(parentActivity);
+        Tools.playGoodSound(parentActivity);
 
         addDataEntry(pValue);
 
@@ -357,6 +347,21 @@ public class TallyDataHandler {
         listView.post(new Runnable() { @Override public void run() { listView.selectLastRow(); } });
 
     }//end of TallyDataHandler::removeLastDataEntry
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDataHandler::setAmountsLeft
+    //
+    // Sets the distance left and the number of pipes left.
+    //
+    private void setAmountsLeft() {
+
+        TextView t = (TextView)parentActivity.findViewById(R.id.distanceLeftTextView);
+        t.setText(tallyData.getDistanceLeft());
+        t = (TextView)parentActivity.findViewById(R.id.numberOfPipesLeftTextView);
+        t.setText(tallyData.getNumberOfPipesLeft());
+
+    }//end of TallyDataHandler::setAmountsLeft
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

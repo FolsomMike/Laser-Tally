@@ -23,7 +23,6 @@ package com.yaboosh.ybtech.lasertally;
 //
 
 import android.app.Activity;
-import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.util.Log;
@@ -31,7 +30,6 @@ import android.util.Log;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.UUID;
 
 public class Tools {
 
@@ -117,7 +115,8 @@ public class Tools {
 
             pDir.delete();
 
-        } catch (Exception e) {}
+        }
+        catch (Exception e) { Log.e(LOG_TAG, "Line 121 :: " + e.getMessage()); }
 
     }//end of Tools::deleteDirectory
     //-----------------------------------------------------------------------------

@@ -5,9 +5,16 @@
 *
 * Purpose:
 *
-* This class extends an Activity used for the main job display screen. It
-* is the main screen used for all actions and functions once a job has been
-* selected.
+* This class is used as an activity to display a job, among other various
+* functions.
+*
+* Functions include, but are not limited to:
+*       connecting to tally device
+*       measuring
+*       editing tally data
+*       editing and creating jobs
+*       printing
+*       options
 *
 */
 
@@ -21,8 +28,6 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -31,12 +36,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ListView;
-import android.widget.ScrollView;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
@@ -65,11 +65,7 @@ public class JobDisplayActivity extends StandardActivity {
     final String connectButtonText = "connect";
     final String measureButtonText = "measure";
 
-    // Job Info Variables
-    private String jobName = "";
-    // End of Job Info Variables
-
-    private int lastClickedRowPos;
+    private int initialSelectedPosition = -1;
 
     //-----------------------------------------------------------------------------
     // JobDisplayActivity::JobDisplayActivity (constructor)
@@ -117,6 +113,8 @@ public class JobDisplayActivity extends StandardActivity {
         //initialize the tally data handler
         tallyDataHandler = new TallyDataHandler(this, sharedSettings, jobsHandler, listView);
         tallyDataHandler.init();
+        if (initialSelectedPosition == -1) { listView.jumpToStartingRow(); }
+        else { listView.selectRow(initialSelectedPosition, true); }
 
         //Start the TallyDeviceService
         serviceIntent = new Intent(this, TallyDeviceService.class);
@@ -177,7 +175,8 @@ public class JobDisplayActivity extends StandardActivity {
 
         super.onPause();
 
-        try { unbindService(connection); } catch (Exception e) {}
+        try { unbindService(connection); }
+        catch (Exception e) { Log.e(LOG_TAG, "Line 179 :: " + e.getMessage()); }
 
         if (service == null) { return; }
 
@@ -189,7 +188,10 @@ public class JobDisplayActivity extends StandardActivity {
             msg.replyTo = messenger;
             service.send(msg);
 
-        } catch (Exception e) { service = null; }
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Line 192 :: " + e.getMessage());
+            service = null;
+        }
 
     }//end of JobDisplayActivity::onPause
     //-----------------------------------------------------------------------------
@@ -197,7 +199,7 @@ public class JobDisplayActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
     // StandardActivity::handleArrowDownKeyPressed
     //
-    // Selects the next row in the tally data list view.
+    // Selects the next row in the list view.
     //
 
     @Override
@@ -211,7 +213,7 @@ public class JobDisplayActivity extends StandardActivity {
     //-----------------------------------------------------------------------------
     // StandardActivity::handleArrowUpKeyPressed
     //
-    // Selects the previous row in the tally data list view.
+    // Selects the previous row in the list view.
     //
 
     @Override
@@ -311,11 +313,52 @@ public class JobDisplayActivity extends StandardActivity {
             msg.arg1 = pRequestCode;
             msg.arg2 = pResultCode;
             msg.obj = pData;
-            try { service.send(msg); } catch (Exception e) { unbindService(connection); }
+            try { service.send(msg); }
+            catch (Exception e) {
+                Log.e(LOG_TAG, "Line 318 :: " + e.getMessage());
+                unbindService(connection);
+            }
 
         }
 
     }//end of JobDisplayActivity::onActivityResult
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobDisplayActivity::onSaveInstanceState
+    //
+    // As the activity begins to stop, the system calls onSaveInstanceState()
+    // so the activity can save state information with a collection of key-value
+    // pairs. This functions is overridden so that additional state information can
+    // be saved.
+    //
+
+    @Override
+    public void onSaveInstanceState(Bundle pSavedInstanceState) {
+
+        super.onSaveInstanceState(pSavedInstanceState);
+
+        //store necessary data
+        pSavedInstanceState.putInt(MultiColumnListView.SELECTION_POS_KEY,
+                                    listView.getSelectedPosition());
+
+    }//end of JobDisplayActivity::onSaveInstanceState
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobDisplayActivity::restoreValuesFromSavedInstance
+    //
+    // Restores values using the passed in saved instance.
+    //
+
+    @Override
+    protected void restoreValuesFromSavedInstance(Bundle pSavedInstanceState) {
+
+        super.restoreValuesFromSavedInstance(pSavedInstanceState);
+
+        initialSelectedPosition = pSavedInstanceState.getInt(MultiColumnListView.SELECTION_POS_KEY);
+
+    }//end of JobDisplayActivity::restoreValuesFromSavedInstance
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -628,7 +671,11 @@ public class JobDisplayActivity extends StandardActivity {
             msg.replyTo = messenger;
             service.send(msg);
 
-        } catch (Exception e) { service = null; }
+        }
+        catch (Exception e) {
+            Log.e(LOG_TAG, "Line 676 :: " + e.getMessage());
+            service = null;
+        }
 
     }//end of JobDisplayActivity::registerWithService
     //-----------------------------------------------------------------------------
@@ -646,7 +693,11 @@ public class JobDisplayActivity extends StandardActivity {
                 TallyDeviceService.MSG_SEND_MEASURE_COMMAND_TO_TALLY_DEVICE);
         if (msg == null) { return; }
 
-        try { service.send(msg); } catch (RemoteException e) { unbindService(connection); return; }
+        try { service.send(msg); }
+        catch (RemoteException e) {
+            Log.e(LOG_TAG, "Line 698 :: " + e.getMessage());
+            unbindService(connection); return;
+        }
 
         //disable the measureConnect and redo buttons
         //so that the user can't use them during the
@@ -670,9 +721,7 @@ public class JobDisplayActivity extends StandardActivity {
 
         if (pNewJobName.equals(jobTitleTextView.getText().toString())) { return; }
 
-        jobName = pNewJobName;
-
-        jobTitleTextView.setText(jobName);
+        jobTitleTextView.setText(pNewJobName);
 
     }//end of JobDisplayActivity::setJobName
     //-----------------------------------------------------------------------------
@@ -776,7 +825,7 @@ public class JobDisplayActivity extends StandardActivity {
         //-----------------------------------------------------------------------------
         // IncomingHandler::handleMessage
         //
-        // Checks to see if the activity is null. Then calls functions if it isn't null. //hss wip//
+        // Handles messages from the TallyDeviceService.
         //
 
         @Override
@@ -784,8 +833,6 @@ public class JobDisplayActivity extends StandardActivity {
 
             JobDisplayActivity tempActivity = activity.get();
             if (tempActivity != null) {
-
-                Log.d(LOG_TAG, "message received: " + pMsg.what);
 
                 switch (pMsg.what) {
 

@@ -5,7 +5,7 @@
  *
  * Purpose:
  *
- * This class is used for storing, comparing, and calculating the imperial
+ * This class is used for storing, comparing, and calculating the metric
  * tally data.
  *
  */

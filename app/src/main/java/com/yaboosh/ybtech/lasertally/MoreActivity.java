@@ -25,7 +25,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 //-----------------------------------------------------------------------------
@@ -119,19 +118,10 @@ public class MoreActivity extends StandardActivity {
     public void onActivityResult(int pRequestCode, int pResultCode, Intent pData)
     {
 
-        if (pRequestCode == Keys.ACTIVITY_RESULT_MORE_OPTIONS) {
-
-            if (pResultCode == RESULT_OK) {
-                sharedSettings = pData.getParcelableExtra(Keys.SHARED_SETTINGS_KEY);
-            }
-            else if (pResultCode == RESULT_CANCELED) {}
-
+        if (pRequestCode == Keys.ACTIVITY_RESULT_MORE_OPTIONS && pResultCode == RESULT_OK) {
+            sharedSettings = pData.getParcelableExtra(Keys.SHARED_SETTINGS_KEY);
         }
-        else {
-
-            super.onActivityResult(pRequestCode, pResultCode, pData);
-
-        }
+        else { super.onActivityResult(pRequestCode, pResultCode, pData); }
 
     }//end of MoreActivity::onActivityResult
     //-----------------------------------------------------------------------------

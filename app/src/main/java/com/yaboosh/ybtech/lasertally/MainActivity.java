@@ -5,8 +5,12 @@
 *
 * Purpose:
 *
-* This class creates the main activity for the application.
-* It is created and used upon app startup.
+* This class creates the main activity for the application. It is created and
+* used upon app startup.
+*
+* Displays two buttons:
+*       open existing job
+*       create new job
 *
 */
 
@@ -16,16 +20,10 @@ package com.yaboosh.ybtech.lasertally;
 
 //-----------------------------------------------------------------------------
 
-import android.app.Activity;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 //-----------------------------------------------------------------------------

@@ -25,10 +25,8 @@ package com.yaboosh.ybtech.lasertally;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 //-----------------------------------------------------------------------------

@@ -18,13 +18,12 @@ package com.yaboosh.ybtech.lasertally;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.SparseArray;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.widget.AdapterView;
 import android.widget.TextView;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 //-----------------------------------------------------------------------------
@@ -35,6 +34,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class OpenJobActivity extends StandardActivity {
 
     public static AtomicInteger activitiesLaunched = new AtomicInteger(0);
+
+    private MultiColumnListView listView;
+
+    private ArrayList<String> jobNames = new ArrayList<String>();
 
     //-----------------------------------------------------------------------------
     // OpenJobActivity::OpenJobActivity (constructor)
@@ -66,6 +69,22 @@ public class OpenJobActivity extends StandardActivity {
         if (activitiesLaunched.incrementAndGet() > 1) { finish(); }
 
         super.onCreate(pSavedInstanceState);
+
+        listView = (MultiColumnListView)findViewById(R.id.tallyDataListView);
+
+        //load a list with ids to be used for each column
+        ArrayList<Integer> ids = new ArrayList<Integer>();
+        ids.add(R.id.COLUMN_1);
+        listView.init(this, R.layout.layout_single_column_list_view_row, 1, ids);
+        listView.setSelectionStartingPosition(MultiColumnListView.STARTING_POSITION_FIRST_ROW);
+
+        //assign a click listener to the ListView
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> pParent, View pView, int pPos, long pId) {
+                handleJobSelected(pPos);
+            }
+        });
 
     }//end of OpenJobActivity::onCreate
     //-----------------------------------------------------------------------------
@@ -102,100 +121,79 @@ public class OpenJobActivity extends StandardActivity {
 
         super.onResume();
 
-        addJobsToListView(jobsHandler.getAllJobs());
+        displayJobNames(jobsHandler.getAllJobs());
 
     }//end of OpenJobActivity::onResume
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // OpenJobActivity::handleF3KeyPressed
+    // OpenJobActivity::handleArrowDownKeyPressed
     //
-    // If a view is in focus, perform a click on that view.
+    // Selects the next row in the list view.
+    //
+
+    @Override
+    protected void handleArrowDownKeyPressed() {
+
+        listView.selectNextRow();
+
+    }//end of OpenJobActivity::handleArrowDownKeyPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // OpenJobActivity::handleArrowUpKeyPressed
+    //
+    // Selects the previous row in the list view.
+    //
+
+    @Override
+    protected void handleArrowUpKeyPressed() {
+
+        listView.selectPreviousRow();
+
+    }//end of OpenJobActivity::handleArrowUpKeyPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobDisplayActivity::handleF3KeyPressed
+    //
+    // Performs a click on the selected ListView row.
     //
 
     @Override
     protected void handleF3KeyPressed() {
 
-        if (viewInFocus != null) { performClickOnView(viewInFocus); }
+        listView.clickSelectedRow();
 
-    }//end of OpenJobActivity::handleF3KeyPressed
+    }//end of JobDisplayActivity::handleF3KeyPressed
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // OpenJobActivity::onClickListener
-    //
-    // Not really a function.
-    //
-    // Listeners for clicks on the objects to which it was handed.
-    //
-    // Ids are used to determine which object was pressed.
-    // When assigning this listener to any new objects, add the object's id to the
-    // switch statement and handle the case properly.
-    //
-
-    View.OnClickListener onClickListener = new View.OnClickListener() {
-
-        @Override
-        public void onClick(View pV) {
-
-            int id = pV.getId();
-
-            if (id == R.id.jobNameTextView) {
-                handleJobSelected(((TextView) pV).getText().toString());
-            }
-
-        }
-
-    };//end of OpenJobActivity::onClickListener
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // OpenJobActivity::addJobsToListView
+    // OpenJobActivity::displayJobNames
     //
     // Adds the job names in the passed in list to the job names list view.
     //
     // If there are no names in the list, a message is displayed to the user.
     //
 
-    private void addJobsToListView(ArrayList<String> pNames) {
+    private void displayJobNames(final ArrayList<String> pNames) {
 
-        TextView textView =  (TextView)findViewById(R.id.noJobsTextView);
-        textView.setVisibility(View.GONE);
+        TextView noJobs =  (TextView)findViewById(R.id.noJobsTextView);
+        noJobs.setVisibility(View.GONE);
+
+        jobNames = pNames;
 
         //if there are no jobs,
         //display a message to the user
-        if (pNames.isEmpty()) { textView.setVisibility(View.VISIBLE); return; }
+        if (jobNames.isEmpty()) {
+            listView.setVisibility(View.GONE);
+            noJobs.setVisibility(View.VISIBLE);
+            return;
+        }
 
-        LinearLayout layout = (LinearLayout)findViewById(R.id.jobNamesLayout);
-        for (String j : pNames) { layout.addView(createJobNameTextView(j)); }
+        readDataFromList(jobNames);
 
-    }//end of OpenJobActivity::addJobsToListView
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // OpenJobActivity::createJobNameTextView
-    //
-    // Returns a selectable text view containing the passed in string.
-    //
-    // A pointer to the created TextView is added to the focus array.
-    //
-
-    private TextView createJobNameTextView(String pString) {
-
-        TextView t = (TextView)getLayoutInflater().inflate
-                                                    (R.layout.selectable_text_view_template, null);
-        t.setId(R.id.jobNameTextView);
-        t.setClickable(true);
-        t.setFocusable(true);
-        t.setFocusableInTouchMode(false);
-        t.setOnClickListener(onClickListener);
-        t.setText(pString);
-
-        focusArray.add(t);
-
-        return t;
-
-    }//end of OpenJobActivity::createJobNameTextView
+    }//end of OpenJobActivity::displayJobNames
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -205,14 +203,14 @@ public class OpenJobActivity extends StandardActivity {
     // jobInfo.txt file) of the selected job into the intent extras.
     //
 
-    private void handleJobSelected(String pJobName) {
+    private void handleJobSelected(int pPos) {
 
-        MultiColumnListView.clearSelectionValues();
+        listView.handleRowClicked(pPos);
 
         Intent intent = new Intent(this, JobDisplayActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.putExtra(Keys.SHARED_SETTINGS_KEY, sharedSettings);
-        jobsHandler.loadJobFromFile(pJobName);
+        jobsHandler.loadJobFromFile(jobNames.get(pPos));
         intent.putExtra(Keys.JOBS_HANDLER_KEY, jobsHandler);
         startActivity(intent);
 
@@ -230,6 +228,29 @@ public class OpenJobActivity extends StandardActivity {
         finish();
 
     }//end of OpenJobActivity::handleRedXButtonPressed
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // OpenJobActivity::readDataFromList
+    //
+    // Reads the data from the passed in list and sends it to the list view to be
+    // displayed.
+    //
+
+    private void readDataFromList(final ArrayList<String> pList)
+    {
+
+        ArrayList<SparseArray<String>> list = new ArrayList<SparseArray<String>>();
+
+        for (int i=0; i<pList.size(); i++) {
+            SparseArray<String> map = new SparseArray<String>();
+            map.put(R.id.COLUMN_1, pList.get(i));
+            list.add(map);
+        }
+
+        listView.setList(list);
+
+    }//end of OpenJobActivity::readDataFromList
     //-----------------------------------------------------------------------------
 
 }//end of class OpenJobActivity

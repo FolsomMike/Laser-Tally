@@ -74,8 +74,8 @@ public class TallyReportHTMLFileMaker extends TallyReportHTMLMaker {
 
         try{
 
-            fileOutputStream = new FileOutputStream(
-                       sharedSettings.getReportsFolderPath() + jobsHandler.getJobName() + " ~ Tally Report.html");
+            fileOutputStream = new FileOutputStream(sharedSettings.getReportsFolderPath()
+                                            + jobsHandler.getJobName() + " ~ Tally Report.html");
             outputStreamWriter = new OutputStreamWriter(fileOutputStream, "UTF-8");
             out = new BufferedWriter(outputStreamWriter);
 
@@ -84,16 +84,14 @@ public class TallyReportHTMLFileMaker extends TallyReportHTMLMaker {
             out.flush();
 
         }
-        catch(IOException e){
-            Log.e(LOG_TAG, "Error creating file..");
-        }
+        catch(IOException e){ Log.e(LOG_TAG, "Line 87 :: " + e.getMessage()); }
         finally{
             try{if (out != null) {out.close();}}
-            catch(IOException e){Log.e(LOG_TAG, "Error closing BufferedWriter.");}
+            catch(IOException e){ Log.e(LOG_TAG, "Line 90 :: " + e.getMessage()); }
             try{if (outputStreamWriter != null) {outputStreamWriter.close();}}
-            catch(IOException e){Log.e(LOG_TAG, "Error closing OutputStreamWriter.");}
+            catch(IOException e){ Log.e(LOG_TAG, "Line 92 :: " + e.getMessage()); }
             try{if (fileOutputStream != null) {fileOutputStream.close();}}
-            catch(IOException e){Log.e(LOG_TAG, "Error closing FileOutputStream.");}
+            catch(IOException e){ Log.e(LOG_TAG, "Line 94 :: " + e.getMessage()); }
         }
 
     }// end of TallyReportHTMLFileMaker::printTallyReport

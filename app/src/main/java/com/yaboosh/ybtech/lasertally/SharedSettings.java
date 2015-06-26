@@ -76,12 +76,12 @@ public class SharedSettings implements Parcelable {
     public void setJobsFolderPath(String pNewPath) { jobsFolderPath = pNewPath; }
 
     //default general settings
-    private String defaultImperialCalibrationValue = "0"; //hss wip// -- should be changed
-    private String defaultMetricCalibrationValue = "0"; //hss wip// -- should be changed
-    private String defaultMaximumImperialMeasurementAllowed = "60.00"; //hss wip// -- should be changed
-    private String defaultMaximumMetricMeasurementAllowed = "18.283"; //hss wip// -- should be changed
-    private String defaultMinimumImperialMeasurementAllowed = "1.00"; //hss wip// -- should be changed
-    private String defaultMinimumMetricMeasurementAllowed = "0.3048"; //hss wip// -- should be changed
+    private String defaultImperialCalibrationValue = "0";
+    private String defaultMetricCalibrationValue = "0";
+    private String defaultMaximumImperialMeasurementAllowed = "60.00";
+    private String defaultMaximumMetricMeasurementAllowed = "18.283";
+    private String defaultMinimumImperialMeasurementAllowed = "4.00";
+    private String defaultMinimumMetricMeasurementAllowed = "1.2192";
     private String defaultUnitSystem = Keys.IMPERIAL_MODE;
     //end of default general settings
 
@@ -423,9 +423,7 @@ public class SharedSettings implements Parcelable {
             out.flush();
 
         }
-        catch(IOException e){
-            Log.e(LOG_TAG, "Line 340 :: " + e.getMessage());
-        }
+        catch(IOException e){ Log.e(LOG_TAG, "Line 340 :: " + e.getMessage()); }
         finally{
             try{ if (out != null) {out.close();} }
             catch(IOException e){ Log.e(LOG_TAG, "Line 386 :: " + e.getMessage());}

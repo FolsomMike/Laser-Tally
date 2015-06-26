@@ -7,11 +7,12 @@
  *
  * This class is used as an activity to display the menu for the Job Info
  * activity.
+ *
  * The menu displays buttons:
- *      Open Existing Job
- *      Create New Job
- *      Close this Job
- *      Delete this Job
+ *      open existing job
+ *      create new job
+ *      rename this job
+ *      delete this job
  *
  */
 
@@ -22,15 +23,10 @@ package com.yaboosh.ybtech.lasertally;
 //-----------------------------------------------------------------------------
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 
-import java.io.File;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 //-----------------------------------------------------------------------------

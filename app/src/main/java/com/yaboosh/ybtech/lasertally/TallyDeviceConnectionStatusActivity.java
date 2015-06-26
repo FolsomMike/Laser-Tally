@@ -29,12 +29,10 @@ import android.os.Message;
 import android.os.Messenger;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 //-----------------------------------------------------------------------------
@@ -168,7 +166,8 @@ public class TallyDeviceConnectionStatusActivity extends StandardActivity {
 
         super.onPause();
 
-        try { unbindService(connection); } catch (Exception e) {}
+        try { unbindService(connection); }
+        catch (Exception e) { Log.e(LOG_TAG, "Line 170 :: " + e.getMessage()); }
 
         if (service == null) { return; }
 
@@ -179,7 +178,11 @@ public class TallyDeviceConnectionStatusActivity extends StandardActivity {
             msg.replyTo = messenger;
             service.send(msg);
 
-        } catch (Exception e) { service = null; }
+        }
+        catch (Exception e) {
+            Log.e(LOG_TAG, "Line 183 :: " + e.getMessage());
+            service = null;
+        }
 
     }//end of TallyDeviceConnectionStatusActivity::onPause
     //-----------------------------------------------------------------------------
@@ -236,9 +239,6 @@ public class TallyDeviceConnectionStatusActivity extends StandardActivity {
 
     public void handleConnectedState() {
 
-        //DEBUG HSS//
-        Log.d(LOG_TAG, "Handle connected state");
-
         setProgressBarVisible(false);
         setGreenCheckMarkVisible(true);
         setMessageText("Connected to " + tallyDeviceName);
@@ -269,8 +269,6 @@ public class TallyDeviceConnectionStatusActivity extends StandardActivity {
 
     public void handleConnectingState() {
 
-        //DEBUG HSS//
-        Log.d(LOG_TAG, "Handle connecting state");
         setProgressBarVisible(true);
         setGreenCheckMarkVisible(false);
         setMessageText("Connecting to " + tallyDeviceName);
@@ -309,7 +307,10 @@ public class TallyDeviceConnectionStatusActivity extends StandardActivity {
             msg.replyTo = messenger;
             service.send(msg);
 
-        } catch (Exception e) { service = null; }
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Line 306 :: " + e.getMessage());
+            service = null;
+        }
 
     }//end of TallyDeviceConnectionStatusActivity::registerWithService
     //-----------------------------------------------------------------------------
@@ -378,9 +379,6 @@ public class TallyDeviceConnectionStatusActivity extends StandardActivity {
 
     private void stateChanged(TallyDeviceService.State pNewState, Message pMsg) {
 
-        //DEBUG HSS//
-        Log.d(LOG_TAG, "connection state changed: " + pNewState);
-
         state = pNewState;
 
         if (state == TallyDeviceService.State.CONNECTED) {
@@ -424,7 +422,7 @@ public class TallyDeviceConnectionStatusActivity extends StandardActivity {
         //-----------------------------------------------------------------------------
         // IncomingHandler::handleMessage
         //
-        // Checks to see if the activity is null. Then calls functions if it isn't null. //hss wip//
+        // Handles messages from the TallyDeviceService.
         //
 
         @Override

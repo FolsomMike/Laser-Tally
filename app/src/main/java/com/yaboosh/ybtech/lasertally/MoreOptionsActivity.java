@@ -24,13 +24,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ScrollView;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 //-----------------------------------------------------------------------------
@@ -162,15 +160,7 @@ public class MoreOptionsActivity extends StandardActivity {
     @Override
     protected void focusChanged() {
 
-        //WIP HSS// -- wtf is this?????
         final ScrollView sv = (ScrollView)findViewById(R.id.optionsScrollView);
-        sv.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                v.requestFocusFromTouch();
-                return false;
-            }
-        });
 
         int index = focusArray.indexOf(viewInFocus);
         if (index == 0) {

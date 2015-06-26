@@ -14,19 +14,7 @@
 
 package com.yaboosh.ybtech.lasertally;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import android.app.Activity;
-import android.bluetooth.BluetoothClass;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothGattCallback;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.ParcelUuid;
 
 //-----------------------------------------------------------------------------
 

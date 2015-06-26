@@ -17,10 +17,12 @@ package com.yaboosh.ybtech.lasertally;
 
 //-----------------------------------------------------------------------------
 
-import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,18 +31,12 @@ import android.os.Message;
 import android.os.Messenger;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 //-----------------------------------------------------------------------------
@@ -56,9 +52,6 @@ public class TallyDeviceScanActivity extends StandardActivity {
     private final Messenger messenger;
     private Intent serviceIntent;
     private Messenger service = null;
-
-    private AbsListView listView;
-    private TextView emptyView;
 
     ArrayList<String> deviceNames = new ArrayList<String>();
 
@@ -134,6 +127,10 @@ public class TallyDeviceScanActivity extends StandardActivity {
 
         bindService(serviceIntent, connection, BIND_AUTO_CREATE);
 
+        //register a receiver to listen for Bluetooth state changes
+        registerReceiver(bluetoothStateReceiver,
+                new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
+
     }//end of TallyDeviceScanActivity::onResume
     //-----------------------------------------------------------------------------
 
@@ -150,7 +147,8 @@ public class TallyDeviceScanActivity extends StandardActivity {
 
         super.onPause();
 
-        try { unbindService(connection); } catch (Exception e) {}
+        try { unbindService(connection); }
+        catch (Exception e) { Log.e(LOG_TAG, "Line 151 :: " + e.getMessage()); }
 
         if (service == null) { return; }
 
@@ -162,7 +160,13 @@ public class TallyDeviceScanActivity extends StandardActivity {
             msg.replyTo = messenger;
             service.send(msg);
 
-        } catch (Exception e) { service = null; }
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Line 170 :: " + e.getMessage());
+            service = null;
+        }
+
+        //unregister the receiver so that it does not leak
+        unregisterReceiver(bluetoothStateReceiver);
 
     }//end of TallyDeviceScanActivity::onPause
     //-----------------------------------------------------------------------------
@@ -199,9 +203,40 @@ public class TallyDeviceScanActivity extends StandardActivity {
         msg.arg1 = pRequestCode;
         msg.arg2 = pResultCode;
         msg.obj = pData;
-        try { service.send(msg); } catch (Exception e) { unbindService(connection); }
+        try { service.send(msg); }
+        catch (Exception e) {
+            Log.e(LOG_TAG, "Line 214 :: " + e.getMessage());
+            unbindService(connection);
+        }
 
     }//end of TallyDeviceScanActivity::onActivityResult
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // JobDisplayActivity::bluetoothStateReceiver
+    //
+    // Not really a function
+    //
+    // Creates a broadcast receiver to be used to listen for Bluetooth state
+    // changes. Should be registered in onResume and unregistered in onPause.
+    //
+
+    private BroadcastReceiver bluetoothStateReceiver =  new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context pContext, Intent pIntent) {
+
+
+                if (BluetoothAdapter.getDefaultAdapter().getState() == BluetoothAdapter.STATE_ON) {
+                    Message msg = Message.obtain(null, TallyDeviceService.MSG_BLUETOOTH_ON);
+                    if (msg == null) { return; }
+                    try { service.send(msg);}
+                    catch (Exception e) {
+                        Log.e(LOG_TAG, "Line 240 :: " + e.getMessage());
+                        unbindService(connection);
+                    }
+                }
+        }
+    };//end of JobDisplayActivity::bluetoothStateReceiver
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -344,7 +379,11 @@ public class TallyDeviceScanActivity extends StandardActivity {
         Message msg = Message.obtain(null, TallyDeviceService.MSG_CONNECT_TO_TALLY_DEVICE);
         if (msg == null) { return; }
         msg.obj = pName;
-        try { service.send(msg); } catch (Exception e) { unbindService(connection); }
+        try { service.send(msg); }
+        catch (Exception e) {
+            Log.e(LOG_TAG, "Line 390 :: " + e.getMessage());
+            unbindService(connection);
+        }
 
         finishActivityAndStartMessageActivity();
 
@@ -363,22 +402,6 @@ public class TallyDeviceScanActivity extends StandardActivity {
         setScanning(false);
 
     }//end of TallyDeviceScanActivity::handleDisconnectedState
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // TallyDeviceScanActivity::handleStartActivityForResultMessage
-    //
-    // Starts an activity using the data obtained from the passed in message for
-    // the action and the request code.
-    //
-
-    private void handleStartActivityForResultMessage(Message pMsg) {
-
-        if (pMsg == null) { return; }
-        Intent intent = new Intent((String)pMsg.obj);
-        startActivityForResult(intent, pMsg.arg1);
-
-    }//end of TallyDeviceScanActivity::handleStartActivityForResultMessage
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -425,7 +448,10 @@ public class TallyDeviceScanActivity extends StandardActivity {
             msg.replyTo = messenger;
             service.send(msg);
 
-        } catch (Exception e) { service = null; }
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Line 477 :: " + e.getMessage());
+            service = null;
+        }
 
     }//end of TallyDeviceScanActivity::registerWithService
     //-----------------------------------------------------------------------------
@@ -486,11 +512,15 @@ public class TallyDeviceScanActivity extends StandardActivity {
 
         focusArray.clear();
         deviceNames.clear();
+        ((LinearLayout)findViewById(R.id.deviceNamesLayout)).removeAllViews();
         setScanning(true);
 
         Message msg = Message.obtain(null, TallyDeviceService.MSG_START_SCAN_FOR_TALLY_DEVICES);
         if (msg == null) { return; }
-        try { service.send(msg); } catch (Exception e) { unbindService(connection); }
+        try { service.send(msg); } catch (Exception e) {
+            Log.e(LOG_TAG, "Line 543 :: " + e.getMessage());
+            unbindService(connection);
+        }
 
     }//end of TallyDeviceScanActivity::startScan
     //-----------------------------------------------------------------------------
@@ -520,7 +550,7 @@ public class TallyDeviceScanActivity extends StandardActivity {
     // was passed.
     //
 
-    private static class IncomingHandler extends Handler {
+    static class IncomingHandler extends Handler {
 
         private final WeakReference<TallyDeviceScanActivity> activity;
 
@@ -538,7 +568,7 @@ public class TallyDeviceScanActivity extends StandardActivity {
         //-----------------------------------------------------------------------------
         // IncomingHandler::handleMessage
         //
-        // Checks to see if the activity is null. Then calls functions if it isn't null. //hss wip//
+        // Handles messages from the TallyDeviceService.
         //
 
         @Override
@@ -551,10 +581,6 @@ public class TallyDeviceScanActivity extends StandardActivity {
 
                     case TallyDeviceService.MSG_CONNECTION_STATE:
                         tempActivity.stateChanged(TallyDeviceService.State.values()[pMsg.arg1]);
-                        break;
-
-                    case TallyDeviceService.MSG_START_ACTIVITY_FOR_RESULT:
-                        tempActivity.handleStartActivityForResultMessage(pMsg);
                         break;
 
                     case TallyDeviceService.MSG_TALLY_DEVICE_NAME:
