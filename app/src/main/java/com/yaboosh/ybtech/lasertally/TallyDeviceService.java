@@ -30,38 +30,20 @@ package com.yaboosh.ybtech.lasertally;
 //
 
 import android.app.Service;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattDescriptor;
-import android.bluetooth.BluetoothGattService;
-import android.bluetooth.BluetoothManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
-import android.os.RemoteException;
 import android.util.Log;
 
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class TallyDeviceService extends Service {
 
-    public static final String TAG = "TallyDeviceService";
+    public static final String LOG_TAG = "TallyDeviceService";
     static final int MSG_REGISTER_JOB_DISPLAY_ACTIVITY = 1;
     static final int MSG_REGISTER_MESSAGE_ACTIVITY = 2;
     static final int MSG_REGISTER_TALLY_DEVICE_SCAN_ACTIVITY = 3;
@@ -73,12 +55,12 @@ public class TallyDeviceService extends Service {
     static final int MSG_START_SCAN_FOR_TALLY_DEVICES = 11;
     static final int MSG_SEND_MEASURE_COMMAND_TO_TALLY_DEVICE = 12;
     static final int MSG_CONNECTION_STATE = 15;
-    static final int MSG_START_ACTIVITY_FOR_RESULT = 18;
     static final int MSG_ACTIVITY_RESULT = 19;
     static final int MSG_TALLY_DEVICE_NAME = 20;
     static final int MSG_NEW_DISTANCE_VALUE = 21;
     static final int MSG_START_SCAN_FOR_TALLY_DEVICES_FAILED = 22;
     static final int MSG_N0_NEW_DISTANCE_VALUE_RECEIVED = 23;
+    static final int MSG_BLUETOOTH_ON = 24;
 
     private static final long SCAN_PERIOD = 10000;
 
@@ -98,7 +80,7 @@ public class TallyDeviceService extends Service {
     // variable can be initiated using different classes
     // (TallyDeviceBluetoothLeConnectionHandler, TallyDeviceSimulationConnectionHandler, etc.)
     private TallyDeviceConnectionHandler tallyDeviceConnectionHandler = new
-            TallyDeviceSimulationConnectionHandler(this);
+            TallyDeviceBluetoothLeConnectionHandler(this);
     Runnable stopScanRunnable;
 
     private final Messenger messenger;
@@ -164,6 +146,19 @@ public class TallyDeviceService extends Service {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // TallyDeviceService::handleBluetoothOnMessage
+    //
+    // Calls a handling function in the connection handler.
+    //
+
+    public void handleBluetoothOnMessage(Message pMsg) {
+
+        tallyDeviceConnectionHandler.handleBluetoothOn();
+
+    }//end of TallyDeviceService::handleBluetoothOnMessage
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // TallyDeviceService::handleConnectedToTallyDevice
     //
     // Sets the state to connected.
@@ -198,9 +193,6 @@ public class TallyDeviceService extends Service {
     //
 
     public void handleConnectToTallyDeviceMessage(Message pMsg) {
-
-        //debug hss//
-        Log.d(TAG, "connect to device message received");
 
         setState(State.CONNECTING);
         connectToDeviceByName((String)pMsg.obj);
@@ -327,9 +319,6 @@ public class TallyDeviceService extends Service {
 
     public void handleStartScanForTallyDevicesSuccess() {
 
-        //debug hss//
-        Log.d(TAG, "Start scan for tally devices success");
-
         // The sending of the message
         // may fail because there might
         // not be any activities registered.
@@ -349,7 +338,6 @@ public class TallyDeviceService extends Service {
 
     public void handleSendMeasureCommandToTallyDeviceMessage(Message pMsg) {
 
-        Log.d(TAG, "measure command received");
         tallyDeviceConnectionHandler.sendMeasureCommandToTallyDevice();
 
     }//end of TallyDeviceService::handleSendMeasureCommandToTallyDeviceMessage
@@ -382,9 +370,6 @@ public class TallyDeviceService extends Service {
 
     public void handleRegisterJobDisplayActivityMessage(Message pMsg) {
 
-        //debug hss//
-        Log.d(TAG, "zzz register job display activity");
-
         messengerClient = pMsg.replyTo;
         tallyDeviceConnectionHandler.setContext((Context)pMsg.obj);
 
@@ -403,9 +388,6 @@ public class TallyDeviceService extends Service {
 
     public void handleUnregisterJobDisplayActivityMessage(Message pMsg) {
 
-        //debug hss//
-        Log.d(TAG, "handle unregister job display activity message");
-
         messengerClient = null;
 
     }//end of TallyDeviceService::handleUnregisterJobDisplayActivityMessage
@@ -419,9 +401,6 @@ public class TallyDeviceService extends Service {
     //
 
     public void handleRegisterMessageActivityMessage(Message pMsg) {
-
-        //debug hss//
-        Log.d(TAG, "Register message activity message received");
 
         messengerClient = pMsg.replyTo;
         tallyDeviceConnectionHandler.setContext((Context)pMsg.obj);
@@ -455,9 +434,6 @@ public class TallyDeviceService extends Service {
 
     public void handleRegisterTallyDeviceScanActivityMessage(Message pMsg) {
 
-        //debug hss//
-        Log.d(TAG, "Register scan activity message received");
-
         messengerClient = pMsg.replyTo;
         tallyDeviceConnectionHandler.setContext((Context)pMsg.obj);
 
@@ -478,24 +454,6 @@ public class TallyDeviceService extends Service {
         }
 
     }//end of TallyDeviceService::handleUnregisterTallyDeviceScanActivityMessage
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // TallyDeviceService::startActivityForResult
-    //
-    // Sends a message to the messenger client activity instructing to to start
-    // an activity for a result using the passed in action and request code.
-    //
-
-    public void startActivityForResult(String pAction, int pRequestCode) {
-
-        Message msg = Message.obtain(null, MSG_START_ACTIVITY_FOR_RESULT);
-        if (msg == null) { return; }
-        msg.obj = pAction;
-        msg.arg1 = pRequestCode;
-        sendMessageToMessengerClient(msg);
-
-    }//end of TallyDeviceService::startActivityForResult
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -555,18 +513,14 @@ public class TallyDeviceService extends Service {
     private boolean sendMessageToMessengerClient(Message pMsg) {
 
         boolean success = true;
-        if (messengerClient == null) {
-            //debug hss//
-            Log.d(TAG, "messengerClient was null -- return");
-            success = false; return success;
-        }
-        try { messengerClient.send(pMsg); } catch (Exception e) {
 
-            //debug hss//
-            Log.d(TAG, "!!!!!!!!!Sending message failed!!!!!!!! :: " + e);
-
+        if (messengerClient == null) { success = false; return success; }
+        try { messengerClient.send(pMsg); }
+        catch (Exception e) {
+            Log.e(LOG_TAG, "Line 576 :: " + e.getMessage());
             success = false;
         }
+
         return success;
 
     }//end of TallyDeviceService::sendMessageToMessengerClient
@@ -610,13 +564,14 @@ public class TallyDeviceService extends Service {
             TallyDeviceService tempService = service.get();
             if (tempService != null) {
 
-                //debug hss//
-                Log.d(TAG, "message received: " + pMsg.what);
-
                 switch (pMsg.what) {
 
                     case MSG_ACTIVITY_RESULT:
                         tempService.handleActivityResultMessage(pMsg);
+                        break;
+
+                    case MSG_BLUETOOTH_ON:
+                        tempService.handleBluetoothOnMessage(pMsg);
                         break;
 
                     case MSG_CONNECT_TO_TALLY_DEVICE:

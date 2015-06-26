@@ -87,6 +87,17 @@ public class TallyDeviceConnectionHandler {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    // TallyDeviceConnectionHandler::handleBluetoothOn
+    //
+
+    public void handleBluetoothOn() {
+
+        return;
+
+    }//end of TallyDeviceConnectionHandler::handleBluetoothOn
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     // TallyDeviceConnectionHandler::sendMeasureCommandToTallyDevice
     //
 
