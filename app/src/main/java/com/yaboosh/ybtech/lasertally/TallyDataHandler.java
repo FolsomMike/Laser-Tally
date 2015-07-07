@@ -105,6 +105,8 @@ public class TallyDataHandler {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> pParent, View pView, int pPos, long pId) {
+                //if the clicked item is the footer, then return
+                if (pView.getId() == R.id.tallyDataListViewFooter) { return; }
                 handleListViewRowClicked(pPos);
             }
         });
@@ -458,7 +460,7 @@ public class TallyDataHandler {
     private void setVolumeToMax(Activity pActivity) {
 
         AudioManager audioManager = (AudioManager)pActivity
-                .getSystemService(pActivity.AUDIO_SERVICE);
+                .getSystemService(Activity.AUDIO_SERVICE);
 
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,
                 audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
