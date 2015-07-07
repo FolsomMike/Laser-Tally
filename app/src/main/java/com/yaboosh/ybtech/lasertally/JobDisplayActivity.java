@@ -623,7 +623,7 @@ public class JobDisplayActivity extends StandardActivity {
 
     private void handleNoNewDistanceValueReceived () {
 
-        Tools.playBadSound(this);
+        tallyDataHandler.playBadSound();
 
         setMeasureConnectButtonEnabled(true);
         setRedoButtonEnabled(true);

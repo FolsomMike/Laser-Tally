@@ -100,7 +100,17 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
     private String previouslyConnectedTallyDeviceName = null;
     private boolean bleScanTurnedOffForNullDevice = false;
     private boolean reconnectToTallyDevice = false;
-    private boolean newDistanceValueReceived = false;
+
+    private Runnable noMeasurementReceived = new Runnable () {
+
+        @Override
+        public void run() {
+
+            parentService.handleNoDistanceValueReceived();
+
+        }
+
+    };
 
     //-----------------------------------------------------------------------------
     // TallyDeviceBluetoothLeConnectionHandler::TallyDeviceBluetoothLeConnectionHandler
@@ -193,22 +203,11 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
     @Override
     public boolean sendMeasureCommandToTallyDevice() {
 
-        newDistanceValueReceived = false;
-
         // If a new distance value hasn't been received in the
         // specified amount of time, then a handling function
         // is called in the parentService.
         // This covers the Disto failing to take a measurement.
-        handler.postDelayed(new Runnable () {
-
-            @Override
-            public void run() {
-
-                if (!newDistanceValueReceived) { parentService.handleNoDistanceValueReceived(); }
-
-            }
-
-        }, 5000);
+        handler.postDelayed(noMeasurementReceived, 1000);
 
         return sendCommand(TRIGGER_DISTANCE_MEASUREMENT);
 
@@ -397,7 +396,8 @@ public class TallyDeviceBluetoothLeConnectionHandler extends TallyDeviceConnecti
         if (pCharacteristic.getUuid().equals(DISTO_CHARACTERISTIC_DISTANCE)) {
 
             // The characteristic's UUID matched the distance characteristic
-            newDistanceValueReceived = true;
+
+            handler.removeCallbacks(noMeasurementReceived);
 
             float distance = ByteBuffer.wrap(pCharacteristic.getValue()).order
                                                             (ByteOrder.LITTLE_ENDIAN).getFloat();

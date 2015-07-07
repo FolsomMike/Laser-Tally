@@ -19,8 +19,11 @@ package com.yaboosh.ybtech.lasertally;
 // class TallyDataHandler
 //
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.AdapterView;
@@ -45,6 +48,9 @@ public class TallyDataHandler {
     private TallyData tallyData;
     private TallyData imperialTallyData;
     private TallyData metricTallyData;
+
+    private MediaPlayer badSound;
+    private MediaPlayer goodSound;
 
     //Variables used for the tally data ListView
     private MultiColumnListView listView;
@@ -83,6 +89,9 @@ public class TallyDataHandler {
         metricTallyData.init();
 
         setUnitSystem(sharedSettings.getUnitSystem());
+
+        badSound = MediaPlayer.create(parentActivity, R.raw.bad_sound);
+        goodSound = MediaPlayer.create(parentActivity, R.raw.good_sound);
 
         //load a list with ids to be used for each column
         ArrayList<Integer> ids = new ArrayList<Integer>();
@@ -263,9 +272,9 @@ public class TallyDataHandler {
         double temp = pValue + imperialTallyData.getCalibrationValue();
 
         //return if the value is not within range
-        if (!imperialTallyData.isValidLength(temp)) { Tools.playBadSound(parentActivity); return; }
+        if (!imperialTallyData.isValidLength(temp)) { playBadSound(); return; }
 
-        Tools.playGoodSound(parentActivity);
+        playGoodSound();
 
         addDataEntry(pValue);
 
@@ -301,6 +310,36 @@ public class TallyDataHandler {
         changeValuesAtIndex(editedRowPos, pPipeNum, pTotalLength, pRenumberAll);
 
     }//end of TallyDataHandler::handleTableRowEditorActivityResultOk
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDataHandler::playBadSound
+    //
+    // Sets the volume to its max value and plays the bad sound.
+    //
+
+    public void playBadSound() {
+
+        setVolumeToMax(parentActivity);
+
+        badSound.start();
+
+    }//end of TallyDataHandler::playBadSound
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDataHandler::playGoodSound
+    //
+    // Sets the volume to its max value and plays the good sound.
+    //
+
+    public void playGoodSound() {
+
+        setVolumeToMax(parentActivity);
+
+        goodSound.start();
+
+    }//end of TallyDataHandler::playGoodSound
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -408,6 +447,23 @@ public class TallyDataHandler {
         else if (unitSystem.equals(Keys.METRIC_MODE)) { tallyData = metricTallyData; }
 
     }//end of TallyDataHandler::setUnitSystem
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // TallyDataHandler::setVolumeToMax
+    //
+    // Sets the volume to its max value.
+    //
+
+    private void setVolumeToMax(Activity pActivity) {
+
+        AudioManager audioManager = (AudioManager)pActivity
+                .getSystemService(pActivity.AUDIO_SERVICE);
+
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,
+                audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
+
+    }//end of TallyDataHandler::setVolumeToMax
     //-----------------------------------------------------------------------------
 
 }//end of class TallyDataHandler
