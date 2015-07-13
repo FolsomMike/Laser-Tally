@@ -154,53 +154,6 @@ public class Tools {
     }//end of Tools::getValueFromList
     //-----------------------------------------------------------------------------
 
-    //-----------------------------------------------------------------------------
-    // Tools::playBadSound
-    //
-    // Sets the volume to its max value and plays the bad sound.
-    //
-
-    public static void playBadSound(Activity pActivity) {
-
-        setVolumeToMax(pActivity);
-
-        (MediaPlayer.create(pActivity, R.raw.bad_sound)).start();
-
-    }//end of Tools::playBadSound
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // Tools::playGoodSound
-    //
-    // Sets the volume to its max value and plays the good sound.
-    //
-
-    public static void playGoodSound(Activity pActivity) {
-
-        setVolumeToMax(pActivity);
-
-        (MediaPlayer.create(pActivity, R.raw.good_sound)).start();
-
-    }//end of Tools::playGoodSound
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    // Tools::setVolumeToMax
-    //
-    // Sets the volume to its max value.
-    //
-
-    public static void setVolumeToMax(Activity pActivity) {
-
-        AudioManager audioManager = (AudioManager)pActivity
-                                                        .getSystemService(pActivity.AUDIO_SERVICE);
-
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,
-                                    audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
-
-    }//end of Tools::setVolumeToMax
-    //-----------------------------------------------------------------------------
-
 }//end of class Tools
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------

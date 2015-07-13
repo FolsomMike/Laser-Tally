@@ -105,6 +105,7 @@ public class JobDisplayActivity extends StandardActivity {
 
         //add a footer to the Tally Data ListView
         View foot = getLayoutInflater().inflate(R.layout.layout_list_view_footer, listView, false);
+        foot.setId(R.id.tallyDataListViewFooter);
         listView.addFooterView(foot);
 
         //set the job name
@@ -623,7 +624,7 @@ public class JobDisplayActivity extends StandardActivity {
 
     private void handleNoNewDistanceValueReceived () {
 
-        Tools.playBadSound(this);
+        tallyDataHandler.playBadSound();
 
         setMeasureConnectButtonEnabled(true);
         setRedoButtonEnabled(true);
