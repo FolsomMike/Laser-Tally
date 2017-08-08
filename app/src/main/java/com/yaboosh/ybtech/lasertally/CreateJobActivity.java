@@ -420,7 +420,7 @@ public class CreateJobActivity extends StandardActivity {
         boolean jobExistsBool = false;
 
         // Check to see if the job name already exists
-        if (jobsHandler.checkIfJobNameAlreadyExists(jobName)) { jobExistsBool = true; }
+        if (jobsHandler.checkIfJobExists(jobName)) { jobExistsBool = true; }
 
         // Check to see if the length of the edit text is greater than
         // 0 and to see if the job does not already exist.

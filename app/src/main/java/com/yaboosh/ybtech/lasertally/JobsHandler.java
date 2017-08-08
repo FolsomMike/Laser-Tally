@@ -225,16 +225,16 @@ public class JobsHandler implements Parcelable {
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    // JobsHandler::checkIfJobNameAlreadyExists
+    // JobsHandler::checkIfJobExists
     //
-    // Searches through the jobs in the jobs directory to see if a job already
-    // has the passed in name.
+    // Searches through the jobs in the jobs directory to see if a job exists with
+    // the passed in name.
     //
     // Returns true if name already exists. False if it doesn't.
     //
     //
 
-    public Boolean checkIfJobNameAlreadyExists(String pJobName) {
+    public Boolean checkIfJobExists(String pJobName) {
 
         Boolean exists = false;
 
@@ -256,7 +256,7 @@ public class JobsHandler implements Parcelable {
 
         return exists;
 
-    }//end of JobsHandler::checkIfJobNameAlreadyExists
+    }//end of JobsHandler::checkIfJobExists
     //----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -377,7 +377,11 @@ public class JobsHandler implements Parcelable {
     public void loadJobFromFile(String pJobName)
     {
 
+        if (!checkIfJobExists(pJobName)) { return; }
+
         storeOldJobDirectoryAndName();
+
+        sharedSettings.setLastOpenedJob(pJobName);
 
         setFilePaths(pJobName);
 

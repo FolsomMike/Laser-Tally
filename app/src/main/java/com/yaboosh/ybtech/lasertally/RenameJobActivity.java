@@ -263,7 +263,7 @@ public class RenameJobActivity extends StandardActivity {
         // Check to see if the job name already exists and to see if the
         // user did not just retype the original name of the job.
         if (!jobsHandler.getJobName().equals(jobName)
-                && jobsHandler.checkIfJobNameAlreadyExists(jobName))
+                && jobsHandler.checkIfJobExists(jobName))
         {
             jobExistsBool = true;
         }
@@ -273,7 +273,6 @@ public class RenameJobActivity extends StandardActivity {
         if (pLength > 0 && !jobExistsBool) { enableOkButton = true; }
 
         enableOkButton(enableOkButton);
-
 
         TextView exists = (TextView) findViewById(R.id.jobNameAlreadyExistsTextView);
         if (jobExistsBool) { exists.setVisibility(View.VISIBLE); }

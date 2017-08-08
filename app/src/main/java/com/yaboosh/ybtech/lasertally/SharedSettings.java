@@ -67,6 +67,9 @@ public class SharedSettings implements Parcelable {
     public String getDataFolderPath() { return dataFolderPath; }
     public void setDataFolderPath(String pNewPath) { dataFolderPath = pNewPath; }
 
+    private String lastOpenedJob;
+    public String getLastOpenedJob() { return lastOpenedJob; }
+
     private String reportsFolderPath = "";
     public String getReportsFolderPath() { return reportsFolderPath; }
     public void setReportsFolderPath(String pNewPath) { reportsFolderPath = pNewPath; }
@@ -207,7 +210,9 @@ public class SharedSettings implements Parcelable {
                             + ("Minimum Metric Measurement Allowed="
                                     + minimumMetricMeasurementAllowed)
                             + nL
-                            + ("Unit System=" + unitSystem);
+                            + ("Unit System=" + unitSystem)
+                            + nL
+                            + ("Last Opened Job=" + lastOpenedJob);
 
         return fileText;
 
@@ -276,6 +281,8 @@ public class SharedSettings implements Parcelable {
                         Tools.getValueFromList("Minimum Metric Measurement Allowed", fileLines);
 
         unitSystem = Tools.getValueFromList("Unit System", fileLines);
+
+        lastOpenedJob = Tools.getValueFromList("Last Opened Job", fileLines);
 
         //if any of the values weren't found in the list set them equal to their defaults
         useDefaultSettings();
@@ -391,6 +398,7 @@ public class SharedSettings implements Parcelable {
         minimumImperialMeasurementAllowed = "";
         minimumMetricMeasurementAllowed ="";
         unitSystem = "";
+        lastOpenedJob = "";
 
     }// end of SharedSettings::resetSettings
     //-----------------------------------------------------------------------------
@@ -423,16 +431,16 @@ public class SharedSettings implements Parcelable {
             out.flush();
 
         }
-        catch(IOException e){ Log.e(LOG_TAG, "Line 340 :: " + e.getMessage()); }
+        catch(IOException e){ Log.e(LOG_TAG, "Line 432 :: " + e.getMessage()); }
         finally{
             try{ if (out != null) {out.close();} }
-            catch(IOException e){ Log.e(LOG_TAG, "Line 386 :: " + e.getMessage());}
+            catch(IOException e){ Log.e(LOG_TAG, "Line 435 :: " + e.getMessage());}
 
             try{ if (outputStreamWriter != null) {outputStreamWriter.close();} }
-            catch(IOException e){ Log.e(LOG_TAG, "Line 389 :: " + e.getMessage());}
+            catch(IOException e){ Log.e(LOG_TAG, "Line 438 :: " + e.getMessage());}
 
             try{ if (fileOutputStream != null) {fileOutputStream.close();} }
-            catch(IOException e){ Log.e(LOG_TAG, "Line 392 :: " + e.getMessage()); }
+            catch(IOException e){ Log.e(LOG_TAG, "Line 441 :: " + e.getMessage()); }
         }
 
     }// end of SharedSettings::saveGeneralSettingsToFile
@@ -496,6 +504,22 @@ public class SharedSettings implements Parcelable {
         saveGeneralSettingsToFile();
 
     }// end of SharedSettings::setGeneralSettings
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    // SharedSettings::setLastOpenedJob
+    //
+    // Sets the last opened job to the passed in job name and saves the
+    // information to file.
+    //
+
+    public void setLastOpenedJob(String pName) {
+
+        lastOpenedJob = pName;
+
+        saveGeneralSettingsToFile();
+
+    }// end of SharedSettings::setLastOpenedJob
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

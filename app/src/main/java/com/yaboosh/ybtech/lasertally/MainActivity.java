@@ -70,6 +70,9 @@ public class MainActivity extends StandardActivity {
         focusArray.add(findViewById(R.id.createNewJobButton));
         focusArray.add(findViewById(R.id.openJobButton));
 
+        //load the last opened job, if there is one and if it still exists
+        jobsHandler.loadJobFromFile(sharedSettings.getLastOpenedJob());
+
     }//end of MainActivity::onCreate
     //-----------------------------------------------------------------------------
 
